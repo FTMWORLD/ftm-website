@@ -2976,40 +2976,36 @@
 
     /* =======================================================================
        LIVE API CLIENT
-       Built against FTM_Customer_API_Contract v0.1/v0.2. Everything here is
-       inert until FTM.remote.configure() is called with a real base URL and
-       a per-customer token issued by the website's own login backend, which
-       does not exist yet — today this always falls through to sample data.
+       Talks to THIS SITE'S OWN Vercel backend (same-origin, /api/v1/customer/*
+       — see api/_lib/engineClient.js and api/v1/*), which is the only thing
+       that ever talks to the trading engine. Confirmed architecture,
+       2026-09-23: the browser authenticates every call with its own live
+       Supabase session token; the Vercel function verifies that token
+       server-side, resolves it to X-FTM-Auth-Subject, and only then calls
+       the engine. The browser never holds, sends, or sees the engine's own
+       bearer token — that lives in Vercel's environment only.
 
-       SECURITY NOTE, do not change this without reading it: the contract's
-       website-to-engine bearer token is a "god token" that can assert any
-       customer id (v0.1 §1.1). It must NEVER be embedded in this file or any
-       browser-delivered code — this file is public. The only token this
-       client may ever hold is a short-lived, customer-scoped token that a
-       real website backend issues at login and that only works for that one
-       customer. Until that backend exists, FTM.remote.getToken() returns
-       null on purpose, and every fetch function below simply declines to run.
-       ======================================================================= */
+       So "ready" here means one thing: is there a real, configured Supabase
+       project to get a session token from. No separate base-URL or token
+       configuration is needed — same origin, always. Until a real Supabase
+       project exists (FTM.auth.ready()===false), every function below
+       simply declines to run and the site stays on sample data. */
     window.FTM.remote = (function(){
-      var BASE = window.FTM_API_BASE || null;   // e.g. 'https://api.followthemarket.example/api/v1/customer'
-      function getToken(){
-        try{ return sessionStorage.getItem('ftm-customer-token') || null; }catch(e){ return null; }
-      }
-      function getCustomerId(){
-        try{ return sessionStorage.getItem('ftm-customer-id') || null; }catch(e){ return null; }
-      }
-      function ready(){ return !!(BASE && getToken() && getCustomerId()); }
+      var BASE = '/api/v1/customer';
+      function ready(){ return !!(window.FTM.auth && window.FTM.auth.ready()); }
 
       function call(path, opts){
         opts = opts || {};
-        return fetch(BASE+path, {
-          method: opts.method||'GET',
-          headers: {
-            'Authorization': 'Bearer '+getToken(),
-            'X-FTM-Customer-Id': getCustomerId(),
-            'Content-Type': 'application/json'
-          },
-          body: opts.body ? JSON.stringify(opts.body) : undefined
+        return window.FTM.auth.getAccessToken().then(function(token){
+          if(!token) throw Object.assign(new Error('Your session has expired. Log in again and retry.'), {code:'UNAUTHENTICATED', status:401});
+          return fetch(BASE+path, {
+            method: opts.method||'GET',
+            headers: {
+              'Authorization': 'Bearer '+token,
+              'Content-Type': 'application/json'
+            },
+            body: opts.body ? JSON.stringify(opts.body) : undefined
+          });
         }).then(function(r){
           return r.json().then(function(j){
             if(!r.ok || j.ok===false) throw Object.assign(new Error(j.message||('HTTP '+r.status)), {code:j.error, status:r.status, issues:j.issues});
@@ -3067,13 +3063,6 @@
 
       return {
         ready: ready,
-        configure: function(baseUrl, token, customerId){
-          BASE = baseUrl;
-          try{
-            sessionStorage.setItem('ftm-customer-token', token);
-            sessionStorage.setItem('ftm-customer-id', customerId);
-          }catch(e){}
-        },
         fetchAccounts: function(){
           return call('/accounts').then(function(j){ return j.accounts.map(mapAccount); });
         },
@@ -3103,12 +3092,17 @@
             });
           });
         },
-        /* Connect-account. CONFIRMED 2026-09-23 against contract v0.1 §1/§2 —
-           no exception, no raw JWT: same bearer-token-plus-X-FTM-Customer-Id
-           pattern as every other call here, via the shared call() helper.
-           §2's error codes for this endpoint: UNAUTHENTICATED,
-           CUSTOMER_NOT_FOUND, VALIDATION_FAILED, MAINTENANCE_MODE, plus a
-           422 with an `issues` array for field-level validation failures. */
+        /* Connect-account. CONFIRMED 2026-09-23 by the engine session,
+           proven live against the real transport — this is the actual
+           error set, not the v0.1 draft:
+             401 UNAUTHENTICATED         403 CUSTOMER_NOT_PERMITTED
+             409 ACCOUNT_ALREADY_CONNECTED   422 VALIDATION_FAILED (+issues)
+             503 CUSTOMER_API_NOT_CONFIGURED  500 INTERNAL_SERVER_ERROR
+           The 409 uniqueness check is PLATFORM-WIDE (broker+account+server),
+           not per customer — a 409 can mean a stranger already connected
+           that account. Never word it as "you already connected this",
+           since that would confirm someone else's account to anyone
+           guessing numbers. The message below is deliberately neutral. */
         connectAccount: function(brokerServer, accountNumber, password, riskTier){
           return call('/accounts', { method:'POST', body: {
             broker_server: brokerServer,
@@ -3123,8 +3117,9 @@
             }
             var friendly={
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
-              CUSTOMER_NOT_FOUND:'We could not find your account. Log out and log in again.',
-              MAINTENANCE_MODE:'FTM is briefly in maintenance. Try again in a few minutes.'
+              CUSTOMER_NOT_PERMITTED:'Your account cannot connect a trading account right now. Contact support.',
+              ACCOUNT_ALREADY_CONNECTED:'This trading account is already connected to FTM.',
+              CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
             throw new Error(friendly[e.code] || e.message || 'Could not connect that account.');
           });
