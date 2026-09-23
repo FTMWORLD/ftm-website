@@ -1504,6 +1504,7 @@
       <button type="submit" class="btn btn-red" id="authSubmit">Log in</button>
     </form>
     <p class="auth-foot" id="authOtpBackRow" hidden><a href="#" id="authOtpBack">Use a different email, or resend the code</a></p>
+    <p class="auth-foot" id="authPwToggleRow" hidden><a href="#" id="authPwToggle">Have a password instead? Log in with it</a></p>
     <p class="auth-foot">No subscription yet? <a href="#pricing" id="authToPricing">See the plans</a></p>
   </div>
 </div>
@@ -2458,14 +2459,25 @@
     document.getElementById('authToPricing').addEventListener('click',close);
     function fail(msg){err.textContent=msg;err.hidden=false;}
 
-    /* ---- two-step OTP UI: email -> code ---- */
+    /* ---- login UI: email -> code (default), or email+password (toggle) ----
+       Password login exists as a secondary, opt-in path — a customer only
+       has a password once they've set one from inside their account (see
+       "Change password", passwordSet). Also serves as the one login route
+       that doesn't depend on outbound email at all, which matters because
+       Supabase's free plan rate-limits OTP emails project-wide — a burst
+       of testing can genuinely exhaust it for everyone, as happened
+       2026-09-24. Password login has no such dependency. */
     var otpEl=document.getElementById('authOtp'), submitBtn=document.getElementById('authSubmit');
     function showEmailStage(){
       otpStage='email';
       document.getElementById('authEmailRow').hidden=false;
+      document.getElementById('authPassRow').hidden=true;
       emailEl.disabled=false;
       document.getElementById('authOtpRow').hidden=true;
       document.getElementById('authOtpBackRow').hidden=true;
+      document.getElementById('authPwToggleRow').hidden=false;
+      document.getElementById('authPwToggle').textContent='Have a password instead? Log in with it';
+      document.getElementById('authSub').textContent='Use the email you paid with when you subscribed or invested. We’ll send you a 6-digit code.';
       submitBtn.textContent='Send code';
       err.hidden=true;
     }
@@ -2475,13 +2487,31 @@
       document.getElementById('authOtpRow').hidden=false;
       document.getElementById('authOtpSentTo').textContent='Code sent to '+mail+'. It expires shortly, so enter it soon.';
       document.getElementById('authOtpBackRow').hidden=false;
+      document.getElementById('authPwToggleRow').hidden=true;
       submitBtn.textContent='Verify & log in';
       err.hidden=true;
       otpEl.value='';
       setTimeout(function(){otpEl.focus();},50);
     }
+    function showPasswordStage(){
+      otpStage='password';
+      document.getElementById('authEmailRow').hidden=false;
+      document.getElementById('authPassRow').hidden=false;
+      document.getElementById('authOtpRow').hidden=true;
+      document.getElementById('authOtpBackRow').hidden=true;
+      document.getElementById('authPwToggleRow').hidden=false;
+      document.getElementById('authPwToggle').textContent='Use an emailed code instead';
+      document.getElementById('authSub').textContent='Use the email and password for your FTM account.';
+      submitBtn.textContent='Log in';
+      err.hidden=true;
+      setTimeout(function(){passEl.focus();},50);
+    }
     if(LIVE){
       document.getElementById('authOtpBack').addEventListener('click',function(e){ e.preventDefault(); showEmailStage(); emailEl.focus(); });
+      document.getElementById('authPwToggle').addEventListener('click',function(e){
+        e.preventDefault();
+        if(otpStage==='password') showEmailStage(); else showPasswordStage();
+      });
     }
     /* --- preview password store ---------------------------------------------
        The first password entered for an email becomes that email's password.
@@ -2564,6 +2594,15 @@
             submitBtn.disabled=false;
             showCodeStage(mail);
           });
+        } else if(otpStage==='password'){
+          var mail3=emailEl.value.trim().toLowerCase(), pw3=passEl.value;
+          if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail3))return fail('Enter a valid email address.');
+          if(!pw3)return fail('Enter your password.');
+          submitBtn.disabled=true;
+          window.FTM.auth.signInWithPassword(mail3,pw3).then(function(r){
+            submitBtn.disabled=false;
+            enter(r.email,r.products,false);
+          }).catch(function(e2){ submitBtn.disabled=false; fail(e2.message||'Could not log in.'); });
         } else {
           var mail2=emailEl.value.trim().toLowerCase(), code=otpEl.value.trim();
           if(!/^\d{6}$/.test(code))return fail('Enter the 6-digit code from your email.');
