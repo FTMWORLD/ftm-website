@@ -28,10 +28,24 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+/* Lazy singleton, built only when a route actually needs Supabase (i.e.
+   calls verifyCustomer). Building this eagerly at module load time — as
+   an earlier version of this file did — meant EVERY function that
+   imports this module, including /api/v1/health, which needs no
+   identity at all, crashed with FUNCTION_INVOCATION_FAILED the moment
+   SUPABASE_URL was unset. A health check that fails because of an
+   unrelated, unconfigured dependency is exactly the kind of coupling
+   this file exists to avoid. */
+let _supabaseAdmin = null;
+function getSupabaseAdmin() {
+  if (!_supabaseAdmin) {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      throw new Error('SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY not configured — cannot verify a customer session yet.');
+    }
+    _supabaseAdmin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+  }
+  return _supabaseAdmin;
+}
 
 /* Verifies the Supabase access token on the incoming request and returns
    the VERIFIED user, or null if there isn't a valid one. Reads the token
@@ -45,7 +59,7 @@ async function verifyCustomer(req) {
 
   // supabase.auth.getUser(jwt) checks the token against Supabase itself —
   // this is real verification, not a decode-and-trust of the JWT payload.
-  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  const { data, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !data || !data.user) return null;
   return data.user; // { id, email, ... } — verified
 }
