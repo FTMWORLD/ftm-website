@@ -736,12 +736,14 @@
   .hero h1{color:var(--white);font-size:clamp(48px,7.5vw,104px);line-height:.96;letter-spacing:-.04em}
   .hero .eyebrow{color:var(--gold-light);font-size:clamp(22px,2.6vw,32px);font-weight:700;text-transform:none;letter-spacing:-.01em;margin-bottom:12px}
   .hero .sub{font-size:18px;max-width:520px;margin:32px 0 40px;color:rgba(255,255,255,.9)}
-  /* Full-width bar pinned to the bottom edge of the hero, like Deriv's —
+  /* Full-width bar sitting just below the hero, on the white background —
      previously this sat inline under the hero text and only spanned the
      text column's width, which is part of why the hero read as "not
-     full" on wide screens. */
-  .hero-score{position:absolute;left:0;right:0;bottom:0;background:rgba(5,10,35,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(255,255,255,.1)}
-  .hero-score-in{display:flex;align-items:center;gap:12px;padding-block:16px;font-size:14px;color:rgba(255,255,255,.85);flex-wrap:wrap}
+     full" on wide screens. Now a normal-flow strip between the hero and
+     the next section, not overlapping the hero's dark background. */
+  .hero-score{background:var(--bg-3);border-bottom:1px solid var(--line)}
+  .hero-score-in{display:flex;align-items:center;gap:12px;padding-block:14px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+  .hero-score-in b{color:var(--ink)}
   .stars{display:flex;gap:2px}
   .stars i{width:18px;height:18px;background:#00B67A;border-radius:3px;display:grid;place-items:center}
   .stars i svg{width:12px;height:12px}
@@ -1112,14 +1114,15 @@
     <p class="sub" data-i18n="hero.sub">Follow The Market. Forex, Metals CFD, Stocks, Indices, Commodities, Shares, Crypto, Investment and Affiliate marketing on one platform, plus FTM MACHINE for automated trading, with support around the clock.</p>
     <a class="btn btn-red js-start" href="#get-started" data-i18n="btn.start">Get started</a>
   </div>
-  <div class="hero-score">
-    <div class="container hero-score-in">
-      <span>FTM scores</span>
-      <div class="stars" aria-label="4.5 out of 5"><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i style="background:#8fd9bd"><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i></div>
-      <span><b>4.5</b> out of 5 based on <b>12,400</b> reviews</span>
-    </div>
-  </div>
 </section>
+
+<div class="hero-score">
+  <div class="container hero-score-in">
+    <span>FTM scores</span>
+    <div class="stars" aria-label="4.5 out of 5"><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i style="background:#8fd9bd"><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i></div>
+    <span><b>4.5</b> out of 5 based on <b>12,400</b> reviews</span>
+  </div>
+</div>
 
 <!-- ===== FLOATING SUPPORT ===== -->
 <div class="float-support" id="floatSupport">
