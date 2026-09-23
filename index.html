@@ -2075,6 +2075,7 @@
       <p class="auth-error" id="pwErr" hidden></p>
       <button class="btn btn-red" type="button" id="pwSave">Save new password</button>
       <p class="hint" id="pwOk" hidden>Password changed. Use it the next time you log in.</p>
+      <p class="hint" id="pwSkipRow" hidden style="margin-top:14px;text-align:center"><a href="#" id="pwSkip">Skip for now, keep using the emailed code</a></p>
     </div>
   </div>
 </div>
@@ -2224,21 +2225,28 @@
          paid FTM subscriptions. */
       sendOtp: function(email){ return client.auth.signInWithOtp({email:email, options:{shouldCreateUser:false}}); },
       /* Verifies the 6-digit code and completes login. Resolves {email,
-         products, userId}, same shape as everything else here. */
+         products, userId, passwordSet}, same shape as everything else
+         here. passwordSet comes from user_metadata — Supabase has no
+         built-in "has this account ever had a password" flag, since OTP
+         accounts never need one, so updatePassword() below sets this
+         itself the first time a customer chooses one. Used to decide
+         whether to prompt a first-time customer to set a password right
+         after they log in. */
       verifyOtp: function(email, code){
         return client.auth.verifyOtp({email:email, token:code, type:'email'}).then(function(r){
           if(r.error) throw new Error(r.error.message.indexOf('expired')!==-1 ? 'That code has expired. Request a new one.' : 'That code is not correct.');
           return fetchEntitlements(r.data.user.id).then(function(products){
-            return {email:r.data.user.email, products:products, userId:r.data.user.id};
+            return {email:r.data.user.email, products:products, userId:r.data.user.id, passwordSet:!!(r.data.user.user_metadata && r.data.user.user_metadata.password_set)};
           });
         });
       },
       /* Sets or changes the password, used only from inside the client
          area once already logged in — never as the login step itself.
          Needs no separate re-authentication: the OTP that opened this
-         session already proved who the customer is. */
+         session already proved who the customer is. Also records
+         password_set in user_metadata — see verifyOtp's note above. */
       updatePassword: function(newPassword){
-        return client.auth.updateUser({password:newPassword}).then(function(r){
+        return client.auth.updateUser({password:newPassword, data:{password_set:true}}).then(function(r){
           if(r.error) throw new Error(r.error.message);
           return true;
         });
@@ -2272,7 +2280,7 @@
           var session=r.data && r.data.session;
           if(!session) return null;
           return fetchEntitlements(session.user.id).then(function(products){
-            return {email:session.user.email, products:products, userId:session.user.id};
+            return {email:session.user.email, products:products, userId:session.user.id, passwordSet:!!(session.user.user_metadata && session.user.user_metadata.password_set)};
           });
         });
       }
@@ -2500,6 +2508,36 @@
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
     }
 
+    /* First thing a customer sees right after logging in with an emailed
+       code, if they've never set a password — before the dashboard opens.
+       Reuses the same modal as "Change password", framed as a welcome
+       step instead. Skippable: setting a password here is encouraged,
+       not required, the code keeps working either way. */
+    var pendingPwSuccess = null;
+    function promptSetPassword(r){
+      close();
+      var pwm=document.getElementById('pwModal');
+      document.getElementById('pwTitle').textContent='Set a password for next time';
+      document.querySelector('#pwModal .hint').textContent='You logged in with an emailed code. Set a password now so you can skip that step next time — or keep using the code, entirely up to you.';
+      document.getElementById('pwCurRow').hidden=true;
+      document.getElementById('pwSkipRow').hidden=false;
+      ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
+      document.getElementById('pwErr').hidden=true; document.getElementById('pwOk').hidden=true;
+      pwm.hidden=false;
+      setTimeout(function(){document.getElementById('pwNew').focus();},40);
+
+      function proceed(){
+        document.getElementById('pwSkipRow').hidden=true; // revert to the ordinary "Change password" framing afterwards
+        document.getElementById('pwTitle').textContent='Set your password';
+        document.querySelector('#pwModal .hint').textContent='Choose a password of at least 8 characters. You can also keep logging in with an emailed code instead — setting one here is optional.';
+        enter(r.email,r.products,false);
+      }
+      document.getElementById('pwSkip').addEventListener('click',function(e){ e.preventDefault(); pwm.hidden=true; proceed(); },{once:true});
+      // The ordinary Save handler (registered once, below) does the actual
+      // save and calls this hook on success instead of polling for it.
+      pendingPwSuccess = proceed;
+    }
+
     if(LIVE){
       form.addEventListener('submit',function(e){
         e.preventDefault();
@@ -2521,12 +2559,18 @@
           var mail2=emailEl.value.trim().toLowerCase(), code=otpEl.value.trim();
           if(!/^\d{6}$/.test(code))return fail('Enter the 6-digit code from your email.');
           submitBtn.disabled=true;
-          window.FTM.auth.verifyOtp(mail2,code).then(function(r){ enter(r.email,r.products,false); })
-            .catch(function(e2){ submitBtn.disabled=false; fail(e2.message||'Could not verify that code.'); });
+          window.FTM.auth.verifyOtp(mail2,code).then(function(r){
+            submitBtn.disabled=false;
+            if(r.passwordSet) enter(r.email,r.products,false);
+            else promptSetPassword(r);
+          }).catch(function(e2){ submitBtn.disabled=false; fail(e2.message||'Could not verify that code.'); });
         }
       });
       /* A returning customer with a valid Supabase session skips the login
-         form entirely. Safe no-op if there's no session. */
+         form entirely. Safe no-op if there's no session. Only prompt for a
+         password on a fresh login, not silently on every page load — a
+         returning customer who already skipped once shouldn't be nagged
+         on every visit, only asked again next time they use the code. */
       window.FTM.auth.restoreSession().then(function(r){ if(r) enter(r.email,r.products,false); })
         .catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); });
     } else {
@@ -2586,7 +2630,8 @@
           document.getElementById('pwErr').hidden=true; document.getElementById('pwOk').hidden=false;
           document.getElementById('pwOk').textContent='Password set. You can use it next time, or keep logging in with an emailed code.';
           ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
-          setTimeout(pwClose,1800);
+          var after=pendingPwSuccess; pendingPwSuccess=null;
+          setTimeout(function(){ pwClose(); if(after) after(); },1800);
         }).catch(function(e2){
           pwErr(e2.message||'Could not change your password.');
         });
