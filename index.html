@@ -2278,14 +2278,17 @@
       }
     };
   })();
-  /* Flip the site live by setting these two globals in a small inline
-     script tag BEFORE this one loads — nothing else needs to change.
-     e.g. window.FTM_SUPABASE_URL = 'https://xxxx.supabase.co';
-          window.FTM_SUPABASE_ANON_KEY = 'eyJ...';
-     placed in its own tiny script tag above this one. */
-  if(window.FTM_SUPABASE_URL && window.FTM_SUPABASE_ANON_KEY){
-    window.FTM.auth.configure(window.FTM_SUPABASE_URL, window.FTM_SUPABASE_ANON_KEY);
-  }
+  /* Real project, confirmed 2026-09-23 — "FTM Wealth Nation" / "ftm production",
+     Frankfurt (eu-central-1). Both values are meant to be public: this is
+     the publishable key, not the secret one — it identifies the project
+     to Supabase's own access rules (RLS), it isn't a privileged credential
+     on its own. Uses Supabase's current sb_publishable_... key format
+     rather than the legacy JWT-looking anon key; supabase-js accepts
+     either, nothing else here needed to change for that. */
+  window.FTM.auth.configure(
+    'https://wawyfgstobnjqwpnylhu.supabase.co',
+    'sb_publishable_reT6pj68ulwy1pz_jdtBXA_boaMaHvM'
+  );
 
   /* ---- floating support widget ---- */
   (function(){
