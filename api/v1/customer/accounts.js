@@ -1,5 +1,11 @@
-/* POST /api/v1/customer/accounts — the real connect-trading-account endpoint.
-   Confirmed shape, 2026-09-23, against the engine's own proven implementation.
+/* GET /api/v1/customer/accounts — list this customer's real accounts.
+   POST /api/v1/customer/accounts — connect a new one.
+   POST shape confirmed live, 2026-09-23, against the engine's own proven
+   implementation. GET is built against contract v0.1 §4's documented
+   response shape — that specific response has not yet been proven live
+   the way POST has (POST was tested end to end tonight; GET has not),
+   so treat its exact field names as best-available rather than confirmed
+   until someone sees a real 200 come back through it.
 
    Flow: verify the browser's Supabase session server-side, resolve it to
    the engine's identity header, forward the request, map the response
@@ -23,7 +29,7 @@ const STATUS_FOR_CODE = {
 };
 
 module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET' && req.method !== 'POST') {
     res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
     return;
   }
@@ -34,6 +40,31 @@ module.exports = async function handler(req, res) {
   });
   if (!user) {
     res.status(401).json({ ok: false, error: 'UNAUTHENTICATED', message: 'Your session has expired. Log in again and retry.' });
+    return;
+  }
+
+  if (req.method === 'GET') {
+    try {
+      var listResult = await callEngine('/api/v1/customer/accounts', {
+        method: 'GET',
+        authSubject: user.id,
+        authEmail: user.email
+      });
+      if (listResult.ok) {
+        // { ok:true, accounts:[...] } — passed straight through. The
+        // browser's mapAccount() already defends against fields this
+        // response might not include (primary, last_sync_at), so an
+        // exact shape mismatch degrades gracefully rather than crashing.
+        res.status(listResult.status).json(listResult.body);
+        return;
+      }
+      var listCode = listResult.body && listResult.body.error;
+      var listStatus = STATUS_FOR_CODE[listCode] || listResult.status || 500;
+      res.status(listStatus).json({ ok: false, error: listCode || 'INTERNAL_SERVER_ERROR' });
+    } catch (e) {
+      console.error('FTM accounts list: engine unreachable:', e.message);
+      res.status(502).json({ ok: false, error: 'ENGINE_UNREACHABLE', message: 'Could not reach the FTM engine. Try again shortly.' });
+    }
     return;
   }
 
