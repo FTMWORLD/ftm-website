@@ -736,10 +736,32 @@
   .hero h1{color:var(--white);font-size:clamp(48px,7.5vw,104px);line-height:.96;letter-spacing:-.04em}
   .hero .eyebrow{color:var(--gold-light);font-size:clamp(22px,2.6vw,32px);font-weight:700;text-transform:none;letter-spacing:-.01em;margin-bottom:12px}
   .hero .sub{font-size:18px;max-width:520px;margin:32px 0 40px;color:rgba(255,255,255,.9)}
-  .hero-score{display:flex;align-items:center;gap:12px;margin-top:40px;font-size:14px;color:rgba(255,255,255,.85)}
+  /* Full-width bar pinned to the bottom edge of the hero, like Deriv's —
+     previously this sat inline under the hero text and only spanned the
+     text column's width, which is part of why the hero read as "not
+     full" on wide screens. */
+  .hero-score{position:absolute;left:0;right:0;bottom:0;background:rgba(5,10,35,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-top:1px solid rgba(255,255,255,.1)}
+  .hero-score-in{display:flex;align-items:center;gap:12px;padding-block:16px;font-size:14px;color:rgba(255,255,255,.85);flex-wrap:wrap}
   .stars{display:flex;gap:2px}
   .stars i{width:18px;height:18px;background:#00B67A;border-radius:3px;display:grid;place-items:center}
   .stars i svg{width:12px;height:12px}
+
+  /* ---------- FLOATING SUPPORT ---------- */
+  .float-support{position:fixed;right:20px;bottom:20px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+  .fs-btn{width:56px;height:56px;border-radius:50%;border:0;background:var(--red);color:#fff;display:grid;place-items:center;box-shadow:0 14px 34px rgba(229,50,62,.4);cursor:pointer}
+  .fs-btn svg{width:26px;height:26px}
+  .fs-btn:hover{background:#c72330}
+  .fs-panel{background:#fff;border-radius:20px;box-shadow:0 24px 60px rgba(11,20,64,.28);padding:10px;width:280px;display:grid;gap:4px}
+  .fs-head{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 4px}
+  .fs-head b{font-size:15px;color:var(--ink)}
+  .fs-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:4px}
+  .fs-opt{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;text-decoration:none;color:var(--ink)}
+  .fs-opt:hover{background:var(--bg-3)}
+  .fs-opt small{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
+  .fs-opt b{font-size:14px}
+  .fs-ic{width:38px;height:38px;border-radius:11px;background:var(--blue);color:var(--gold);display:grid;place-items:center;flex:none}
+  .fs-ic svg{width:19px;height:19px}
+  @media (max-width:520px){.float-support{right:14px;bottom:14px}.fs-panel{width:calc(100vw - 28px)}}
 
   /* ---------- TRUST ---------- */
   .trust{background:var(--bg-3)}
@@ -1089,13 +1111,33 @@
     <h1><span data-i18n="hero.l1">Invest Today,</span><br><span data-i18n="hero.l2">Secure Tomorrow</span></h1>
     <p class="sub" data-i18n="hero.sub">Follow The Market. Forex, Metals CFD, Stocks, Indices, Commodities, Shares, Crypto, Investment and Affiliate marketing on one platform, plus FTM MACHINE for automated trading, with support around the clock.</p>
     <a class="btn btn-red js-start" href="#get-started" data-i18n="btn.start">Get started</a>
-    <div class="hero-score">
+  </div>
+  <div class="hero-score">
+    <div class="container hero-score-in">
       <span>FTM scores</span>
       <div class="stars" aria-label="4.5 out of 5"><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i><i style="background:#8fd9bd"><svg viewBox="0 0 24 24" fill="#fff"><path d="m12 2 3 7 7 .5-5.5 4.5 2 7-6.5-4-6.5 4 2-7L2 9.5 9 9z"/></svg></i></div>
       <span><b>4.5</b> out of 5 based on <b>12,400</b> reviews</span>
     </div>
   </div>
 </section>
+
+<!-- ===== FLOATING SUPPORT ===== -->
+<div class="float-support" id="floatSupport">
+  <div class="fs-panel" id="fsPanel" hidden>
+    <div class="fs-head"><b>Need a hand?</b><button type="button" class="fs-x" id="fsClose" aria-label="Close">&times;</button></div>
+    <a class="fs-opt" href="mailto:ftmwebnation@gmail.com">
+      <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>
+      <span><b>Email us</b><small>ftmwebnation@gmail.com</small></span>
+    </a>
+    <a class="fs-opt" href="#support">
+      <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+      <span><b>Live chat</b><small>See our support desk</small></span>
+    </a>
+  </div>
+  <button type="button" class="fs-btn" id="fsToggle" aria-label="Get help" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  </button>
+</div>
 
 <!-- ===== TRUST ===== -->
 <section class="trust">
@@ -2239,6 +2281,18 @@
   if(window.FTM_SUPABASE_URL && window.FTM_SUPABASE_ANON_KEY){
     window.FTM.auth.configure(window.FTM_SUPABASE_URL, window.FTM_SUPABASE_ANON_KEY);
   }
+
+  /* ---- floating support widget ---- */
+  (function(){
+    var toggle=document.getElementById('fsToggle'), panel=document.getElementById('fsPanel'), close=document.getElementById('fsClose');
+    if(!toggle)return;
+    function open(){ panel.hidden=false; toggle.setAttribute('aria-expanded','true'); }
+    function shut(){ panel.hidden=true; toggle.setAttribute('aria-expanded','false'); }
+    toggle.addEventListener('click',function(){ panel.hidden ? open() : shut(); });
+    close.addEventListener('click',shut);
+    document.addEventListener('click',function(e){ if(!panel.hidden && !e.target.closest('#floatSupport')) shut(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !panel.hidden) shut(); });
+  })();
 
   const nav=document.getElementById('nav');
   const heroH=()=>document.querySelector('.hero').offsetHeight-80;
