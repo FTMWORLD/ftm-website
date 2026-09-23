@@ -231,6 +231,7 @@
   .mg dd{margin:0;font-size:13.5px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
   .val-up{color:#1f8a5b}
   .val-down{color:var(--red-dark)}
+  .val-wait{color:#B4690E}
   .app-note code{background:rgba(11,20,64,.08);padding:1px 6px;border-radius:5px;font-size:12.5px}
   @media (max-width:1000px){.metrics{grid-template-columns:1fr 1fr}.app-cols3{grid-template-columns:1fr}}
   @media (max-width:560px){.metrics{grid-template-columns:1fr}}
@@ -440,6 +441,9 @@
   @media (max-width:560px){.mem-grid{grid-template-columns:1fr}.prof-stats{grid-template-columns:1fr 1fr}}
 
   .acct-table .conn{background:#EAF7F0;color:#1f8a5b;font-size:11.5px;font-weight:800;padding:5px 11px;border-radius:99px;white-space:nowrap}
+  .acct-table .conn-good{background:#EAF7F0;color:#1f8a5b}
+  .acct-table .conn-wait{background:#FFF3E0;color:#B4690E}
+  .acct-table .conn-bad{background:#FDEAEA;color:#C4302B}
   .acct-table .conn-btn{border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
   .acct-table tr.active td{background:#F6FBF8}
@@ -3527,12 +3531,35 @@
       var h=Math.round(m/60); if(h<24)return h+' hour'+(h===1?'':'s')+' ago';
       var d=Math.round(h/24); return d+' day'+(d===1?'':'s')+' ago';
     }
+    /* Customer-facing label + tone for every real display_status value
+       (contract v0.1 §3's precedence table). A freshly connected account
+       sits in SETUP_INCOMPLETE for a few minutes — showing that plainly
+       matters, because the previous binary Connected/Connect rendering
+       made a just-connected account look identical to one nobody had
+       touched yet, which is actively misleading right when a customer
+       most wants confirmation that something happened. */
+    var STATUS_LABEL = {
+      MAINTENANCE:      {text:'Platform maintenance', tone:'wait'},
+      BLOCKED:          {text:'Blocked — contact support', tone:'bad'},
+      SETUP_INCOMPLETE: {text:'Verifying — usually a few minutes', tone:'wait'},
+      ACTION_REQUIRED:  {text:'Action required', tone:'bad'},
+      OFFLINE:          {text:'Offline', tone:'bad'},
+      PAUSED:           {text:'Paused', tone:'wait'},
+      INACTIVE:         {text:'Connected, not trading', tone:'wait'},
+      ACTIVE:           {text:'Active — trading', tone:'good'}
+    };
     function renderAccounts(){
       var m=F.metrics(), A=F.data.accounts||[];
       el('acctRows').innerHTML=A.map(function(a,i){
-        var status = a.active
-          ? '<span class="conn">Connected</span>'
-          : '<button class="conn-btn" data-connect="'+i+'">Connect</button>';
+        var status;
+        if(a.displayStatus){
+          var s=STATUS_LABEL[a.displayStatus]||{text:a.displayStatus,tone:'wait'};
+          status='<span class="conn conn-'+s.tone+'" title="'+(a.statusReason||'')+'">'+s.text+'</span>';
+        } else {
+          status = a.active
+            ? '<span class="conn conn-good">Connected</span>'
+            : '<button class="conn-btn" data-connect="'+i+'">Connect</button>';
+        }
         return '<tr class="'+(a.active?'active':'')+'"><td><b>'+a.name+'</b></td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
           '<td><span class="'+(a.type==='LIVE'?'tag-live':'tag-demo')+'">'+a.type+'</span></td>'+
           '<td>'+a.platform+'</td><td>'+(a.primary?money(m.balance,2):money(a.balance,2))+'</td>'+
@@ -3713,10 +3740,14 @@
     };
     function header(name){
       var m=F.metrics(), A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0];
+      var lead = A.filter(function(a){return a.primary;})[0] || A[0];
       var meta=VIEW_META[name]||VIEW_META.metrics;
       var acctLabel = on ? ('Account '+(name==='metrics'?'metrics ':'')+on.number) : 'No account connected';
       document.getElementById('crumbView').textContent=meta.t;
-      document.getElementById('crumbAcct').textContent= on ? (on.name+' '+on.number) : 'No account';
+      // Any connected account, not only one already ACTIVE — a customer
+      // whose account is still being verified should still see it named
+      // here, rather than "No account" implying nothing was submitted.
+      document.getElementById('crumbAcct').textContent= lead ? (lead.name+' '+lead.number) : 'No account';
       document.getElementById('pageTitle').textContent = name==='metrics' ? ('Account metrics '+(on?on.number:'')) : meta.t;
       document.getElementById('pageSub').textContent=meta.s;
       var ic=document.getElementById('pageIcon');
@@ -3725,8 +3756,18 @@
       document.getElementById('hdrPlan').textContent=(F.data.plan||'5 Years');
       document.getElementById('hdrBal').textContent=money(m.balance,0);
       var st=document.getElementById('hdrStatus');
-      st.textContent = on ? 'Running' : 'Not connected';
-      st.className = on ? 'ok' : 'val-down';
+      /* Prefer the real display_status over the plain active/not-active
+         split, same reasoning as renderAccounts — a customer whose
+         account is still being verified should see that, not a status
+         that reads identically to "nothing connected yet". */
+      if(lead && lead.displayStatus){
+        var s=STATUS_LABEL[lead.displayStatus]||{text:lead.displayStatus,tone:'wait'};
+        st.textContent=s.text;
+        st.className = s.tone==='good' ? 'ok' : (s.tone==='bad' ? 'val-down' : 'val-wait');
+      } else {
+        st.textContent = on ? 'Running' : 'Not connected';
+        st.className = on ? 'ok' : 'val-down';
+      }
     }
     F.header=header;
 
