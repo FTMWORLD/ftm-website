@@ -2510,6 +2510,11 @@
       if(products && products.length) FTM.openArea(products[0]);
       else FTM.openArea('auto'); /* opens the "No results" panel already built for this case */
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
+      /* Fetch this customer's real account data now that they're actually
+         logged in — see F.loadLive's own note on why this can't just
+         happen once at page load. Sample data may flash briefly until
+         this resolves; that's preferable to it never being replaced. */
+      if(LIVE && window.FTM.loadLive) window.FTM.loadLive();
     }
 
     /* First thing a customer sees right after logging in with an emailed
@@ -3273,10 +3278,29 @@
        fetch the real account/executions/positions and overwrite the sample
        F.data before the first render. Silent no-op today, since ready()
        is false until a login flow actually calls FTM.remote.configure(). */
+    /* Skeleton state for a real, authenticated customer who hasn't
+       connected a trading account yet — every number genuinely zero or
+       blank, never the 250-trade sample set. Showing sample data here
+       would mean a real paying customer sees fake numbers on what looks
+       like their own account, which is a straightforwardly dishonest
+       failure mode, not a cosmetic one. */
+    function emptyLiveData(){
+      return {
+        account: {currency:'EUR', deposits:0, withdrawals:0},
+        closed: [], open: [], accounts: [],
+        plan: null, // no real billing/subscription API yet — see the
+                    // matching note on ivPlanLine below. Never fabricate
+                    // a plan name for a real customer.
+        profile: F.data.profile, members: F.data.members, threads: F.data.threads, leaderboard: F.data.leaderboard
+        // community/leaderboard intentionally left as-is — still sample,
+        // per the standing decision that those features aren't built for
+        // real yet. This fix is scoped to financial data specifically.
+      };
+    }
     function loadLive(){
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
       return F.remote.fetchAccounts().then(function(accounts){
-        if(!accounts.length) return false;
+        if(!accounts.length){ F.data = emptyLiveData(); return true; }
         var primary = accounts.find(function(a){return a.primary;}) || accounts[0];
         return F.remote.fetchAllExecutions(primary.accountId).then(function(closed){
           return F.remote.fetchPositions(primary.accountId).then(function(open){
@@ -3287,12 +3311,42 @@
           });
         });
       }).catch(function(err){
-        console.warn('FTM live data fetch failed, keeping sample data:', err);
+        /* Previously this kept whatever was already in F.data on any
+           failure — which, before a customer has logged in, is the
+           250-trade sample set. That meant a real, logged-in customer
+           whose data fetch failed for ANY reason (network blip, an
+           expired session, a backend error) would silently see fake
+           numbers presented as their own, with no sign anything was
+           wrong. Once we know we're genuinely in live mode, a failure
+           must fall back to the honest empty state, never to sample
+           data. Only a call made before any login exists (this
+           function's own initial run at page load) should still leave
+           sample data in place, since there's no real customer to
+           mislead yet. */
+        console.warn('FTM live data fetch failed:', err);
+        if(F.session) F.data = emptyLiveData();
         return false;
       });
     }
 
     loadLive().then(function(){ F.render(); });
+    /* Exposed so the login flow (a separate closure, earlier in this file)
+       can re-fetch real account data the moment a fresh login succeeds —
+       calling it only here, at initial page parse, meant real data was
+       only ever loaded if a session happened to already exist before the
+       page finished loading, and never after a customer actually logs in
+       during this visit. That's why a real, freshly-authenticated
+       customer could still see 250 sample trades. */
+    F.loadLive = function(){
+      return loadLive().then(function(){
+        F.render();
+        // F.render() alone doesn't touch the client-area header (balance,
+        // status, breadcrumb) — that's driven separately by header(), tied
+        // to whichever view is currently on screen.
+        var onItem = document.querySelector('.app-nav-item.is-on');
+        F.header(onItem ? onItem.dataset.view : 'metrics');
+      });
+    };
 
     /* Live floating P&L on the open positions, so equity breathes like a real
        terminal. The backend will push real prices here instead. */
@@ -3753,7 +3807,7 @@
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
       ic.innerHTML = src ? src.outerHTML : '';
-      document.getElementById('hdrPlan').textContent=(F.data.plan||'5 Years');
+      document.getElementById('hdrPlan').textContent=(F.data.plan||'—');
       document.getElementById('hdrBal').textContent=money(m.balance,0);
       var st=document.getElementById('hdrStatus');
       /* Prefer the real display_status over the plain active/not-active
@@ -4543,19 +4597,31 @@
     if(y) y.textContent=new Date().getFullYear();
 
     /* The plan line is worked out from the subscription start, so it stays
-       right as months pass. Swap planStart for the real date from the backend. */
+       right as months pass. Swap planStart for the real date from the
+       backend. IMPORTANT: there is no real billing/subscription API yet
+       (Stripe-to-backend account creation is still separate, unbuilt
+       work) — F.invest.planStart is always a placeholder, never a real
+       fetched value, unlike F.data which loadLive() genuinely replaces.
+       So once real login exists, this must NOT compute a fabricated
+       date — a real customer must never see an invented "active until
+       2032" for a subscription record that doesn't actually exist yet. */
     var line=document.getElementById('ivPlanLine');
     if(line){
       var F=window.FTM||{};
-      var planStart=(F.invest&&F.invest.planStart)?new Date(F.invest.planStart):new Date(2026,8,16);
-      var years=(F.invest&&F.invest.planYears)||5, bonus=(F.invest&&F.invest.planBonusMonths)||4;
-      var end=new Date(planStart.getFullYear()+years, planStart.getMonth()+bonus, planStart.getDate());
-      var months=Math.max(0,Math.round((end-planStart)/(30.44*864e5)));
-      var now=Date.now();
-      var left=Math.max(0,Math.ceil((end-now)/864e5));
-      line.textContent=years+' Years plan, active until '+
-        end.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+
-        '. '+months+' months connected'+(left?', '+left+' days remaining.':'. Expired.');
+      var isLive = !!(F.remote && F.remote.ready());
+      if(isLive){
+        line.textContent='Subscription details will appear here once your plan is linked to your account.';
+      } else {
+        var planStart=(F.invest&&F.invest.planStart)?new Date(F.invest.planStart):new Date(2026,8,16);
+        var years=(F.invest&&F.invest.planYears)||5, bonus=(F.invest&&F.invest.planBonusMonths)||4;
+        var end=new Date(planStart.getFullYear()+years, planStart.getMonth()+bonus, planStart.getDate());
+        var months=Math.max(0,Math.round((end-planStart)/(30.44*864e5)));
+        var now=Date.now();
+        var left=Math.max(0,Math.ceil((end-now)/864e5));
+        line.textContent=years+' Years plan, active until '+
+          end.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+
+          '. '+months+' months connected'+(left?', '+left+' days remaining.':'. Expired.');
+      }
     }
   })();
 
