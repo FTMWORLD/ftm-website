@@ -53,16 +53,25 @@ async function verifyCustomer(req) {
 /* Calls the FTM engine through the Cloudflare Access tunnel. `customerId`
    is required for every customer-scoped route and must come from
    verifyCustomer()'s result, never from the request itself — see the
-   note above. Pass null only for routes with no customer concept, e.g.
-   the health check. */
-async function callEngine(path, { method = 'GET', body = null, customerId = null } = {}) {
+   note above. Pass null for routes with no customer concept (health).
+
+   Header contract v0.3 (engine session, confirmed): identity is asserted
+   as X-FTM-Auth-Subject, the Supabase user id, NOT X-FTM-Customer-Id —
+   the engine resolves/creates the customer row itself on first sight, so
+   this function never needs to know or store an ftm.customers.id. Pass
+   authEmail only alongside a brand-new signup; the engine uses it solely
+   to populate a first-seen customer row, never to update an existing
+   one — sending it on every request would let this header edit customer
+   data, which it must never be able to do. */
+async function callEngine(path, { method = 'GET', body = null, authSubject = null, authEmail = null } = {}) {
   const headers = {
     'Authorization': `Bearer ${process.env.FTM_WEBSITE_API_TOKEN}`,
     'Content-Type': 'application/json',
     'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
     'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET
   };
-  if (customerId !== null) headers['X-FTM-Customer-Id'] = String(customerId);
+  if (authSubject !== null) headers['X-FTM-Auth-Subject'] = String(authSubject);
+  if (authEmail !== null) headers['X-FTM-Auth-Email'] = String(authEmail);
 
   const r = await fetch(`${process.env.FTM_ENGINE_URL}${path}`, {
     method,
