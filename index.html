@@ -466,6 +466,10 @@
   .acct-table .conn-bad{background:#FDEAEA;color:#C4302B}
   .acct-table .conn-btn{border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
+  .acct-table .running-pl{font-weight:700;font-variant-numeric:tabular-nums}
+  .acct-table .running-pl.up{color:#1f8a5b}
+  .acct-table .running-pl.down{color:var(--red-dark)}
+  .acct-table .running-pl.none{color:var(--muted);font-weight:400}
   .acct-table tr.active td{background:#F6FBF8}
   .acct-note{display:block;background:var(--bg-3);border-left:4px solid var(--blue);border-radius:10px;padding:13px 16px;margin-top:18px;font-size:13.5px;color:var(--text);line-height:1.55}
   .acct-note b{color:var(--ink)}
@@ -1889,7 +1893,7 @@
           <div class="app-card">
             <div class="acct-head"><div><h3>Connected accounts</h3><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
             <div class="app-scroll"><table class="app-trades acct-table">
-              <thead><tr><th>Name</th><th>Number</th><th>Provider</th><th>Type</th><th>Platform</th><th>Balance</th><th>Last sync</th><th>FTM MACHINE</th></tr></thead>
+              <thead><tr><th>Name</th><th>Number</th><th>Provider</th><th>Type</th><th>Platform</th><th>Balance</th><th>Running P/L</th><th>Last sync</th><th>FTM MACHINE</th></tr></thead>
               <tbody id="acctRows"></tbody>
             </table></div>
           </div>
@@ -3217,7 +3221,13 @@
           active: a.display_status === 'ACTIVE',
           displayStatus: a.display_status,
           statusReason: a.status_reason,
-          accountId: a.account_id
+          accountId: a.account_id,
+          // Unrealised P&L on whatever is open right now, straight from the
+          // broker's own account_state, refreshed on its heartbeat. Only
+          // meaningful while a position is open — null otherwise, rendered
+          // as "—" rather than 0, since 0 would claim a figure we don't have.
+          floating: (a.account_state && a.account_state.floating_profit != null) ? num(a.account_state.floating_profit) : null,
+          currency: (a.account_state && a.account_state.currency) || a.currency || null
         };
       }
 
@@ -3737,9 +3747,17 @@
             ? '<span class="conn conn-good">Connected</span>'
             : '<button class="conn-btn" data-connect="'+i+'">Connect</button>';
         }
+        var pl;
+        if(a.floating==null){
+          pl='<span class="running-pl none">&mdash;</span>';
+        } else {
+          var plTone=a.floating>0?'up':(a.floating<0?'down':'none');
+          pl='<span class="running-pl '+plTone+'">'+(a.floating>0?'+':'')+money(a.floating,2)+'</span>';
+        }
         return '<tr class="'+(a.active?'active':'')+'"><td><b>'+a.name+'</b></td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
           '<td><span class="'+(a.type==='LIVE'?'tag-live':'tag-demo')+'">'+a.type+'</span></td>'+
           '<td>'+a.platform+'</td><td>'+(a.primary?money(m.balance,2):money(a.balance,2))+'</td>'+
+          '<td>'+pl+'</td>'+
           '<td>'+ago(a.lastSync)+'</td><td>'+status+'</td></tr>';
       }).join('');
       var note=document.querySelector('.acct-note');
