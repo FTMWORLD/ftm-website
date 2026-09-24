@@ -861,6 +861,12 @@
   .compound-result small{color:#2fa66b;font-weight:700;font-size:14px}
   #cChart{width:100%;height:110px}
   @media (max-width:900px){.plans{grid-template-columns:1fr}.plan.featured{transform:none}.compound{grid-template-columns:1fr;padding:32px 24px}}
+  .plan-agree{max-width:720px;margin:28px auto 0;text-align:center}
+  .plan-agree label{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--muted);text-align:left;cursor:pointer}
+  .plan-agree input{margin-top:3px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--red);cursor:pointer}
+  .plan-agree a{color:var(--ink);text-decoration:underline}
+  .plan-agree-hint{color:var(--red);font-size:13px;margin:10px 0 0;font-weight:600}
+  .plan .btn[aria-disabled="true"]{opacity:.45;pointer-events:none;box-shadow:none;transform:none}
 
   /* ---------- MARKETS scroll stage ---------- */
   .market-wrap{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
@@ -1233,6 +1239,11 @@
       </div>
     </div>
 
+    <div class="plan-agree">
+      <label><input type="checkbox" id="planAgree"> I have read and agree to the <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including the non-refundable fee policy and, where applicable, the FTM Investment Programme's 12-month lock-in and 50/50 profit split.</label>
+      <p class="plan-agree-hint" id="planAgreeHint" hidden>Please tick the box above to confirm you agree before continuing to payment.</p>
+    </div>
+
     <div class="compound">
       <div class="compound-text">
         <h3>The long-term idea</h3>
@@ -1332,8 +1343,6 @@
         <p class="inv-out-note" id="ivcNote"></p>
       </div>
     </div>
-
-    <div class="inv-risk"><b>Capital at risk.</b> The FTM account trades financial markets and can lose money. The value of your investment can go down as well as up, and you may get back less than you invest. Past performance is not a reliable indicator of future results. This is not a bank deposit and is not covered by a deposit guarantee scheme.</div>
 
   </div>
 </section>
@@ -2158,13 +2167,14 @@
       </div>
       <div>
         <h4>Partner</h4><ul><li><a href="#partner">Deriv affiliate via FTM</a></li><li><a href="#partner">Introducing broker</a></li><li><a href="#partner">Payment agent</a></li><li><a href="#partner">Partner login</a></li></ul>
-        <h4>Legal</h4><ul><li><a href="#">Regulatory information</a></li><li><a href="#">Terms &amp; conditions</a></li><li><a href="#">Privacy policy</a></li><li><a href="#">Secure &amp; responsible trading</a></li><li><a href="#">Fraud prevention</a></li></ul>
+        <h4>Legal</h4><ul><li><a href="/terms.html#s13">Regulatory information</a></li><li><a href="/terms.html">Terms &amp; conditions</a></li><li><a href="/terms.html#s12">Privacy policy</a></li><li><a href="/terms.html#s10">Secure &amp; responsible trading</a></li><li><a href="/terms.html#s10">Fraud prevention</a></li></ul>
       </div>
     </div>
     <div class="legal">
+      <p><b>Capital at risk.</b> The FTM account trades financial markets and can lose money. The value of your investment can go down as well as up, and you may get back less than you invest. Past performance is not a reliable indicator of future results. This is not a bank deposit and is not covered by a deposit guarantee scheme.</p>
       <p>This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.</p>
       <p>Follow The Market Ltd (Company No. 7309997) is licensed and regulated by the Corporate Affairs Commission. It is the manufacturer and distributor of its products.</p>
-      <p>Please note that the information on this website does not constitute investment advice. Make sure to read our <a href="#">Terms and Conditions</a>, <a href="#">Risk Disclosure</a>, and <a href="#">Secure and Responsible Trading</a> to fully understand the risks involved before using our services.</p>
+      <p>Please note that the information on this website does not constitute investment advice. Make sure to read our <a href="/terms.html">Terms and Conditions</a>, <a href="/terms.html#s5">Risk Disclosure</a>, and <a href="/terms.html#s10">Secure and Responsible Trading</a> to fully understand the risks involved before using our services.</p>
       <p>The products offered by Follow The Market Ltd are classed as 'complex products' that carry a significant risk of potential loss. The value of your investment may go down as well as up.</p>
       <p>&copy; <span id="copyYear">2026</span> Follow The Market Ltd. All rights reserved.</p>
     </div>
@@ -2208,6 +2218,33 @@
         });
         hero.addEventListener('mouseleave', function(){ glow.style.opacity = '0'; });
       }
+    });
+  })();
+
+  /* Require the Terms & Conditions checkbox before any plan purchase
+     link is usable — runs regardless of reduced-motion, unlike the block
+     above, since this is a functional gate, not a cosmetic effect. */
+  (function(){
+    document.addEventListener('DOMContentLoaded', function(){
+      var check = document.getElementById('planAgree');
+      var hint = document.getElementById('planAgreeHint');
+      var links = document.querySelectorAll('.plans .plan .btn');
+      if (!check || !links.length) return;
+      function sync(){
+        links.forEach(function(a){ a.setAttribute('aria-disabled', check.checked ? 'false' : 'true'); });
+        if (check.checked && hint) hint.hidden = true;
+      }
+      links.forEach(function(a){
+        a.addEventListener('click', function(e){
+          if (!check.checked) {
+            e.preventDefault();
+            if (hint) hint.hidden = false;
+            check.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+      });
+      check.addEventListener('change', sync);
+      sync();
     });
   })();
 </script>
