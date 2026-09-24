@@ -3785,7 +3785,9 @@
       if(F.renderBoard)F.renderBoard();
     });
     el('acctAdd').addEventListener('click',function(){
-      alert('Preview only. In the live client area this opens the broker connection flow.');
+      show('metrics');
+      var card=document.getElementById('appBroker');
+      if(card){ card.closest('.app-card').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){card.focus();},400); }
     });
 
     /* ====================== SESSIONS ====================== */
