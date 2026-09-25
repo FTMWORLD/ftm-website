@@ -215,6 +215,11 @@
   .app-who b{overflow-wrap:anywhere;min-width:0}
   .app-who b{color:var(--gold-light)}
   .app-main{max-width:1100px;margin:0 auto;padding:32px 24px 72px;display:grid;gap:24px}
+  /* Dashboard stacks every other section's full content beneath its own —
+     this only fires between two sections that are BOTH actually visible
+     at once (the Dashboard case), never in ordinary single-view mode
+     where the next section exists in the DOM but stays [hidden]. */
+  .app-view:not([hidden])+.app-view:not([hidden]){border-top:1px solid var(--line)}
   .app-note{background:#FFF7E0;border-left:4px solid var(--gold);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:#5a4a12}
   .app-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
   .app-tile{background:#fff;border-radius:18px;padding:22px;display:grid;gap:6px;box-shadow:0 10px 30px rgba(11,20,64,.05)}
@@ -4184,26 +4189,47 @@
     }
     F.header=header;
 
+    /* Draws whichever view's content hasn't been rendered yet — shared by
+       both the single-view click path and the Dashboard "everything
+       stacked" path below, so nothing is ever rendered twice for no
+       reason. */
+    function draw(name){
+      if(drawn[name])return;
+      if(name==='calendar')renderCalendar();
+      if(name==='perf')renderPerf();
+      if(name==='accounts')renderAccounts();
+      if(name==='sessions'){ renderSessions(); renderSessionPerf(); }
+      if(name==='charts')renderCandles();
+      if(name==='board' && F.renderBoard) F.renderBoard();
+      if(name==='community' && F.renderCommunity) F.renderCommunity();
+      drawn[name]=true;
+    }
     var drawn={metrics:true};
     function show(name){
       header(name);
-      document.querySelectorAll('.app-view').forEach(function(v){ v.hidden = v.dataset.view!==name; });
-      document.querySelectorAll('.app-nav-item').forEach(function(b){ b.classList.toggle('is-on', b.dataset.view===name); });
-      if(!drawn[name]){
-        if(name==='calendar')renderCalendar();
-        if(name==='perf')renderPerf();
-        if(name==='accounts')renderAccounts();
-        if(name==='sessions'){ renderSessions(); renderSessionPerf(); }
-        if(name==='charts')renderCandles();
-        drawn[name]=true;
+      /* Dashboard is also an overview: every other section's full
+         content stacks onto it in order, while clicking any section on
+         its own (from the nav, or from Dashboard's own scroll) still
+         isolates just that one, unchanged from before. */
+      if(name==='metrics'){
+        document.querySelectorAll('.app-view').forEach(function(v){ v.hidden=false; draw(v.dataset.view); });
+      } else {
+        document.querySelectorAll('.app-view').forEach(function(v){ v.hidden = v.dataset.view!==name; });
+        draw(name);
       }
-      if(name==='accounts')renderAccounts();
+      document.querySelectorAll('.app-nav-item').forEach(function(b){ b.classList.toggle('is-on', b.dataset.view===name); });
+      if(name==='accounts')renderAccounts(); // always fresh, not just first-draw
       var app=document.getElementById('appView'); if(app)app.scrollTop=0;
     }
     document.querySelectorAll('.app-nav-item').forEach(function(b){
       b.addEventListener('click',function(){ show(b.dataset.view); });
     });
-    header('metrics');
+    /* Deferred one tick: Leaderboard and Community render themselves via
+       F.renderBoard/F.renderCommunity, defined by IIFEs further down this
+       same script that haven't run yet at this exact line — by the next
+       tick they have, so draw() can actually find and call them instead
+       of silently marking them "drawn" while doing nothing. */
+    setTimeout(function(){ show('metrics'); },0);
     setInterval(function(){
       var v=document.querySelector('.app-view[data-view="sessions"]');
       if(v && !v.hidden) renderSessions();
