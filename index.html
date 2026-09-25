@@ -1075,20 +1075,24 @@
 </head>
 <body>
 
-<!-- A refresh while genuinely logged in used to flash the marketing
-     homepage underneath before the client area re-opened, which read as
-     "logged out". This inline, blocking script runs before anything else
-     paints: if a Supabase session token is already sitting in
-     localStorage, it covers the page with a plain loading screen until
-     the login script (further down) confirms the session and opens the
-     client area — or gives up and reveals the homepage for real. */
+<!-- A refresh while genuinely logged in AND already inside the client
+     area used to flash the marketing homepage underneath before the
+     client area re-opened, which read as "logged out". This inline,
+     blocking script runs before anything else paints: only when both a
+     Supabase session token exists AND the customer's last known place
+     was the client area (not the homepage — refreshing there should
+     just stay on the homepage, never auto-jump into the dashboard) does
+     it cover the page with a loading screen until the login script
+     (further down) confirms the session and opens the client area, or
+     gives up and reveals the homepage for real. */
 <script>
   (function(){
     try {
       var hasToken = Object.keys(localStorage).some(function(k){
         return k.indexOf('sb-')===0 && k.indexOf('-auth-token')>-1;
       });
-      if (hasToken) document.documentElement.classList.add('ftm-restoring');
+      var wasInApp = sessionStorage.getItem('ftm_in_app')==='1';
+      if (hasToken && wasInApp) document.documentElement.classList.add('ftm-restoring');
     } catch(e) {}
   })();
 </script>
@@ -2626,7 +2630,15 @@
       setTimeout(function(){emailEl.focus();},50);
     }
     function close(){overlay.hidden=true;document.body.style.overflow='';}
-    document.querySelectorAll('.js-login').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();open();});});
+    document.querySelectorAll('.js-login').forEach(function(b){b.addEventListener('click',function(e){
+      e.preventDefault();
+      /* Session was already confirmed quietly in the background (see
+         restoreSession below) but the client area wasn't auto-opened
+         because the refresh happened on the homepage — so "Log in" here
+         means "open what I already am", not "ask again". */
+      if(LIVE && window.FTM && FTM.session && FTM.session.email){ enter(FTM.session.email, FTM.session.products, false); return; }
+      open();
+    });});
     document.getElementById('authClose').addEventListener('click',close);
     overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!overlay.hidden)close();});
@@ -2852,14 +2864,22 @@
         }
       });
       /* A returning customer with a valid Supabase session skips the login
-         form entirely. Safe no-op if there's no session. Only prompt for a
-         password on a fresh login, not silently on every page load — a
-         returning customer who already skipped once shouldn't be nagged
-         on every visit, only asked again next time they use the code. */
+         form entirely — but only reopens the client area automatically
+         if that's genuinely where they refreshed from. Refreshing the
+         plain homepage while logged in stays on the homepage; the
+         session is still confirmed quietly in the background so a
+         manual "Log in" click right after doesn't ask for credentials
+         again, it just opens straight in. */
+      var wasInApp=false; try{ wasInApp = sessionStorage.getItem('ftm_in_app')==='1'; }catch(e2){}
       var lift=function(){ document.documentElement.classList.remove('ftm-restoring'); };
       setTimeout(lift,5000); // never leave the gate up if Supabase hangs
-      window.FTM.auth.restoreSession().then(function(r){ if(r) enter(r.email,r.products,false); lift(); })
-        .catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
+      window.FTM.auth.restoreSession().then(function(r){
+        if(r){
+          if(wasInApp) enter(r.email,r.products,false);
+          else { window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products}; }
+        }
+        lift();
+      }).catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
 
       /* A customer who clicked "Forgot password?" lands back here from
          the emailed link. supabase-js reads the recovery token out of
@@ -2968,6 +2988,7 @@
 
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
+      try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
     document.getElementById('appConnect').addEventListener('click',function(){
@@ -4463,6 +4484,7 @@
       e.preventDefault();
       var app=document.getElementById('appView'); if(app)app.hidden=true;
       document.body.style.overflow='';
+      try{ sessionStorage.removeItem('ftm_in_app'); }catch(e2){}
       window.scrollTo({top:0,behavior:'instant'});
       if(history.replaceState)history.replaceState(null,'',location.pathname+location.search);
     });
@@ -4822,6 +4844,11 @@
 
     /* ---------------- switching between the two client areas ---------------- */
     F.openArea=function(p){
+      /* Marks that a refresh should reopen straight into the client area
+         instead of the homepage — set only once the client area actually
+         opens, so refreshing the plain homepage while logged in stays on
+         the homepage, matching what a customer would expect. */
+      try{ sessionStorage.setItem('ftm_in_app','1'); }catch(e){}
       var A=$('appView'), I=$('invView'), s=F.session||{email:'',products:[p]};
       $('appEmail').textContent=s.email; $('invEmail').textContent=s.email;
       /* every client gets the switch; a product they do not have shows "No results" */
@@ -4842,6 +4869,7 @@
     document.querySelectorAll('.prod-switch button').forEach(function(b){ b.addEventListener('click',function(){ F.openArea(b.dataset.p); }); });
     $('npAutoBtn').addEventListener('click',function(e){
       e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
+      try{ sessionStorage.removeItem('ftm_in_app'); }catch(e2){}
       var t=document.getElementById('pricing'); document.documentElement.style.scrollBehavior='auto';
       window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); document.documentElement.style.scrollBehavior='';
     });
