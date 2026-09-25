@@ -44,6 +44,11 @@
   }
   *{box-sizing:border-box}
   [hidden]{display:none!important}
+  #sessionGate{position:fixed;inset:0;background:var(--blue-deep,#0B1440);z-index:99999;display:none;align-items:center;justify-content:center}
+  html.ftm-restoring #sessionGate{display:flex}
+  #sessionGate .mark{width:52px;height:52px;border-radius:14px;background:var(--blue,#1F3A93);display:flex;align-items:center;justify-content:center;animation:blink 1.1s ease-in-out infinite}
+  #sessionGate .mark svg{width:28px;height:28px}
+  @media (prefers-reduced-motion:reduce){#sessionGate .mark{animation:none}}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
   h1,h2,h3,h4{margin:0;color:var(--ink);font-weight:800;letter-spacing:-.02em;line-height:1.1;text-wrap:balance}
@@ -1053,6 +1058,27 @@
 </style>
 </head>
 <body>
+
+<!-- A refresh while genuinely logged in used to flash the marketing
+     homepage underneath before the client area re-opened, which read as
+     "logged out". This inline, blocking script runs before anything else
+     paints: if a Supabase session token is already sitting in
+     localStorage, it covers the page with a plain loading screen until
+     the login script (further down) confirms the session and opens the
+     client area — or gives up and reveals the homepage for real. */
+<script>
+  (function(){
+    try {
+      var hasToken = Object.keys(localStorage).some(function(k){
+        return k.indexOf('sb-')===0 && k.indexOf('-auth-token')>-1;
+      });
+      if (hasToken) document.documentElement.classList.add('ftm-restoring');
+    } catch(e) {}
+  })();
+</script>
+<div id="sessionGate" aria-hidden="true">
+  <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>
+</div>
 
 <!-- ===== NAV ===== -->
 <div class="nav-wrap">
@@ -2719,8 +2745,10 @@
          password on a fresh login, not silently on every page load — a
          returning customer who already skipped once shouldn't be nagged
          on every visit, only asked again next time they use the code. */
-      window.FTM.auth.restoreSession().then(function(r){ if(r) enter(r.email,r.products,false); })
-        .catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); });
+      var lift=function(){ document.documentElement.classList.remove('ftm-restoring'); };
+      setTimeout(lift,5000); // never leave the gate up if Supabase hangs
+      window.FTM.auth.restoreSession().then(function(r){ if(r) enter(r.email,r.products,false); lift(); })
+        .catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
     } else {
       form.addEventListener('submit',function(e){
         e.preventDefault();
