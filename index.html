@@ -4239,6 +4239,34 @@
        tick they have, so draw() can actually find and call them instead
        of silently marking them "drawn" while doing nothing. */
     setTimeout(function(){ show('metrics'); },0);
+
+    /* Scroll-spy: while every section is stacked on the Dashboard, the
+       sidebar highlight follows whichever section is currently in view,
+       rather than staying stuck on "Dashboard" the whole time you scroll.
+       Only active in that stacked state — single-view mode already has
+       the right item highlighted by show() itself. */
+    var stacked=true;
+    var origShow=show;
+    show=function(name){ stacked=(name==='metrics'); origShow(name); };
+    var appEl=document.getElementById('appView'), spyPending=false;
+    function updateActiveByScroll(){
+      spyPending=false;
+      if(!stacked || !appEl)return;
+      var threshold=appEl.getBoundingClientRect().top+130;
+      var current=VIEW_ORDER[0];
+      VIEW_ORDER.forEach(function(vname){
+        var v=document.querySelector('.app-view[data-view="'+vname+'"]');
+        if(!v || v.hidden)return;
+        if(v.getBoundingClientRect().top<=threshold) current=vname;
+      });
+      document.querySelectorAll('.app-nav-item').forEach(function(b){ b.classList.toggle('is-on', b.dataset.view===current); });
+    }
+    if(appEl){
+      appEl.addEventListener('scroll',function(){
+        if(spyPending)return; spyPending=true;
+        requestAnimationFrame(updateActiveByScroll);
+      });
+    }
     setInterval(function(){
       var v=document.querySelector('.app-view[data-view="sessions"]');
       if(v && !v.hidden) renderSessions();
