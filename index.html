@@ -2322,8 +2322,15 @@
   window.FTM = window.FTM || {};
   window.FTM.auth = (function(){
     var client = null;
+    var recoveryHandler = null;
 
     function ready(){ return !!client; }
+    function wireRecovery(){
+      if(!client || !client.auth.onAuthStateChange) return;
+      client.auth.onAuthStateChange(function(event){
+        if(event==='PASSWORD_RECOVERY' && recoveryHandler) recoveryHandler();
+      });
+    }
 
     /* Looks up which FTM products (auto / invest) this signed-in customer
        has, from a `profiles` table keyed by the Supabase user id. This
@@ -2346,6 +2353,18 @@
       configure: function(url, anonKey){
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
         client = window.supabase.createClient(url, anonKey);
+        wireRecovery();
+      },
+      /* Registers a callback fired once when the browser lands on a
+         Supabase password-recovery link (?type=recovery) — supabase-js
+         reads the token from the URL and establishes a real session
+         automatically, this just tells the caller when that's happened
+         so it can open the "set a new password" modal. */
+      onPasswordRecovery: function(cb){ recoveryHandler = cb; },
+      /* Always resolves, whether or not the email has an account — same
+         privacy reasoning as sendOtp: never reveal which emails exist. */
+      resetPassword: function(email){
+        return client.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin + '/'});
       },
       /* Real login. Resolves {email, products} on success, matching the
          shape FTM.session already uses, or rejects with a message safe
@@ -2613,6 +2632,29 @@
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!overlay.hidden)close();});
     document.getElementById('authToPricing').addEventListener('click',close);
     function fail(msg){err.textContent=msg;err.hidden=false;}
+    /* Raw browser fetch errors ("Load failed" on Safari, "Failed to
+       fetch" on Chrome) leaked straight to the customer as the error
+       message — meaningless to them, and the underlying Supabase client
+       could be left in a bad state after one, so a retry in the same
+       still-open modal sometimes didn't work and the only fix looked
+       like closing and reopening it. This reworks both: a clear message,
+       and a fresh client built right away so the very next tap works
+       without the customer having to do anything themselves. */
+    function isNetworkError(e){
+      var m=(e&&e.message||'').toLowerCase();
+      return m.indexOf('load failed')>-1 || m.indexOf('failed to fetch')>-1 ||
+             m.indexOf('network')>-1 || m.indexOf('networkerror')>-1;
+    }
+    function authFail(e2,fallback){
+      if(isNetworkError(e2)){
+        try{
+          window.FTM.auth.configure('https://wawyfgstobnjqwpnylhu.supabase.co','sb_publishable_reT6pj68ulwy1pz_jdtBXA_boaMaHvM');
+        }catch(e3){}
+        fail('Connection hiccup. Check your signal and tap Log in again.');
+        return;
+      }
+      fail((e2&&e2.message)||fallback);
+    }
 
     /* ---- login UI: email -> code (default), or email+password (toggle) ----
        Password login exists as a secondary, opt-in path — a customer only
@@ -2634,6 +2676,7 @@
       document.getElementById('authPwToggle').textContent='Have a password instead? Log in with it';
       document.getElementById('authSub').textContent='Use the email you paid with when you subscribed or invested. We’ll send you a 6-digit code.';
       submitBtn.textContent='Send code';
+      submitBtn.hidden=false;
       err.hidden=true;
     }
     function showCodeStage(mail){
@@ -2642,8 +2685,10 @@
       document.getElementById('authOtpRow').hidden=false;
       document.getElementById('authOtpSentTo').textContent='Code sent to '+mail+'. It expires shortly, so enter it soon.';
       document.getElementById('authOtpBackRow').hidden=false;
+      document.getElementById('authOtpBack').textContent='Use a different email, or resend the code';
       document.getElementById('authPwToggleRow').hidden=true;
       submitBtn.textContent='Verify & log in';
+      submitBtn.hidden=false;
       err.hidden=true;
       otpEl.value='';
       setTimeout(function(){otpEl.focus();},50);
@@ -2655,17 +2700,38 @@
       document.getElementById('authOtpRow').hidden=true;
       document.getElementById('authOtpBackRow').hidden=true;
       document.getElementById('authPwToggleRow').hidden=false;
-      document.getElementById('authPwToggle').textContent='Use an emailed code instead';
+      document.getElementById('authPwToggle').textContent='Forgot password?';
       document.getElementById('authSub').textContent='Use the email and password for your FTM account.';
       submitBtn.textContent='Log in';
+      submitBtn.hidden=false;
       err.hidden=true;
       setTimeout(function(){passEl.focus();},50);
     }
+    /* Always the same message whether or not that email has an account —
+       same reasoning as sendOtp/resetPassword themselves: never confirm
+       or deny an email's existence through the response the customer sees. */
+    function showResetStage(){
+      otpStage='reset';
+      document.getElementById('authEmailRow').hidden=false;
+      document.getElementById('authPassRow').hidden=true;
+      document.getElementById('authOtpRow').hidden=true;
+      document.getElementById('authOtpBackRow').hidden=false;
+      document.getElementById('authOtpBack').textContent='Back to log in';
+      document.getElementById('authPwToggleRow').hidden=true;
+      document.getElementById('authSub').textContent='Enter the email on your FTM account and we’ll send a link to reset your password, if that email has a subscription.';
+      submitBtn.textContent='Send reset link';
+      submitBtn.hidden=false;
+      err.hidden=true;
+      setTimeout(function(){emailEl.focus();},50);
+    }
     if(LIVE){
-      document.getElementById('authOtpBack').addEventListener('click',function(e){ e.preventDefault(); showEmailStage(); emailEl.focus(); });
+      document.getElementById('authOtpBack').addEventListener('click',function(e){
+        e.preventDefault();
+        showEmailStage(); emailEl.focus();
+      });
       document.getElementById('authPwToggle').addEventListener('click',function(e){
         e.preventDefault();
-        if(otpStage==='password') showEmailStage(); else showPasswordStage();
+        if(otpStage==='password') showResetStage(); else showPasswordStage();
       });
     }
     /* --- preview password store ---------------------------------------------
@@ -2757,7 +2823,23 @@
           window.FTM.auth.signInWithPassword(mail3,pw3).then(function(r){
             submitBtn.disabled=false;
             enter(r.email,r.products,false);
-          }).catch(function(e2){ submitBtn.disabled=false; fail(e2.message||'Could not log in.'); });
+          }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'Could not log in.'); });
+        } else if(otpStage==='reset'){
+          var mail4=emailEl.value.trim().toLowerCase();
+          if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail4))return fail('Enter a valid email address.');
+          submitBtn.disabled=true;
+          var showSent=function(){
+            submitBtn.disabled=false;
+            document.getElementById('authSub').textContent='If '+mail4+' has an FTM subscription, we’ve sent a link to reset the password. Check your inbox.';
+            submitBtn.hidden=true;
+          };
+          window.FTM.auth.resetPassword(mail4).then(showSent).catch(function(e2){
+            /* Same privacy reasoning as sendOtp — never let the response
+               reveal whether the email exists, only a real network
+               failure gets a different message. */
+            if(isNetworkError(e2)){ submitBtn.disabled=false; authFail(e2,'Could not send that.'); }
+            else showSent();
+          });
         } else {
           var mail2=emailEl.value.trim().toLowerCase(), code=otpEl.value.trim();
           if(!/^\d{6}$/.test(code))return fail('Enter the 6-digit code from your email.');
@@ -2766,7 +2848,7 @@
             submitBtn.disabled=false;
             if(r.passwordSet) enter(r.email,r.products,false);
             else promptSetPassword(r);
-          }).catch(function(e2){ submitBtn.disabled=false; fail(e2.message||'Could not verify that code.'); });
+          }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'Could not verify that code.'); });
         }
       });
       /* A returning customer with a valid Supabase session skips the login
@@ -2778,6 +2860,27 @@
       setTimeout(lift,5000); // never leave the gate up if Supabase hangs
       window.FTM.auth.restoreSession().then(function(r){ if(r) enter(r.email,r.products,false); lift(); })
         .catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
+
+      /* A customer who clicked "Forgot password?" lands back here from
+         the emailed link. supabase-js reads the recovery token out of
+         the URL on its own and fires this event once a real session is
+         established from it — no login needed, the link itself proves
+         identity. Opens straight into "set a new password", reusing the
+         existing Change password modal. */
+      window.FTM.auth.onPasswordRecovery(function(){
+        close();
+        var pwm=document.getElementById('pwModal');
+        document.getElementById('pwTitle').textContent='Reset your password';
+        document.querySelector('#pwModal .hint').textContent='Choose a new password for your FTM account.';
+        document.getElementById('pwCurRow').hidden=true;
+        document.getElementById('pwSkipRow').hidden=true;
+        ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
+        document.getElementById('pwErr').hidden=true; document.getElementById('pwOk').hidden=true;
+        pwm.hidden=false;
+        lift();
+        if(history.replaceState) history.replaceState(null,'',location.pathname+location.search);
+        setTimeout(function(){document.getElementById('pwNew').focus();},40);
+      });
     } else {
       form.addEventListener('submit',function(e){
         e.preventDefault();
