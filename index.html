@@ -106,6 +106,11 @@
   .nav-links a{display:inline-flex;align-items:center;gap:4px;padding:10px 12px;font-size:14px;font-weight:600;color:var(--ink);border-radius:8px}
   .nav-links a svg{width:14px;height:14px;opacity:.7}
   .nav-right{display:flex;align-items:center;gap:12px}
+  /* The nav's own Log in button, distinct from every other .js-login
+     button on the page (hero, dashboard, get-started overlay, etc.) —
+     scoped to .nav-right so only this one changes colour. */
+  .nav-right .btn-outline.js-login{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+  .nav-right .btn-outline.js-login:hover{background:var(--gold-light);border-color:var(--gold-light)}
   .lang-wrap{position:relative}
   .lang{display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:var(--ink);padding:10px 18px 10px 14px;background:rgba(11,20,64,.08);border:0;border-radius:99px;cursor:pointer;font-family:inherit;transition:background .15s;letter-spacing:.01em}
   .lang:hover{background:rgba(11,20,64,.14)}
@@ -142,7 +147,8 @@
      a returning customer checking their account than a first-time signup. */
   @media (max-width:640px){
     .nav-right .js-start{display:none}
-    .nav-right .btn-outline.js-login{display:inline-flex}
+    .nav-right .btn-outline.js-login{display:inline-flex;background:var(--red);color:var(--white);border-color:var(--red)}
+    .nav-right .btn-outline.js-login:hover{background:var(--red-dark);border-color:var(--red-dark)}
     .nav-right .lang-wrap{display:block}
     .nav-right .lang{padding:10px 12px;gap:6px}
   }
@@ -2493,7 +2499,20 @@
     langMenu.appendChild(li);
     const b=document.createElement('button');b.dataset.code=code;b.textContent=name;b.onclick=()=>applyLang(code);mobileLang.appendChild(b);
   });
-  langBtn.onclick=e=>{e.stopPropagation();const o=langMenu.classList.toggle('open');langBtn.setAttribute('aria-expanded',o);};
+  /* On phones the nav's own language button sits beside "Log in", but
+     the desktop lang-menu is a wide, centered grid never designed for
+     that width — it read as a random screen dropped on top of the
+     homepage. On phones, route to the hamburger menu's existing compact
+     language pill list instead, which was already built for this. */
+  langBtn.onclick=e=>{
+    e.stopPropagation();
+    if(window.innerWidth<=640){
+      var mm=document.getElementById('mobileMenu'), bg=document.getElementById('burger');
+      if(mm){ mm.classList.add('open'); if(bg)bg.setAttribute('aria-expanded','true'); mobileLang.scrollIntoView({behavior:'smooth',block:'center'}); }
+      return;
+    }
+    const o=langMenu.classList.toggle('open');langBtn.setAttribute('aria-expanded',o);
+  };
   document.addEventListener('click',e=>{if(!e.target.closest('.lang-wrap')){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   let saved='en';try{saved=localStorage.getItem('ftm-lang')||'en'}catch(e){}
