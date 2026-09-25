@@ -3683,6 +3683,14 @@
         // to whichever view is currently on screen.
         var onItem = document.querySelector('.app-nav-item.is-on');
         F.header(onItem ? onItem.dataset.view : 'metrics');
+        // Nor does it repaint the Accounts table — that section can
+        // already be drawn (e.g. the Dashboard's stacked view draws every
+        // section immediately, before a login has even happened) with
+        // whatever was in F.data.accounts at that moment. Without this,
+        // real account data landing after login would sit correctly in
+        // F.data.accounts while the actual table on screen kept showing
+        // whatever it was first drawn with.
+        if(F.renderAccounts) F.renderAccounts();
       });
     };
 
@@ -3987,6 +3995,14 @@
       var st=document.getElementById('mStatus');
       if(st) st.innerHTML='<i></i>FTM MACHINE is running on '+(on?on.name:'no account');
     }
+    /* So a fresh login (or any later real-data refresh) can repaint the
+       Accounts table on demand, not just the first time it happens to be
+       drawn. Without this, the table could render once with whatever was
+       in F.data.accounts at that moment — sample data, if the Dashboard's
+       own stacked view had already drawn it before login finished — and
+       then never update again even after real account data arrived,
+       because nothing else calls this function a second time. */
+    F.renderAccounts = renderAccounts;
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-connect]'); if(!b)return;
       var A=F.data.accounts, i=+b.dataset.connect, prev=A.filter(function(a){return a.active;})[0];
