@@ -4205,6 +4205,10 @@
       drawn[name]=true;
     }
     var drawn={metrics:true};
+    /* The order the Dashboard stacks sections in, matching the sidebar
+       nav's own order top to bottom — not the sections' original markup
+       order, which was different and unrelated to the nav. */
+    var VIEW_ORDER=['metrics','accounts','perf','calendar','board','community','charts','sessions'];
     function show(name){
       header(name);
       /* Dashboard is also an overview: every other section's full
@@ -4212,7 +4216,12 @@
          its own (from the nav, or from Dashboard's own scroll) still
          isolates just that one, unchanged from before. */
       if(name==='metrics'){
-        document.querySelectorAll('.app-view').forEach(function(v){ v.hidden=false; draw(v.dataset.view); });
+        VIEW_ORDER.forEach(function(vname){
+          var v=document.querySelector('.app-view[data-view="'+vname+'"]');
+          if(!v)return;
+          v.parentNode.appendChild(v); // reorders to match VIEW_ORDER, moves not clones
+          v.hidden=false; draw(vname);
+        });
       } else {
         document.querySelectorAll('.app-view').forEach(function(v){ v.hidden = v.dataset.view!==name; });
         draw(name);
