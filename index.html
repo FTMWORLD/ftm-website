@@ -136,6 +136,16 @@
     .mobile-menu a:last-of-type{border-bottom:0}
     .mobile-menu .btn{width:100%;margin-top:16px}
   }
+  /* Phones specifically (not tablets, which keep "Get started"): swap the
+     red "Get started" button for "Log in" next to the burger, and bring
+     the language selector back beside it — a phone visitor is more often
+     a returning customer checking their account than a first-time signup. */
+  @media (max-width:640px){
+    .nav-right .js-start{display:none}
+    .nav-right .btn-outline.js-login{display:inline-flex}
+    .nav-right .lang-wrap{display:block}
+    .nav-right .lang{padding:10px 12px;gap:6px}
+  }
 
 
   /* ---------- DROPDOWN ---------- */
