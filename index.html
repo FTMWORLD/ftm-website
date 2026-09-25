@@ -1525,8 +1525,10 @@
         <p class="hint" id="authOtpSentTo" style="margin-top:6px"></p>
       </div>
       <p class="pw-hint" id="authFirstTimeHint" style="margin-top:6px">First time logging in? Choose the password you want to use. It becomes your password, and you can change it any time from your client area.</p>
-      <label class="auth-agree"><input type="checkbox" id="authAgree">I agree. <a href="/terms.html" target="_blank" rel="noopener">See Terms &amp; Conditions</a></label>
-      <p class="auth-error" id="authAgreeHint" hidden>Please tick the box above to continue.</p>
+      <div id="authAgreeBlock">
+        <label class="auth-agree"><input type="checkbox" id="authAgree">I agree. <a href="/terms.html" target="_blank" rel="noopener">See Terms &amp; Conditions</a></label>
+        <p class="auth-error" id="authAgreeHint" hidden>Please tick the box above to continue.</p>
+      </div>
       <p class="auth-error" id="authError" hidden></p>
       <button type="submit" class="btn btn-red" id="authSubmit">Log in</button>
     </form>
@@ -1638,7 +1640,7 @@
         <div class="app-card">
           <h3>Your subscription</h3>
           <p class="hint" id="ivPlanLine">&mdash;</p>
-          <div class="app-actions"><button class="btn btn-outline btn-sm" type="button">Pause trading</button><button class="btn btn-outline btn-sm" type="button">Billing history</button></div>
+          <div class="app-actions"><button class="btn btn-outline btn-sm" type="button" id="pauseTradingBtn">Pause trading</button><button class="btn btn-outline btn-sm" type="button">Billing history</button></div>
         </div>
       </div>
     </div>
@@ -2224,20 +2226,30 @@
   /* Require the Terms & Conditions checkbox in the login/signup panel
      before the form can submit — runs regardless of reduced-motion,
      unlike the block above, since this is a functional gate, not a
-     cosmetic effect. */
+     cosmetic effect. Once a customer has checked it and submitted once,
+     remembered in this browser so it doesn't ask again on every login —
+     agreement was already given, re-asking every time is just friction. */
   (function(){
+    var AGREE_KEY = 'ftm_terms_agreed';
     document.addEventListener('DOMContentLoaded', function(){
       var check = document.getElementById('authAgree');
       var hint = document.getElementById('authAgreeHint');
+      var block = document.getElementById('authAgreeBlock');
       var form = document.getElementById('authForm');
       if (!check || !form) return;
+      var alreadyAgreed = false;
+      try { alreadyAgreed = localStorage.getItem(AGREE_KEY) === '1'; } catch(e) {}
+      if (alreadyAgreed && block) block.hidden = true;
       form.addEventListener('submit', function(e){
+        if (alreadyAgreed) return;
         if (!check.checked) {
           e.preventDefault();
           e.stopImmediatePropagation();
           if (hint) hint.hidden = false;
           check.focus();
+          return;
         }
+        try { localStorage.setItem(AGREE_KEY, '1'); } catch(e2) {}
       }, true);
       check.addEventListener('change', function(){
         if (check.checked && hint) hint.hidden = true;
@@ -3824,6 +3836,12 @@
       var card=document.getElementById('appBroker');
       if(card){ card.closest('.app-card').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){card.focus();},400); }
     });
+    var pauseBtn=document.getElementById('pauseTradingBtn');
+    if(pauseBtn){
+      pauseBtn.addEventListener('click',function(){
+        alert('Pausing is not available yet. To pause trading on your account right now, contact FTM support and we will handle it manually.');
+      });
+    }
 
     /* ====================== SESSIONS ====================== */
     var SESSIONS=[
