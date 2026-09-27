@@ -3944,7 +3944,7 @@
         if(a.displayStatus){
           var s=STATUS_LABEL[a.displayStatus]||{text:a.displayStatus,tone:'wait'};
           status='<span class="conn conn-'+s.tone+'" title="'+(a.statusReason||'')+'">'+s.text+'</span>';
-          if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Make active</button>';
+          if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Activate</button>';
         } else {
           status = a.active
             ? '<span class="conn conn-good">Connected</span>'
