@@ -3663,14 +3663,16 @@
         // to whichever view is currently on screen.
         var onItem = document.querySelector('.app-nav-item.is-on');
         F.header(onItem ? onItem.dataset.view : 'metrics');
-        // Nor does it repaint the Accounts table — that section can
-        // already be drawn (e.g. the Dashboard's stacked view draws every
-        // section immediately, before a login has even happened) with
-        // whatever was in F.data.accounts at that moment. Without this,
-        // real account data landing after login would sit correctly in
-        // F.data.accounts while the actual table on screen kept showing
-        // whatever it was first drawn with.
-        if(F.renderAccounts) F.renderAccounts();
+        // Nor does it repaint any section already drawn (e.g. the
+        // Dashboard's stacked view draws every section immediately,
+        // before a login has even happened) with whatever was in F.data
+        // at that moment — Calendar, Performance, Leaderboard, Charts
+        // and Sessions all have this same gap, not just Accounts.
+        // Without this, real data landing after login sits correctly in
+        // F.data while every already-drawn section on screen keeps
+        // showing whatever it was first drawn with, sample data included.
+        if(F.redrawAllViews) F.redrawAllViews();
+        else if(F.renderAccounts) F.renderAccounts(); // fallback if somehow not wired yet
       });
     };
 
@@ -4189,8 +4191,9 @@
        both the single-view click path and the Dashboard "everything
        stacked" path below, so nothing is ever rendered twice for no
        reason. */
-    function draw(name){
-      if(drawn[name])return;
+    /* Actually renders a section, regardless of whether it's already been
+       drawn — the only thing draw() below skips on a repeat call. */
+    function forceDraw(name){
       if(name==='calendar')renderCalendar();
       if(name==='perf')renderPerf();
       if(name==='accounts')renderAccounts();
@@ -4200,7 +4203,18 @@
       if(name==='community' && F.renderCommunity) F.renderCommunity();
       drawn[name]=true;
     }
+    function draw(name){ if(!drawn[name]) forceDraw(name); }
     var drawn={metrics:true};
+    /* Every section the Dashboard's stacked view draws immediately on
+       page load — before any login exists, so with sample data — needs
+       repainting once real data actually lands (the same bug already
+       found and fixed for Accounts specifically: real data landing in
+       F.data doesn't repaint anything on its own, nothing re-renders
+       unless told to). Called from F.loadLive()'s completion, covers
+       every section this way rather than just the one that got noticed. */
+    F.redrawAllViews = function(){
+      Object.keys(drawn).forEach(function(name){ if(name!=='metrics') forceDraw(name); });
+    };
     /* The order the Dashboard stacks sections in, matching the sidebar
        nav's own order top to bottom — not the sections' original markup
        order, which was different and unrelated to the nav. */
