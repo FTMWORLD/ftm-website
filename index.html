@@ -3730,13 +3730,17 @@
       });
       return {map:map, order:order};
     }
-    var D=days();
-
     /* ====================== CALENDAR ====================== */
     var viewY, viewM;
-    (function(){ var last=D.order[D.order.length-1]; var d=last?new Date(last):new Date(); viewY=d.getFullYear(); viewM=d.getMonth(); })();
+    (function(){ var initD=days(); var last=initD.order[initD.order.length-1]; var d=last?new Date(last):new Date(); viewY=d.getFullYear(); viewM=d.getMonth(); })();
 
     function renderCalendar(){
+      /* Recomputed on every call, not cached from page-load time — this
+         was the bug: a module-level `var D=days()` captured F.data.closed
+         exactly once, at whatever it held before a real login even
+         happened (sample data), so a later real, empty account's calendar
+         kept showing the old sample month's trades forever after. */
+      var D=days();
       var grid=el('calGrid'); if(!grid)return;
       var first=new Date(viewY,viewM,1), dim=new Date(viewY,viewM+1,0).getDate();
       var lead=(first.getDay()+6)%7;                 /* Monday-first */
