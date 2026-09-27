@@ -498,6 +498,8 @@
   .acct-table .conn-bad{background:#FDEAEA;color:#C4302B}
   .acct-table .conn-btn{border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
+  .acct-table .conn-switch{display:block;margin-top:5px;border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;cursor:pointer;white-space:nowrap}
+  .acct-table .conn-switch:hover{background:var(--ink);color:#fff}
   .acct-table .running-pl{font-weight:700;font-variant-numeric:tabular-nums}
   .acct-table .running-pl.up{color:#1f8a5b}
   .acct-table .running-pl.down{color:var(--red-dark)}
@@ -3942,6 +3944,7 @@
         if(a.displayStatus){
           var s=STATUS_LABEL[a.displayStatus]||{text:a.displayStatus,tone:'wait'};
           status='<span class="conn conn-'+s.tone+'" title="'+(a.statusReason||'')+'">'+s.text+'</span>';
+          if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Make active</button>';
         } else {
           status = a.active
             ? '<span class="conn conn-good">Connected</span>'
@@ -4018,6 +4021,15 @@
       renderAccounts();
       header('accounts');
       if(F.renderBoard)F.renderBoard();
+    });
+    /* Switching which real, engine-connected account FTM MACHINE trades
+       on has no backend route yet — same situation as Pause. Fails
+       visibly with a clear message rather than silently doing nothing
+       or faking a switch client-side, which would show a status the
+       engine never actually set. */
+    el('acctRows').addEventListener('click',function(e){
+      var b=e.target.closest('[data-switch]'); if(!b)return;
+      alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
     });
     el('acctAdd').addEventListener('click',function(){
       show('metrics');
