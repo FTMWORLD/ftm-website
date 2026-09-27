@@ -3609,15 +3609,25 @@
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
       return F.remote.fetchAccounts().then(function(accounts){
         if(!accounts.length){ F.data = emptyLiveData(); return true; }
+        // Set immediately, before touching executions/positions below —
+        // those endpoints don't exist on the website's Vercel proxy yet
+        // (only /accounts itself does), so they 404. That failure must
+        // never wipe out an accounts list that already loaded
+        // successfully; previously it did, because both were one promise
+        // chain sharing a single catch, so a real, fully-connected
+        // account could still render as "no account" whenever this ran.
+        F.data.accounts = accounts;
         var primary = accounts.find(function(a){return a.active;}) || accounts[0];
         return F.remote.fetchAllExecutions(primary.accountId).then(function(closed){
           return F.remote.fetchPositions(primary.accountId).then(function(open){
-            F.data.accounts = accounts;
             F.data.closed = closed;
             F.data.open = open;
-            return true;
           });
-        });
+        }).catch(function(err2){
+          console.warn('FTM trade history/positions fetch failed (accounts still loaded):', err2);
+          F.data.closed = [];
+          F.data.open = [];
+        }).then(function(){ return true; });
       }).catch(function(err){
         /* Previously this kept whatever was already in F.data on any
            failure — which, before a customer has logged in, is the
