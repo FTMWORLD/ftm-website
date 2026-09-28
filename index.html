@@ -858,9 +858,10 @@
   .trust-card h3{font-size:22px}
   .tc-icon{width:44px;height:44px;border-radius:12px;background:var(--blue);color:var(--gold);display:grid;place-items:center}
   .tc-icon svg{width:22px;height:22px}
-  .stats-row{grid-template-columns:repeat(4,1fr);gap:16px;padding:32px;direction:rtl}
-  .stats-row .stat{direction:ltr}
-  @media (max-width:900px){.trust-cards{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+  .stats-marquee{padding:32px 0}
+  .marquee-track.stats-track{gap:0;animation:marquee 22s linear infinite}
+  .stats-track .stat{flex:0 0 260px}
+  @media (max-width:900px){.trust-cards{grid-template-columns:1fr}}
   @media (max-width:520px){.awards{grid-template-columns:1fr}}
 
   /* ---------- AUTO ---------- */
@@ -1257,11 +1258,19 @@
       <div class="trust-card"><span class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></span><h3 data-i18n="trust.c2">Risk Transparency</h3><p>Max exposure, leverage and stop rules are stated upfront on every product. No surprises after you fund.</p></div>
       <div class="trust-card"><span class="tc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg></span><h3 data-i18n="trust.c3">Long-Term Philosophy</h3><p>We build for anyone who plans in years. Steady conditions, no gimmicks, and a team that answers.</p></div>
     </div>
-    <div class="stats stats-row">
-      <div class="stat"><b>1M+</b><span data-i18n="stat.deals">Monthly deals</span></div>
-      <div class="stat"><b>50K+</b><span data-i18n="stat.customers">Customers worldwide</span></div>
-      <div class="stat"><b>$2B+</b><span data-i18n="stat.volume">Monthly volume</span></div>
-      <div class="stat"><b>2021</b><span data-i18n="stat.est">Established since</span></div>
+    <div class="stats stats-marquee">
+      <div class="marquee">
+        <div class="marquee-track stats-track">
+          <div class="stat"><b>1M+</b><span data-i18n="stat.deals">Monthly deals</span></div>
+          <div class="stat"><b>50K+</b><span data-i18n="stat.customers">Customers worldwide</span></div>
+          <div class="stat"><b>$2B+</b><span data-i18n="stat.volume">Monthly volume</span></div>
+          <div class="stat"><b>2021</b><span data-i18n="stat.est">Established since</span></div>
+          <div class="stat" aria-hidden="true"><b>1M+</b><span>Monthly deals</span></div>
+          <div class="stat" aria-hidden="true"><b>50K+</b><span>Customers worldwide</span></div>
+          <div class="stat" aria-hidden="true"><b>$2B+</b><span>Monthly volume</span></div>
+          <div class="stat" aria-hidden="true"><b>2021</b><span>Established since</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
