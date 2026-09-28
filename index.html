@@ -3760,6 +3760,17 @@
         // showing whatever it was first drawn with, sample data included.
         if(F.redrawAllViews) F.redrawAllViews();
         else if(F.renderAccounts) F.renderAccounts(); // fallback if somehow not wired yet
+        // Belt and braces: the Dashboard's own first-ever draw (deferred
+        // by a setTimeout at page load, to let this module finish
+        // defining itself first) can land at an arbitrary time relative
+        // to this fetch — including the narrow window where F.data.accounts
+        // has already been updated but closed/open haven't yet, since
+        // loadLive() sets them in that order, not atomically. A section
+        // drawn for the first time in exactly that gap renders correctly
+        // for accounts but stale for anything trade-history-based. A
+        // second redraw shortly after guarantees a redraw happens once
+        // F.data is fully, consistently settled, regardless of timing.
+        setTimeout(function(){ if(F.redrawAllViews) F.redrawAllViews(); },300);
       });
     };
 
@@ -4293,16 +4304,27 @@
        stacked" path below, so nothing is ever rendered twice for no
        reason. */
     /* Actually renders a section, regardless of whether it's already been
-       drawn — the only thing draw() below skips on a repeat call. */
+       drawn — the only thing draw() below skips on a repeat call. Each
+       section's render is isolated in its own try/catch: previously, one
+       section throwing (e.g. mid-way through a data refresh) silently
+       aborted every section after it in the same redraw pass, which is
+       exactly the "some sections fixed themselves, others stayed on
+       sample data until I manually revisited them" symptom reported —
+       Calendar sits after Accounts in the draw order, so an accounts-
+       related throw would have blocked it every time. */
     function forceDraw(name){
-      if(name==='calendar')renderCalendar();
-      if(name==='perf')renderPerf();
-      if(name==='accounts')renderAccounts();
-      if(name==='sessions'){ renderSessions(); renderSessionPerf(); }
-      if(name==='charts')renderCandles();
-      if(name==='board' && F.renderBoard) F.renderBoard();
-      if(name==='community' && F.renderCommunity) F.renderCommunity();
-      drawn[name]=true;
+      try{
+        if(name==='calendar')renderCalendar();
+        if(name==='perf')renderPerf();
+        if(name==='accounts')renderAccounts();
+        if(name==='sessions'){ renderSessions(); renderSessionPerf(); }
+        if(name==='charts')renderCandles();
+        if(name==='board' && F.renderBoard) F.renderBoard();
+        if(name==='community' && F.renderCommunity) F.renderCommunity();
+        drawn[name]=true;
+      }catch(e){
+        console.error('FTM: '+name+' failed to render, other sections unaffected:', e);
+      }
     }
     function draw(name){ if(!drawn[name]) forceDraw(name); }
     var drawn={metrics:true};
