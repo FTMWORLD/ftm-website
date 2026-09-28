@@ -283,12 +283,12 @@
 
   /* ---------- client area shell ---------- */
   .app-body{display:flex;align-items:flex-start;min-height:calc(100vh - 68px)}
-  .app-nav{position:sticky;top:68px;width:228px;flex:none;padding:24px 14px;display:grid;gap:2px;align-content:start;background:#fff;border-right:1px solid var(--line);min-height:calc(100vh - 68px);box-shadow:1px 0 0 rgba(11,20,64,.02)}
-  .app-nav-item{position:relative;display:flex;align-items:center;gap:12px;padding:11px 14px;border:0;border-radius:12px;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;width:100%;transition:background .15s,color .15s}
-  .app-nav-item svg{width:18px;height:18px;flex:none;opacity:.55;transition:opacity .15s}
-  .app-nav-item:hover{background:var(--bg-2)}
-  .app-nav-item.is-on{background:var(--ink);color:#fff;box-shadow:0 6px 16px -6px rgba(11,20,64,.35)}
-  .app-nav-item.is-on::before{content:'';position:absolute;left:-14px;top:50%;transform:translateY(-50%);width:3px;height:18px;border-radius:0 3px 3px 0;background:var(--gold)}
+  .app-nav{position:sticky;top:68px;width:240px;flex:none;padding:28px 16px;display:grid;gap:3px;align-content:start;background:linear-gradient(190deg,#0E1A52,#0B1440 60%);min-height:calc(100vh - 68px);box-shadow:inset -1px 0 0 rgba(255,255,255,.05)}
+  .app-nav-item{position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;border-radius:12px;background:none;font:inherit;font-size:14px;font-weight:600;color:rgba(255,255,255,.62);cursor:pointer;text-align:left;width:100%;transition:background .15s,color .15s}
+  .app-nav-item svg{width:18px;height:18px;flex:none;opacity:.75;transition:opacity .15s}
+  .app-nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .app-nav-item.is-on{background:rgba(212,175,55,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(212,175,55,.22)}
+  .app-nav-item.is-on::before{content:'';position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--gold)}
   .app-nav-item.is-on svg{opacity:1;color:var(--gold-light)}
   .app-content{flex:1;min-width:0}
   .app-content .app-main{max-width:1180px}
