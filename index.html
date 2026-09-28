@@ -3102,16 +3102,27 @@
       });
       lotsCovered.forEach(function(t){ lots+=t.lots; });
 
-      /* Balance/equity as "deposits plus summed P&L" is itself only an
-         approximation while any trade's P&L is unknown — a truly accurate
-         current balance has to come from the account's own live state
-         (FTM.remote once the engine exposes account_state), not from
-         re-deriving it client-side from an incomplete trade history. Kept
-         as the fallback until that exists; do not treat this as exact
-         once real accounts are wired in. */
-      var balance = acct.deposits - acct.withdrawals + netPL;
-      var floating = openT.reduce(function(a,t){return a+(t.pl||0);},0);
-      var equity = balance + floating;
+      /* "Deposits plus summed P&L" is only an approximation, and a bad
+         one once real accounts are wired in — the engine reports no
+         deposit history at all today, so acct.deposits is honestly 0 for
+         a real account, and this formula alone would show something
+         like "-45" as a balance from netPL landing negative against a
+         0 baseline. Now prefers the connected account's own reported
+         balance/equity (the same real, live figures already shown in
+         Accounts and on the account card) whenever one exists, falling
+         back to the deposits-derived estimate only when there's no real
+         account to read from yet (sample/preview mode). */
+      var liveAcct = (d.accounts||[]).filter(function(a){return a.active;})[0];
+      var balance, floating, equity;
+      if(liveAcct && liveAcct.balance!=null){
+        balance = liveAcct.balance;
+        floating = liveAcct.floating!=null ? liveAcct.floating : openT.reduce(function(a,t){return a+(t.pl||0);},0);
+        equity = liveAcct.equity!=null ? liveAcct.equity : balance+floating;
+      } else {
+        balance = acct.deposits - acct.withdrawals + netPL;
+        floating = openT.reduce(function(a,t){return a+(t.pl||0);},0);
+        equity = balance + floating;
+      }
 
       /* Balance curve: built only from covered trades, in order, so an
          unknown P&L neither vanishes silently into the total nor gets
@@ -3119,7 +3130,17 @@
          history effectively starts wherever coverage starts, which is a
          real limitation, not a cosmetic one — curveIncomplete flags it so
          the UI can say so rather than imply the whole history is shown. */
-      var run = acct.deposits - acct.withdrawals, curve=[{t:covered.length?covered[0].openTime:Date.now(), v:run}];
+      /* Anchor the curve/drawdown/gain-% baseline on the account's real,
+         current balance worked backwards through covered P&L, not on
+         acct.deposits — which is honestly 0 for a real account (no
+         deposit-history endpoint exists yet), and a near-zero baseline
+         turns any small loss into an absurd swing (e.g. "-978%
+         drawdown" on a single -45 trade against a ~0 peak). Falls back
+         to the deposits-based anchor only in sample/preview mode. */
+      var anchor = (liveAcct && liveAcct.balance!=null)
+        ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0)
+        : acct.deposits - acct.withdrawals;
+      var run = anchor, curve=[{t:covered.length?covered[0].openTime:Date.now(), v:run}];
       covered.forEach(function(t){ run+=t.pl; curve.push({t:t.closeTime, v:run}); });
       var curveIncomplete = covered.length < closed.length;
       var curveStart = covered.length ? covered[0].closeTime : null;
@@ -3140,10 +3161,10 @@
 
       /* compounded (time-weighted) gain, and simple gain on money paid in —
          over covered trades only, same reasoning as above */
-      var twr=1, base=acct.deposits-acct.withdrawals;
+      var twr=1, base=anchor;
       covered.forEach(function(t){ if(base>0){ twr*=(1+t.pl/base); base+=t.pl; } });
       var gainPct=(twr-1)*100;
-      var absPct=acct.deposits>0 ? (netPL/acct.deposits*100) : 0;
+      var absPct=anchor>0 ? (netPL/anchor*100) : 0;
 
       /* per-trade statistics — n is the COVERED count; count below keeps
          the total so the UI can show "58% over 240 of 243 trades" rather
@@ -3188,7 +3209,7 @@
       return {
         netPL:netPL, gainPct:gainPct, absPct:absPct, balance:balance, equity:equity,
         floating:floating, highest:Math.max.apply(null,balSeries), ddBal:ddBal, ddEq:ddEq,
-        deposits:acct.deposits, withdrawals:acct.withdrawals, fees:fees, lots:lots,
+        deposits:acct.deposits, withdrawals:acct.withdrawals, anchor:anchor, fees:fees, lots:lots,
         expectancy:expectancy, sd:sd, sharpe:sharpe,
         count:closed.length, coveredCount:covered.length, curveIncomplete:curveIncomplete, curveStart:curveStart,
         winRate: n?(wins/n*100):0, profitFactor: grossLoss>0?(grossProfit/grossLoss):0,
@@ -3371,7 +3392,12 @@
       set('mDDtile', '-'+m.ddBal.pct.toFixed(1)+'%', 'down');
 
       set('mGain', pct(m.gainPct), tone(m.gainPct));
-      set('mGainAbs', 'on '+cur0(m.deposits)+' deposited');
+      /* m.deposits is honestly 0 for a real account (no deposit-history
+         endpoint yet) — showing "on 0€ deposited" next to a real gain
+         % would be actively misleading, since the % is really computed
+         against the account's own real balance (m.anchor). Label
+         reflects whichever baseline the number actually came from. */
+      set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
       set('mNet', (m.netPL>=0?'+':'')+cur(m.netPL), tone(m.netPL));
       set('mCount', String(m.count));
       set('mStreakDays', String(m.streakDays));
