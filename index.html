@@ -3686,6 +3686,25 @@
           {symbol:'BTC/USD', dir:'Buy',  lots:0.05, open:'61,240',   current:'61,905',   pl:33}
         ]
       };
+      /* The actual, final fix for sample data flashing on a real login
+         or refresh: stop ever seeding it in the first place when a real
+         Supabase project is configured. Every earlier attempt patched
+         WHEN the swap to real data happened; none of them could fully
+         close the gap, because the swap always raced some async step
+         (a session token settling, a network fetch) that can't be made
+         instant. Removing the fake numbers from F.data before that race
+         even starts removes the failure mode itself — there is nothing
+         wrong left to flash, regardless of how long real data takes.
+         Community/leaderboard sample content is deliberately kept; that
+         is a separate, already-accepted product decision unrelated to
+         financial data. */
+      if(window.FTM.auth && window.FTM.auth.ready()){
+        F.data.account = {currency:'EUR', deposits:0, withdrawals:0};
+        F.data.closed = [];
+        F.data.open = [];
+        F.data.accounts = [];
+        F.data.plan = null;
+      }
     })();
 
     /* Live path: if a real backend session exists (see FTM.remote above),
