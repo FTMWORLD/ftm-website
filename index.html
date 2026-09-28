@@ -3282,8 +3282,12 @@
     function drawOpen(m){
       var tb=document.getElementById('mOpenRows'); if(!tb)return;
       tb.innerHTML=m.open.map(function(t){
-        var cls=t.pl>=0?'pl-up':'pl-down';
-        return '<tr><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+t.current+'</td><td class="'+cls+'">'+(t.pl>=0?'+':'')+cur0(t.pl)+'</td></tr>';
+        // current price and floating P&L per open position aren't provided
+        // by the engine yet — "—", never a guessed number or a literal
+        // "null" string.
+        var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
+        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
+        return '<tr><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
       set('mOpenHint', m.open.length+' position'+(m.open.length===1?'':'s')+' currently open.');
     }
@@ -3408,23 +3412,28 @@
         };
       }
 
-      /* Matches the F.data.closed[] shape exactly — the engine's query was
-         written with these same field names so this is close to a pass-
-         through. symbol/dir/lots/pl/commission/swap may individually be
-         null (see the engine session's LEFT JOIN discussion) — render as
-         "unknown", never as 0 or a blank string that reads as zero. */
+      /* Maps GET /accounts/{id}/history's real, confirmed-live shape
+         (2026-09-25) onto F.data.closed[]'s existing internal field
+         names, so the render code built against those names (Calendar,
+         Performance, Sessions, the trade table) doesn't need to change.
+         pl is net_profit exactly as the engine computed it
+         (realized_profit + commission + swap) — never reconstructed
+         from its components here. null stays null (unknown), never 0. */
       function mapExecution(e){
         return {
           symbol: e.symbol || null,
-          dir: e.dir || null,
-          lots: num(e.lots),
-          openTime: e.openTime,
-          closeTime: e.closeTime,
-          pl: num(e.pl),
+          dir: e.side || null,
+          lots: num(e.volume),
+          openTime: e.opened_at ? Date.parse(e.opened_at) : null,
+          closeTime: e.closed_at ? Date.parse(e.closed_at) : null,
+          pl: num(e.net_profit),
           commission: num(e.commission),
           swap: num(e.swap),
           closeReason: e.close_reason || null,
-          closedBy: e.closed_by || null            // 'PLATFORM' | 'BROKER' | null
+          closedBy: e.closed_by || null,           // 'PLATFORM' | 'BROKER' | null
+          positionRef: e.position_ref || null,
+          partialCloses: e.partial_closes || 0,
+          closingDealRef: e.closing_deal_ref || null
         };
       }
 
@@ -3433,29 +3442,37 @@
         fetchAccounts: function(){
           return call('/accounts').then(function(j){ return j.accounts.map(mapAccount); });
         },
-        fetchExecutions: function(accountId, cursor){
-          var q = '?limit=200' + (cursor?('&cursor='+encodeURIComponent(cursor)):'');
-          return call('/accounts/'+accountId+'/executions'+q).then(function(j){
-            return { executions: j.executions.map(mapExecution), nextCursor: j.next_cursor||null };
+        fetchExecutions: function(accountId, offset){
+          var q = '?limit=200&offset=' + (offset||0);
+          return call('/accounts/'+accountId+'/history'+q).then(function(j){
+            var trades = (j.trades||[]).map(mapExecution);
+            var page = j.page || {};
+            var nextOffset = (page.offset!=null && page.limit!=null && page.total!=null && (page.offset+page.limit)<page.total)
+              ? (page.offset+page.limit) : null;
+            return { executions: trades, nextOffset: nextOffset, summary: j.summary||null };
           });
         },
         fetchAllExecutions: function(accountId){
-          // Pages through cursor results until exhausted. Fine for a
+          // Pages through offset results until exhausted. Fine for a
           // dashboard-sized history; revisit if an account's trade count
           // grows large enough to make this slow.
           var out=[], self=this;
-          function page(cursor){
-            return self.fetchExecutions(accountId, cursor).then(function(r){
+          function page(offset){
+            return self.fetchExecutions(accountId, offset).then(function(r){
               out = out.concat(r.executions);
-              return r.nextCursor ? page(r.nextCursor) : out;
+              return r.nextOffset!=null ? page(r.nextOffset) : out;
             });
           }
-          return page(null);
+          return page(0);
         },
         fetchPositions: function(accountId){
           return call('/accounts/'+accountId+'/positions').then(function(j){
-            return j.positions.map(function(p){
-              return { symbol:p.symbol, dir:p.dir, lots:num(p.lots), open:p.open_price, current:p.current_price, pl:num(p.pl) };
+            return (j.positions||[]).map(function(p){
+              // No current price or floating P&L per position in v1 —
+              // null, not invented, rendered as "—" by the open-positions
+              // table rather than a guessed number.
+              return { symbol:p.symbol, dir:p.side, lots:num(p.volume), open:p.open_price, current:null, pl:null,
+                positionRef:p.position_ref||null, openTime:p.opened_at?Date.parse(p.opened_at):null, partialCloses:p.partial_closes||0 };
             });
           });
         },
@@ -3883,7 +3900,7 @@
     /* ====================== PERFORMANCE ====================== */
     function renderPerf(){
       var byYear={};
-      F.data.closed.forEach(function(t){ var d=new Date(t.closeTime), y=d.getFullYear(), m=d.getMonth();
+      F.data.closed.forEach(function(t){ if(t.pl==null)return; var d=new Date(t.closeTime), y=d.getFullYear(), m=d.getMonth();
         byYear[y]=byYear[y]||{m:new Array(12).fill(null)};
         byYear[y].m[m]=byYear[y].m[m]||{pl:0,n:0};
         byYear[y].m[m].pl+=t.pl; byYear[y].m[m].n++; });
@@ -3903,7 +3920,7 @@
 
       var bySym={};
       F.data.closed.forEach(function(t){ var b=bySym[t.symbol]=bySym[t.symbol]||{pl:0,n:0,w:0,lots:0};
-        b.pl+=t.pl; b.n++; b.lots+=t.lots; if(t.pl>0)b.w++; });
+        b.n++; b.lots+=(t.lots||0); if(t.pl!=null){ b.pl+=t.pl; if(t.pl>0)b.w++; } });
       var list=Object.keys(bySym).sort(function(a,b){return bySym[b].pl-bySym[a].pl;});
       el('perfSymbols').innerHTML='<thead><tr><th>Market</th><th>Trades</th><th>Win rate</th><th>Lots</th><th>Net P/L</th></tr></thead><tbody>'+
         list.map(function(k){ var b=bySym[k];
@@ -4074,7 +4091,7 @@
       SESSIONS.forEach(function(s){ stats[s.name]={pl:0,n:0,w:0}; });
       F.data.closed.forEach(function(t){
         var h=new Date(sessMode==='open'?t.openTime:t.closeTime).getUTCHours();
-        SESSIONS.forEach(function(s){ if(inSession(h,s)){ var x=stats[s.name]; x.pl+=t.pl; x.n++; if(t.pl>0)x.w++; } });
+        SESSIONS.forEach(function(s){ if(inSession(h,s)){ var x=stats[s.name]; x.n++; if(t.pl!=null){ x.pl+=t.pl; if(t.pl>0)x.w++; } } });
       });
       var best=null;
       SESSIONS.forEach(function(s){ if(!best||stats[s.name].pl>stats[best].pl)best=s.name; });
