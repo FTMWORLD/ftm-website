@@ -2759,25 +2759,18 @@
       setTimeout(function(){ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(function(){t.remove();},450); },5200);
     }
     function enter(mail,products,first){
+      /* Reverted: waiting for loadLive() before opening the client area
+         caused a worse regression — if that fetch hung or was merely
+         slow, the client area never opened at all, which looked exactly
+         like being logged out on refresh. Open immediately, as before;
+         the sample-data flash this reintroduces is a real, known issue,
+         but it is strictly better than the page silently failing to open. */
+      close(); passEl.value='';
       window.FTM=window.FTM||{}; FTM.session={email:mail,products:products};
-      passEl.value='';
-      function openNow(){
-        close();
-        if(products && products.length) FTM.openArea(products[0]);
-        else FTM.openArea('auto'); /* opens the "No results" panel already built for this case */
-        if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
-      }
-      /* Fetch this customer's real account data BEFORE opening the
-         client area, not after. Opening first and letting loadLive()
-         catch up afterward is exactly what let sample data flash on
-         screen — visibly, for however long the fetch took — on every
-         fresh login AND every refresh, since both paths go through this
-         same function. Delaying the open until real data is in hand
-         means a real, logged-in customer never sees sample data at all,
-         only ever the real dashboard once it's ready. */
-      if(LIVE && window.FTM.loadLive) return window.FTM.loadLive().then(openNow);
-      openNow();
-      return Promise.resolve();
+      if(products && products.length) FTM.openArea(products[0]);
+      else FTM.openArea('auto'); /* opens the "No results" panel already built for this case */
+      if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
+      return (LIVE && window.FTM.loadLive) ? window.FTM.loadLive() : Promise.resolve();
     }
 
     /* First thing a customer sees right after logging in with an emailed
