@@ -2766,9 +2766,12 @@
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
       /* Fetch this customer's real account data now that they're actually
          logged in — see F.loadLive's own note on why this can't just
-         happen once at page load. Sample data may flash briefly until
-         this resolves; that's preferable to it never being replaced. */
-      if(LIVE && window.FTM.loadLive) window.FTM.loadLive();
+         happen once at page load. Returns the promise (rather than
+         firing and forgetting it) so a caller that cares — the refresh
+         gate below — can wait for it before showing anything, instead of
+         a sample-data flash while it's still in flight. Callers that
+         don't care (a fresh login from the modal) just ignore it. */
+      return (LIVE && window.FTM.loadLive) ? window.FTM.loadLive() : Promise.resolve();
     }
 
     /* First thing a customer sees right after logging in with an emailed
@@ -2866,8 +2869,15 @@
       setTimeout(lift,5000); // never leave the gate up if Supabase hangs
       window.FTM.auth.restoreSession().then(function(r){
         if(r){
-          if(wasInApp) enter(r.email,r.products,false);
-          else { window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products}; }
+          if(wasInApp){
+            // Wait for enter()'s real-data fetch too, not just the
+            // session check — otherwise the gate lifts the instant login
+            // is confirmed, revealing the dashboard still full of sample
+            // data for however long the account/trade fetch takes, which
+            // is exactly the flash this gate exists to prevent.
+            return enter(r.email,r.products,false).then(lift);
+          }
+          window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products};
         }
         lift();
       }).catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
