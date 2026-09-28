@@ -395,11 +395,12 @@
   .tf button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;color:var(--muted)}
   .tf button.is-on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(11,20,64,.12)}
   .cv-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  .cv-reset-zoom{margin-top:12px;border:1px solid var(--line);background:#fff;font:inherit;font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:99px;cursor:pointer;color:var(--ink)}
-  .cv-reset-zoom:hover{background:var(--bg-2)}
-  .cv-zoom-hint{font-size:11.5px;color:var(--muted);margin:6px 0 0;text-align:center}
-  .cv-wrap.zooming{cursor:col-resize}
-  .cv-selbox{position:absolute;top:0;bottom:0;background:rgba(212,175,55,.16);border-left:1px solid var(--gold);border-right:1px solid var(--gold);pointer-events:none;z-index:2}
+  .cv-zoom-btns{display:inline-flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:99px;margin-top:12px}
+  .cv-zoom-btn{border:0;background:#fff;font:inherit;font-size:15px;font-weight:800;width:28px;height:28px;line-height:1;border-radius:50%;cursor:pointer;color:var(--ink);box-shadow:0 1px 4px rgba(11,20,64,.12)}
+  .cv-zoom-btn:hover{background:var(--bg-3)}
+  .cv-zoom-btn:disabled{opacity:.4;cursor:default}
+  .cv-yaxis{position:absolute;right:2px;top:0;bottom:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0;font-size:10.5px;font-weight:700;color:var(--muted);text-align:right}
+  .cv-yaxis span{background:#fff;padding-left:4px}
 
   /* ---------- candles ---------- */
   .chart-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start;margin-bottom:10px}
@@ -1668,9 +1669,12 @@
         <div class="cv-controls">
           <div class="tf" id="curveTF"><button data-r="1">1M</button><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="ytd">YTD</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div>
           <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div>
-          <button class="cv-reset-zoom" id="curveResetZoom" hidden type="button">Reset zoom</button>
+          <div class="cv-zoom-btns">
+            <button class="cv-zoom-btn" id="curveZoomOut" type="button" aria-label="Zoom out">&minus;</button>
+            <button class="cv-zoom-btn" id="curveZoomIn" type="button" aria-label="Zoom in">+</button>
+          </div>
         </div>
-        <div class="cv-wrap"><svg class="app-chart" id="mCurve" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cv-tip" id="cvTip" hidden></div><p class="cv-zoom-hint">Drag across the chart to zoom in.</p></div>
+        <div class="cv-wrap"><svg class="app-chart" id="mCurve" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cv-yaxis" id="cvYAxis"></div><div class="cv-tip" id="cvTip" hidden></div></div>
         <div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
       </div>
 
@@ -3201,16 +3205,21 @@
         curve=all.slice(Math.max(0,idx));
         if(curve.length<2)curve=all.slice(-2);
       }
-      /* Drag-to-zoom further narrows whatever period is already picked,
-         by timestamp so it survives a re-render (a period switch clears
-         it, see the click handler below). */
-      if(F.curveZoom){
-        var zc=curve.filter(function(p){return p.t>=F.curveZoom.from && p.t<=F.curveZoom.to;});
-        if(zc.length>=2)curve=zc;
+      /* Zoom narrows further within whatever period is already picked,
+         keeping the most recent point fixed and showing fewer of the
+         ones before it — a period switch resets it (see click handler
+         below), since a zoom level from one period may not make sense
+         inside another. */
+      var ZOOM_LEVELS=[1,0.7,0.5,0.35,0.22,0.12];
+      var zi=F.curveZoomLevel||0; if(zi>=ZOOM_LEVELS.length)zi=ZOOM_LEVELS.length-1;
+      if(zi>0){
+        var keep=Math.max(2,Math.round(curve.length*ZOOM_LEVELS[zi]));
+        curve=curve.slice(-keep);
       }
+      var zoomInBtn=document.getElementById('curveZoomIn'), zoomOutBtn=document.getElementById('curveZoomOut');
+      if(zoomInBtn)zoomInBtn.disabled = zi>=ZOOM_LEVELS.length-1 || curve.length<=2;
+      if(zoomOutBtn)zoomOutBtn.disabled = zi<=0;
       m={curve:curve};
-      var resetBtn=document.getElementById('curveResetZoom');
-      if(resetBtn)resetBtn.hidden=!F.curveZoom;
       var W=600,H=190,pad=14;
       /* Percent mode reframes every point as % change from the first
          point of whatever's currently shown, so switching period or
@@ -3243,6 +3252,13 @@
         '<circle id="cvEnd" cx="'+last[0]+'" cy="'+last[1]+'" r="4"/>'+
         '<line id="cvLine" x1="0" y1="0" x2="0" y2="190" visibility="hidden"/>'+
         '<circle id="cvDot" r="5" visibility="hidden"/>';
+      var yax=document.getElementById('cvYAxis');
+      if(yax){
+        var fmtY=function(v){ return pctMode ? (v>=0?'+':'')+v.toFixed(1)+'%' : cur0(v); };
+        // top-to-bottom, matching the gridlines' pixel order (y=0 is the
+        // chart's top, i.e. the highest value in view)
+        yax.innerHTML=['<span>'+fmtY(hi)+'</span>','<span>'+fmtY(lo+span/2)+'</span>','<span>'+fmtY(lo)+'</span>'].join('');
+      }
       var fmt=function(ts){ return new Date(ts).toLocaleDateString('en-GB',{month:'short',year:'numeric'}); };
       set('mCurveFrom', fmt(m.curve[0].t));
       set('mCurveTo', fmt(m.curve[m.curve.length-1].t));
@@ -3251,7 +3267,7 @@
       if(hv){ hv.textContent='Hover or touch the chart for an exact date'; hv.className='cv-read idle'; }
     }
 
-    /* ---- hover/touch readout, plus drag-to-zoom ---- */
+    /* ---- hover/touch readout ---- */
     (function(){
       var svg=document.getElementById('mCurve'), tip=document.getElementById('cvTip'), wrap=svg&&svg.parentElement;
       if(!svg||!tip)return;
@@ -3263,18 +3279,12 @@
         var hv=document.getElementById('mCurveHover');
         if(hv){ hv.textContent='Hover or touch the chart for an exact date'; hv.className='cv-read idle'; }
       }
-      function nearest(clientX){
-        var c=F._cv; if(!c||!c.pts.length)return null;
+      function move(clientX){
+        var c=F._cv; if(!c||!c.pts.length)return;
         var r=svg.getBoundingClientRect(), vx=(clientX-r.left)/r.width*600;
         var best=0,bd=1e9;
         for(var i=0;i<c.pts.length;i++){ var d=Math.abs(c.pts[i][0]-vx); if(d<bd){bd=d;best=i;} }
-        return best;
-      }
-      function move(clientX){
-        var c=F._cv; if(!c||!c.pts.length)return;
-        var best=nearest(clientX); if(best==null)return;
         var p=c.pts[best], pt=c.data[best];
-        var r=svg.getBoundingClientRect();
         var l=document.getElementById('cvLine'), dot=document.getElementById('cvDot');
         l.setAttribute('x1',p[0]); l.setAttribute('x2',p[0]); l.setAttribute('visibility','visible');
         dot.setAttribute('cx',p[0]); dot.setAttribute('cy',p[1]); dot.setAttribute('visibility','visible');
@@ -3290,48 +3300,19 @@
         var hv=document.getElementById('mCurveHover');
         if(hv){ hv.textContent=date+' \u00B7 '+fmtV(pt.v); hv.className='cv-read'; }
       }
-      /* Drag horizontally to zoom into a date range; a small movement is
-         treated as a tap/hover instead, not a zoom attempt. */
-      var dragX=null, dragging=false, DRAG_MIN=8;
-      function selRect(x1,x2){
-        var r=svg.getBoundingClientRect();
-        var box=wrap.querySelector('.cv-selbox');
-        if(!box){ box=document.createElement('div'); box.className='cv-selbox'; wrap.appendChild(box); }
-        var left=Math.min(x1,x2), width=Math.abs(x2-x1);
-        box.style.left=(left-r.left)+'px'; box.style.width=width+'px';
-        box.hidden=false;
-      }
-      function clearSelRect(){ var box=wrap.querySelector('.cv-selbox'); if(box)box.hidden=true; }
-      wrap.addEventListener('pointerdown',function(e){
-        dragX=e.clientX; dragging=false;
-        move(e.clientX);
-      });
-      wrap.addEventListener('pointermove',function(e){
-        if(dragX!=null){
-          if(!dragging && Math.abs(e.clientX-dragX)>DRAG_MIN){ dragging=true; wrap.classList.add('zooming'); }
-          if(dragging){ selRect(dragX,e.clientX); return; }
-        }
-        move(e.clientX);
-      });
-      wrap.addEventListener('pointerup',function(e){
-        if(dragging){
-          var c=F._cv; wrap.classList.remove('zooming'); clearSelRect();
-          if(c && c.data.length){
-            var i1=nearest(dragX), i2=nearest(e.clientX);
-            if(i1!=null && i2!=null && i1!==i2){
-              var lo=Math.min(i1,i2), hi=Math.max(i1,i2);
-              F.curveZoom={from:c.data[lo].t, to:c.data[hi].t};
-              F.render();
-            }
-          }
-        }
-        dragX=null; dragging=false;
-      });
-      wrap.addEventListener('pointerleave',function(){ if(!dragging)hide(); });
-      wrap.addEventListener('touchmove',function(e){ if(e.touches[0] && !dragging){ move(e.touches[0].clientX); e.preventDefault(); } },{passive:false});
+      wrap.addEventListener('pointermove',function(e){ move(e.clientX); });
+      wrap.addEventListener('pointerdown',function(e){ move(e.clientX); });
+      wrap.addEventListener('pointerleave',hide);
+      wrap.addEventListener('touchmove',function(e){ if(e.touches[0]){ move(e.touches[0].clientX); e.preventDefault(); } },{passive:false});
       wrap.addEventListener('touchend',function(){ setTimeout(hide,1800); });
-      var resetBtn=document.getElementById('curveResetZoom');
-      if(resetBtn)resetBtn.addEventListener('click',function(){ F.curveZoom=null; F.render(); });
+      var zoomIn=document.getElementById('curveZoomIn'), zoomOut=document.getElementById('curveZoomOut');
+      var ZOOM_MAX=5; // matches ZOOM_LEVELS.length-1 in drawCurve
+      if(zoomIn)zoomIn.addEventListener('click',function(){
+        F.curveZoomLevel=Math.min(ZOOM_MAX,(F.curveZoomLevel||0)+1); F.render();
+      });
+      if(zoomOut)zoomOut.addEventListener('click',function(){
+        F.curveZoomLevel=Math.max(0,(F.curveZoomLevel||0)-1); F.render();
+      });
       var unitTF=document.getElementById('curveUnit');
       if(unitTF)unitTF.addEventListener('click',function(e){
         var b=e.target.closest('button'); if(!b)return;
@@ -4657,7 +4638,7 @@
       this.querySelectorAll('button').forEach(function(x){x.classList.remove('is-on');});
       b.classList.add('is-on');
       F.curveRange=b.dataset.r;
-      F.curveZoom=null; // a new period picked from scratch, any drag-zoom from before no longer applies
+      F.curveZoomLevel=0; // a new period picked from scratch, any zoom-in from before no longer applies
       F.render();
     });
   })();
