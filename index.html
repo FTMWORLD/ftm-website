@@ -3420,9 +3420,28 @@
       var BASE = '/api/v1/customer';
       function ready(){ return !!(window.FTM.auth && window.FTM.auth.ready()); }
 
+      /* Right after a fresh sign-in, getAccessToken() can briefly resolve
+         null even though the login genuinely just succeeded — Supabase's
+         session write isn't guaranteed to have fully settled the instant
+         signInWithPassword's own promise resolves. Reproduced live: the
+         very first accounts/history/positions calls after login threw
+         "session expired" while a retry moments later succeeded with the
+         exact same, still-valid session. One retry after a short pause
+         tells a real expiry (still null second time) apart from that
+         transient gap, instead of resetting real data to the empty state
+         over what amounts to a false alarm. */
+      function getTokenWithRetry(triedOnce){
+        return window.FTM.auth.getAccessToken().then(function(token){
+          if(token) return token;
+          if(triedOnce) return null;
+          return new Promise(function(resolve){ setTimeout(resolve,350); }).then(function(){
+            return getTokenWithRetry(true);
+          });
+        });
+      }
       function call(path, opts){
         opts = opts || {};
-        return window.FTM.auth.getAccessToken().then(function(token){
+        return getTokenWithRetry(false).then(function(token){
           if(!token) throw Object.assign(new Error('Your session has expired. Log in again and retry.'), {code:'UNAUTHENTICATED', status:401});
           return fetch(BASE+path, {
             method: opts.method||'GET',
@@ -3891,13 +3910,20 @@
         day++;
       }
       grid.innerHTML=html;
-      renderDayStats();
+      renderDayStats(D);
     }
 
     /* ---- daily win rate gauge, avg day win vs loss, daily P&L, hourly spread ----
        All aggregates below skip days whose pl is null (all-unknown days) —
-       same absence-vs-zero rule as everywhere else in this file. */
-    function renderDayStats(){
+       same absence-vs-zero rule as everywhere else in this file. D is
+       passed in from renderCalendar rather than read from a shared
+       variable — it used to be a module-level `var D`, recomputed fresh
+       inside renderCalendar() only fixed the calendar grid itself and
+       silently broke this function, which called it as its own free
+       variable and threw ReferenceError: D is not defined on every call,
+       aborting before touching the gauge, the day-win-rate ratio, the
+       daily P&L chart or the hourly spread — all four stayed blank. */
+    function renderDayStats(D){
       var winDays=0, lossDays=0, winSum=0, lossSum=0, net=0;
       D.order.forEach(function(k){ var e=D.map[k]; if(e.pl===null)return; net+=e.pl;
         if(e.pl>0){winDays++;winSum+=e.pl;} else if(e.pl<0){lossDays++;lossSum+=Math.abs(e.pl);} });
