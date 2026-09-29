@@ -510,6 +510,13 @@
   .acct-table .conn-switch{display:block;margin-top:5px;border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-switch:hover{background:var(--ink);color:#fff}
   .acct-table .conn-remove{display:block;margin-top:5px;border:0;background:none;color:var(--red-dark);font:inherit;font-size:11.5px;font-weight:700;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+  .acct-menu{position:relative;display:inline-block;margin-top:6px;vertical-align:top}
+  .acct-menu-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:16px;line-height:1;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+  .acct-menu-btn:hover,.acct-menu-btn[aria-expanded="true"]{background:var(--bg-2);color:var(--ink)}
+  .acct-menu-list{position:absolute;right:0;top:calc(100% + 6px);z-index:5;background:#fff;border-radius:12px;box-shadow:0 16px 36px -12px rgba(11,20,64,.28);border:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:190px}
+  .acct-menu-item{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);text-align:left;padding:9px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .acct-menu-item:hover{background:var(--bg-2)}
+  .acct-menu-item.danger{color:var(--red-dark)}
   .acct-kind{font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
   .acct-action-note{margin-top:6px;font-size:12px;color:var(--muted);max-width:260px;line-height:1.45}
   .acct-hedge-note{background:#FFF7E0;border-left:3px solid var(--gold);border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;color:#5a4a12;margin:-6px 0 14px}
@@ -4245,12 +4252,17 @@
           }
           status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
           if(a.displayStatus==='ACTION_REQUIRED') status+='<div class="acct-action-note">'+detail+'</div>';
+          // Actions live behind a "⋮" menu instead of sitting exposed as
+          // a stack of buttons under every row.
+          var items='';
           // Only when the broker itself refused the login and tries are
           // still left — every other ACTION_REQUIRED case keeps the
           // plain "contact support" text above, no form.
-          if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) status+='<button class="conn-switch" data-fix="'+i+'">Update and try again</button>';
-          if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Activate</button>';
-          status+='<button class="conn-remove" data-remove="'+i+'">Remove account</button>';
+          if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) items+='<button class="acct-menu-item" data-fix="'+i+'">Update and try again</button>';
+          if(!a.active) items+='<button class="acct-menu-item" data-switch="'+i+'">Activate</button>';
+          items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
+          status+='<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button>'+
+            '<div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+items+'</div></div>';
         } else {
           status = a.active
             ? '<span class="conn conn-good">Connected</span>'
@@ -4342,6 +4354,30 @@
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-switch]'); if(!b)return;
       alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
+    });
+    /* Account actions live behind a "⋮" menu per row instead of sitting
+       exposed as a stack of buttons — one open at a time, closes on an
+       outside click or a second toggle. */
+    el('acctRows').addEventListener('click',function(e){
+      var toggle=e.target.closest('[data-menu-toggle]');
+      if(toggle){
+        var list=el('acctRows').querySelector('[data-menu-list="'+toggle.dataset.menuToggle+'"]');
+        var willOpen = list && list.hidden;
+        el('acctRows').querySelectorAll('.acct-menu-list').forEach(function(l){ l.hidden=true; });
+        el('acctRows').querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
+        if(list && willOpen){ list.hidden=false; toggle.setAttribute('aria-expanded','true'); }
+        return;
+      }
+      if(!e.target.closest('.acct-menu-list')){
+        el('acctRows').querySelectorAll('.acct-menu-list').forEach(function(l){ l.hidden=true; });
+        el('acctRows').querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
+      }
+    });
+    document.addEventListener('click',function(e){
+      if(e.target.closest('.acct-menu'))return;
+      var rows=document.getElementById('acctRows'); if(!rows)return;
+      rows.querySelectorAll('.acct-menu-list').forEach(function(l){ l.hidden=true; });
+      rows.querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
     });
     /* Refused-login recovery + account removal — deployed and proven
        live on the engine 2026-09-29. */
