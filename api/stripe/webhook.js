@@ -26,8 +26,8 @@ module.exports.config = { api: { bodyParser: false } };
    real ids, sent by Gospel from the Stripe Dashboard, replacing the
    placeholders. Update here if a plan's link ever changes, since
    nothing else derives this mapping.
-     confirmed: Annual (999€), 5 Years (3,999€), Lifetime (9,999€) -> auto
-     still placeholder: Investment — see bottom note
+     confirmed, all four: Annual (999€), 5 Years (3,999€),
+     Lifetime (9,999€) -> auto; Investment -> invest
      Note: Gospel first sent the Lifetime link labelled "Annual" by
      mistake, caught and corrected the same night — worth a sanity
      check against the Stripe Dashboard if a real payment ever grants
@@ -36,7 +36,7 @@ const PAYMENT_LINK_PRODUCT = {
   'plink_1UG5XeAZWClTb7yx1a8w5228': 'auto', // Annual, 999€ — confirmed 2026-09-30
   'plink_1UG6CUAZWClTb7yxRTis1wzS': 'auto', // 5 Years, 3,999€ — confirmed 2026-09-30
   'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Lifetime, 9,999€ — confirmed 2026-09-30
-  'plink_1SDMzZJ9CfQOYqUACCCCCC': 'invest' // Investment — placeholder, still needed
+  'plink_1NItdgAZWClTb7yxGcXgPDLP': 'invest' // Investment — confirmed 2026-09-30
 };
 
 async function readRawBody(req) {
@@ -143,26 +143,19 @@ module.exports = async function handler(req, res) {
 };
 
 /* ---------------------------------------------------------------------
-   SETUP — none of this can be done from here, it needs Gospel's own
-   Stripe and Vercel dashboard access:
+   SETUP — completed 2026-09-30, all live:
 
-   1. Stripe Dashboard → Developers → Webhooks → Add endpoint
+   1. Stripe Dashboard → Developers → Webhooks → endpoint added,
         URL: https://www.ftmwealthnation.com/api/stripe/webhook
         Event: checkout.session.completed
-      Stripe then shows a signing secret (whsec_...) — copy it.
 
-   2. Vercel → this project → Settings → Environment Variables:
-        STRIPE_WEBHOOK_SECRET = the whsec_... value from step 1
-        SITE_URL = https://www.ftmwealthnation.com   (optional, has a
-                                                        fallback above)
+   2. Vercel → Environment Variables → STRIPE_WEBHOOK_SECRET set,
+      redeployed, confirmed live (probe returns 400 BAD_SIGNATURE for
+      a request without a real Stripe signature, as expected, rather
+      than 503 NOT_CONFIGURED).
 
-   3. THE PAYMENT_LINK_PRODUCT MAP ABOVE HAS PLACEHOLDER IDS.
-      Stripe Dashboard → Payment Links → open each of the 4 live links
-      (3 Auto Trading plans + 1 Investment) → the link's own id starts
-      with "plink_..." (NOT the buy.stripe.com/xxxx part in the URL).
-      Replace the four placeholder keys above with the real plink_...
-      ids, matched to 'auto' or 'invest' correctly, then redeploy.
-      Until this is done, the webhook will run but log "unrecognised
-      payment_link" for every real payment and grant nothing — safer
-      than guessing wrong, but it needs this one manual step to work.
+   3. PAYMENT_LINK_PRODUCT above has all four real plink_... ids,
+      confirmed against the Stripe Dashboard by Gospel. This webhook
+      has not yet been proven against a real live payment end to end —
+      first real checkout.session.completed event is the actual test.
    --------------------------------------------------------------------- */
