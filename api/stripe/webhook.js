@@ -26,12 +26,16 @@ module.exports.config = { api: { bodyParser: false } };
    real ids, sent by Gospel from the Stripe Dashboard, replacing the
    placeholders. Update here if a plan's link ever changes, since
    nothing else derives this mapping.
-     confirmed: Annual (999€), 5 Years (3,999€) -> auto
-     still placeholder: Lifetime, Investment — see bottom note */
+     confirmed: Annual (999€), 5 Years (3,999€), Lifetime (9,999€) -> auto
+     still placeholder: Investment — see bottom note
+     Note: Gospel first sent the Lifetime link labelled "Annual" by
+     mistake, caught and corrected the same night — worth a sanity
+     check against the Stripe Dashboard if a real payment ever grants
+     the wrong plan. */
 const PAYMENT_LINK_PRODUCT = {
-  'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Annual, 999€ — confirmed 2026-09-30
+  'plink_1UG5XeAZWClTb7yx1a8w5228': 'auto', // Annual, 999€ — confirmed 2026-09-30
   'plink_1UG6CUAZWClTb7yxRTis1wzS': 'auto', // 5 Years, 3,999€ — confirmed 2026-09-30
-  'plink_1SDMyYJ9CfQOYqUABBBBBB': 'auto',  // Lifetime — placeholder, still needed
+  'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Lifetime, 9,999€ — confirmed 2026-09-30
   'plink_1SDMzZJ9CfQOYqUACCCCCC': 'invest' // Investment — placeholder, still needed
 };
 
