@@ -509,6 +509,7 @@
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
   .acct-table .conn-switch{display:block;margin-top:5px;border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-switch:hover{background:var(--ink);color:#fff}
+  .acct-table .conn-remove{display:block;margin-top:5px;border:0;background:none;color:var(--red-dark);font:inherit;font-size:11.5px;font-weight:700;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
   .acct-kind{font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
   .acct-action-note{margin-top:6px;font-size:12px;color:var(--muted);max-width:260px;line-height:1.45}
   .acct-hedge-note{background:#FFF7E0;border-left:3px solid var(--gold);border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;color:#5a4a12;margin:-6px 0 14px}
@@ -2202,6 +2203,26 @@
   </div>
 </div>
 
+<!-- ===== UPDATE ACCOUNT DETAILS (refused login) ===== -->
+<div class="mdl" id="acctFixModal" hidden>
+  <div class="mdl-box" role="dialog" aria-modal="true" aria-labelledby="acctFixTitle">
+    <button class="auth-close" id="acctFixClose" aria-label="Close">&times;</button>
+    <h3 id="acctFixTitle">Update account details</h3>
+    <p class="hint">The broker refused these login details. Check your password, account number and server, then try again.</p>
+    <div class="app-form" style="margin-top:16px">
+      <label for="acctFixServer">Server</label>
+      <input type="text" id="acctFixServer" autocomplete="off">
+      <label for="acctFixNumber">MT5 account number</label>
+      <input type="text" id="acctFixNumber" autocomplete="off">
+      <label for="acctFixPass">Master trading password</label>
+      <input type="password" id="acctFixPass" autocomplete="new-password">
+      <p class="auth-error" id="acctFixErr" hidden></p>
+      <button class="btn btn-red" type="button" id="acctFixSave">Update and try again</button>
+      <p class="hint" id="acctFixOk" hidden>Checking your new details…</p>
+    </div>
+  </div>
+</div>
+
 <!-- ===== PAYMENT RECEIVED ===== -->
 <div class="paid" id="paidView" hidden role="dialog" aria-modal="true" aria-labelledby="paidTitle">
   <div class="paid-inner">
@@ -3549,7 +3570,15 @@
           // DEMO | REAL | CONTEST | null. null on every account
           // provisioned before the validator existed (including the
           // owner's own test account) — that is expected, not a bug.
-          tradeMode: a.trade_mode || null
+          tradeMode: a.trade_mode || null,
+          // Added 2026-09-29 with the password-retry/remove-account
+          // endpoints. canRetryPassword is true only when the broker
+          // genuinely refused the login (tries left, no FTM terminal
+          // running it yet) — that's the ONLY case the "Update and try
+          // again" form should show. passwordTriesLeft is logic-only,
+          // never shown to the customer (owner decision, not yet approved).
+          canRetryPassword: !!a.can_retry_password,
+          passwordTriesLeft: (a.password_tries_left!=null) ? a.password_tries_left : null
         };
       }
 
@@ -3644,9 +3673,52 @@
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               CUSTOMER_NOT_PERMITTED:'Your account cannot connect a trading account right now. Contact support.',
               ACCOUNT_ALREADY_CONNECTED:'This trading account is already connected to FTM.',
+              // Added 2026-09-29: a login can also be refused after three
+              // password attempts across any account number/server
+              // combination for it — only FTM support can reset that.
+              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
             throw new Error(friendly[e.code] || e.message || 'Could not connect that account.');
+          });
+        },
+        /* PUT .../password — updates the saved master password on an
+           account whose login was refused, without creating a new
+           account record. Used when the customer's corrected details
+           kept the same account number and server; see connectAccount
+           for the "number or server changed" path instead. Deployed and
+           proven live 2026-09-29. */
+        updateAccountPassword: function(accountId, password){
+          return call('/accounts/'+accountId+'/password', { method:'PUT', body:{ password: password } }).then(function(j){
+            return j; // { ok:true, account_id, status, status_reason:'VALIDATION_PENDING', password_tries_left }
+          }).catch(function(e){
+            var friendly={
+              UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
+              ACCOUNT_NOT_FOUND:'That account could not be found.',
+              ACCOUNT_PROVISIONED:'This account is already set up with FTM. Please contact support to change or remove it.',
+              ACCOUNT_DISABLED:'This account is no longer active. Please contact support.',
+              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
+              CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
+            };
+            throw new Error(friendly[e.code] || e.message || 'Could not update that password.');
+          });
+        },
+        /* DELETE .../{id} — removes a connected account. The engine
+           keeps the record internally; for the customer it's gone from
+           GET /accounts and its history/positions start 404ing.
+           Deployed and proven live 2026-09-29. */
+        removeAccount: function(accountId){
+          return call('/accounts/'+accountId, { method:'DELETE' }).then(function(j){
+            return j; // { ok:true, account_id, removed:true }
+          }).catch(function(e){
+            var friendly={
+              UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
+              ACCOUNT_NOT_FOUND:'That account could not be found.',
+              OPEN_POSITIONS:'This account still has open copied positions. You can remove it once they have closed.',
+              ACCOUNT_PROVISIONED:'This account is already set up with FTM. Please contact support to change or remove it.',
+              CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
+            };
+            throw new Error(friendly[e.code] || e.message || 'Could not remove that account.');
           });
         }
       };
@@ -4139,7 +4211,12 @@
        account was successfully checked. Override by status_reason so
        this one specific case reads as the good news it actually is. */
     var STATUS_REASON_OVERRIDE = {
-      NO_NODE_ASSIGNED: {text:'Verified, being set up by FTM', tone:'wait'}
+      NO_NODE_ASSIGNED: {text:'Verified, being set up by FTM', tone:'wait'},
+      // The customer just corrected their login/details and the
+      // validator is checking again — distinct from a first-ever
+      // connection (NEVER_VALIDATED), which keeps the existing
+      // "Connecting" label.
+      VALIDATION_PENDING: {text:'Checking your new details…', tone:'wait'}
     };
     /* Shown on an ACTION_REQUIRED account, keyed on validation_reason —
        added 2026-09-29 once the account validator went live. Wording for
@@ -4168,7 +4245,12 @@
           }
           status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
           if(a.displayStatus==='ACTION_REQUIRED') status+='<div class="acct-action-note">'+detail+'</div>';
+          // Only when the broker itself refused the login and tries are
+          // still left — every other ACTION_REQUIRED case keeps the
+          // plain "contact support" text above, no form.
+          if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) status+='<button class="conn-switch" data-fix="'+i+'">Update and try again</button>';
           if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Activate</button>';
+          status+='<button class="conn-remove" data-remove="'+i+'">Remove account</button>';
         } else {
           status = a.active
             ? '<span class="conn conn-good">Connected</span>'
@@ -4260,6 +4342,64 @@
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-switch]'); if(!b)return;
       alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
+    });
+    /* Refused-login recovery + account removal — deployed and proven
+       live on the engine 2026-09-29. */
+    var fixTarget=null;
+    el('acctRows').addEventListener('click',function(e){
+      var b=e.target.closest('[data-fix]'); if(!b)return;
+      var a=F.data.accounts[+b.dataset.fix]; if(!a)return;
+      fixTarget=a;
+      document.getElementById('acctFixServer').value=a.server||'';
+      document.getElementById('acctFixNumber').value=a.number||'';
+      document.getElementById('acctFixPass').value='';
+      document.getElementById('acctFixErr').hidden=true;
+      document.getElementById('acctFixOk').hidden=true;
+      document.getElementById('acctFixSave').hidden=false;
+      document.getElementById('acctFixSave').disabled=false;
+      document.getElementById('acctFixModal').hidden=false;
+    });
+    el('acctRows').addEventListener('click',function(e){
+      var b=e.target.closest('[data-remove]'); if(!b)return;
+      var a=F.data.accounts[+b.dataset.remove]; if(!a)return;
+      if(!confirm('Remove this account? FTM will stop copying trades to it and delete the saved password. Its trade history will no longer appear here.'))return;
+      F.remote.removeAccount(a.accountId).then(function(){
+        if(F.loadLive)F.loadLive();
+      }).catch(function(err){
+        alert(err.message||'Could not remove that account.');
+      });
+    });
+    document.getElementById('acctFixClose').addEventListener('click',function(){
+      document.getElementById('acctFixModal').hidden=true;
+    });
+    document.getElementById('acctFixSave').addEventListener('click',function(){
+      var a=fixTarget; if(!a)return;
+      var server=document.getElementById('acctFixServer').value.trim();
+      var number=document.getElementById('acctFixNumber').value.trim();
+      var pass=document.getElementById('acctFixPass').value;
+      var errEl=document.getElementById('acctFixErr'), okEl=document.getElementById('acctFixOk'), saveBtn=document.getElementById('acctFixSave');
+      errEl.hidden=true;
+      function fail(msg){ saveBtn.disabled=false; errEl.hidden=false; errEl.textContent=msg; }
+      if(!pass) return fail('Enter your MT5 master password.');
+      if(!number) return fail('Enter your MT5 account number.');
+      if(!server) return fail('Enter your MT5 server.');
+      saveBtn.disabled=true;
+      function finish(){
+        saveBtn.disabled=false; saveBtn.hidden=true; okEl.hidden=false;
+        setTimeout(function(){ document.getElementById('acctFixModal').hidden=true; if(F.loadLive)F.loadLive(); },1400);
+      }
+      var changed = (number!==a.number) || (server!==a.server);
+      if(!changed){
+        F.remote.updateAccountPassword(a.accountId, pass).then(finish).catch(function(e2){ fail(e2.message||'Could not update those details.'); });
+      } else {
+        /* Account number or server changed — that's a different login,
+           so it needs a fresh account record. Only delete the old one
+           once the new one is confirmed connected, so the customer
+           never ends up with neither if the new details are also wrong. */
+        F.remote.connectAccount(server, number, pass, a.riskTier||'BALANCED').then(function(){
+          return F.remote.removeAccount(a.accountId).catch(function(){});
+        }).then(finish).catch(function(e2){ fail(e2.message||'Could not update those details.'); });
+      }
     });
     el('acctAdd').addEventListener('click',function(){
       show('metrics');
