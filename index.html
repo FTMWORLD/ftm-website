@@ -1708,6 +1708,7 @@
     </div>
 
     <div class="app-cols">
+      <div class="app-side">
       <div class="app-card">
         <div class="app-status" id="mStatus"><i></i>FTM MACHINE is running</div>
         <h3>Account balance</h3>
@@ -1722,6 +1723,16 @@
         </div>
         <div class="cv-wrap"><svg class="app-chart" id="mCurve" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg><div class="cv-yaxis" id="cvYAxis"></div><div class="cv-tip" id="cvTip" hidden></div></div>
         <div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
+      </div>
+
+      <div class="app-card">
+        <h3>Recently closed trades</h3>
+        <p class="hint" id="mClosedHint">&mdash;</p>
+        <div class="app-scroll"><table class="app-trades">
+          <thead><tr><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
+          <tbody id="mClosedRows"></tbody>
+        </table></div>
+      </div>
       </div>
 
       <div class="app-side">
@@ -3443,6 +3454,18 @@
       set('mOpenHint', m.open.length+' position'+(m.open.length===1?'':'s')+' currently open.');
     }
 
+    function drawClosed(){
+      var tb=document.getElementById('mClosedRows'); if(!tb)return;
+      var recent=F.data.closed.slice().sort(function(a,b){return b.closeTime-a.closeTime;}).slice(0,8);
+      tb.innerHTML=recent.map(function(t){
+        var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
+        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
+        var d=new Date(t.closeTime).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        return '<tr><td>'+d+'</td><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+      }).join('');
+      set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'.' : 'No trades closed yet.');
+    }
+
     /* ---------- render ---------- */
     F.curveRange='0';
     F.render = function(){
@@ -3485,7 +3508,7 @@
       var mins=Math.round(m.avgDurMs/60000);
       set('mDur', Math.floor(mins/60)+'h '+(mins%60)+'m');
 
-      drawCurve(m); drawSpark(m); drawOpen(m);
+      drawCurve(m); drawSpark(m); drawOpen(m); drawClosed();
     };
 
     /* =======================================================================
