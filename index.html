@@ -626,6 +626,7 @@
   .pw-eye[aria-pressed="true"]{color:var(--blue)}
   .pw-eye svg{width:18px;height:18px}
   .pw-hint{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:-4px}
+  .pw-optional{font-size:11.5px;font-weight:500;color:var(--muted);text-transform:none;letter-spacing:0}
 
   .bk-list .opt.srv{padding:6px 10px;border-radius:6px;font-size:14px}
   .bk-list .opt.srv.sel{background:#2F6FD6;color:#fff;font-weight:600}
@@ -1623,8 +1624,8 @@
         <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="off" required>
       </div>
       <div id="authPassRow">
-        <label for="authPass">Password</label>
-        <input type="password" id="authPass" autocomplete="off" required>
+        <label for="authPass">Password <span class="pw-optional">(leave blank to get a login code by email instead)</span></label>
+        <input type="password" id="authPass" autocomplete="off">
       </div>
       <div id="authOtpRow" hidden>
         <label for="authOtp">6-digit code</label>
@@ -1637,7 +1638,7 @@
       <button type="submit" class="btn btn-red" id="authSubmit">Log in</button>
     </form>
     <p class="auth-foot" id="authOtpBackRow" hidden><a href="#" id="authOtpBack">Use a different email, or resend the code</a></p>
-    <p class="auth-foot" id="authPwToggleRow" hidden><a href="#" id="authPwToggle">Have a password instead? Log in with it</a></p>
+    <p class="auth-foot" id="authPwToggleRow" hidden><a href="#" id="authPwToggle">Forgot password?</a></p>
     <p class="auth-foot">No subscription yet? <a href="#pricing" id="authToPricing">See the plans</a></p>
   </div>
 </div>
@@ -2731,23 +2732,30 @@
        of testing can genuinely exhaust it for everyone, as happened
        2026-09-24. Password login has no such dependency. */
     var otpEl=document.getElementById('authOtp'), submitBtn=document.getElementById('authSubmit');
+    /* Email and password now live on the same screen, password optional
+       — merged after customer feedback that having to click "Have a
+       password instead?" every single login was needless friction for
+       anyone who already set one. Submit decides what to do based on
+       whether the password field has anything in it (see the submit
+       handler below): filled in -> log in directly; left blank -> send
+       an emailed code, exactly as before. Nobody has to pick a mode. */
     function showEmailStage(){
       otpStage='email';
       document.getElementById('authEmailRow').hidden=false;
-      document.getElementById('authPassRow').hidden=true;
+      document.getElementById('authPassRow').hidden=false;
       emailEl.disabled=false;
       document.getElementById('authOtpRow').hidden=true;
       document.getElementById('authOtpBackRow').hidden=true;
       document.getElementById('authPwToggleRow').hidden=false;
-      document.getElementById('authPwToggle').textContent='Have a password instead? Log in with it';
-      document.getElementById('authSub').textContent='Use the email you paid with when you subscribed or invested. We’ll send you a 6-digit code.';
-      submitBtn.textContent='Send code';
+      document.getElementById('authSub').textContent='Enter your password to log in, or leave it blank and we’ll email you a 6-digit code.';
+      submitBtn.textContent='Continue';
       submitBtn.hidden=false;
       err.hidden=true;
     }
     function showCodeStage(mail){
       otpStage='code';
       document.getElementById('authEmailRow').hidden=true;
+      document.getElementById('authPassRow').hidden=true;
       document.getElementById('authOtpRow').hidden=false;
       document.getElementById('authOtpSentTo').textContent='Code sent to '+mail+'. It expires shortly, so enter it soon.';
       document.getElementById('authOtpBackRow').hidden=false;
@@ -2758,20 +2766,6 @@
       err.hidden=true;
       otpEl.value='';
       setTimeout(function(){otpEl.focus();},50);
-    }
-    function showPasswordStage(){
-      otpStage='password';
-      document.getElementById('authEmailRow').hidden=false;
-      document.getElementById('authPassRow').hidden=false;
-      document.getElementById('authOtpRow').hidden=true;
-      document.getElementById('authOtpBackRow').hidden=true;
-      document.getElementById('authPwToggleRow').hidden=false;
-      document.getElementById('authPwToggle').textContent='Forgot password?';
-      document.getElementById('authSub').textContent='Use the email and password for your FTM account.';
-      submitBtn.textContent='Log in';
-      submitBtn.hidden=false;
-      err.hidden=true;
-      setTimeout(function(){passEl.focus();},50);
     }
     /* Always the same message whether or not that email has an account —
        same reasoning as sendOtp/resetPassword themselves: never confirm
@@ -2797,7 +2791,7 @@
       });
       document.getElementById('authPwToggle').addEventListener('click',function(e){
         e.preventDefault();
-        if(otpStage==='password') showResetStage(); else showPasswordStage();
+        showResetStage();
       });
     }
     /* --- preview password store ---------------------------------------------
@@ -2871,27 +2865,30 @@
         e.preventDefault();
         err.hidden=true;
         if(otpStage==='email'){
-          var mail=emailEl.value.trim().toLowerCase();
+          var mail=emailEl.value.trim().toLowerCase(), pwVal=passEl.value;
           if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return fail('Enter a valid email address.');
           submitBtn.disabled=true;
-          window.FTM.auth.sendOtp(mail).then(function(){
-            submitBtn.disabled=false;
-            showCodeStage(mail);
-          }).catch(function(){
-            /* Same message whether the account exists or not — see the
-               note on sendOtp itself for why that's deliberate. */
-            submitBtn.disabled=false;
-            showCodeStage(mail);
-          });
-        } else if(otpStage==='password'){
-          var mail3=emailEl.value.trim().toLowerCase(), pw3=passEl.value;
-          if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail3))return fail('Enter a valid email address.');
-          if(!pw3)return fail('Enter your password.');
-          submitBtn.disabled=true;
-          window.FTM.auth.signInWithPassword(mail3,pw3).then(function(r){
-            submitBtn.disabled=false;
-            enter(r.email,r.products,false);
-          }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'Could not log in.'); });
+          if(pwVal){
+            /* Password filled in — try it directly, no separate mode to
+               pick. A wrong password shows an error and stays on this
+               same screen so they can just fix it and resubmit; it does
+               NOT silently fall back to emailing a code, since that
+               would mask a real typo as if it worked differently. */
+            window.FTM.auth.signInWithPassword(mail,pwVal).then(function(r){
+              submitBtn.disabled=false;
+              enter(r.email,r.products,false);
+            }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'That password isn’t correct for this email.'); });
+          } else {
+            window.FTM.auth.sendOtp(mail).then(function(){
+              submitBtn.disabled=false;
+              showCodeStage(mail);
+            }).catch(function(){
+              /* Same message whether the account exists or not — see the
+                 note on sendOtp itself for why that's deliberate. */
+              submitBtn.disabled=false;
+              showCodeStage(mail);
+            });
+          }
         } else if(otpStage==='reset'){
           var mail4=emailEl.value.trim().toLowerCase();
           if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail4))return fail('Enter a valid email address.');
