@@ -513,7 +513,14 @@
   .acct-menu{position:relative;display:inline-block;margin-top:6px;vertical-align:top}
   .acct-menu-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:16px;line-height:1;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
   .acct-menu-btn:hover,.acct-menu-btn[aria-expanded="true"]{background:var(--bg-2);color:var(--ink)}
-  .acct-menu-list{position:absolute;right:0;top:calc(100% + 6px);z-index:5;background:#fff;border-radius:12px;box-shadow:0 16px 36px -12px rgba(11,20,64,.28);border:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:190px}
+  /* position:fixed, not absolute — the table's own horizontal scroll
+     wrapper (.app-scroll{overflow-x:auto}) forces overflow-y to clip
+     too, per how the overflow CSS property works when only one axis is
+     set to a non-visible value; overflow-y:visible can't be set
+     independently, it just gets computed back to auto. A fixed-position
+     menu, placed via JS from the toggle button's real screen position,
+     escapes that clipping entirely rather than fighting it. */
+  .acct-menu-list{position:fixed;z-index:50;background:#fff;border-radius:12px;box-shadow:0 16px 36px -12px rgba(11,20,64,.28);border:1px solid var(--line);padding:6px;display:flex;flex-direction:column;gap:2px;min-width:190px}
   .acct-menu-item{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--ink);text-align:left;padding:9px 11px;border-radius:8px;cursor:pointer;white-space:nowrap}
   .acct-menu-item:hover{background:var(--bg-2)}
   .acct-menu-item.danger{color:var(--red-dark)}
@@ -4365,7 +4372,21 @@
         var willOpen = list && list.hidden;
         el('acctRows').querySelectorAll('.acct-menu-list').forEach(function(l){ l.hidden=true; });
         el('acctRows').querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
-        if(list && willOpen){ list.hidden=false; toggle.setAttribute('aria-expanded','true'); }
+        if(list && willOpen){
+          list.hidden=false; toggle.setAttribute('aria-expanded','true');
+          var r=toggle.getBoundingClientRect();
+          list.style.top=(r.bottom+6)+'px';
+          list.style.right=(window.innerWidth-r.right)+'px';
+          list.style.left='auto';
+          // Flip above the button if there isn't room below (e.g. the
+          // last row in the table, close to the bottom of the screen).
+          if(r.bottom+160>window.innerHeight){
+            list.style.top='auto';
+            list.style.bottom=(window.innerHeight-r.top+6)+'px';
+          } else {
+            list.style.bottom='auto';
+          }
+        }
         return;
       }
       if(!e.target.closest('.acct-menu-list')){
@@ -4373,12 +4394,19 @@
         el('acctRows').querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
       }
     });
-    document.addEventListener('click',function(e){
-      if(e.target.closest('.acct-menu'))return;
+    function closeAcctMenus(){
       var rows=document.getElementById('acctRows'); if(!rows)return;
       rows.querySelectorAll('.acct-menu-list').forEach(function(l){ l.hidden=true; });
       rows.querySelectorAll('.acct-menu-btn').forEach(function(btn){ btn.setAttribute('aria-expanded','false'); });
+    }
+    document.addEventListener('click',function(e){
+      if(e.target.closest('.acct-menu'))return;
+      closeAcctMenus();
     });
+    // Fixed-position menu, computed once at open time — scrolling (the
+    // page, or the table's own horizontal scroller) would leave it
+    // floating in the wrong place, so close it instead of tracking.
+    window.addEventListener('scroll',closeAcctMenus,true);
     /* Refused-login recovery + account removal — deployed and proven
        live on the engine 2026-09-29. */
     var fixTarget=null;
