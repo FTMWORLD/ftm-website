@@ -509,6 +509,10 @@
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
   .acct-table .conn-switch{display:block;margin-top:5px;border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-switch:hover{background:var(--ink);color:#fff}
+  .acct-kind{font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
+  .acct-action-note{margin-top:6px;font-size:12px;color:var(--muted);max-width:260px;line-height:1.45}
+  .acct-hedge-note{background:#FFF7E0;border-left:3px solid var(--gold);border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;color:#5a4a12;margin:-6px 0 14px}
+  .acct-hedge-note b{color:#3d3308}
   .acct-table .running-pl{font-weight:700;font-variant-numeric:tabular-nums}
   .acct-table .running-pl.up{color:#1f8a5b}
   .acct-table .running-pl.down{color:var(--red-dark)}
@@ -1696,6 +1700,7 @@
         <div class="app-card">
           <h3>Connect your trading account</h3>
           <p class="hint">FTM only needs trading access. We never ask for your broker portal login or anything that can move money out of your account.</p>
+          <p class="acct-hedge-note"><b>Hedging account required.</b> FTM MACHINE cannot copy trades onto a netting account — check with your broker that the account you connect is hedging before you submit.</p>
           <div class="app-form">
             <label for="appBroker">Server</label>
             <div class="bk" id="bkBox">
@@ -3535,7 +3540,16 @@
           floating: num(a.floating_profit),
           currency: a.currency || null,
           openPositions: a.open_positions || 0,
-          riskTier: a.risk_tier || null
+          riskTier: a.risk_tier || null,
+          // Added 2026-09-29 once the account validator went live.
+          // validation_reason is ONLY meaningful while statusReason is
+          // ACTION_REQUIRED — null otherwise, per the engine session.
+          validationReason: a.validation_reason || null,
+          lastValidatedAt: a.last_validated_at ? Date.parse(a.last_validated_at) : null,
+          // DEMO | REAL | CONTEST | null. null on every account
+          // provisioned before the validator existed (including the
+          // owner's own test account) — that is expected, not a bug.
+          tradeMode: a.trade_mode || null
         };
       }
 
@@ -4118,13 +4132,42 @@
       INACTIVE:         {text:'Connected, not trading', tone:'wait'},
       ACTIVE:           {text:'Active — trading', tone:'good'}
     };
+    /* NO_NODE_ASSIGNED means the account just passed validation and is
+       genuinely fine — FTM just hasn't provisioned its trading terminal
+       yet (still a manual step). display_status for that state is
+       OFFLINE, which reads like a failure right after a customer's
+       account was successfully checked. Override by status_reason so
+       this one specific case reads as the good news it actually is. */
+    var STATUS_REASON_OVERRIDE = {
+      NO_NODE_ASSIGNED: {text:'Verified, being set up by FTM', tone:'wait'}
+    };
+    /* Shown on an ACTION_REQUIRED account, keyed on validation_reason —
+       added 2026-09-29 once the account validator went live. Wording for
+       NOT_HEDGING is owner-confirmed; NOT_CONNECTED/LOGIN_MISMATCH avoid
+       telling the customer to "reconnect", since there is no working
+       reconnect flow yet (the engine only allows connecting a brand new
+       account number, not fixing credentials on an existing one) —
+       support contact instead, per the engine session's caution. */
+    var VALIDATION_REASON_TEXT = {
+      NOT_HEDGING:    'FTM requires a hedging account; please open one with your broker and connect that.',
+      NOT_CONNECTED:  'We could not log in with the details provided. Please contact FTM support to update your login details.',
+      LOGIN_MISMATCH: 'The details you entered logged into a different account than the account number you gave. Please contact FTM support.'
+    };
+    var VALIDATION_REASON_FALLBACK = 'This account needs attention. Please contact support.';
+    var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function renderAccounts(){
       var m=F.metrics(), A=F.data.accounts||[];
       el('acctRows').innerHTML=A.map(function(a,i){
         var status;
         if(a.displayStatus){
-          var s=STATUS_LABEL[a.displayStatus]||{text:a.displayStatus,tone:'wait'};
-          status='<span class="conn conn-'+s.tone+'" title="'+(a.statusReason||'')+'">'+s.text+'</span>';
+          var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
+                  STATUS_LABEL[a.displayStatus] || {text:a.displayStatus,tone:'wait'};
+          var detail = a.statusReason || '';
+          if(a.displayStatus==='ACTION_REQUIRED'){
+            detail = (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK;
+          }
+          status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
+          if(a.displayStatus==='ACTION_REQUIRED') status+='<div class="acct-action-note">'+detail+'</div>';
           if(!a.active) status+='<button class="conn-switch" data-switch="'+i+'">Activate</button>';
         } else {
           status = a.active
@@ -4147,7 +4190,13 @@
         }
         var balCell = a.balance==null ? '&mdash;' : '<span'+(stale?' class="running-pl none"':'')+freshness+'>'+money(a.balance,2)+'</span>';
         var typeCell = a.currency ? '<span class="tag-demo">'+a.currency+'</span>' : '<span class="running-pl none">&mdash;</span>';
-        return '<tr class="'+(a.active?'active':'')+'"><td><b>'+a.name+'</b></td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
+        // What the broker actually told the validator this account is —
+        // "not yet confirmed" rather than a guess when trade_mode is
+        // still null (every account provisioned before the validator
+        // existed, e.g. the owner's own test account, is null here).
+        var kindLabel = a.tradeMode ? (TRADE_MODE_LABEL[a.tradeMode]||a.tradeMode) : 'Account type not yet confirmed';
+        var nameCell = '<b>'+a.name+'</b><div class="acct-kind">'+kindLabel+'</div>';
+        return '<tr class="'+(a.active?'active':'')+'"><td>'+nameCell+'</td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
           '<td>'+typeCell+'</td>'+
           '<td>'+(a.server||'&mdash;')+'</td><td>'+balCell+'</td>'+
           '<td>'+pl+'</td>'+
