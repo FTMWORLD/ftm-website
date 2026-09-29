@@ -22,16 +22,17 @@ const Stripe = require('stripe');
 
 module.exports.config = { api: { bodyParser: false } };
 
-/* Maps a Stripe Payment Link id (the part after buy.stripe.com/ in
-   every "Start annual plan" / "Lock in 5 years" / etc. link on the
-   site) to the FTM product it grants. Extracted straight from the live
-   links in index.html on 2026-09-30 — update here if a plan's link
-   ever changes, since nothing else derives this mapping. */
+/* Maps a Stripe Payment Link id to the FTM product it grants — the
+   real ids, sent by Gospel from the Stripe Dashboard, replacing the
+   placeholders. Update here if a plan's link ever changes, since
+   nothing else derives this mapping.
+     confirmed: Annual (999€) -> auto
+     still placeholder: 5 Years, Lifetime, Investment — see bottom note */
 const PAYMENT_LINK_PRODUCT = {
-  'plink_1SDMxOJ9CfQOYqUAlbY9v6f': 'auto', // placeholder ids — Stripe's actual
-  'plink_1SDMxxJ9CfQOYqUAAAAAAA': 'auto',  // payment_link.id (starts plink_...),
-  'plink_1SDMyYJ9CfQOYqUABBBBBB': 'auto',  // not the buy.stripe.com/xxxx slug —
-  'plink_1SDMzZJ9CfQOYqUACCCCCC': 'invest' // see setup note, this needs the real ids
+  'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Annual, 999€ — confirmed 2026-09-30
+  'plink_1SDMxxJ9CfQOYqUAAAAAAA': 'auto',  // 5 Years — placeholder, still needed
+  'plink_1SDMyYJ9CfQOYqUABBBBBB': 'auto',  // Lifetime — placeholder, still needed
+  'plink_1SDMzZJ9CfQOYqUACCCCCC': 'invest' // Investment — placeholder, still needed
 };
 
 async function readRawBody(req) {
