@@ -2707,6 +2707,12 @@
       if(LIVE && window.FTM && FTM.session && FTM.session.email){ enter(FTM.session.email, FTM.session.products, false); return; }
       open();
     });});
+    /* A link from elsewhere on the site (e.g. terms.html) can send a
+       visitor here with #login to open this modal directly. */
+    if((location.hash||'').toLowerCase()==='#login'){
+      if(history.replaceState)history.replaceState(null,'',location.pathname+location.search);
+      open();
+    }
     document.getElementById('authClose').addEventListener('click',close);
     overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!overlay.hidden)close();});
