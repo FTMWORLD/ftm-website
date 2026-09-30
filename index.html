@@ -4046,10 +4046,16 @@
       });
     };
 
-    /* Live floating P&L on the open positions, so equity breathes like a real
-       terminal. The backend will push real prices here instead. */
+    /* Simulated floating P&L on the open positions, so the SAMPLE account
+       breathes like a real terminal while a visitor is only browsing the
+       demo. Must never run once a real session is live — the engine's v1
+       positions API has no current-price/floating-P&L field yet (see
+       fetchPositions above), so a real customer's positions carry pl:null
+       on purpose; nudging that with Math.random() here would silently
+       turn an honest "—" into a fabricated number on a real account. */
     if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
       setInterval(function(){
+        if(F.remote && F.remote.ready()) return;
         var app=document.getElementById('appView');
         if(!app || app.hidden) return;
         F.data.open.forEach(function(t){ t.pl = Math.round((t.pl + (Math.random()-0.47)*14)*100)/100; });
