@@ -1833,6 +1833,7 @@
               <div><span>Net P&amp;L</span><b id="calNet">&mdash;</b></div>
               <div><span>Percent</span><b id="calPct">&mdash;</b></div>
             </div>
+            <div class="tf" id="calUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div>
           </div>
           <div class="cal-wrap">
             <div class="app-card cal-card">
@@ -4096,7 +4097,13 @@
        trades, for the same reason F.metrics().curve does. */
     function days(){
       var closed=F.data.closed.slice().sort(function(a,b){return a.closeTime-b.closeTime;});
-      var map={}, order=[], run=F.data.account.deposits-F.data.account.withdrawals;
+      /* Same anchor F.metrics() uses for the balance curve/gain% — a real
+         account's deposits are honestly 0 (no deposit-history endpoint),
+         so starting from deposits-withdrawals pins every day's baseline
+         at 0 and every day's percent at a flat 0.00%, regardless of the
+         real amount. Anchoring on the account's real balance worked
+         backwards through covered P&L gives each day a real baseline. */
+      var map={}, order=[], run=F.metrics().anchor;
       closed.forEach(function(t){
         var k=key(t.closeTime), known=(t.pl!==null && t.pl!==undefined);
         if(!map[k]){ map[k]={pl:null,trades:0,wins:0,unknownCount:0,start:run}; order.push(k); }
@@ -4136,15 +4143,22 @@
       el('calPct').textContent=mPL!==null?((mPct>=0?'+':'')+mPct.toFixed(2)+'%'):(mTrades?'No data':'-');
       el('calPct').className=mPct>0?'val-up':(mPct<0?'val-down':'');
 
+      /* percent unit swaps which figure is the bold headline (v) and which
+         is the small secondary line (q) — customer's choice, via calUnit. */
+      var pctPrimary = F.calUnit==='percent';
+      function cellText(amt,pc){
+        var a=signed(amt,2), p=(pc>=0?'+':'')+pc.toFixed(2)+'%';
+        return pctPrimary ? [p,a] : [a,p];
+      }
       var html='', day=1-lead, weekPL=null, weekTr=0, weekStart=null;
       for(var cell=0; cell<42; cell++){
         var inMonth = day>=1 && day<=dim;
         if(inMonth){
           var kk=key(new Date(viewY,viewM,day)), ent=D.map[kk];
           if(ent && ent.pl!==null){
-            var pc=ent.start>0?(ent.pl/ent.start*100):0;
+            var pc=ent.start>0?(ent.pl/ent.start*100):0, t=cellText(ent.pl,pc);
             html+='<div class="cal-cell '+(ent.pl>=0?'up':'down')+'"><span class="d">'+day+'</span>'+
-                  '<span class="v">'+signed(ent.pl,2)+'</span><span class="q">'+(pc>=0?'+':'')+pc.toFixed(2)+'%</span></div>';
+                  '<span class="v">'+t[0]+'</span><span class="q">'+t[1]+'</span></div>';
             weekPL=(weekPL||0)+ent.pl; weekTr+=ent.trades; if(weekStart===null)weekStart=ent.start;
           } else if(ent){
             /* trades happened but every one has unknown P&L */
@@ -4159,9 +4173,9 @@
         }
         if(cell%7===6){
           if(weekPL!==null){
-            var wp=(weekStart&&weekStart>0)?(weekPL/weekStart*100):0;
+            var wp=(weekStart&&weekStart>0)?(weekPL/weekStart*100):0, wt=cellText(weekPL,wp);
             html+='<div class="cal-cell tot '+(weekPL>=0?'up':'down')+'"><span class="d">Week</span>'+
-                  '<span class="v">'+signed(weekPL,2)+'</span><span class="q">'+(wp>=0?'+':'')+wp.toFixed(2)+'%</span></div>';
+                  '<span class="v">'+wt[0]+'</span><span class="q">'+wt[1]+'</span></div>';
           } else if(weekTr){ html+='<div class="cal-cell tot"><span class="d">Week</span><span class="v">No data</span></div>'; }
           else { html+='<div class="cal-cell tot"><span class="d">Week</span><span class="v">-</span></div>'; }
           weekPL=null; weekTr=0; weekStart=null;
@@ -4260,6 +4274,13 @@
 
     el('calPrev').addEventListener('click',function(){ viewM--; if(viewM<0){viewM=11;viewY--;} renderCalendar(); });
     el('calNext').addEventListener('click',function(){ viewM++; if(viewM>11){viewM=0;viewY++;} renderCalendar(); });
+    F.calUnit='amount';
+    var calUnitTF=el('calUnit');
+    if(calUnitTF)calUnitTF.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b)return;
+      calUnitTF.querySelectorAll('button').forEach(function(x){x.classList.remove('is-on');});
+      b.classList.add('is-on'); F.calUnit=b.dataset.u; renderCalendar();
+    });
 
     /* ====================== PERFORMANCE ====================== */
     function renderPerf(){
