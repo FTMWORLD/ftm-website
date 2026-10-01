@@ -316,6 +316,8 @@
   .cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr) 1.15fr;gap:6px}
   .cal-head span{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding-bottom:8px}
   .cal-cell{min-height:74px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line);padding:7px 8px;display:flex;flex-direction:column;gap:2px}
+  .cal-cell.day-click{cursor:pointer}
+  .cal-cell.day-click:hover,.cal-cell.day-click:focus-visible{box-shadow:inset 0 0 0 2px var(--blue)}
   .cal-cell.unknown{background:repeating-linear-gradient(135deg,var(--bg-3),var(--bg-3) 6px,var(--line) 6px,var(--line) 7px)}
   .cal-cell.unknown .v{color:var(--muted);font-weight:600;font-size:12px}
   .cal-cell.off{opacity:.35}
@@ -2261,6 +2263,18 @@
   </div>
 </div>
 
+<div class="mdl" id="dayTradesModal" hidden>
+  <div class="mdl-box" role="dialog" aria-modal="true" aria-labelledby="dayTradesTitle" style="width:min(620px,100%)">
+    <button class="auth-close" id="dayTradesClose" aria-label="Close">&times;</button>
+    <h3 id="dayTradesTitle">Trades</h3>
+    <p class="hint" id="dayTradesHint">&mdash;</p>
+    <div class="app-scroll" style="margin-top:12px"><table class="app-trades">
+      <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
+      <tbody id="dayTradesRows"></tbody>
+    </table></div>
+  </div>
+</div>
+
 <div class="mdl" id="acctFixModal" hidden>
   <div class="mdl-box" role="dialog" aria-modal="true" aria-labelledby="acctFixTitle">
     <button class="auth-close" id="acctFixClose" aria-label="Close">&times;</button>
@@ -3537,6 +3551,9 @@
       document.getElementById('tradeModal').hidden=false;
       document.body.style.overflow='hidden';
     }
+    // Exposed so the calendar's day-trades drill-down (defined in a
+    // separate module below) can open the same single-trade detail view.
+    F.openTradeModal = openTradeModal;
     (function(){
       var modal=document.getElementById('tradeModal'), closeBtn=document.getElementById('tradeModalClose');
       function shut(){ modal.hidden=true; document.body.style.overflow=''; }
@@ -4209,12 +4226,12 @@
           var kk=key(new Date(viewY,viewM,day)), ent=D.map[kk];
           if(ent && ent.pl!==null){
             var pc=ent.start>0?(ent.pl/ent.start*100):0, t=cellText(ent.pl,pc);
-            html+='<div class="cal-cell '+(ent.pl>=0?'up':'down')+'"><span class="d">'+day+'</span>'+
+            html+='<div class="cal-cell day-click '+(ent.pl>=0?'up':'down')+'" data-day="'+kk+'" tabindex="0"><span class="d">'+day+'</span>'+
                   '<span class="v">'+t[0]+'</span><span class="q">'+t[1]+'</span></div>';
             weekPL=(weekPL||0)+ent.pl; weekTr+=ent.trades; if(weekStart===null)weekStart=ent.start;
           } else if(ent){
             /* trades happened but every one has unknown P&L */
-            html+='<div class="cal-cell unknown"><span class="d">'+day+'</span><span class="v">No data</span></div>';
+            html+='<div class="cal-cell unknown day-click" data-day="'+kk+'" tabindex="0"><span class="d">'+day+'</span><span class="v">No data</span></div>';
             weekTr+=ent.trades; if(weekStart===null)weekStart=ent.start;
           } else {
             html+='<div class="cal-cell"><span class="d">'+day+'</span></div>';
@@ -4333,6 +4350,50 @@
       calUnitTF.querySelectorAll('button').forEach(function(x){x.classList.remove('is-on');});
       b.classList.add('is-on'); F.calUnit=b.dataset.u; renderCalendar();
     });
+
+    /* Drill-down: clicking a traded day lists the actual trades that made
+       up its total, each row itself opening the full single-trade detail
+       (the same modal the dashboard's Recently closed trades uses). */
+    (function(){
+      var dayModal=document.getElementById('dayTradesModal'), dayClose=document.getElementById('dayTradesClose');
+      var dayRows=document.getElementById('dayTradesRows');
+      var dayCache=[];
+      function shutDay(){ dayModal.hidden=true; document.body.style.overflow=''; }
+      if(dayClose)dayClose.addEventListener('click',shutDay);
+      if(dayModal)dayModal.addEventListener('click',function(e){ if(e.target===dayModal)shutDay(); });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && dayModal && !dayModal.hidden)shutDay(); });
+      function openDay(dayKey){
+        var trades=F.data.closed.filter(function(t){ return key(t.closeTime)===dayKey; })
+          .sort(function(a,b){return a.closeTime-b.closeTime;});
+        dayCache=trades;
+        var d=new Date(dayKey+'T00:00:00');
+        document.getElementById('dayTradesTitle').textContent=d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        document.getElementById('dayTradesHint').textContent=trades.length+' trade'+(trades.length===1?'':'s')+' closed this day. Click a row for full details.';
+        dayRows.innerHTML=trades.map(function(t,i){
+          var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
+          var plCell=t.pl==null?'&mdash;':signed(t.pl,2);
+          return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+        }).join('');
+        dayModal.hidden=false;
+        document.body.style.overflow='hidden';
+      }
+      var grid=document.getElementById('calGrid');
+      if(grid){
+        grid.addEventListener('click',function(e){
+          var cell=e.target.closest('.day-click'); if(!cell)return;
+          openDay(cell.dataset.day);
+        });
+        grid.addEventListener('keydown',function(e){
+          if(e.key!=='Enter' && e.key!==' ')return;
+          var cell=e.target.closest('.day-click'); if(!cell)return;
+          e.preventDefault(); openDay(cell.dataset.day);
+        });
+      }
+      if(dayRows)dayRows.addEventListener('click',function(e){
+        var row=e.target.closest('.tr-click'); if(!row)return;
+        var t=dayCache[+row.dataset.i]; if(t && F.openTradeModal){ shutDay(); F.openTradeModal(t); }
+      });
+    })();
 
     /* ====================== PERFORMANCE ====================== */
     function renderPerf(){
