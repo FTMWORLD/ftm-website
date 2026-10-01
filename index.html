@@ -3108,8 +3108,26 @@
         btn.disabled=true; msg.hidden=true;
         window.FTM.remote.connectAccount(srv, n, pwVal, tier).then(function(r){
           btn.disabled=false;
-          msg.hidden=false; msg.className='hint';
-          msg.textContent='Connecting — we’ll confirm shortly. Your account now shows as "Setup incomplete" until FTM verifies it, usually within a few minutes.';
+          msg.hidden=false; msg.className='hint'; msg.style.color='#1f8a5b';
+          msg.textContent='Connecting — Account being verified by FTM...';
+          /* Show the new account in the Accounts list immediately, rather
+             than making the customer wait for the next full page load/
+             loadLive() refresh to see it appear at all. Uses the same
+             SETUP_INCOMPLETE status the real record will carry, so the
+             "Connecting" label (STATUS_LABEL below) doesn't change once
+             the reconcile below replaces this with the real row. */
+          if(r && r.account_id && F.data.accounts){
+            F.data.accounts.push({
+              name:'Trading account', number:n, provider:null, server:srv,
+              balance:null, equity:null, marginFree:null, lastReported:null,
+              active:false, displayStatus:r.status||'SETUP_INCOMPLETE',
+              statusReason:r.status_reason||'NEVER_VALIDATED', accountId:r.account_id,
+              floating:null, currency:null, openPositions:0, riskTier:tier,
+              validationReason:null, lastValidatedAt:null, tradeMode:null, canRetryPassword:false
+            });
+            if(F.renderAccounts) F.renderAccounts();
+          }
+          setTimeout(function(){ if(F.loadLive) F.loadLive(); },4000);
         }).catch(function(e){
           btn.disabled=false;
           msg.hidden=false; msg.className='hint'; msg.style.color='#E5323E';
