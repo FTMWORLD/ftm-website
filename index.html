@@ -1742,7 +1742,7 @@
         <h3>Recently closed trades</h3>
         <p class="hint" id="mClosedHint">&mdash;</p>
         <div class="app-scroll"><table class="app-trades">
-          <thead><tr><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
+          <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
           <tbody id="mClosedRows"></tbody>
         </table></div>
       </div>
@@ -2269,7 +2269,7 @@
     <h3 id="dayTradesTitle">Trades</h3>
     <p class="hint" id="dayTradesHint">&mdash;</p>
     <div class="app-scroll" style="margin-top:12px"><table class="app-trades">
-      <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
+      <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
       <tbody id="dayTradesRows"></tbody>
     </table></div>
   </div>
@@ -3521,8 +3521,8 @@
       tb.innerHTML=recent.map(function(t,i){
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
-        var d=new Date(t.closeTime).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+d+'</td><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+        var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
       set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'. Click a row for details.' : 'No trades closed yet.');
     }
@@ -4372,7 +4372,8 @@
         dayRows.innerHTML=trades.map(function(t,i){
           var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
           var plCell=t.pl==null?'&mdash;':signed(t.pl,2);
-          return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+          var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); };
+          return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
         }).join('');
         dayModal.hidden=false;
         document.body.style.overflow='hidden';
