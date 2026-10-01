@@ -3461,9 +3461,9 @@
     function drawOpen(m){
       var tb=document.getElementById('mOpenRows'); if(!tb)return;
       tb.innerHTML=m.open.map(function(t){
-        // current price and floating P&L per open position aren't provided
-        // by the engine yet — "—", never a guessed number or a literal
-        // "null" string.
+        // current_price/floating_profit are null until that account's
+        // terminal has reported this position (or once it no longer
+        // holds it) — "—", never a guessed number or a literal "null".
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
         return '<tr><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
@@ -3747,10 +3747,17 @@
         fetchPositions: function(accountId){
           return call('/accounts/'+accountId+'/positions').then(function(j){
             return (j.positions||[]).map(function(p){
-              // No current price or floating P&L per position in v1 —
-              // null, not invented, rendered as "—" by the open-positions
-              // table rather than a guessed number.
-              return { symbol:p.symbol, dir:p.side, lots:num(p.volume), open:p.open_price, current:null, pl:null,
+              // current_price/floating_profit/swap/snapshot_at went live
+              // 2026-10-01 — each is null until that account's terminal
+              // (Receiver v1.015+) has reported, or once it no longer
+              // holds the position. null means "not reported yet", not
+              // zero — rendered as "—" by the open-positions table, same
+              // as before, never guessed or derived from prices.
+              return { symbol:p.symbol, dir:p.side, lots:num(p.volume),
+                open:p.open_price, current:p.current_price!=null?p.current_price:null,
+                pl:p.floating_profit!=null?num(p.floating_profit):null,
+                swap:p.swap!=null?num(p.swap):null,
+                snapshotAt:p.snapshot_at?Date.parse(p.snapshot_at):null,
                 positionRef:p.position_ref||null, openTime:p.opened_at?Date.parse(p.opened_at):null, partialCloses:p.partial_closes||0 };
             });
           });
@@ -4069,6 +4076,23 @@
         drawOpen(m);
       },1600);
     }
+
+    /* Live path: real per-position current_price/floating_profit/swap now
+       exist server-side (shipped 2026-10-01), refreshed by the customer's
+       terminal roughly every 20s — poll a little slower than that so the
+       Open positions table reflects it without a full page reload. Only
+       refetches positions, not accounts/executions, to stay light. */
+    var livePositionsPoll=setInterval(function(){
+      if(!F.remote || !F.remote.ready()) return;
+      var app=document.getElementById('appView');
+      if(!app || app.hidden) return;
+      var liveAcct=(F.data.accounts||[]).filter(function(a){return a.active;})[0];
+      if(!liveAcct) return;
+      F.remote.fetchPositions(liveAcct.accountId).then(function(open){
+        F.data.open=open;
+        drawOpen(F.metrics());
+      }).catch(function(err){ console.warn('FTM live positions poll failed:', err); });
+    },25000);
   })();
 
   /* =========================================================================
