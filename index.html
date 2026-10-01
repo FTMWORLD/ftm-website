@@ -782,7 +782,15 @@
   .paid-help{margin-top:22px;font-size:14px;color:rgba(255,255,255,.7)}
   .paid-help a{color:var(--gold-light);text-decoration:underline}
   @media (max-width:560px){.paid-inner{padding-top:44px}.paid-card{padding:26px 20px}.paid-cta .btn{width:100%}}
-  .app-scroll{overflow-x:auto}
+  /* padding-bottom reserves room for the scrollbar itself so it sits
+     below the content instead of overlapping the last row (visible as
+     the bottom of each month cell looking "cut" by the scroll thumb on
+     a non-overlay scrollbar, e.g. Windows/Linux default scrollbars) */
+  .app-scroll{overflow-x:auto;padding-bottom:14px}
+  .app-scroll::-webkit-scrollbar{height:8px}
+  .app-scroll::-webkit-scrollbar-track{background:transparent}
+  .app-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+  .app-scroll::-webkit-scrollbar-thumb:hover{background:#C9CEDB}
   @media (max-width:900px){.app-grid{grid-template-columns:1fr 1fr}.app-cols{grid-template-columns:1fr}}
   @media (max-width:520px){.app-grid{grid-template-columns:1fr}.auth-panel{padding:28px 22px}}
 
