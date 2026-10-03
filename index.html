@@ -3138,26 +3138,51 @@
              SETUP_INCOMPLETE status the real record will carry, so the
              "Connecting" label (STATUS_LABEL below) doesn't change once
              the reconcile below replaces this with the real row. */
-          if(r && r.account_id && F.data.accounts){
-            F.data.accounts.push({
-              name:'Trading account', number:n, provider:null, server:srv,
-              balance:null, equity:null, marginFree:null, lastReported:null,
-              active:false, displayStatus:r.status||'SETUP_INCOMPLETE',
-              statusReason:r.status_reason||'NEVER_VALIDATED', accountId:r.account_id,
-              floating:null, currency:null, openPositions:0, riskTier:tier,
-              validationReason:null, lastValidatedAt:null, tradeMode:null, canRetryPassword:false
-            });
-            if(F.renderAccounts) F.renderAccounts();
-          }
-          setTimeout(function(){ if(F.loadLive) F.loadLive(); },4000);
+          /* Cosmetic only — wrapped so a problem here can never turn an
+             account that DID connect into an error message (this block
+             once referenced an out-of-scope `F` and did exactly that). */
+          try{
+            var FT=window.FTM;
+            if(r && r.account_id && FT && FT.data && FT.data.accounts){
+              FT.data.accounts.push({
+                name:'Trading account', number:n, provider:null, server:srv,
+                balance:null, equity:null, marginFree:null, lastReported:null,
+                active:false, displayStatus:r.status||'SETUP_INCOMPLETE',
+                statusReason:r.status_reason||'NEVER_VALIDATED', accountId:r.account_id,
+                floating:null, currency:null, openPositions:0, riskTier:tier,
+                validationReason:null, lastValidatedAt:null, tradeMode:null, canRetryPassword:false
+              });
+              if(FT.renderAccounts) FT.renderAccounts();
+            }
+            setTimeout(function(){ if(FT && FT.loadLive) FT.loadLive(); },4000);
+          }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){
           btn.disabled=false;
-          msg.hidden=false; msg.className='hint'; msg.style.color='#E5323E';
+          msg.hidden=false; msg.className='hint';
+          /* "Already connected" is good news, not a failure — green. */
+          msg.style.color = (e && e.code==='ACCOUNT_ALREADY_CONNECTED') ? '#1f8a5b' : '#E5323E';
           msg.textContent=e.message||'Could not connect that account. Check the details and try again.';
         });
       } else {
         alert('Preview only. In the live client area this sends account '+n+' on '+srv+' and your master password securely to the FTM backend to connect FTM MACHINE. The password has been cleared from this form.');
       }
+    });
+    /* Pasted values often carry a trailing space or newline from wherever
+       they were copied, which silently makes the broker reject a correct
+       password. Clean only what is pasted — typed input is left exactly
+       as typed. */
+    ['appPass','acctFixPass','appAcct'].forEach(function(id){
+      var inp=document.getElementById(id); if(!inp)return;
+      inp.addEventListener('paste',function(e){
+        var cd=e.clipboardData||window.clipboardData; if(!cd)return;
+        var txt=cd.getData('text'); if(txt==null)return;
+        var clean=txt.replace(/[\r\n\t]+/g,'').trim();
+        if(clean===txt)return;
+        e.preventDefault();
+        var s=inp.selectionStart, en=inp.selectionEnd;
+        if(typeof s==='number'){ inp.value=inp.value.slice(0,s)+clean+inp.value.slice(en); inp.selectionStart=inp.selectionEnd=s+clean.length; }
+        else inp.value=clean;
+      });
     });
     document.getElementById('appPassEye').addEventListener('click',function(){
       var pw=document.getElementById('appPass'), on=pw.type==='password';
@@ -3840,7 +3865,9 @@
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            throw new Error(friendly[e.code] || e.message || 'Could not connect that account.');
+            var out=new Error(friendly[e.code] || e.message || 'Could not connect that account.');
+            out.code=e.code;
+            throw out;
           });
         },
         /* PUT .../password — updates the saved master password on an
