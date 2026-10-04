@@ -36,7 +36,7 @@ const PAYMENT_LINK_PRODUCT = {
   'plink_1UG5XeAZWClTb7yx1a8w5228': 'auto', // Annual, 999€ — confirmed 2026-09-30
   'plink_1UG6CUAZWClTb7yxRTis1wzS': 'auto', // 5 Years, 3,999€ — confirmed 2026-09-30
   'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Lifetime, 9,999€ — confirmed 2026-09-30
-  'plink_1NItdgAZWClTb7yxGcXgPDLP': 'invest' // Investment — confirmed 2026-09-30,
+  'plink_1NItdgAZWClTb7yxGcXgPDLP': 'invest', // Investment — confirmed 2026-09-30
   'plink_1UMzE0AZWClTb7yxLQSDjIPE': 'auto' // TEMPORARY 10€ flow test, 2026-10-05 — remove after test
 };
 
