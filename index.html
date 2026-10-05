@@ -4589,6 +4589,9 @@
           // still left — every other ACTION_REQUIRED case keeps the
           // plain "contact support" text above, no form.
           if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) items+='<button class="acct-menu-item" data-fix="'+i+'">Update and try again</button>';
+          // Pausing has no engine route yet; the item shows the same honest
+          // "contact support" message as the Your-subscription button.
+          if(a.displayStatus==='ACTIVE') items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
           if(!a.active) items+='<button class="acct-menu-item" data-switch="'+i+'">Activate</button>';
           items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
           status+='<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button>'+
@@ -4685,6 +4688,11 @@
       var b=e.target.closest('[data-switch]'); if(!b)return;
       alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
     });
+    el('acctRows').addEventListener('click',function(e){
+      var b=e.target.closest('[data-pause]'); if(!b)return;
+      closeAcctMenus();
+      alert('Pausing is not available yet. To pause trading on your account right now, contact FTM support and we will handle it manually.');
+    });
     /* Account actions live behind a "⋮" menu per row instead of sitting
        exposed as a stack of buttons — one open at a time, closes on an
        outside click or a second toggle. */
@@ -4701,9 +4709,9 @@
           list.style.top=(r.bottom+6)+'px';
           list.style.right=(window.innerWidth-r.right)+'px';
           list.style.left='auto';
-          // Flip above the button if there isn't room below (e.g. the
-          // last row in the table, close to the bottom of the screen).
-          if(r.bottom+160>window.innerHeight){
+          // Always directly below the button; only flip above if the
+          // list, measured for real, genuinely cannot fit under it.
+          if(r.bottom+6+list.offsetHeight>window.innerHeight && r.top-6-list.offsetHeight>0){
             list.style.top='auto';
             list.style.bottom=(window.innerHeight-r.top+6)+'px';
           } else {
