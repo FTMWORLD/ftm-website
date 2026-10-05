@@ -125,7 +125,9 @@ module.exports = async function handler(req, res) {
   // The reply body is only ever read by Stripe (the Dashboard's event
   // delivery log) because the signature was verified above. It reports
   // what actually happened, since a plain {ok:true} hid real failures.
-  const report = { ok: true, product: product, invited: false, existingUser: false, granted: false };
+  // error/detail are listed first (null when fine) so they are the first
+  // lines Stripe's delivery log shows.
+  const report = { ok: true, error: null, detail: null, granted: false, product: product, invited: false, existingUser: false };
 
   try {
     const invite = await admin.auth.admin.inviteUserByEmail(email, {
