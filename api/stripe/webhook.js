@@ -108,10 +108,31 @@ module.exports = async function handler(req, res) {
   }
   const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
+  // Finds an existing Supabase user's id by email. supabase-js v2 has no
+  // lookup-by-email, so page through the user list (fine at this scale).
+  async function findUserIdByEmail(addr) {
+    const want = String(addr).toLowerCase();
+    for (let page = 1; page <= 20; page++) {
+      const r = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+      if (r.error) throw new Error('listUsers: ' + r.error.message);
+      const hit = (r.data.users || []).find(u => String(u.email || '').toLowerCase() === want);
+      if (hit) return hit.id;
+      if ((r.data.users || []).length < 1000) break;
+    }
+    return null;
+  }
+
+  // The reply body is only ever read by Stripe (the Dashboard's event
+  // delivery log) because the signature was verified above. It reports
+  // what actually happened, since a plain {ok:true} hid real failures.
+  const report = { ok: true, product: product, invited: false, existingUser: false, granted: false };
+
   try {
     const invite = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: (process.env.SITE_URL || 'https://www.ftmwealthnation.com') + '/'
     });
+
+    let userId = invite.data && invite.data.user && invite.data.user.id;
 
     if (invite.error) {
       // Most likely an existing customer buying a second plan (e.g.
@@ -119,27 +140,45 @@ module.exports = async function handler(req, res) {
       // and password, so no new invite email; just grant the product.
       if (String(invite.error.message || '').toLowerCase().indexOf('already') > -1) {
         console.log('Stripe webhook:', email, 'already has an account — adding product only, not resending an invite.');
+        report.existingUser = true;
+        userId = await findUserIdByEmail(email);
       } else {
         console.error('Stripe webhook: inviteUserByEmail failed:', invite.error.message);
-        res.status(200).json({ ok: true, error: 'INVITE_FAILED' });
+        res.status(200).json({ ok: true, error: 'INVITE_FAILED', detail: invite.error.message });
         return;
+      }
+    } else {
+      report.invited = true;
+    }
+
+    if (!userId) {
+      console.error('Stripe webhook: no user id for', email, '— cannot grant a plan.');
+      report.error = 'NO_USER_ID';
+    } else if (!product) {
+      report.error = 'UNRECOGNISED_PAYMENT_LINK';
+      report.paymentLink = linkId || null;
+    } else {
+      const existing = await admin.from('profiles').select('products').eq('id', userId).maybeSingle();
+      if (existing.error) console.error('Stripe webhook: profiles read failed:', existing.error.message);
+      const current = (existing.data && existing.data.products) || [];
+      const next = current.indexOf(product) > -1 ? current : current.concat([product]);
+      const write = await admin.from('profiles').upsert({ id: userId, products: next });
+      if (write.error) {
+        console.error('Stripe webhook: profiles write failed:', write.error.message);
+        report.error = 'PROFILE_WRITE_FAILED';
+        report.detail = write.error.message;
+      } else {
+        report.granted = true;
+        report.products = next;
       }
     }
 
-    const userId = invite.data && invite.data.user && invite.data.user.id;
-    if (userId && product) {
-      const existing = await admin.from('profiles').select('products').eq('id', userId).maybeSingle();
-      const current = (existing.data && existing.data.products) || [];
-      const next = current.indexOf(product) > -1 ? current : current.concat([product]);
-      await admin.from('profiles').upsert({ id: userId, products: next });
-    }
-
-    res.status(200).json({ ok: true });
+    res.status(200).json(report);
   } catch (e) {
     console.error('Stripe webhook: unexpected error:', e.message);
     // Still 200 — Stripe retrying won't fix a bug in this handler, and
     // the failure is already logged for a manual follow-up.
-    res.status(200).json({ ok: true, error: 'INTERNAL_ERROR' });
+    res.status(200).json({ ok: true, error: 'INTERNAL_ERROR', detail: e.message });
   }
 };
 
