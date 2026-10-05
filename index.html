@@ -5068,18 +5068,16 @@
           '<div class="lb-top"><span class="lb-medal">'+medals[i]+'</span>'+
           '<div><div class="lb-name">'+e.name+'</div><div class="lb-country">'+e.flag+' '+e.country+'</div></div>'+
           '<span class="lb-rank">'+(i+1)+'</span></div>'+
-          '<div class="lb-stats"><div><span>Profit</span><b>'+money(e.profit)+'</b></div>'+
-          '<div><span>Equity</span><b>'+money(e.equity)+'</b></div>'+
+          '<div class="lb-stats"><div><span>Equity</span><b>'+money(e.equity)+'</b></div>'+
           '<div class="g"><span>Gain %</span><b>'+e.gain.toFixed(0)+'%</b></div></div>'+
           '<div class="lb-size">Account size <b>'+money(e.size)+'</b></div></div>';
       }).join('');
 
       document.getElementById('lbTable').innerHTML=
-        '<thead><tr><th>#</th><th>Name</th><th>Profit</th><th>Equity</th><th>Gain %</th><th>Account size</th><th>Country</th></tr></thead><tbody>'+
+        '<thead><tr><th>#</th><th>Name</th><th>Equity</th><th>Gain %</th><th>Account size</th><th>Country</th></tr></thead><tbody>'+
         list.map(function(e,i){
           return '<tr class="'+(e.you?'you':'')+'"><td>'+(i+1)+'.</td>'+
             '<td><b>'+e.name+'</b>'+(e.you?'<span class="lb-you-tag">YOU</span>':'')+'</td>'+
-            '<td class="'+(e.profit>=0?'pl-up':'pl-down')+'">'+money(e.profit)+'</td>'+
             '<td>'+money(e.equity)+'</td>'+
             '<td class="'+(e.gain>=0?'pl-up':'pl-down')+'">'+e.gain.toFixed(0)+'%</td>'+
             '<td>'+money(e.size)+'</td><td>'+e.flag+' '+e.country+'</td></tr>';

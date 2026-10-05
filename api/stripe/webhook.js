@@ -36,8 +36,7 @@ const PAYMENT_LINK_PRODUCT = {
   'plink_1UG5XeAZWClTb7yx1a8w5228': 'auto', // Annual, 999€ — confirmed 2026-09-30
   'plink_1UG6CUAZWClTb7yxRTis1wzS': 'auto', // 5 Years, 3,999€ — confirmed 2026-09-30
   'plink_1UHLQXAZWClTb7yxBn9gU95g': 'auto', // Lifetime, 9,999€ — confirmed 2026-09-30
-  'plink_1NItdgAZWClTb7yxGcXgPDLP': 'invest', // Investment — confirmed 2026-09-30
-  'plink_1UMzE0AZWClTb7yxLQSDjIPE': 'auto' // TEMPORARY 10€ flow test, 2026-10-05 — remove after test
+  'plink_1NItdgAZWClTb7yxGcXgPDLP': 'invest' // Investment — confirmed 2026-09-30
 };
 
 async function readRawBody(req) {
@@ -197,7 +196,13 @@ module.exports = async function handler(req, res) {
       than 503 NOT_CONFIGURED).
 
    3. PAYMENT_LINK_PRODUCT above has all four real plink_... ids,
-      confirmed against the Stripe Dashboard by Gospel. This webhook
-      has not yet been proven against a real live payment end to end —
-      first real checkout.session.completed event is the actual test.
+      confirmed against the Stripe Dashboard by Gospel.
+
+   4. PROVEN end to end 2026-10-05 with a 1€ live test link: payment ->
+      webhook -> invite email -> create password -> login -> plan
+      unlocked. That test found the profiles table had no grant for
+      the service role; fixed in Supabase with
+        grant all on table public.profiles to service_role;
+      This endpoint's reply body reports what happened (error / detail
+      / granted), readable in the Stripe Dashboard's event delivery log.
    --------------------------------------------------------------------- */
