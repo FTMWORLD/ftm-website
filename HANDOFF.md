@@ -334,6 +334,20 @@ silently change them.
 - Facebook link is a share URL; a page URL would be cleaner.
 - YouTube points at a personal channel, `@gospelubaka`, while the others are FTM brand accounts.
 
+### 9.6 Backend tasks requested by the owner (added 2026-10-05)
+
+- **Real community members and messaging.** The Community area, the Leaderboard
+  and the member profile pages (opened by clicking a name on the Leaderboard) all run on
+  hard-coded sample data: made-up members, made-up leaderboard figures, and chats nobody
+  can answer. Needed from the backend before this can be real:
+  - member profiles keyed to real customers (display name, country, bio, a visibility
+    opt-in, which the site already has a switch for);
+  - a real leaderboard computed from connected accounts' results, for members who opted in;
+  - follow / unfollow, block / report;
+  - messaging between members: send, receive, unread state, and delivery to the recipient.
+  Until this exists, the site must keep treating the Community and Leaderboard as sample
+  content. Requested by the owner, who asked for it to be queued for the programmers.
+
 ---
 
 ## 10. Working preferences observed
