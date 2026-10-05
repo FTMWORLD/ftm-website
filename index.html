@@ -2430,12 +2430,24 @@
   window.FTM.auth = (function(){
     var client = null;
     var recoveryHandler = null;
+    var inviteLink = false;       // landed from a Supabase "invite" email link
+    var pendingKind = null;       // event fired before a handler was registered
 
     function ready(){ return !!client; }
+    function fireRecovery(kind){
+      if(recoveryHandler) recoveryHandler(kind); else pendingKind = kind;
+    }
     function wireRecovery(){
       if(!client || !client.auth.onAuthStateChange) return;
       client.auth.onAuthStateChange(function(event){
-        if(event==='PASSWORD_RECOVERY' && recoveryHandler) recoveryHandler();
+        if(event==='PASSWORD_RECOVERY') fireRecovery('recovery');
+        /* An invite link (sent by the Stripe webhook after payment) signs
+           the customer in but never fires PASSWORD_RECOVERY, so without
+           this they just landed on the plain homepage. */
+        else if(inviteLink && (event==='SIGNED_IN' || event==='INITIAL_SESSION')){
+          inviteLink = false;
+          fireRecovery('invite');
+        }
       });
     }
 
@@ -2459,6 +2471,9 @@
       ready: ready,
       configure: function(url, anonKey){
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
+        // Read before createClient — supabase-js clears the URL hash once
+        // it has consumed the token in it.
+        inviteLink = /[#&?]type=invite(&|$)/.test((location.hash||'')+'&'+(location.search||''));
         client = window.supabase.createClient(url, anonKey);
         wireRecovery();
       },
@@ -2467,7 +2482,10 @@
          reads the token from the URL and establishes a real session
          automatically, this just tells the caller when that's happened
          so it can open the "set a new password" modal. */
-      onPasswordRecovery: function(cb){ recoveryHandler = cb; },
+      onPasswordRecovery: function(cb){
+        recoveryHandler = cb;
+        if(pendingKind){ var k=pendingKind; pendingKind=null; cb(k); }
+      },
       /* Always resolves, whether or not the email has an account — same
          privacy reasoning as sendOtp: never reveal which emails exist. */
       resetPassword: function(email){
@@ -2890,13 +2908,15 @@
        step instead. Skippable: setting a password here is encouraged,
        not required, the code keeps working either way. */
     var pendingPwSuccess = null;
-    function promptSetPassword(r){
+    function promptSetPassword(r, invited){
       close();
       var pwm=document.getElementById('pwModal');
-      document.getElementById('pwTitle').textContent='Set a password for next time';
-      document.querySelector('#pwModal .hint').textContent='You logged in with an emailed code. Set a password now so you can skip that step next time — or keep using the code, entirely up to you.';
+      document.getElementById('pwTitle').textContent = invited ? 'Welcome to FTM — create your password' : 'Set a password for next time';
+      document.querySelector('#pwModal .hint').textContent = invited
+        ? 'Your payment went through and your account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
+        : 'You logged in with an emailed code. Set a password now so you can skip that step next time — or keep using the code, entirely up to you.';
       document.getElementById('pwCurRow').hidden=true;
-      document.getElementById('pwSkipRow').hidden=false;
+      document.getElementById('pwSkipRow').hidden=!!invited;
       ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
       document.getElementById('pwErr').hidden=true; document.getElementById('pwOk').hidden=true;
       pwm.hidden=false;
@@ -3001,7 +3021,15 @@
          established from it — no login needed, the link itself proves
          identity. Opens straight into "set a new password", reusing the
          existing Change password modal. */
-      window.FTM.auth.onPasswordRecovery(function(){
+      window.FTM.auth.onPasswordRecovery(function(kind){
+        if(kind==='invite'){
+          if(history.replaceState) history.replaceState(null,'',location.pathname+location.search);
+          window.FTM.auth.restoreSession().then(function(r){
+            lift();
+            if(r) promptSetPassword(r, true);
+          }).catch(function(){ lift(); });
+          return;
+        }
         close();
         var pwm=document.getElementById('pwModal');
         document.getElementById('pwTitle').textContent='Reset your password';
