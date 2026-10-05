@@ -450,6 +450,12 @@
   .ctab{display:grid;gap:20px}
   .ctab[hidden],.app-view[hidden]{display:none!important}
   .prof-row{display:flex;align-items:center;gap:15px;flex-wrap:wrap}
+  .lb-click{cursor:pointer}
+  .lb-table tr.lb-click:hover td{background:var(--bg-3)}
+  .lb-table tr.you.lb-click:hover td{background:#E3E9FF}
+  .lb-card.lb-click:hover{transform:translateY(-2px)}
+  .mp-back{border:0;background:none;color:var(--blue);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;padding:0}
+  .mp-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
   .avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--ink));color:var(--gold-light);display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
   .prof-name{font-size:19px;color:var(--ink)}
   .prof-name .muted{color:var(--muted);font-weight:600;font-size:14px}
@@ -1969,6 +1975,33 @@
                   <input type="text" id="cChatInput" placeholder="Write a message" autocomplete="off">
                   <button class="btn btn-red btn-sm" type="submit">Send</button>
                 </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="ctab" data-tab="member" hidden>
+            <div class="app-card">
+              <button class="mp-back" type="button" id="mpBack">&larr; Back to leaderboard</button>
+              <div class="prof-row" style="margin-top:14px">
+                <span class="avatar" id="mpAvatar">&mdash;</span>
+                <div class="prof-id">
+                  <div class="prof-name"><b id="mpName">&mdash;</b></div>
+                  <div class="lb-country" id="mpCountry">&mdash;</div>
+                </div>
+                <div class="mp-actions">
+                  <button class="msg-btn" type="button" id="mpMsg">Message</button>
+                  <button class="follow" type="button" id="mpFollow">Follow</button>
+                </div>
+              </div>
+            </div>
+            <div class="app-cols">
+              <div class="app-card">
+                <h3>About</h3>
+                <p class="hint" id="mpBio">&mdash;</p>
+              </div>
+              <div class="app-card">
+                <h3>Account progress</h3>
+                <dl class="mg" id="mpStats"></dl>
               </div>
             </div>
           </div>
@@ -5000,6 +5033,7 @@
        tick they have, so draw() can actually find and call them instead
        of silently marking them "drawn" while doing nothing. */
     setTimeout(function(){ show('metrics'); },0);
+    F.showView=function(name){ show(name); };
 
     /* Scroll-spy: while every section is stacked on the Dashboard, the
        sidebar highlight follows whichever section is currently in view,
@@ -5060,11 +5094,29 @@
         .sort(function(a,b){ return b.profit-a.profit; });
     }
 
+    /* Overall standing for the member profile page — ignores the account-
+       size filter so a profile always shows the true rank. */
+    F.boardEntry=function(name){
+      var saved=filter; filter=0;
+      var list=rows(); filter=saved;
+      for(var i=0;i<list.length;i++){ if(list[i].name===name) return {rank:i+1, total:list.length, entry:list[i]}; }
+      return null;
+    };
+    function openFromBoard(e){
+      var t=e.target.closest('[data-lb]'); if(!t)return;
+      if(F.openMemberProfile) F.openMemberProfile(t.dataset.lb);
+    }
+    ['lbPodium','lbTable'].forEach(function(id){
+      var host=document.getElementById(id); if(!host)return;
+      host.addEventListener('click',openFromBoard);
+      host.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); openFromBoard(e); } });
+    });
+
     function render(){
       var list=rows(), medals=['🥇','🥈','🥉'];
       document.getElementById('lbDate').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'2-digit'});
       document.getElementById('lbPodium').innerHTML=list.slice(0,3).map(function(e,i){
-        return '<div class="lb-card r'+(i+1)+(e.you?' you':'')+'">'+
+        return '<div class="lb-card lb-click r'+(i+1)+(e.you?' you':'')+'" data-lb="'+e.name.replace(/"/g,'&quot;')+'" tabindex="0">'+
           '<div class="lb-top"><span class="lb-medal">'+medals[i]+'</span>'+
           '<div><div class="lb-name">'+e.name+'</div><div class="lb-country">'+e.flag+' '+e.country+'</div></div>'+
           '<span class="lb-rank">'+(i+1)+'</span></div>'+
@@ -5076,7 +5128,7 @@
       document.getElementById('lbTable').innerHTML=
         '<thead><tr><th>#</th><th>Name</th><th>Equity</th><th>Gain %</th><th>Account size</th><th>Country</th></tr></thead><tbody>'+
         list.map(function(e,i){
-          return '<tr class="'+(e.you?'you':'')+'"><td>'+(i+1)+'.</td>'+
+          return '<tr class="lb-click '+(e.you?'you':'')+'" data-lb="'+e.name.replace(/"/g,'&quot;')+'" tabindex="0"><td>'+(i+1)+'.</td>'+
             '<td><b>'+e.name+'</b>'+(e.you?'<span class="lb-you-tag">YOU</span>':'')+'</td>'+
             '<td>'+money(e.equity)+'</td>'+
             '<td class="'+(e.gain>=0?'pl-up':'pl-down')+'">'+e.gain.toFixed(0)+'%</td>'+
@@ -5267,6 +5319,56 @@
       setTimeout(function(){ el('cSaved').hidden=true; },2600);
     });
 
+    /* ---- another member's profile, opened from the leaderboard ---- */
+    var mpId=null;
+    function slug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+    function renderMember(){
+      var x=member(mpId); if(!x)return;
+      var b=F.boardEntry ? F.boardEntry(x.name) : null;
+      el('mpAvatar').textContent=initials(x.name);
+      el('mpName').textContent=x.name;
+      el('mpCountry').innerHTML=x.flag+' '+x.country;
+      el('mpBio').textContent=x.bio || 'This trader has not written anything about themselves yet.';
+      var f=el('mpFollow'); f.textContent=x.following?'Following':'Follow'; f.className='follow'+(x.following?' on':'');
+      var rows=[];
+      if(b){
+        rows.push(['Leaderboard rank','#'+b.rank+' of '+b.total]);
+        rows.push(['Gain', (b.entry.gain>=0?'+':'')+b.entry.gain.toFixed(1)+'%']);
+        rows.push(['Account size', fmtMoney(b.entry.size)]);
+        rows.push(['Equity', fmtMoney(b.entry.equity)]);
+      } else if(x.gain!=null){
+        rows.push(['Gain', (x.gain>=0?'+':'')+x.gain.toFixed(1)+'%']);
+      }
+      el('mpStats').innerHTML = rows.length
+        ? rows.map(function(r){ return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'; }).join('')
+        : '<p class="hint">No account figures to show yet.</p>';
+    }
+    function fmtMoney(n){ return (n<0?'-':'')+Math.abs(Math.round(n)).toLocaleString('de-DE')+(F.data.account.currency==='USD'?' $':'€'); }
+    F.openMemberProfile=function(name){
+      if(name==='You'){ F.showView('community'); showTab('profile'); return; }
+      var x=null;
+      for(var i=0;i<M.length;i++){ if(M[i].name===name){ x=M[i]; break; } }
+      if(!x){
+        var row=null; (F.data.leaderboard||[]).forEach(function(r){ if(r.name===name) row=r; });
+        if(!row) return;
+        x={id:slug(name), name:name, flag:row.flag, country:row.country, bio:'', gain:null, following:false};
+        M.push(x);
+      }
+      if(blocked(x.id)) return;
+      mpId=x.id;
+      F.showView('community');
+      showTab('member');
+    };
+    el('mpBack').addEventListener('click',function(){ F.showView('board'); });
+    el('mpFollow').addEventListener('click',function(){
+      var x=member(mpId); if(!x)return; x.following=!x.following; renderMember(); renderOverview();
+    });
+    el('mpMsg').addEventListener('click',function(){
+      if(!mpId)return; openThread=mpId;
+      if(!T.some(function(t){return t.id===openThread;})) T.push({id:openThread,msgs:[]});
+      showTab('messages'); renderChat();
+    });
+
     /* ---- tabs ---- */
     function showTab(name){
       document.querySelectorAll('.ctab').forEach(function(t){ t.hidden = t.dataset.tab!==name; });
@@ -5275,6 +5377,7 @@
       if(name==='discover')renderMembers();
       if(name==='messages')renderChat();
       if(name==='profile')renderBlocked();
+      if(name==='member')renderMember();
     }
     el('cTabs').addEventListener('click',function(e){
       var b=e.target.closest('button'); if(b)showTab(b.dataset.tab);
