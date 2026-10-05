@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Follow The Market Ltd. (FTM)</title>
+<meta name="description" content="How Follow The Market Ltd. (FTM) collects, uses and protects personal data across the website, FTM MACHINE and the FTM Investment Programme.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --red:#E5323E; --red-dark:#C4262F;
+    --blue:#1F3A93; --blue-deep:#0B1440; --gold:#D4AF37;
+    --ink:#0B1440; --ink-3:#1F2F6B;
+    --text:#2E3448; --muted:#6B7188; --line:#E2E4EC;
+    --bg:#FFFFFF; --bg-2:#F1F3F8; --bg-3:#F6F7FB;
+    --font:"Inter",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none!important}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue)}
+
+  .top{background:var(--blue-deep);color:#fff;padding:18px 24px;position:sticky;top:0;z-index:50}
+  .top-inner{max-width:1240px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:18px;color:#fff;text-decoration:none}
+  .top a.back{color:rgba(255,255,255,.8);font-size:14px;text-decoration:none}
+  .top a.back:hover{color:#fff}
+
+  .top-cta{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .top-cta a{display:inline-flex;align-items:center;padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:700;text-decoration:none;white-space:nowrap;border:1px solid transparent}
+  .top-cta a.tc-red{background:var(--red);color:#fff}
+  .top-cta a.tc-red:hover{background:var(--red-dark)}
+  .top-cta a.tc-outline{border-color:rgba(255,255,255,.3);color:#fff}
+  .top-cta a.tc-outline:hover{border-color:#fff;background:rgba(255,255,255,.08)}
+  .top-cta a.tc-gold{background:var(--gold);color:var(--ink)}
+  .top-cta a.tc-gold:hover{filter:brightness(1.08)}
+  @media (max-width:900px){.top-inner{justify-content:flex-start}.top a.back{order:3;width:100%}.top-cta{order:2}}
+
+  .crumb{max-width:1240px;margin:0 auto;padding:16px 24px 0;color:var(--muted);font-size:13.5px}
+  .crumb a{color:var(--muted);text-decoration:none}
+  .crumb a:hover{color:var(--ink)}
+  .crumb b{color:var(--ink)}
+
+  .layout{max-width:1240px;margin:0 auto;padding:20px 24px 120px;display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start}
+
+  /* ---------- SIDEBAR ---------- */
+  .side{position:sticky;top:76px;display:grid;gap:4px;align-self:start}
+  .side-group{margin-bottom:18px}
+  .side-label{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 14px;margin-bottom:8px}
+  .side a{display:block;padding:11px 14px;border-radius:12px;color:var(--text);text-decoration:none;font-size:14.5px;border-left:3px solid transparent}
+  .side a:hover{background:var(--bg-3)}
+  .side a.is-active{background:var(--bg-2);color:var(--ink);font-weight:700;border-left-color:var(--red)}
+
+  /* mobile pill nav */
+  .side-mobile{display:none}
+
+  .wrap{min-width:0}
+  h1{font-size:clamp(28px,4vw,40px);color:var(--ink);letter-spacing:-.02em;margin:0 0 8px}
+  .meta{color:var(--muted);font-size:14px;margin-bottom:32px}
+  h2{color:var(--ink);font-size:22px;margin:0 0 12px;padding-top:28px;border-top:1px solid var(--line);scroll-margin-top:88px}
+  section:first-of-type h2{border-top:none;padding-top:0}
+  h3{color:var(--ink);font-size:17px;margin:24px 0 8px}
+  p,li{color:var(--text);font-size:15.5px}
+  p{margin:0 0 14px}
+  ul,ol{margin:0 0 14px;padding-left:22px}
+  li{margin-bottom:8px}
+  .callout{background:var(--bg-2);border-left:4px solid var(--red);border-radius:8px;padding:16px 20px;margin:16px 0}
+  .callout b{color:var(--ink)}
+  section{margin-bottom:8px}
+
+  footer{border-top:1px solid var(--line);padding:32px 24px;text-align:center;color:var(--muted);font-size:13px}
+
+  /* ---------- FLOATING SUPPORT ---------- */
+  .float-support{position:fixed;right:20px;bottom:20px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+  .fs-btn{width:56px;height:56px;border-radius:50%;border:0;background:var(--red);color:#fff;display:grid;place-items:center;box-shadow:0 14px 34px rgba(229,50,62,.4);cursor:pointer}
+  .fs-btn svg{width:26px;height:26px}
+  .fs-btn:hover{background:#c72330}
+  .fs-panel{background:#fff;border-radius:20px;box-shadow:0 24px 60px rgba(11,20,64,.28);padding:10px;width:280px;display:grid;gap:4px}
+  .fs-head{display:flex;align-items:center;justify-content:space-between;padding:8px 10px 4px}
+  .fs-head b{font-size:15px;color:var(--ink)}
+  .fs-x{border:0;background:none;font-size:20px;line-height:1;color:var(--muted);cursor:pointer;padding:4px}
+  .fs-opt{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;text-decoration:none;color:var(--ink)}
+  .fs-opt:hover{background:var(--bg-3)}
+  .fs-opt small{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
+  .fs-opt b{font-size:14px}
+  .fs-ic{width:38px;height:38px;border-radius:11px;background:var(--blue);color:var(--gold);display:grid;place-items:center;flex:none}
+  .fs-ic svg{width:19px;height:19px}
+
+  .todo{background:#FFF3C4;border-radius:4px;padding:0 4px;font-weight:600}
+  table.dt{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:14.5px}
+  table.dt th,table.dt td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  table.dt th{background:var(--bg-2);color:var(--ink)}
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;padding-top:0}
+    .side{display:none}
+    .side-mobile{display:flex;gap:8px;overflow-x:auto;padding:14px 24px;margin:0 -24px 24px;border-bottom:1px solid var(--line);background:var(--bg-3);position:sticky;top:60px;z-index:40;-webkit-overflow-scrolling:touch}
+    .side-mobile a{flex:none;padding:9px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);color:var(--text);text-decoration:none;font-size:13.5px;white-space:nowrap}
+    .side-mobile a.is-active{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:700}
+  }
+  @media (max-width:520px){.float-support{right:14px;bottom:14px}.fs-panel{width:calc(100vw - 28px)}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="top-inner">
+    <a class="brand" href="/">FTM</a>
+    <div class="top-cta">
+      <a class="tc-red" href="/#get-started">Get started</a>
+      <a class="tc-outline" href="/#invest">Invest</a>
+      <a class="tc-outline" href="/#auto">Auto trading</a>
+      <a class="tc-outline" href="/#partner">Affiliate marketing</a>
+      <a class="tc-gold" href="/#login">Log in</a>
+    </div>
+    <a class="back" href="/">← Back to ftmwealthnation.com</a>
+  </div>
+</div>
+
+<div class="crumb"><a href="/">FTM</a> &nbsp;›&nbsp; <a href="/#legal">Legal</a> &nbsp;›&nbsp; <b>Privacy Policy</b></div>
+
+<nav class="side-mobile" id="sideMobile" aria-label="Sections"></nav>
+
+<div class="layout">
+  <nav class="side" id="side" aria-label="Sections">
+    <div class="side-group">
+      <div class="side-label">Privacy Policy</div>
+      <a href="#s1" data-s="s1">1. Who we are</a>
+      <a href="#s2" data-s="s2">2. What personal data we collect</a>
+      <a href="#s3" data-s="s3">3. Why we use it, and our legal basis</a>
+      <a href="#s4" data-s="s4">4. Who we share it with</a>
+      <a href="#s5" data-s="s5">5. Transfers outside the EEA</a>
+      <a href="#s6" data-s="s6">6. How long we keep it</a>
+      <a href="#s7" data-s="s7">7. How we protect it</a>
+      <a href="#s8" data-s="s8">8. Cookies and browser storage</a>
+      <a href="#s9" data-s="s9">9. Community features</a>
+      <a href="#s10" data-s="s10">10. Your rights</a>
+      <a href="#s11" data-s="s11">11. Children</a>
+      <a href="#s12" data-s="s12">12. Changes to this policy</a>
+      <a href="#s13" data-s="s13">13. Contact and complaints</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <h1>Privacy Policy</h1>
+    <p class="meta">Follow The Market Ltd. ("FTM", "we", "us", "our") — Last updated: <span class="todo">[date]</span>. This policy explains what personal data we handle when you use ftmwealthnation.com, FTM MACHINE and the FTM Investment Programme, why, and what rights you have.</p>
+
+    <div class="callout"><b>In short:</b> we collect only what we need to create your account, take payment, connect your trading account and run the service. We do not sell personal data, and this site uses no advertising or analytics trackers. Details are below.</div>
+
+    <section id="s1"><h2>1. Who we are</h2>
+    <p>The controller responsible for your personal data is <b>Follow The Market Ltd.</b>, <span class="todo">[registered address]</span>, Germany, company registration number <span class="todo">[number]</span>. Contact for privacy matters: <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>. <span class="todo">[Data protection officer / representative, if appointed]</span></p></section>
+
+    <section id="s2"><h2>2. What personal data we collect</h2>
+    <table class="dt">
+      <tr><th>Category</th><th>What it includes</th><th>Where it comes from</th></tr>
+      <tr><td>Account data</td><td>Email address; a password (stored only as a protected hash by our authentication provider, never in readable form); the plan(s) you hold</td><td>You, and our payment system when you buy</td></tr>
+      <tr><td>Payment data</td><td>Your email, plan purchased, payment status and reference. Card and bank details are entered on Stripe's page and are <b>not</b> received or stored by FTM</td><td>You, via Stripe</td></tr>
+      <tr><td>Trading-account data</td><td>The MT5 account number, broker server and master trading password you enter in the connect form, and the risk profile you pick. The password is used only to log in to your trading account and place trades as you have instructed. <span class="todo">[Confirm with the engine team how it is stored and protected]</span></td><td>You</td></tr>
+      <tr><td>Trading activity</td><td>Account balance, equity, open positions, trade history and status, reported by the trading terminal connected to your account</td><td>Your trading account</td></tr>
+      <tr><td>Identity checks</td><td>Where we are required or choose to verify identity or screen against sanctions lists: details you provide for that purpose</td><td>You, and screening services</td></tr>
+      <tr><td>Support messages</td><td>The content of emails or chats you send us, and our replies</td><td>You</td></tr>
+      <tr><td>Technical data</td><td>IP address, browser type and the time of requests, kept in server logs for security and reliability</td><td>Your browser</td></tr>
+    </table></section>
+
+    <section id="s3"><h2>3. Why we use it, and our legal basis</h2>
+    <ul>
+      <li><b>To provide the service you asked for</b> — creating your account, delivering your plan, connecting your trading account and showing your results. <i>Legal basis: performance of a contract (Art. 6(1)(b) GDPR).</i></li>
+      <li><b>To take payment and keep records</b> — including accounting and tax records. <i>Legal basis: contract, and legal obligation (Art. 6(1)(b) and (c)).</i></li>
+      <li><b>To meet legal duties</b> — identity verification, anti-money-laundering and sanctions checks where required. <i>Legal basis: legal obligation (Art. 6(1)(c)).</i></li>
+      <li><b>To keep the service secure and prevent fraud or abuse</b>, and to fix faults. <i>Legal basis: our legitimate interests (Art. 6(1)(f)).</i></li>
+      <li><b>To answer your questions</b> and give support. <i>Legal basis: contract, or legitimate interests.</i></li>
+      <li><b>Marketing messages</b>, only if you have agreed to them, which you can withdraw at any time. <i>Legal basis: consent (Art. 6(1)(a)).</i></li>
+    </ul></section>
+
+    <section id="s4"><h2>4. Who we share it with</h2>
+    <p>We use service providers who process data on our behalf under agreements that limit what they may do with it. We do not sell your personal data.</p>
+    <table class="dt">
+      <tr><th>Provider</th><th>Purpose</th></tr>
+      <tr><td>Supabase</td><td>Customer accounts and login (our project is hosted in Frankfurt, Germany)</td></tr>
+      <tr><td>Stripe</td><td>Taking payments and sending payment receipts</td></tr>
+      <tr><td>Vercel</td><td>Hosting the website and its server functions</td></tr>
+      <tr><td>Cloudflare</td><td>Protecting and routing traffic to our trading systems</td></tr>
+      <tr><td>Your broker (for example Deriv)</td><td>Executing trades on your own trading account</td></tr>
+      <tr><td><span class="todo">[Hosting provider of the trading-engine servers]</span></td><td>Running the systems that connect to your trading account</td></tr>
+    </table>
+    <p>We may also disclose data where the law requires it, for example to courts, regulators or law-enforcement authorities.</p></section>
+
+    <section id="s5"><h2>5. Transfers outside the EEA</h2>
+    <p>Some providers, such as Stripe, Vercel and Cloudflare, may process data in countries outside the European Economic Area, including the United States. Where that happens we rely on safeguards recognised by EU law, such as the European Commission's standard contractual clauses or an adequacy decision. <span class="todo">[Confirm the safeguard in place with each provider]</span></p></section>
+
+    <section id="s6"><h2>6. How long we keep it</h2>
+    <p>We keep personal data only as long as needed for the purposes above. In general: account data for as long as your account exists; payment and accounting records for the periods required by German commercial and tax law; support messages <span class="todo">[period]</span>; server logs <span class="todo">[period]</span>. When data is no longer needed we delete or anonymise it. <span class="todo">[Confirm retention periods with counsel]</span></p></section>
+
+    <section id="s7"><h2>7. How we protect it</h2>
+    <p>Connections to the website are encrypted. Passwords for FTM accounts are stored only as protected hashes. Secret keys that connect our systems are held on the server side and are never placed in the website's code or sent to your browser. Access to customer data is limited to people and systems that need it. No system is perfectly secure; if a breach affects your rights we will notify you and the authorities as the law requires.</p></section>
+
+    <section id="s8"><h2>8. Cookies and browser storage</h2>
+    <p>This website does not use advertising cookies, tracking pixels or analytics tools. It does store a small amount of data in your browser that it needs to work:</p>
+    <ul>
+      <li>your <b>login session</b>, so you stay signed in (set by our authentication provider);</li>
+      <li>your chosen <b>language</b>;</li>
+      <li>a short-lived marker that remembers whether you were in the client area when you refresh the page.</li>
+    </ul>
+    <p>The site also loads the Inter typeface from <b>Google Fonts</b> and a script library from the <b>jsDelivr</b> content network. Your browser contacts those services directly when the page loads, so they receive your IP address. <span class="todo">[Counsel to confirm whether these should be self-hosted]</span></p></section>
+
+    <section id="s9"><h2>9. Community features</h2>
+    <p>If you choose to take part in the FTM community, other members may see the display name, country and short description you choose, and your standing on the leaderboard. You control this with the "Show me in the community" switch in your profile; turning it off hides you. You can also block and report other members.</p></section>
+
+    <section id="s10"><h2>10. Your rights</h2>
+    <p>Under the GDPR you have the right to: access your data; have it corrected; have it erased; restrict its use; receive it in a portable format; object to processing based on our legitimate interests; and withdraw consent at any time where we rely on it. To use any of these rights, email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>. We may need to confirm your identity first, and some data we must keep to meet legal obligations.</p></section>
+
+    <section id="s11"><h2>11. Children</h2>
+    <p>The services are for people aged 18 or over. We do not knowingly collect data from anyone under 18; if you believe we have, contact us and we will delete it.</p></section>
+
+    <section id="s12"><h2>12. Changes to this policy</h2>
+    <p>We may update this policy as our services change. The "Last updated" date at the top shows the current version. If a change is significant we will tell you by email or in your dashboard.</p></section>
+
+    <section id="s13"><h2>13. Contact and complaints</h2>
+    <p>Questions about this policy or your data: <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>. You also have the right to complain to a data protection supervisory authority, in particular in the EU country where you live or work, or the authority responsible for FTM: <span class="todo">[competent supervisory authority]</span>.</p></section>
+
+    <p style="margin-top:48px;color:var(--muted);font-size:13px">This document is a draft prepared from how the website and its connected services currently work. It is not legal advice and should be reviewed by a qualified data-protection lawyer before it is relied upon. Items highlighted in yellow must be completed or confirmed first.</p>
+  </div>
+</div>
+
+<footer>© 2026 Follow The Market Ltd. All rights reserved. · <a href="/">ftmwealthnation.com</a></footer>
+
+<!-- ===== FLOATING SUPPORT ===== -->
+<div class="float-support" id="floatSupport">
+  <div class="fs-panel" id="fsPanel" hidden>
+    <div class="fs-head"><b>Need a hand?</b><button type="button" class="fs-x" id="fsClose" aria-label="Close">&times;</button></div>
+    <a class="fs-opt" href="mailto:ftmwebnation@gmail.com">
+      <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>
+      <span><b>Email us</b><small>ftmwebnation@gmail.com</small></span>
+    </a>
+    <a class="fs-opt" href="/#support">
+      <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+      <span><b>Live chat</b><small>See our support desk</small></span>
+    </a>
+  </div>
+  <button type="button" class="fs-btn" id="fsToggle" aria-label="Get help" aria-expanded="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  </button>
+</div>
+
+<script>
+  /* ---- floating support widget ---- */
+  (function(){
+    var toggle=document.getElementById('fsToggle'), panel=document.getElementById('fsPanel'), close=document.getElementById('fsClose');
+    if(!toggle)return;
+    function open(){ panel.hidden=false; toggle.setAttribute('aria-expanded','true'); }
+    function shut(){ panel.hidden=true; toggle.setAttribute('aria-expanded','false'); }
+    toggle.addEventListener('click',function(){ panel.hidden ? open() : shut(); });
+    close.addEventListener('click',shut);
+    document.addEventListener('click',function(e){ if(!panel.hidden && !e.target.closest('#floatSupport')) shut(); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !panel.hidden) shut(); });
+  })();
+
+  /* ---- section sidebar: mirror desktop links into a mobile pill bar,
+     then highlight whichever section is currently in view ---- */
+  (function(){
+    var side=document.getElementById('side'), mobile=document.getElementById('sideMobile');
+    if(!side||!mobile)return;
+    mobile.innerHTML = side.innerHTML.replace(/side-label|side-group/g,'');
+    var allLinks=[].slice.call(document.querySelectorAll('.side a, .side-mobile a'));
+    var sections=[].slice.call(document.querySelectorAll('section[id]'));
+    function setActive(id){
+      allLinks.forEach(function(a){
+        a.classList.toggle('is-active', a.getAttribute('href')==='#'+id);
+      });
+      var activeMobile=mobile.querySelector('a.is-active');
+      if(activeMobile) activeMobile.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+    }
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting) setActive(en.target.id); });
+      },{rootMargin:'-88px 0px -70% 0px',threshold:0});
+      sections.forEach(function(s){ io.observe(s); });
+    }
+    if(sections.length) setActive(sections[0].id);
+  })();
+</script>
+</body>
+</html>
