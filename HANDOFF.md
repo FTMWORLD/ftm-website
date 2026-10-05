@@ -85,7 +85,7 @@ without re-reading the original conversation.
 
 ## 1. The business
 
-**Follow The Market Ltd. (FTM)** — founded 2021, based in Germany (Braunschweig).
+**Follow The Market Ltd. (FTM)** — founded 2021, **registered in Nigeria** (corrected 5 October 2026 — earlier versions of this file, and the legal notes in 9.1 and 9.3 below, wrongly assumed a German base). The website says "Base: Worldwide" and must not describe FTM as a German company.
 Founder and CEO: Gospel Chukwujekwu Ubaka. The website says "Base: Europe".
 
 Slogan: **Invest Today, Secure Tomorrow.**
@@ -342,7 +342,7 @@ deliver.
   a logic-free receiver places the trades. This works technically.
 - **The risks with that approach:** most brokers forbid sharing account passwords in their
   terms; FTM would hold a database of trading passwords; and trading a client's account for a
-  fee can count as portfolio management under German and EU law.
+  fee can count as portfolio management under securities law, in Nigeria and in the countries where customers live. *(Updated: originally written assuming a German base.)*
 - **Alternatives that were explored:** broker copy trading or social trading (no install, needs
   a broker to accept FTM as a strategy provider); MAM or PAMM (needs a licence or a licensed
   partner); MT5 Signals marketplace; a client-installed EA, which the owner rejected because he
@@ -364,8 +364,9 @@ your password" step. See section 0 for the proven flow.
 
 ### 9.3 Legal authorisation for the Investment service — unresolved, blocking
 
-Taking deposits into a pooled account, trading it, and paying a share of profit is a regulated
-investment activity in Germany. Doing it without authorisation is a criminal offence, not a
+Taking deposits into a pooled account, trading it, and paying a share of profit is likely a regulated
+investment activity, and which regulators apply depends on where FTM is registered (Nigeria) and
+where customers live (for example the EU). *(Updated: originally written assuming a German base; the lawyer must re-check this.)* Doing it without authorisation is a criminal offence, not a
 fine. The owner has been told this repeatedly and has not yet seen a lawyer. The Stripe link
 is live on the page, so **this can take real money today.**
 
