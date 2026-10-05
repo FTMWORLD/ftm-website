@@ -1,9 +1,85 @@
 # FTM — Project Handoff
 
-**Written:** 21 September 2026 · **Site state:** artifact version 110 · **For:** a fresh Claude session, or a new developer
+**Written:** 21 September 2026 · **Last updated:** 5 October 2026 (section 0 and the corrections marked *updated*) · **For:** a fresh Claude session, or a new developer
 
 Read this file first. It is written so someone with no prior context can pick the work up
 without re-reading the original conversation.
+
+---
+
+## 0. Current state and launch checklist (updated 5 October 2026)
+
+**Read this section first; sections 2, 3 and 6 below were corrected, the rest is the
+21 September text.**
+
+### Where things stand
+
+- **Live at https://www.ftmwealthnation.com**, deployed by Vercel from the GitHub repo
+  `FTMWORLD/ftm-website` (branch `main`). The artifact is no longer the source of truth.
+  The site is still one `index.html`, plus `terms.html` and Vercel serverless functions under
+  `/api` (a proxy to the trading engine, and the Stripe webhook).
+- **Customer accounts:** Supabase project "ftm production" (Frankfurt). Customers log in with
+  email and password, or an emailed code; password reset exists.
+- **Payment to account flow, proven end to end on 5 October 2026** with a 1€ live test:
+  Stripe Payment Link, then webhook `/api/stripe/webhook`, then Supabase invite email, then the
+  customer creates a password, then logs in with the plan unlocked. The test found the
+  `profiles` table had no grant for the service role (fixed with
+  `grant all on table public.profiles to service_role;`). The webhook's reply body reports what
+  happened and is readable in Stripe's event delivery log.
+- **Real data in the client area:** connected accounts, balance, equity, account-level floating
+  profit, closed-trade history, open positions. Per-position current price, floating profit
+  and swap were shipped by the engine on 1 October and wired in; **not yet seen with a real open
+  position**.
+- **Still sample content:** the Community, the Leaderboard, member profile pages and chats.
+- **Secrets live only in Vercel environment variables** (`FTM_WEBSITE_API_TOKEN`,
+  `CF_ACCESS_CLIENT_ID`, `CF_ACCESS_CLIENT_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`,
+  `STRIPE_WEBHOOK_SECRET`). They are never put in the repo or in chat.
+- **Two Claude sessions work together:** one on the website, one on the trading engine. The
+  engine session decides engine priorities with the owner and sends exact endpoint shapes
+  before the site is wired to anything. Do not guess shapes.
+
+### Launch checklist
+
+**Engine / backend (the programmers)**
+
+- [ ] Automatic provisioning of customer trading terminals. *In progress.*
+- [ ] Copy-latency work. *In progress.*
+- [ ] Currency conversion where the account currency differs from the symbol's quote currency.
+      *Flagged as a pre-launch blocker.*
+- [ ] Minimum lot-size failures on small accounts, which fail silently. *Flagged as a
+      pre-launch blocker.*
+- [ ] Live-gate / multi-strategy work the owner prioritised. *The engine session holds the
+      details.*
+- [ ] Pause / resume, and one-account-at-a-time enforcement. *Deprioritised by the owner.*
+- [ ] Deposit-history and subscription/billing data. Without it the dashboard's "Plan" box is
+      blank and percentages use an estimated starting balance.
+- [ ] Real community: members, leaderboard, follow, block, report, messaging (section 9.6).
+      *Queued; order is the owner's decision.*
+- [x] Account validator, fix-login-details and remove-account flows.
+- [x] Per-position current price, floating profit and swap (verify on the first live position).
+
+**Website**
+
+- [ ] Show the plan name in the "Plan" box once a billing feed exists.
+- [ ] Wire the Community and Leaderboard once the backend design arrives.
+- [ ] Confirm live open-position P/L on the first real position.
+- [ ] Translations cover headings and buttons only.
+- [ ] Decide what to do with sample and unverifiable content before launch (section 9.4).
+- [x] Terms page (sidebar, jump links, support button). **Still needs lawyer review.**
+- [x] Payment, invite and set-password flow.
+
+**Business and legal (the owner)**
+
+- [ ] **Investment service authorisation** (section 9.3). Blocking; the Investment payment link
+      is live now.
+- [ ] Lawyer review of the Terms, and a decision on what happens to Investment capital on a loss.
+- [ ] Confirm with the brokers that the credential-based trading approach is permitted (9.1).
+- [ ] Claims that cannot be backed up (9.4).
+- [ ] Set the Investment Stripe minimum to 5,000€ to match the page.
+- [ ] Real customer reviews and a verified track-record page.
+- [ ] Housekeeping from the 5 October test: refund the 1€ test payments, deactivate the 1€
+      test link in Stripe. The owner chose to keep the test accounts; they still hold the
+      Auto Trading plan.
 
 ---
 
@@ -45,16 +121,16 @@ FTM sells three things:
 
 | Thing | Location |
 |---|---|
-| **Website source** | `~/Library/Mobile Documents/com~apple~CloudDocs/FTM Website/index.html` (iCloud Drive) |
-| **Working copy** | The session scratch workspace; kept byte-identical to the iCloud copy |
-| **Published site** | https://claude.ai/artifact/Bx7vb1htHx3PDFMFjjuXSQ — shared as "anyone with the link" |
+| **Website source** *(updated)* | GitHub `FTMWORLD/ftm-website`, branch `main`. A copy lives at `~/Library/Mobile Documents/com~apple~CloudDocs/FTM Website/` (iCloud Drive); it is updated with `git pull` and can lag if macOS blocks access |
+| **Published site** *(updated)* | https://www.ftmwealthnation.com, built by Vercel on every push to `main` |
+| **Old artifact** | https://claude.ai/artifact/Bx7vb1htHx3PDFMFjjuXSQ — the earlier hosting; no longer the live site |
 | **Memory files** | `~/.claude/projects/-Users-razerr-…-scratch-2026-09-14-0d7915/memory/` |
 
 The site is **one self-contained HTML file**, ~323 KB, ~3,925 lines. No build step, no
 dependencies, no framework. Only external requests are the Inter font from Google Fonts and
 the outbound links listed in section 6.
 
-**Workflow that has been used all along**
+**Original workflow (superseded: now commit and push to GitHub, and Vercel deploys)**
 
 1. Edit the file in the scratch workspace (Python string replacement has been the usual tool —
    the file is large, so whole-file rewrites are avoided).
@@ -66,21 +142,10 @@ the outbound links listed in section 6.
 
 ## 3. Version history
 
-**There is no Git repository.** Not in the scratch workspace, not in the iCloud folder.
-This was checked on 21 September 2026 and `git rev-parse` fails in both.
-
-The only version history is the **artifact version list, 1 to 110**, visible on the artifact
-page. Each publish carried a short label. There is no commit message trail, no diffs, and no
-way to restore an arbitrary past state except through the artifact's own version viewer.
-
-**Recommendation:** set up Git. Do **not** put the repository inside iCloud Drive — iCloud
-syncing `.git` internals is a known cause of corruption. Better options:
-
-- A local folder such as `~/code/ftm-site`, pushed to a private GitHub repo.
-- Or keep editing in iCloud and add a script that copies the file into a Git repo on commit.
-
-This has been recommended to the owner but not done, because it was outside the scope of
-what was asked and the iCloud risk needs a decision.
+**Updated:** the project is now under Git, hosted at `FTMWORLD/ftm-website` on GitHub, and every
+change since the move is a commit with a message explaining why. The history before that is
+only the artifact version list, 1 to 110, described below. Keep Git repositories out of iCloud
+Drive; the iCloud folder here is a working copy updated by `git pull`.
 
 **Rough milestone history, reconstructed** (artifact versions in brackets)
 
@@ -167,15 +232,16 @@ Sections in page order, with the line where each begins:
 | Lifetime plan | `https://buy.stripe.com/dRmbJ0dqj4xee7M5Vy7wA0h` |
 | Investment deposit | `https://buy.stripe.com/5kA7uka0Y4t27zWbIN` |
 | Instagram | `https://www.instagram.com/ftm_wealth_nation` |
-| Facebook | `https://www.facebook.com/share/1Ex61KKjpJ/?mibextid=wwXIfr` |
+| Facebook *(updated)* | `https://www.facebook.com/profile.php?id=61595064296217` |
 | TikTok | `https://www.tiktok.com/@ftm_wealth_nation` |
-| YouTube | `https://youtube.com/@gospelubaka` |
+| YouTube *(updated)* | `http://www.youtube.com/@ftmwealthnation` |
+| X *(added)* | `https://x.com/ftmwealthnation?s=11` |
 
 **Still pointing nowhere:** Log in destination (opens the preview overlay), Explore FTM MT5,
 View verified track record, Contact us, Meet the team, Terms and Conditions, Risk Disclosure,
 Secure and Responsible Trading, Help centre, FTM Academy, Community, and most footer links.
 
-The support email on the payment page is a placeholder: `support@followthemarket.example`.
+*(Updated)* The Terms and Conditions page now exists at `/terms.html`. The support email in use is `ftmwebnation@gmail.com`, shown by the floating support button.
 
 ---
 
@@ -284,19 +350,17 @@ deliver.
   also rejected because he does not want customers setting anything up.
 - **Owner's position:** he wants to sell a service with zero client setup. That narrows it to
   broker copy trading, MAM/PAMM, or the credential route.
-- **Current state:** the programmer is building a backend in a separate chat using the
-  credential approach. The connect form on the site collects server, account number, master
-  password and risk profile, and is ready to be pointed at their endpoint.
+- **Current state *(updated)*:** the credential approach was built. The connect form on the
+  site posts to the engine through the site's own proxy, accounts are validated, and customers
+  can fix login details or remove an account. Automatic provisioning of terminals is in progress
+  on the engine side. The broker-permission and legal risks above remain open.
 
-### 9.2 Authentication — decided, not built
+### 9.2 Authentication — built and proven *(updated)*
 
-- The preview login uses a **"first password entered becomes the password"** rule, with a salted
-  hash kept in the visitor's own browser. Anyone who knows a client's email could claim the
-  account first. This was flagged and the owner agreed.
-- **Agreed replacement:** Stripe webhook records the paid email, the backend emails a one-time
-  set-password link, the client sets a password there. Plus a Forgot password flow.
-- **Not built yet.** Waiting on the programmer's link format. When it arrives, build: the
-  set-password screen, the Forgot password screen, and revised login wording.
+The preview login described in the original handoff has been replaced. Customers sign in with
+Supabase (email and password, or an emailed code, plus password reset). A paid customer is
+created automatically by the Stripe webhook, which emails an invite link that opens a "create
+your password" step. See section 0 for the proven flow.
 
 ### 9.3 Legal authorisation for the Investment service — unresolved, blocking
 
@@ -325,14 +389,13 @@ silently change them.
 
 ### 9.5 Smaller open items
 
-- Terms and Conditions page — the owner will supply text, then it needs building and linking,
-  with a tick box at checkout.
+- Terms and Conditions page — *(updated)* built; it still needs lawyer review. A tick box at
+  checkout depends on what Stripe Payment Links allow.
 - Stripe minimum for the Investment link should be set to 5,000€ to match the page.
 - Real customer reviews, a verified track record URL, a real support email.
 - What happens to Investment capital on a loss (see section 1).
 - Translations cover headings and buttons only; the Investment section is English only.
-- Facebook link is a share URL; a page URL would be cleaner.
-- YouTube points at a personal channel, `@gospelubaka`, while the others are FTM brand accounts.
+- *(Done)* Facebook and YouTube now point to the FTM brand pages; an X link was added.
 
 ### 9.6 Backend tasks requested by the owner (added 2026-10-05)
 
