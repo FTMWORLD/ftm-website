@@ -1,0 +1,702 @@
+0|Main
+1|FTM home
+2|Language
+3|Open menu
+4|4.5 out of 5
+5|<b>4.5</b> out of 5 based on <b>12,400</b> reviews
+6|Close
+7|Get help
+8|FTM MACHINE · Account <span class="running"><i></i>Running</span>
+9|<b>Lock period.</b> You become eligible on the 1st of the month after 13 full months. Join in September 2026 and you are eligible on 1 November 2027.
+10|<b>Your share.</b> Half of the percentage the account made between the day you joined and the day you become eligible, applied to the amount you invested.
+11|<b>Minimum.</b> The smallest investment FTM accepts is 5.000€.
+12|<b>Example.</b> The account makes 40% over your period. Your share is 20% of what you invested, so 2.000€ on 10.000€.
+17|<i style="background:#1b1b1b"></i>Tech stocks
+18|<i style="background:#3b82f6"></i>Blue chips
+19|<i style="background:#E8B923"></i>Gold
+20|<i style="background:#333"></i>Crude oil
+24|FTM MT5 <span style="color:#5ad48b">Live</span>
+25|Rise / Fall <span>5 ticks</span>
+26|<i></i>FTM Support is online
+29|<i></i>Running
+30|FTM on Facebook
+31|FTM on Instagram
+32|FTM on TikTok
+33|FTM on YouTube
+34|FTM on X
+36|Password <span class="pw-optional">(leave blank to get a login code by email instead)</span>
+37|By using FTM you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.
+38|Go to the FTM homepage
+39|Client area
+40|Equity <i class="live-dot"></i>
+41|<i></i>FTM MACHINE is running
+42|Zoom out
+43|Zoom in
+44|Type or pick your MT5 server
+45|Your MT5 master password
+46|Show password
+47|Previous month
+48|Next month
+49|Write a message
+50|A line about how you trade
+51|<b>FTM only asks for your MT5 master password inside the Connect account form in your client area. We will never ask for it by message, chat or email, and never ask for a transfer to a personal account.</b> If a member does, report them straight away.
+52|Add detail to help us review this
+53|Investor area
+54|Need help? Email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a> and quote your reference.
+55|<b>Capital at risk.</b> The FTM account trades financial markets and can lose money. The value of your investment can go down as well as up, and you may get back less than you invest. Past performance is not a reliable indicator of future results. This is not a bank deposit and is not covered by a deposit guarantee scheme.
+56|Please note that the information on this website does not constitute investment advice. Make sure to read our <a href="/terms.html">Terms and Conditions</a>, <a href="/terms.html#s5">Risk Disclosure</a>, and <a href="/terms.html#s10">Secure and Responsible Trading</a> to fully understand the risks involved before using our services.
+58|Auto Trading
+59|Trading Solutions
+60|FTM MACHINE
+61|Automated trading, run in the cloud for you
+62|Performance
+63|Verified results and risk metrics
+64|How it works
+65|From sign-up to live trading
+66|Subscription plans
+67|Annual, 5-year and lifetime
+68|Risk profiles
+69|Conservative
+70|Lower exposure, steadier equity curve
+71|Balanced
+72|Our default configuration
+73|Growth
+74|Higher exposure for experienced clients
+75|No installation needed
+76|Subscribe first, link an account after, and FTM MACHINE runs on our infrastructure.
+77|Get started
+78|Investment
+79|Markets
+80|Partner
+81|Affiliate programme
+82|Become an FTM affiliate
+83|Earn commission on every trader you refer
+84|Deriv affiliates via FTM
+85|Join Deriv's programme under FTM as master affiliate
+86|Commission plans
+87|Revenue share, CPA and hybrid
+88|Partners
+89|Introducing broker
+90|Bring your clients and community
+91|Payment agent
+92|Offer local deposits and withdrawals
+93|Partner login
+94|Track referrals and payouts
+95|Start earning with FTM
+96|Sign up in minutes and get your referral link the same day.
+97|Apply as a partner
+98|Platforms
+99|About
+100|Learning & support
+101|Log in
+102|Invest Today,
+103|Secure Tomorrow
+104|Follow The Market. Forex, Metals CFD, Stocks, Indices, Commodities, Shares, Crypto, Investment and Affiliate marketing on one platform, plus FTM MACHINE for automated trading, with support around the clock.
+105|FTM scores
+106|Need a hand?
+107|Email us
+109|Live chat
+110|See our support desk
+111|Your money, working around the clock
+112|Follow The Market is built by traders, analysts, investors and programmers for EVERYONE. Active 24/7, automated execution and proper risk management.
+113|Verified Performance
+114|Every FTM MACHINE result is tracked on live accounts and published with drawdown, not just returns.
+115|Risk Transparency
+116|Max exposure, leverage and stop rules are stated upfront on every product. No surprises after you fund.
+117|Long-Term Philosophy
+118|We build for anyone who plans in years. Steady conditions, no gimmicks, and a team that answers.
+119|Monthly deals
+120|Customers worldwide
+121|Monthly volume
+122|Established since
+123|FTM MACHINE trades the plan, not the mood
+124|Subscribe, link your trading account and let FTM MACHINE execute a rules-based strategy automatically across Gold, Forex, Crypto and Stocks. You keep full control: pause, adjust or withdraw any time.
+125|Live, verified track record with drawdown shown
+126|Three risk profiles: Conservative, Balanced, Growth
+127|Runs on FTM MT5, no extra software
+128|Explore FTM MACHINE
+129|2024 till date
+130|Max drawdown
+131|Open trades
+132|FTM Auto Trading subscription
+133|Pay once, let the machine work for years
+134|One subscription covers every market FTM MACHINE trades: Gold, Forex, Crypto and Stocks. The longer you commit, the more months you get for free.
+135|Annual
+136|per year
+137|+1 month free
+138|13 months active for the price of 12
+139|Access to trade all markets
+140|All three risk profiles
+141|Cloud execution, nothing to install
+142|Dashboard and 24/7 support
+143|Start annual plan
+144|Every month you wait is a month FTM MACHINE trades without you.
+145|Popular
+146|5 Years
+147|one payment
+148|+4 months free
+149|64 months connected, you pay for 60
+150|Locked price, no renewals for 5 years
+151|Priority support and early access to new setups
+152|Lock in 5 years
+153|Around 67€ a month, fixed. Renewal prices for annual plans can rise. This one cannot.
+154|Lifetime
+155|once, forever
+156|Never pay again
+157|FTM MACHINE for life
+158|Every future strategy and market at no extra cost
+159|Dedicated account manager
+160|Access for life
+161|Lifetime seats are limited so our infrastructure stays fast for every account.
+162|The long-term idea
+163|FTM is not built for a lucky month. It is built to let a rules-based edge compound over years while you get on with your life. Consistent returns reinvested over a long horizon do far more than one big win.
+164|Move the sliders to see how a starting balance could grow if a steady annual return were achieved and reinvested.
+165|Starting balance
+166|Annual return
+167|Years
+168|Projected balance
+169|+27,129€ growth
+170|Performance you can verify
+171|Every figure FTM publishes comes from live, third-party-tracked accounts and is shown with its drawdown. Past performance indicates possible future results.
+172|Target annual return
+173|Depends on risk profile and market conditions.
+174|No. trades per time
+175|Six independent market setups, each with its own rules and sizing.
+176|Conservative, Balanced and Growth. Sizing changes, the strategy does not.
+177|Max drawdown, Balanced
+178|Even in the worst market conditions, FTM has proven to lose below 17%.
+179|View verified track record
+180|Link this to your Myfxbook, FX Blue or broker-verified statement.
+181|How FTM MACHINE works
+182|You never install, configure or babysit an Expert Advisor. FTM runs the strategy on secure cloud infrastructure and your account receives the trades.
+183|Subscribe to FTM MACHINE
+184|Pick the plan that suits you and choose a trading style. This takes a couple of minutes.
+185|See subscription plans
+186|Link a trading account
+187|Already have an eligible MT5 account? Link it. If not, open one through FTM and we will walk you through it.
+188|Open account
+189|Cloud AutoTrading activates
+190|Our infrastructure starts executing the strategy on your account, 24/7.
+191|Monitor from your dashboard
+192|See profit status, open positions and results. Withdraw, pause or cancel any time.
+193|Your funds stay yours
+194|FTM never asks for withdrawal credentials. We use trading-only permissions supported by the brokers, your MT5 password goes encrypted straight to our secure backend and is never stored in your browser, and access to the strategy is switched off automatically if a subscription lapses.
+195|FTM Investment
+196|Invest without opening a broker account
+197|No broker to choose, nothing to connect and nothing to install. Deposit into the FTM general account, follow its progress in your own client area, and receive a share of the profit after 13 months.
+198|Deposit securely
+199|Pay through our secure checkout. Your deposit is recorded against your email.
+200|Follow the account
+201|Log in to your client area to see how the FTM account is performing, day by day.
+202|Profit share after 13 months
+203|If the account made a profit over your period, you can withdraw half of that percentage on the amount you invested.
+204|How your profit share works
+205|Invest now
+206|Investor log in
+207|Work out your share
+208|An illustration to show how FTM investment ROI works.
+209|Amount you invest
+210|Minimum investment 5.000€
+211|Account return over your period
+212|Month you join
+213|Eligible on
+214|Your profit share
+215|Payable to you
+216|All your markets in one place
+217|Forex
+218|Trade the most popular currency pairs with flexible leverage, tight spreads and fast execution.
+219|Learn more
+220|Derived Indices
+221|Trade 24/7 on synthetic indices with volatility levels that match your strategy.
+222|Stocks
+223|Trade global market leaders across technology, finance, energy and consumer sectors.
+224|Commodities
+225|Trade gold, silver, oil and natural gas with competitive leverage and tight spreads.
+226|Cryptos
+227|Trade round the clock on the volatility of Bitcoin, Ethereum and other major coins.
+228|Stock Indices
+229|Trade instruments that track the top global stock indices, from Wall Street to Frankfurt.
+230|Buy
+231|Sell
+232|Trade all day
+233|Our automated system and strategy are available 24/7. Markets never sleep, and neither does FTM.
+234|Trade the way you want
+235|Balance
+236|Equity
+237|Power of MT5 with 24/7 trading
+238|FTM MT5 brings you the world's favourite platform with forex, stocks, commodities, cryptocurrencies and derived indices, all with zero commissions.
+239|Explore FTM MT5
+240|Optimised risk management, limited downsides
+241|With FTM MACHINE you never lose more than you put in, and you get to know your maximum risk upfront, even before clicking the start button.
+242|Stake
+243|Max payout
+244|Max loss
+245|Get answers when you need
+246|We don't have opening or closing hours. That means you can speak to our support team whenever you need, wherever you are.
+247|Contact us
+248|Hi, how do I withdraw to my bank?
+249|Hi Sam! Go to Cashier, choose Withdraw, and pick Bank transfer.
+250|Most withdrawals are processed within one business day.
+251|Partner with FTM
+252|FTM is a master affiliate with Deriv. Join under us and we help you set up, promote and get paid, on top of the standard Deriv affiliate terms.
+253|Most popular
+254|Deriv affiliate via FTM
+255|Refer traders to Deriv through FTM's master affiliate network and earn recurring commission on their trading.
+256|Revenue share or CPA plans
+257|Marketing materials and landing pages
+258|Onboarding support from the FTM team
+259|Apply now
+260|For communities
+261|Bring your signal group, academy or trading community and earn on the volume your members trade.
+262|Tiered rewards as your network grows
+263|Sub-affiliate tracking
+264|Dedicated partner manager
+265|Local payments
+266|Help traders in your region deposit and withdraw using local methods, and earn a fee on each transaction.
+267|Set your own service fee
+268|Verified agent listing
+269|Fast settlement
+270|Deriv is a separate company and brand. FTM's relationship with Deriv is as an affiliate partner. Commission terms are set by the Deriv affiliate programme and may change.
+271|What our customers say
+332|Get started in 3 simple steps
+333|Subscribe
+334|Choose your plan in minutes. Link a trading account afterwards.
+335|See the plans
+336|Create account
+337|AutoTrade
+338|Start your trading journey and anticipate profits.
+342|Monitor
+343|Withdraw, pause, or cancel trading anytime.
+345|Profit
+346|Pause
+347|Withdraw
+348|Company
+349|Registered and Trading since 2021
+350|Follow The Market Ltd started as a trading, investment and funds-management business. Today FTM is becoming a financial technology company offering a secure cloud trading infrastructure that delivers FTM MACHINE to clients without them ever managing the software or trading themselves.
+351|Meet the team
+353|Developer
+355|Founded
+356|Base
+357|Worldwide
+358|Focus
+359|AutoTrading business
+360|Flagship product
+361|Join 50K+ global traders
+362|Client log in
+363|Use the email you paid with when you subscribed or invested.
+372|Email
+373|6-digit code
+374|First time logging in? Choose the password you want to use. It becomes your password, and you can change it any time from your client area.
+375|Use a different email, or resend the code
+376|Forgot password?
+377|No subscription yet?
+378|Signed in as
+379|Change password
+380|Log out
+381|Dashboard
+382|Accounts
+383|Calendar
+384|Leaderboard
+385|Community
+386|Charts
+387|Sessions
+388|No results
+389|There is no FTM Auto Trading subscription on this email yet. Choose a plan to get started.
+390|See Auto Trading plans
+391|Paid with a different email? Log out and log in with that one.
+392|Plan
+393|Status
+394|Profit this year
+395|Gain
+396|Net P&L
+397|Trade count
+398|Win streak
+399|Days
+400|Trades
+401|Account balance
+402|Balance after every closed trade on the connected account.
+403|YTD
+404|All
+405|Hover or touch the chart for an exact date
+406|Recently closed trades
+407|Opened
+408|Closed
+409|Market
+410|Direction
+411|Size
+412|Connect your trading account
+413|FTM only needs trading access. We never ask for your broker portal login or anything that can move money out of your account.
+414|Server
+415|Use the exact server name. You will find it in your broker's welcome email, or in MT5 under File, Login to Trade Account.
+416|MT5 account number
+417|Master trading password
+418|This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.
+419|Risk profile
+420|Connect account
+421|Your subscription
+422|Pause trading
+423|Billing history
+424|Risk
+425|Max balance drawdown
+426|Max equity drawdown
+427|Current equity
+428|Current balance
+429|Highest balance
+430|Capital flows
+431|Deposits / withdrawals
+432|Commission & swap
+433|Total lots
+434|Statistics
+435|Expectancy
+436|Standard deviation
+437|Sharpe ratio
+438|Trade stats
+439|Win rate
+440|Profit factor
+441|Avg win / avg loss
+442|Avg trade duration
+443|Open positions
+444|Entry
+445|Current
+446|Wins
+447|Percent
+448|Mon
+449|Tue
+450|Wed
+451|Thu
+452|Fri
+453|Sat
+454|Sun
+455|Total
+456|Daily win rate
+457|Avg day win / avg day loss
+458|Net daily P&L
+459|Trade distribution by hour
+460|Profit and loss grouped by the hour a trade closed.
+461|Yearly performance
+462|Net profit and loss for every month, with the number of trades closed.
+463|By market
+464|Which instruments FTM MACHINE made and lost money on.
+465|The most profitable accounts currently connected to FTM MACHINE.
+466|FTM Community
+467|Meet other traders running FTM MACHINE, follow them and talk.
+468|Overview
+469|Discover
+470|Messages
+471|My profile
+472|(You)
+473|Months active
+474|Followers
+475|Following
+476|Traders you follow and how their month is going.
+477|Discover traders
+478|Only members who chose to be visible appear here.
+479|Send
+480|← Back to leaderboard
+481|Message
+482|Follow
+483|Account progress
+484|My community profile
+485|This is what other FTM members see. Nothing here is shared with anyone outside FTM.
+486|Display name
+487|About you
+488|Show me in the community
+489|When this is off you are hidden from Discover and from the leaderboard, and no one can message you. You keep full access to everything else.
+490|Save profile
+491|Blocked members
+492|Blocked members cannot message you or see your profile, and you will not see them in Discover.
+493|Reporting
+494|Report anyone who spams, harasses, impersonates FTM staff, or asks you for money or account access. Reports go to the FTM moderation team and are reviewed within one working day. You are never told to handle it yourself, and the member is not told who reported them.
+495|Saved. In the live client area this is stored on your FTM account.
+496|Report a member
+497|What is the problem?
+498|Spam or unwanted promotion
+499|Harassment or abuse
+500|Asking for money, passwords or account access
+501|Impersonating FTM staff or another member
+502|Giving financial advice as if from FTM
+503|Something else
+504|Anything else we should know? (optional)
+505|Also block this member
+506|Send report
+507|Report sent. The FTM moderation team will review it within one working day.
+508|Connected accounts
+509|Add as many accounts as you like. FTM MACHINE trades on one of them at a time.
+510|Add account
+511|Name
+512|Number
+513|Provider
+514|Currency
+515|Running P/L
+516|Last reported
+517|Session clock
+518|Session performance
+519|Exit
+520|By session
+521|Trades grouped by the session that was open when they were placed.
+523|My investments
+524|There is no FTM Investment on this email yet. Deposit to open your investor client area.
+525|You invested
+526|Next eligible
+527|Data
+528|Sample
+529|Account return since you joined
+530|Profit share accrued
+531|Available to withdraw
+532|Your investments
+533|Each deposit becomes eligible on the 1st of the month after 13 full months.
+534|FTM account performance
+535|Growth of the FTM general account since launch. Gold dots mark your deposits.
+536|How your profit share is calculated
+537|Account growth
+538|Percentage growth of the FTM general account since launch.
+539|Month by month
+540|The account's return for each calendar month.
+541|Every deposit you have made and where it stands. These figures are yours alone.
+542|Invest more
+543|Withdraw your profit
+544|You can withdraw your profit share and your deposit from any investment that has passed its 13 month period.
+545|Available now
+546|Amount to withdraw
+547|Request withdrawal
+548|Good to know
+549|Once a deposit is eligible you can withdraw your profit share, your deposit, or both.
+550|Withdrawals are paid to the bank account you gave when you invested.
+551|Processing times and any fees are set out in your investor agreement.
+552|If an investment is still inside its 13 months, the profit share shown is accrued and cannot yet be withdrawn.
+553|Withdrawal history
+554|Get started with FTM
+555|How would you like to start?
+556|Choose the service that fits you. Each one takes you straight to the section that explains it.
+557|Let FTM MACHINE trade for you automatically, on a plan that suits you.
+558|See Auto Trading
+559|No broker account needed. Deposit into the FTM account and follow it in your client area.
+560|See Investment
+561|Affiliate Marketing
+562|Earn commission by referring traders to Deriv through FTM, a master affiliate.
+563|See Affiliate Marketing
+564|Already a client?
+565|Choose a new password of at least 8 characters.
+566|Current password
+567|New password
+568|Repeat new password
+569|Save new password
+570|Password changed. Use it the next time you log in.
+571|Skip for now, keep using the emailed code
+572|Trade details
+573|Update account details
+574|The broker refused these login details. Check your password, account number and server, then try again.
+575|Update and try again
+576|Checking your new details…
+577|Payment received
+578|Thank you. Your payment has gone through and your FTM account is being set up.
+579|What happens next
+580|Come back and log in
+581|Click "Log in" and enter the email address you paid with.
+582|Enter the code we email you
+583|We will send a 6-digit code to that email. No password needed to get in.
+584|You're in
+585|You can optionally set a password from your client area, but the emailed code always works too.
+586|A code not arriving within a few minutes? Look in spam or promotions, then contact us and we will sort it out.
+587|Back to the homepage
+588|Log in now
+589|Trade
+590|CFDs
+591|Multipliers
+592|Trading specifications
+593|Cryptocurrencies
+594|ETFs
+595|FTM MT5
+596|Tools
+597|MT5 signals
+598|Trading calculator
+599|Who we are
+600|Why choose us
+601|Our principles
+602|Careers
+603|Help centre
+604|FTM Academy
+605|Legal
+606|Regulatory information
+607|Terms & conditions
+608|Privacy policy
+609|Secure & responsible trading
+610|Fraud prevention
+611|This website may use automated translations for your convenience. However, the English version is the definitive version and will prevail in the event of any discrepancy.
+612|Follow The Market Ltd (Company No. 7309997) is licensed and regulated by the Corporate Affairs Commission. It is the manufacturer and distributor of its products.
+613|The products offered by Follow The Market Ltd are classed as 'complex products' that carry a significant risk of potential loss. The value of your investment may go down as well as up.
+614|Follow The Market Ltd. All rights reserved.
+615|CFDs are complex instruments with a high risk of incurring losses due to leverage. FTM has worked hard to minimise that risk, but you should understand how these products work before engaging your money.
+616|That email or password is not correct.
+617|That code has expired. Request a new one.
+618|That code is not correct.
+619|Use the email you paid with when you subscribed or invested. We’ll send you a 6-digit code.
+620|Connection hiccup. Check your signal and tap Log in again.
+621|Enter your password to log in, or leave it blank and we’ll email you a 6-digit code.
+622|Continue
+623|Code sent to
+624|Verify & log in
+625|Back to log in
+626|Enter the email on your FTM account and we’ll send a link to reset your password, if that email has a subscription.
+627|Send reset link
+628|Password set. Use it next time you log in. You can change it any time with Change password.
+629|Welcome to FTM — create your password
+630|Set a password for next time
+631|Your payment went through and your account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.
+632|You logged in with an emailed code. Set a password now so you can skip that step next time — or keep using the code, entirely up to you.
+633|Set your password
+634|Choose a password of at least 8 characters. You can also keep logging in with an emailed code instead — setting one here is optional.
+635|Enter a valid email address.
+636|That password isn’t correct for this email.
+637|Could not send that.
+638|Enter the 6-digit code from your email.
+639|Could not verify that code.
+640|Reset your password
+641|Choose a new password for your FTM account.
+642|We could not find a subscription or investment for that email. Use the email you paid with, or choose a plan or invest first.
+643|Enter your password.
+644|Your new password needs at least 8 characters.
+645|The two new passwords do not match.
+646|Password set. You can use it next time, or keep logging in with an emailed code.
+647|Could not change your password.
+648|Choose a password different from the current one.
+649|Your current password is not correct.
+650|Pick or type your MT5 server first. It must match your account exactly.
+651|Enter your MT5 account number. It is the 5 to 12 digit number your broker gave you.
+652|Enter your MT5 master trading password.
+653|Connecting...
+654|Could not connect that account. Check the details and try again.
+655|Hide password
+656|No trades closed yet.
+657|Entry price
+658|Close price
+659|Duration
+660|Commission
+661|Swap
+662|Your session has expired. Log in again and retry.
+663|Your account cannot connect a trading account right now. Contact support.
+664|This trading account is already connected to FTM.
+665|Too many attempts with these login details. Please contact FTM support.
+666|FTM is briefly in maintenance. Try again in a few minutes.
+667|Could not connect that account.
+668|That account could not be found.
+669|This account is already set up with FTM. Please contact support to change or remove it.
+670|This account is no longer active. Please contact support.
+671|Could not update that password.
+672|This account still has open copied positions. You can remove it once they have closed.
+673|Could not remove that account.
+674|No data
+675|Never
+676|Platform maintenance
+677|Blocked — contact support
+678|Connecting
+679|Action required
+680|Offline
+681|Paused
+682|Connected, not trading
+683|Active — trading
+684|FTM requires a hedging account; please open one with your broker and connect that.
+685|We could not log in with the details provided. Please contact FTM support to update your login details.
+686|The details you entered logged into a different account than the account number you gave. Please contact FTM support.
+687|This account needs attention. Please contact support.
+688|Demo account
+689|Real account
+690|Contest account
+691|Account type not yet confirmed
+692|Switching the active account is not available yet. Contact FTM support and we will switch it for you.
+693|Pausing is not available yet. To pause trading on your account right now, contact FTM support and we will handle it manually.
+694|Remove this account? FTM will stop copying trades to it and delete the saved password. Its trade history will no longer appear here.
+695|Enter your MT5 master password.
+696|Enter your MT5 account number.
+697|Enter your MT5 server.
+698|Could not update those details.
+699|Account metrics
+700|Everything FTM MACHINE has done on this account.
+701|Trading calendar
+702|Profit and loss for every day, week and month.
+703|How every month and every market has performed.
+704|Where you stand among other FTM accounts.
+705|Meet other traders running FTM MACHINE.
+706|Accounts overview
+707|The accounts you have added to FTM.
+708|Trading sessions
+709|Which session your results come from.
+710|Price history for the markets FTM MACHINE trades.
+711|Account
+712|No account connected
+713|No account
+714|Running
+715|Not connected
+716|Visible to members
+717|Hidden
+718|No messages yet
+719|Pick a conversation
+720|This trader has not written anything about themselves yet.
+721|Leaderboard rank
+722|Account size
+723|Half of the return, on your deposits
+724|Nothing eligible yet
+725|From the day you joined to
+726|That is not a profit, so no profit share is payable for this period, and your deposit is affected by the loss.
+727|January
+728|February
+729|March
+730|April
+731|June
+732|July
+733|August
+734|September
+735|October
+736|November
+737|December
+738|How your investment is doing.
+739|How the FTM account has grown.
+740|Every deposit and its dates.
+741|Take out profit you are eligible for.
+742|Eligible now
+743|Enter the amount you want to withdraw.
+744|You can withdraw up to
+745|Pending
+746|Request received. In the live client area this goes to the FTM team for approval and payment.
+747|Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.
+748|Subscription details will appear here once your plan is linked to your account.
+749|Thank you. Your FTM MACHINE subscription is active and your client area is being set up.
+750|Thank you. Your deposit has been received and your investor client area is being set up.
+751|May
+752|Connected
+753|Connect
+754|Jan
+755|Feb
+756|Mar
+757|Apr
+758|Jun
+759|Jul
+760|Aug
+761|Sep
+762|Oct
+763|Nov
+764|Dec
+765|{} trades
+766|{} positions currently open.
+767|{} position currently open.
+768|Your {} most recently closed trades. Click a row for details.
+769|Your {} most recently closed trade. Click a row for details.
+770|{} minutes ago
+771|{} minute ago
+772|{} hours ago
+773|{} hour ago
+774|{} days ago
+775|{} day ago
+776|just now
+777|{} winning
+778|{} losing
+779|{} avg win day
+780|{} avg loss day
+781|{} trades closed this day. Click a row for full details.
+782|{} trade closed this day. Click a row for full details.
+783|{} floating
+784|on {} deposited
+785|on {} starting balance
+786|FTM MACHINE is running on {}
+787|FTM MACHINE is running on no account
+788|{} min
