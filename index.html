@@ -2765,7 +2765,7 @@
       if(observer) return;
       observer=new MutationObserver(function(ms){
         if(lang==='en') return;
-        queued=queued.concat(ms); if(!raf) raf=requestAnimationFrame(flush);
+        queued=queued.concat(ms); if(!raf) raf=setTimeout(flush,0);
       });
       observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
     }
