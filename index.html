@@ -2679,7 +2679,10 @@
     var patterns=[];
     function buildPatterns(d){
       patterns=Object.keys(d).filter(function(k){ return k.indexOf('{}')>-1; }).map(function(k){
-        var src=k.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\}/g,'(.+?)');
+        // {} only matches a number or amount (e.g. 16, -12€, $1,234), except in
+        // the "running on {}" pattern where it is an account name.
+        var slot = k.indexOf('running on')>-1 ? '(.+)' : '([+\\-\u2212]?[$\u20AC]?\\d[\\d.,\u00A0 ]*[$\u20AC%]?)';
+        var src=k.replace(/[.*+?^$()|[\]\\]/g,'\\$&').replace(/\{\}/g,slot);
         return {re:new RegExp('^'+src+'$'), tpl:d[k]};
       });
     }

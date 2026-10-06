@@ -13,7 +13,7 @@ def build(lang,txt,final=False,only_extra=False):
     bad=[]; out={}
     for i,t in got.items():
         en=keep[i][0]
-        if tags(en)!=tags(t): bad.append((i,'tag mismatch'))
+        if tags(en)!=tags(t) or en.count('{}')!=t.count('{}'): bad.append((i,'tag or {} mismatch'))
         elif not t: bad.append((i,'empty'))
         else: out[en]=t
     miss=[i for i in (EXTRA if only_extra else need) if i not in got]
