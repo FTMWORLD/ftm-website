@@ -2657,11 +2657,116 @@
   const RTL=new Set(['ar']);
   var START_LABEL={'fr':'Commencer','es':'Empezar','de':'Jetzt starten','pt':'Come\u00E7ar','it':'Inizia','ru':'\u041D\u0430\u0447\u0430\u0442\u044C','ar':'\u0627\u0628\u062F\u0623 \u0627\u0644\u0622\u0646','vi':'B\u1EAFt \u0111\u1EA7u','bn':'\u09B6\u09C1\u09B0\u09C1 \u0995\u09B0\u09C1\u09A8','sw':'Anza sasa','ko':'\uC2DC\uC791\uD558\uAE30','pl':'Zacznij','si':'\u0D86\u0DBB\u0DB8\u0DCA\u0DB7 \u0D9A\u0DBB\u0DB1\u0DCA\u0DB1','zh':'\u7ACB\u5373\u5F00\u59CB','zh-tw':'\u7ACB\u5373\u958B\u59CB','mn':'\u042D\u0445\u043B\u044D\u0445','ta':'\u0BA4\u0BCA\u0B9F\u0B99\u0BCD\u0B95\u0BC1\u0B99\u0BCD\u0B95\u0BB3\u0BCD'};
   Object.keys(START_LABEL).forEach(function(k){ if(I18N[k])I18N[k]['btn.start']=START_LABEL[k]; });
-  const nodes=[...document.querySelectorAll('[data-i18n]')];
-  nodes.forEach(n=>{const sv=n.querySelector('svg');n._t=n.childNodes[0];n._en=n._t.textContent;});
+  /* ---- Full-page translation engine ----
+     Translates every piece of visible text, plus placeholders, aria-labels
+     and tooltips, from per-language files (/i18n/<code>.json) mapping the
+     English text to its translation. A file is fetched only when that
+     language is picked. Anything without a translation stays English, so a
+     partly translated language still works. A MutationObserver translates
+     content the client area draws after load. Elements that contain ids,
+     buttons or inputs are never rewritten as a block, so their listeners
+     survive. */
+  const I18NE=(function(){
+    var lang='en', dict={}, cache={}, touched=new Set(), observer=null, queued=[], raf=0;
+    var textOrig=new WeakMap(), textLast=new WeakMap(), htmlOrig=new WeakMap(), htmlLast=new WeakMap(), attrOrig=new WeakMap();
+    var ATTRS=['placeholder','aria-label','title','alt'];
+    var SKIP={SCRIPT:1,STYLE:1,NOSCRIPT:1,TEXTAREA:1,CODE:1,PRE:1};
+    var INLINE={A:1,B:1,I:1,EM:1,STRONG:1,SPAN:1,BR:1,SMALL:1,U:1};
+    function norm(t){ return String(t).replace(/\s+/g,' ').trim(); }
+    function skipEl(el){ return !el || SKIP[el.nodeName] || (el.closest && el.closest('svg,[data-no-i18n]')); }
+    function insideHandled(n){ for(var p=n.parentNode;p;p=p.parentNode){ if(htmlLast.has(p)) return true; } return false; }
+    function isBlock(el){
+      if(!el.children.length || SKIP[el.nodeName] || el.nodeName==='A' || el.nodeName==='BUTTON') return false;
+      if(el.querySelector('[id],[class*="js-"],button,input,select,textarea,svg,img')) return false;
+      var all=el.getElementsByTagName('*');
+      for(var i=0;i<all.length;i++){ if(!INLINE[all[i].nodeName]) return false; }
+      for(var c=el.firstChild;c;c=c.nextSibling){ if(c.nodeType===3 && /\S/.test(c.nodeValue)) return true; }
+      return false;
+    }
+    function setText(node,en){
+      var t=dict[norm(en)]; if(!t) return;
+      var lead=en.match(/^\s*/)[0], trail=en.match(/\s*$/)[0], v=lead+t+trail;
+      if(node.nodeValue!==v){ node.nodeValue=v; }
+      textLast.set(node,v); touched.add(node);
+    }
+    function translateText(node){
+      if(skipEl(node.parentNode) || !/\S/.test(node.nodeValue)) return;
+      var last=textLast.get(node);
+      if(last!==undefined && node.nodeValue===last) return;     // our own write
+      var en=node.nodeValue; textOrig.set(node,en); setText(node,en);
+    }
+    function translateAttrs(el){
+      for(var i=0;i<ATTRS.length;i++){
+        var a=ATTRS[i]; if(!el.hasAttribute(a)) continue;
+        var rec=attrOrig.get(el)||{}, cur=el.getAttribute(a);
+        if(rec[a] && rec[a].last===cur) continue;
+        var t=dict[norm(cur)]; rec[a]={en:cur,last:t||cur}; attrOrig.set(el,rec);
+        if(t){ el.setAttribute(a,t); touched.add(el); }
+      }
+    }
+    function translateTree(root){
+      if(root.nodeType===3){ if(!insideHandled(root)) translateText(root); return; }
+      if(root.nodeType!==1 || skipEl(root)) return;
+      var els=[root].concat([].slice.call(root.getElementsByTagName('*')));
+      var handled=[];
+      els.forEach(function(el){
+        if(skipEl(el)) return;
+        for(var h=0;h<handled.length;h++){ if(handled[h].contains(el)) return; }
+        translateAttrs(el);
+        if(isBlock(el)){
+          var key=norm(el.innerHTML), t=dict[key];
+          if(t){ if(!htmlOrig.has(el)) htmlOrig.set(el,el.innerHTML); el.innerHTML=t; htmlLast.set(el,t); touched.add(el); handled.push(el); }
+        }
+      });
+      var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null), n, list=[];
+      while((n=w.nextNode())) list.push(n);
+      list.forEach(function(tn){ if(!insideHandled(tn) && !handled.some(function(h){return h.contains(tn);})) translateText(tn); });
+    }
+    function restoreAll(){
+      touched.forEach(function(x){
+        if(x.nodeType===3){ var o=textOrig.get(x); if(o!==undefined){ x.nodeValue=o; textLast.delete(x); } }
+        else {
+          if(htmlOrig.has(x)){ x.innerHTML=htmlOrig.get(x); htmlOrig.delete(x); htmlLast.delete(x); }
+          var rec=attrOrig.get(x); if(rec){ Object.keys(rec).forEach(function(a){ x.setAttribute(a,rec[a].en); }); attrOrig.delete(x); }
+        }
+      });
+      touched.clear();
+    }
+    function flush(){
+      raf=0; var items=queued; queued=[];
+      items.forEach(function(m){
+        if(m.type==='childList'){ m.addedNodes.forEach(function(n){ translateTree(n); }); }
+        else if(m.type==='characterData'){ if(!insideHandled(m.target)) translateText(m.target); }
+        else if(m.type==='attributes'){ translateAttrs(m.target); }
+      });
+    }
+    function watch(){
+      if(observer) return;
+      observer=new MutationObserver(function(ms){
+        if(lang==='en') return;
+        queued=queued.concat(ms); if(!raf) raf=requestAnimationFrame(flush);
+      });
+      observer.observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:ATTRS});
+    }
+    function load(code){
+      if(cache[code]) return Promise.resolve(cache[code]);
+      return fetch('/i18n/'+code+'.json').then(function(r){ return r.ok?r.json():{}; }).catch(function(){ return {}; })
+        .then(function(d){ cache[code]=d; return d; });
+    }
+    return {
+      set:function(code){
+        lang=code; restoreAll();
+        if(code==='en'){ dict={}; return Promise.resolve(); }
+        return load(code).then(function(d){
+          if(lang!==code) return;               // user already picked another language
+          dict=d; watch(); translateTree(document.body);
+        });
+      }
+    };
+  })();
+  window.FTM_I18N=I18NE;
   const applyLang=code=>{
-    const d=I18N[code]||{};
-    nodes.forEach(n=>{const k=n.dataset.i18n;const v=d[k]??n._en;n._t.textContent=(n.querySelector('svg')&&!v.endsWith(' '))?v+' ':v;});
+    I18NE.set(code);
     document.documentElement.lang=code;document.documentElement.dir=RTL.has(code)?'rtl':'ltr';
     document.getElementById('langCode').textContent=code.toUpperCase();
     document.querySelectorAll('#langMenu li').forEach(li=>li.setAttribute('aria-selected',li.dataset.code===code));
@@ -2693,6 +2798,7 @@
   document.addEventListener('click',e=>{if(!e.target.closest('.lang-wrap')){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   let saved='en';try{saved=localStorage.getItem('ftm-lang')||'en'}catch(e){}
+  try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
 
   /* ---- Live FTM MACHINE card ---- */
