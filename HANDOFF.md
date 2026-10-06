@@ -426,6 +426,16 @@ silently change them.
 - He values **speed and visible progress**. Verify in the browser, publish, then report briefly.
 - He has accepted every compliance flag raised so far without objection, but has not acted on
   the legal ones. Keep raising them once, plainly, then do the work as asked.
+- **Global standard (owner instruction, 6 October 2026).** FTM is a global company. Everything
+  built, on the website and on the engine, must meet a global, international standard: one
+  worldwide behaviour for every customer, built to a high bar for security, privacy, data
+  handling, reliability and clear customer-facing states. Do not build region-specific or
+  minimum-viable versions. Where the country FTM is registered in (Nigeria) matters is legal
+  paperwork only, never product behaviour. Any place where doing it properly needs a decision
+  or costs noticeably more time goes to the owner. Country-specific selling and marketing
+  restrictions are a lawyer question and do not change how the product works.
+- **Every language should fully change the page (owner instruction, 6 October 2026).** Switching
+  language must translate everything customers see, not only headings.
 
 ---
 
