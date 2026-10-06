@@ -3829,6 +3829,14 @@
          pl is net_profit exactly as the engine computed it
          (realized_profit + commission + swap) — never reconstructed
          from its components here. null stays null (unknown), never 0. */
+      /* Prices arrive as numeric strings with trailing zeros, e.g.
+         "4129.5600000000". Trim to what is meaningful; null stays null
+         (shown as "—", never a guess). */
+      function px(v){
+        if(v==null || v==='') return null;
+        var n=Number(v);
+        return isFinite(n) ? String(+n.toFixed(5)) : String(v);
+      }
       function mapExecution(e){
         return {
           symbol: e.symbol || null,
@@ -3836,6 +3844,11 @@
           lots: num(e.volume),
           openTime: e.opened_at ? Date.parse(e.opened_at) : null,
           closeTime: e.closed_at ? Date.parse(e.closed_at) : null,
+          // The customer's own broker fills (not the master's prices), so
+          // they can differ from the master by a few cents. Either can be
+          // null (older trades, or no successful OPEN on record).
+          open: px(e.open_price),
+          close: px(e.close_price),
           pl: num(e.net_profit),
           commission: num(e.commission),
           swap: num(e.swap),
@@ -3885,7 +3898,7 @@
               // zero — rendered as "—" by the open-positions table, same
               // as before, never guessed or derived from prices.
               return { symbol:p.symbol, dir:p.side, lots:num(p.volume),
-                open:p.open_price, current:p.current_price!=null?p.current_price:null,
+                open:px(p.open_price), current:px(p.current_price),
                 pl:p.floating_profit!=null?num(p.floating_profit):null,
                 swap:p.swap!=null?num(p.swap):null,
                 snapshotAt:p.snapshot_at?Date.parse(p.snapshot_at):null,
