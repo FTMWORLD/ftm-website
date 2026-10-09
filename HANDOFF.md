@@ -7,6 +7,114 @@ without re-reading the original conversation.
 
 ---
 
+## 00. Cloud-session briefing — read this before anything else (written 9 October 2026)
+
+**You are a Claude Cloud session working on the repo `FTMWORLD/ftm-website`.** This repo is
+your only memory. The owner's previous work happened in a Local session on a Mac that is not
+always on, so everything has been moved here. If this section disagrees with older text below,
+this section wins.
+
+### What you can and cannot do from here
+
+- You can read and edit every file in the repo and push **branches** to GitHub through the
+  Claude GitHub app.
+- You **cannot** see: the owner's iCloud folder, the Vercel / Supabase / Stripe dashboards or
+  their environment variables, the trading VPS, or any other Claude session (you cannot message
+  one and cannot be messaged back). Anything that needs those goes to the owner in plain words:
+  say exactly what he must click or run, and what to paste back.
+- There is no memory outside this repo. When you finish something that the next session must
+  know, **write it into this file** and push.
+
+### How to push (follow this exactly)
+
+1. Work on your own branch named `claude/<short-topic>`. **Do not push to `main` and do not
+   merge unless the owner explicitly says so.** `main` deploys straight to the live site
+   (https://www.ftmwealthnation.com) through Vercel, so a push to `main` is a release.
+2. Commit in small steps, with a clear message. End every commit message with the line
+   `Co-Authored-By: Claude <noreply@anthropic.com>`. Never force-push. Never rewrite history.
+3. Open a pull request into `main` and give the owner a short plain summary: what changed, what
+   he will see, how you checked it, and anything you could not check. He decides when it merges.
+4. Before pushing, check the inline scripts parse (extract every `<script>` without `src` from
+   `index.html` and run each through `node --check` or `new Function(code)`), and for any
+   translation change run the checks in `i18n/_tools/README.md`.
+5. **Never put a secret in the repo or in chat**: no API keys, tokens, passwords, `.env` files,
+   database dumps, or customer data. Secrets live only in Vercel environment variables.
+   `.env.example` lists the names only.
+
+### What has been built (state at 9 October 2026, `main` = `4956016`)
+
+- **Site:** one `index.html` plus `terms.html`, `privacy.html` (draft, not linked, noindex) and
+  Vercel functions under `api/`. Live at www.ftmwealthnation.com. Company is **registered in
+  Nigeria** and trades since 2021. Never describe it as a German company, anywhere.
+- **Payment to account flow:** proven end to end (Stripe Payment Link, webhook
+  `api/stripe/webhook.js`, Supabase invite, set password, login, plan unlocked).
+- **Client area** with real data (balance, equity, floating P/L, closed-trade history with a
+  detail popup, open positions, calendar with day detail and a percentage toggle,
+  leaderboard, community profile page). Leaderboard, Community, member profiles and chats are
+  **still sample content**; never show invented numbers to real customers.
+- **50 languages (49 translations plus English).** Every string on the page is translated, not
+  only headings. Files: `i18n/<code>.json` (about 700 entries each), the engine is the `I18NE`
+  block in `index.html`, the language list is `const LANGS` in `index.html`, and
+  `i18n/_tools/` has the source strings, the build and register scripts and a README on adding a
+  language. Urdu, Persian, Arabic and Hebrew switch the page to right-to-left. These are machine
+  translations: before launch they should be checked by native speakers, especially risk and
+  legal wording. Terms and Privacy stay English (the footer says English prevails).
+  A branch `claude/inspiring-gauss-krrmqf` adds a language search box above the list for the
+  50-entry menu; it is not merged yet.
+- **Engine "deploy A" hand-over implemented (commit `4956016`):** every amount is in the
+  account's own currency via `FTM.moneyIn` (never a guessed EUR/USD; a missing currency shows
+  the bare number); status `SETUP_FAILED` and any unknown status show the existing "Action
+  required" chip with the existing contact-support text and never a raw engine code; the refused
+  login text and "Update and try again" form show only while `can_retry_password` is true; a
+  Growth information icon beside the risk profile reveals exactly "Growth scales at twice my
+  normal size" and the connect request still sends exactly four keys; 409
+  `ACCOUNT_REMOVAL_IN_PROGRESS` shows "This account is still being removed. Please wait a
+  minute and try again."; a removed account's card disappears at once; PROVIDER uses the broker
+  name; the sub-line never shows a raw `trade_mode`. The new engine fields
+  (`broker_trade_disabled`, `provisioning_*`, `trade_allowed`, `growth_acknowledged_*`) are
+  deliberately **not shown**. The connect form never had a minimum-balance text.
+- **Proxy privacy checked:** every `api/v1/customer/*` route calls `verifyCustomer(req)`, which
+  validates the Supabase session server-side, and uses only that verified id. Logs never print
+  account payloads. Keep it that way.
+
+### Rules from the owner that always apply
+
+- **Global standard:** one worldwide behaviour, high bar for security, privacy and clarity.
+  Where the company is registered affects legal paperwork only, never how the product behaves.
+- **Never fabricate** data, P/L, prices, reviews or track records for real customers.
+- **Do not guess backend shapes.** The engine is built in a separate session that the owner
+  runs. Ask the owner for the exact endpoint and response before wiring anything.
+- Customer-facing sentences about money, risk or accounts are **owner-approved wording**. Do not
+  invent new ones; propose them to the owner.
+- Keep the Community, Leaderboard, profiles and chats on sample content until the backend design
+  arrives.
+- Raise legal points once, plainly, then do the work as asked.
+
+### Waiting on the owner (do not build these on your own)
+
+1. Approved translations of the two new English sentences (the Growth icon sentence and the
+   removal-in-progress sentence). Until then they show in English in every language.
+2. Engine items the owner has not decided: the PROVIDER text for an unresolved broker, the text
+   if a removal is held for a person, number style (comma/point, sign/code) worldwide, a
+   notice for small accounts about proportionally larger risk, showing the Growth
+   acknowledgement, changing tier after connecting, a chip label for `SETUP_FAILED`, a separate
+   label for the Growth icon.
+3. Lawyer review of the Terms and the Investment service, and the placeholders in
+   `privacy.html` (company address, registration number, data-protection contact, retention,
+   hosting provider, transfer safeguards). Do not link the Privacy page from the site until they
+   are filled.
+4. Section 0 below is the launch checklist; it is still accurate except where this section says
+   otherwise.
+
+### Housekeeping the owner holds
+
+- The owner pushes from his own Mac with a GitHub token that expires on **8 November 2026**.
+  The cloud session does not need that token.
+- Stripe test payments and test link, and the test accounts, are left as they are by the owner's
+  choice.
+
+---
+
 ## 0. Current state and launch checklist (updated 5 October 2026)
 
 **Read this section first; sections 2, 3 and 6 below were corrected, the rest is the
@@ -63,7 +171,7 @@ without re-reading the original conversation.
 - [ ] Show the plan name in the "Plan" box once a billing feed exists.
 - [ ] Wire the Community and Leaderboard once the backend design arrives.
 - [ ] Confirm live open-position P/L on the first real position.
-- [ ] Translations cover headings and buttons only.
+- [x] Translations: 50 languages, full page (machine translations; native-speaker review before launch).
 - [ ] Decide what to do with sample and unverifiable content before launch (section 9.4).
 - [x] Terms page (sidebar, jump links, support button). **Still needs lawyer review.**
 - [x] Payment, invite and set-password flow.
@@ -442,10 +550,8 @@ silently change them.
 ## 11. First moves for a fresh session
 
 1. Read this file and `memory/ftm-website-project.md`.
-2. Confirm the working copy matches iCloud:
-   `cmp index.html ~/Library/Mobile\ Documents/com~apple~CloudDocs/FTM\ Website/index.html`
-3. To update the live site, publish with the Artifact tool using the URL
-   `https://claude.ai/artifact/Bx7vb1htHx3PDFMFjjuXSQ` so the link stays the same.
+2. Make sure you are on a fresh `claude/<topic>` branch off the latest `main` (see section 00).
+3. To change the live site, open a pull request into `main`; the owner merges it and Vercel deploys.
 4. If the task touches the backend, ask for the programmer's endpoint and response format
    first; that chat is separate and its decisions are not visible here.
 5. If the task is a launch step, raise section 9.3 before building anything that takes money.
