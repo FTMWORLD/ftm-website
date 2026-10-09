@@ -627,6 +627,11 @@
   .bk-list .none{padding:12px 10px;font-size:13.5px;color:var(--muted)}
   .bk-list mark{background:none;color:var(--blue);font-weight:800}
   .bk-hint{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .rp-row{display:flex;align-items:center;gap:8px}
+  .rp-row select{flex:1;min-width:0}
+  .rp-info{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--muted);background:transparent;color:var(--muted);font:700 14px/1 Georgia,serif;font-style:italic;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+  .rp-info:hover,.rp-info:focus-visible,.rp-info[aria-expanded="true"]{color:var(--fg,#111);border-color:currentColor}
+  .rp-note{font-size:12.5px;color:var(--muted);margin:2px 0 0}
 
   .pw{position:relative}
   .pw input{padding-right:46px!important}
@@ -1778,7 +1783,11 @@
             </div>
             <p class="pw-hint">This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.</p>
             <label for="appProfile">Risk profile</label>
-            <select id="appProfile"><option>Conservative</option><option selected>Balanced</option><option>Growth</option></select>
+            <div class="rp-row">
+              <select id="appProfile"><option>Conservative</option><option selected>Balanced</option><option>Growth</option></select>
+              <button type="button" class="rp-info" id="rpInfoBtn" aria-labelledby="rpInfoTxt" aria-controls="rpInfoTxt" aria-expanded="false"><span aria-hidden="true">i</span></button>
+            </div>
+            <p class="rp-note" id="rpInfoTxt" hidden>Growth scales at twice my normal size</p>
             <button class="btn btn-red" type="button" id="appConnect">Connect account</button>
             <p class="hint" id="appConnectMsg" style="margin-top:10px" hidden></p>
           </div>
@@ -3302,6 +3311,17 @@
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
+    /* Growth information icon: reveals exactly the owner-approved sentence,
+       on click/tap and on keyboard Enter/Space (a native button), nothing
+       else and no confirmation. The connect request is unchanged: exactly
+       four keys (the engine rejects any extra key and refuses the connect). */
+    (function(){
+      var ib=document.getElementById('rpInfoBtn'), it=document.getElementById('rpInfoTxt');
+      if(!ib||!it) return;
+      ib.addEventListener('click',function(){
+        var open=it.hidden; it.hidden=!open; ib.setAttribute('aria-expanded',open?'true':'false');
+      });
+    })();
     document.getElementById('appConnect').addEventListener('click',function(){
       var acct=document.getElementById('appAcct'), pw=document.getElementById('appPass');
       var n=acct.value.trim();
@@ -3407,16 +3427,27 @@
     var F = window.FTM;
 
     /* ---------- helpers ---------- */
-    function cur(n){
-      var c = F.data.account.currency === 'USD' ? '$' : '€';
-      var v = Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
-      return (n<0?'-':'') + (c==='$' ? c+v : v+c);
-    }
-    function cur0(n){
-      var c = F.data.account.currency === 'USD' ? '$' : '€';
-      var v = Math.abs(Math.round(n)).toLocaleString('de-DE');
-      return (n<0?'-':'') + (c==='$' ? c+v : v+c);
-    }
+    /* One money formatter for every account amount. The currency is the
+       account's own (GET /accounts currency, the broker's report) and is
+       never guessed: a missing currency shows the bare number, and a code
+       Intl rejects (say USDT) shows the number followed by the code as
+       given. Number style (decimal comma, symbol placement) is unchanged
+       from before; only the currency is now correct per account. */
+    F.moneyIn = function(n, dp, currency){
+      if(n===null || n===undefined || isNaN(n)) return '\u2014';
+      dp = dp || 0;
+      var v = Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+      var sign = n<0 ? '-' : '';
+      if(!currency) return sign+v;
+      var sym;
+      try{
+        sym = new Intl.NumberFormat('de-DE',{style:'currency',currency:currency,currencyDisplay:'narrowSymbol'})
+                .formatToParts(0).filter(function(p){return p.type==='currency';})[0].value;
+      }catch(e){ return sign+v+' '+currency; }
+      return sign + (currency==='EUR' ? v+sym : sym+v);
+    };
+    function cur(n){ return F.moneyIn(n,2,F.data.account.currency); }
+    function cur0(n){ return F.moneyIn(Math.round(n),0,F.data.account.currency); }
     function pct(n,d){ return (n>0?'+':'') + n.toFixed(d===undefined?2:d) + '%'; }
     function set(id,text,tone){
       var el=document.getElementById(id); if(!el)return;
@@ -3859,6 +3890,11 @@
        project exists (FTM.auth.ready()===false), every function below
        simply declines to run and the site stays on sample data. */
     window.FTM.remote = (function(){
+      /* Never show a raw engine code: a message that is just an
+         UPPER_SNAKE_CASE code (or empty) becomes a generic sentence. */
+      function safeMsg(m, fallback){
+        return (m && !/^[A-Z][A-Z0-9_]{2,}$/.test(String(m).trim())) ? m : fallback;
+      }
       var BASE = '/api/v1/customer';
       function ready(){ return !!(window.FTM.auth && window.FTM.auth.ready()); }
 
@@ -3921,7 +3957,7 @@
         return {
           name: a.name || (a.broker && a.broker.code) || 'Trading account',
           number: a.account_number,
-          provider: a.broker && a.broker.code,
+          provider: a.broker && (a.broker.name || a.broker.code),
           server: a.server || null,
           balance: num(a.balance),                 // live broker balance, not a scaling basis
           equity: num(a.equity),
@@ -4069,13 +4105,16 @@
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               CUSTOMER_NOT_PERMITTED:'Your account cannot connect a trading account right now. Contact support.',
               ACCOUNT_ALREADY_CONNECTED:'This trading account is already connected to FTM.',
+              // Engine deploy A: the same customer's own removal of this
+              // login is still being completed (owner-approved wording).
+              ACCOUNT_REMOVAL_IN_PROGRESS:'This account is still being removed. Please wait a minute and try again.',
               // Added 2026-09-29: a login can also be refused after three
               // password attempts across any account number/server
               // combination for it — only FTM support can reset that.
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            var out=new Error(friendly[e.code] || e.message || 'Could not connect that account.');
+            var out=new Error(friendly[e.code] || safeMsg(e.message,'Could not connect that account.'));
             out.code=e.code;
             throw out;
           });
@@ -4098,7 +4137,7 @@
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            throw new Error(friendly[e.code] || e.message || 'Could not update that password.');
+            throw new Error(friendly[e.code] || safeMsg(e.message,'Could not update that password.'));
           });
         },
         /* DELETE .../{id} — removes a connected account. The engine
@@ -4116,7 +4155,7 @@
               ACCOUNT_PROVISIONED:'This account is already set up with FTM. Please contact support to change or remove it.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            throw new Error(friendly[e.code] || e.message || 'Could not remove that account.');
+            throw new Error(friendly[e.code] || safeMsg(e.message,'Could not remove that account.'));
           });
         }
       };
@@ -4223,7 +4262,7 @@
          is a separate, already-accepted product decision unrelated to
          financial data. */
       if(window.FTM.auth && window.FTM.auth.ready()){
-        F.data.account = {currency:'EUR', deposits:0, withdrawals:0};
+        F.data.account = {currency:null, deposits:0, withdrawals:0};
         F.data.closed = [];
         F.data.open = [];
         F.data.accounts = [];
@@ -4243,7 +4282,7 @@
        failure mode, not a cosmetic one. */
     function emptyLiveData(){
       return {
-        account: {currency:'EUR', deposits:0, withdrawals:0},
+        account: {currency:null, deposits:0, withdrawals:0},
         closed: [], open: [], accounts: [],
         plan: null, // no real billing/subscription API yet — see the
                     // matching note on ivPlanLine below. Never fabricate
@@ -4267,6 +4306,9 @@
         // account could still render as "no account" whenever this ran.
         F.data.accounts = accounts;
         var primary = accounts.find(function(a){return a.active;}) || accounts[0];
+        // Every amount on screen belongs to this account, so it takes this
+        // account's own currency (null until the account has connected once).
+        F.data.account = {currency: primary.currency || null, deposits:0, withdrawals:0};
         return F.remote.fetchAllExecutions(primary.accountId).then(function(closed){
           return F.remote.fetchPositions(primary.accountId).then(function(open){
             F.data.closed = closed;
@@ -4384,10 +4426,11 @@
      ========================================================================= */
   (function(){
     var F=window.FTM; if(!F||!F.data)return;
-    var SYM = F.data.account.currency==='USD' ? '$' : '€';
-    function money(n,dp){
-      var v=Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0});
-      return (n<0?'-':'')+(SYM==='$'?SYM+v:v+SYM);
+    /* money(n,dp[,currency]): the account's own currency, never a guess.
+       Per-account figures (the Accounts table) pass that account's currency;
+       the rest use the account whose data is on screen. */
+    function money(n,dp,currency){
+      return F.moneyIn(n,dp,currency===undefined ? F.data.account.currency : currency);
     }
     function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
     function el(id){ return document.getElementById(id); }
@@ -4685,6 +4728,11 @@
       BLOCKED:          {text:'Blocked — contact support', tone:'bad'},
       SETUP_INCOMPLETE: {text:'Connecting', tone:'wait'},
       ACTION_REQUIRED:  {text:'Action required', tone:'bad'},
+      // SETUP_FAILED (engine deploy A) and any status this site has no
+      // mapping for reuse the existing ACTION_REQUIRED chip and the
+      // existing "contact support" text below it, never a raw engine code
+      // and never an invented label (owner decision D6).
+      SETUP_FAILED:     {text:'Action required', tone:'bad', support:true},
       OFFLINE:          {text:'Offline', tone:'bad'},
       PAUSED:           {text:'Paused', tone:'wait'},
       INACTIVE:         {text:'Connected, not trading', tone:'wait'},
@@ -4724,13 +4772,18 @@
         var status;
         if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
-                  STATUS_LABEL[a.displayStatus] || {text:a.displayStatus,tone:'wait'};
-          var detail = a.statusReason || '';
+                  STATUS_LABEL[a.displayStatus] || STATUS_LABEL.SETUP_FAILED;
+          var detail = '';
+          var showNote = (a.displayStatus==='ACTION_REQUIRED') || !!s.support;
           if(a.displayStatus==='ACTION_REQUIRED'){
-            detail = (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK;
+            if(a.validationReason==='NOT_HEDGING') detail = VALIDATION_REASON_TEXT.NOT_HEDGING;
+            else if(a.validationReason==='NOT_CONNECTED' && a.canRetryPassword) detail = 'The broker refused these login details. Check your password, account number and server, then try again.';
+            else detail = (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK;
+          } else if(s.support){
+            detail = VALIDATION_REASON_FALLBACK;
           }
           status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
-          if(a.displayStatus==='ACTION_REQUIRED') status+='<div class="acct-action-note">'+detail+'</div>';
+          if(showNote) status+='<div class="acct-action-note">'+detail+'</div>';
           // Actions live behind a "⋮" menu instead of sitting exposed as
           // a stack of buttons under every row.
           var items='';
@@ -4762,15 +4815,15 @@
           pl='<span class="running-pl none">&mdash;</span>';
         } else {
           var plTone=stale?'none':(a.floating>0?'up':(a.floating<0?'down':'none'));
-          pl='<span class="running-pl '+plTone+'"'+freshness+'>'+(a.floating>0?'+':'')+money(a.floating,2)+'</span>';
+          pl='<span class="running-pl '+plTone+'"'+freshness+'>'+(a.floating>0?'+':'')+money(a.floating,2,a.currency)+'</span>';
         }
-        var balCell = a.balance==null ? '&mdash;' : '<span'+(stale?' class="running-pl none"':'')+freshness+'>'+money(a.balance,2)+'</span>';
+        var balCell = a.balance==null ? '&mdash;' : '<span'+(stale?' class="running-pl none"':'')+freshness+'>'+money(a.balance,2,a.currency)+'</span>';
         var typeCell = a.currency ? '<span class="tag-demo">'+a.currency+'</span>' : '<span class="running-pl none">&mdash;</span>';
         // What the broker actually told the validator this account is —
         // "not yet confirmed" rather than a guess when trade_mode is
         // still null (every account provisioned before the validator
         // existed, e.g. the owner's own test account, is null here).
-        var kindLabel = a.tradeMode ? (TRADE_MODE_LABEL[a.tradeMode]||a.tradeMode) : 'Account type not yet confirmed';
+        var kindLabel = (a.tradeMode && TRADE_MODE_LABEL[a.tradeMode]) || 'Account type not yet confirmed';
         var nameCell = '<b>'+a.name+'</b><div class="acct-kind">'+kindLabel+'</div>';
         return '<tr class="'+(a.active?'active':'')+'"><td>'+nameCell+'</td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
           '<td>'+typeCell+'</td>'+
@@ -4908,6 +4961,10 @@
       var a=F.data.accounts[+b.dataset.remove]; if(!a)return;
       if(!confirm('Remove this account? FTM will stop copying trades to it and delete the saved password. Its trade history will no longer appear here.'))return;
       F.remote.removeAccount(a.accountId).then(function(){
+        // The engine hides a removed account at once; the card goes at once
+        // here too, and the account is no longer polled or re-read.
+        F.data.accounts=(F.data.accounts||[]).filter(function(x){return x.accountId!==a.accountId;});
+        if(F.render)F.render();
         if(F.loadLive)F.loadLive();
       }).catch(function(err){
         alert(err.message||'Could not remove that account.');
@@ -5500,7 +5557,7 @@
         ? rows.map(function(r){ return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'; }).join('')
         : '<p class="hint">No account figures to show yet.</p>';
     }
-    function fmtMoney(n){ return (n<0?'-':'')+Math.abs(Math.round(n)).toLocaleString('de-DE')+(F.data.account.currency==='USD'?' $':'€'); }
+    function fmtMoney(n){ return F.moneyIn(Math.round(n),0,F.data.account.currency); }
     F.openMemberProfile=function(name){
       if(name==='You'){ F.showView('community'); showTab('profile'); return; }
       var x=null;
