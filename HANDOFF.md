@@ -59,8 +59,7 @@ this section wins.
   language. Urdu, Persian, Arabic and Hebrew switch the page to right-to-left. These are machine
   translations: before launch they should be checked by native speakers, especially risk and
   legal wording. Terms and Privacy stay English (the footer says English prevails).
-  A branch `claude/inspiring-gauss-krrmqf` adds a language search box above the list for the
-  50-entry menu; it is not merged yet.
+  A search box above the language list (desktop and phone menu) for the 50-entry menu is merged and live.
 - **Engine "deploy A" hand-over implemented (commit `4956016`):** every amount is in the
   account's own currency via `FTM.moneyIn` (never a guessed EUR/USD; a missing currency shows
   the bare number); status `SETUP_FAILED` and any unknown status show the existing "Action
