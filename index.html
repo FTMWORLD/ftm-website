@@ -117,15 +117,25 @@
   .lang svg:first-child{width:22px;height:22px;stroke-width:1.7}
   .nav.on-hero .lang{background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
   .nav.on-hero .lang:hover{background:rgba(255,255,255,.26)}
-  .lang-menu{position:fixed;left:50%;top:92px;transform:translateX(-50%);width:min(1100px,calc(100vw - 32px));list-style:none;margin:0;padding:40px 48px;background:#fff;border-radius:32px;box-shadow:0 30px 80px rgba(11,20,64,.25);display:none;grid-template-columns:repeat(4,1fr);gap:4px 28px;z-index:60;max-height:calc(100vh - 120px);overflow-y:auto;overscroll-behavior:contain}
-  .lang-menu.open{display:grid}
+  .lang-menu{position:fixed;left:50%;top:92px;transform:translateX(-50%);width:min(1100px,calc(100vw - 32px));margin:0;padding:28px 48px 40px;background:#fff;border-radius:32px;box-shadow:0 30px 80px rgba(11,20,64,.25);display:none;flex-direction:column;gap:20px;z-index:60;max-height:calc(100vh - 120px);overflow-y:auto;overscroll-behavior:contain}
+  .lang-menu.open{display:flex}
+  .lang-search{display:flex;align-items:center;gap:12px;padding:0 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg-2);color:var(--muted)}
+  .lang-search:focus-within{border-color:var(--ink);background:#fff}
+  .lang-search svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+  .lang-search input{flex:1;min-width:0;border:0;background:transparent;padding:14px 0;font:inherit;font-size:17px;color:var(--ink);outline:none}
+  .lang-search input::placeholder{color:var(--muted)}
+  .lang-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:4px 28px}
+  .lang-empty{margin:0;padding:8px 12px;color:var(--muted);font-size:16px}
   .lang-menu li{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;cursor:pointer;font-size:17px;font-weight:500;color:var(--ink)}
   .lang-menu li:hover,.lang-menu li:focus-visible{background:var(--bg-2);outline:none}
   .lang-menu li[aria-selected="true"]{color:var(--red);font-weight:600}
-  @media (max-width:1000px){.lang-menu{grid-template-columns:repeat(3,1fr)}}
-  @media (max-width:700px){.lang-menu{grid-template-columns:1fr 1fr;padding:24px;font-size:16px}}
+  @media (max-width:1000px){.lang-grid{grid-template-columns:repeat(3,1fr)}}
+  @media (max-width:700px){.lang-grid{grid-template-columns:1fr 1fr}.lang-menu{padding:20px 24px 24px;font-size:16px}}
   .lang-menu li small{color:var(--muted);font-weight:500}
   .mobile-lang{display:flex;flex-wrap:wrap;gap:8px;padding:14px 8px}
+  .mobile-lang .lang-search{flex:1 0 100%;margin-bottom:6px;background:#fff}
+  .mobile-lang .lang-search input{padding:11px 0;font-size:15px}
+  .mobile-lang .lang-empty{font-size:14px}
   .mobile-lang button{border:1px solid var(--line);background:#fff;border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--ink)}
   .mobile-lang button[aria-pressed="true"]{background:var(--ink);color:var(--gold-light);border-color:var(--ink)}
   .lang svg{width:16px;height:16px}
@@ -1238,7 +1248,11 @@
     <div class="nav-right">
       <div class="lang-wrap">
         <button class="lang" id="langBtn" aria-haspopup="listbox" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M2.5 12h19M4.6 7.5h14.8M4.6 16.5h14.8"/><ellipse cx="12" cy="12" rx="4" ry="9.5"/></svg><span id="langCode">EN</span></button>
-        <ul class="lang-menu" id="langMenu" role="listbox" aria-label="Language"></ul>
+        <div class="lang-menu" id="langMenu">
+          <label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="langSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label>
+          <ul class="lang-grid" id="langList" role="listbox" aria-label="Language"></ul>
+          <p class="lang-empty" id="langEmpty" hidden>No language found</p>
+        </div>
       </div>
       <button class="btn btn-outline btn-sm js-login" data-i18n="btn.login">Log in</button>
       <a class="btn btn-red btn-sm js-start" href="#get-started" data-i18n="btn.start">Get started</a>
@@ -1248,7 +1262,7 @@
 </div>
 <div class="mobile-menu" id="mobileMenu">
   <a href="#auto">Auto Trading</a><a href="#performance">Performance</a><a href="#how">How it works</a><a href="#invest">Investment</a><a href="#markets">Markets</a><a href="#partner">Partner</a><a href="#platforms">Platforms</a><a href="#company">About</a><a href="#support">Learning &amp; support</a>
-  <div class="mobile-lang" id="mobileLang"></div>
+  <div class="mobile-lang" id="mobileLang"><label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="mobileLangSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label></div>
   <button class="btn btn-outline js-login">Log in</button>
 </div>
 
@@ -2808,16 +2822,20 @@
     I18NE.set(code).then(()=>{ try{ if(window.FTM&&FTM.redrawAllViews) FTM.redrawAllViews(); }catch(e){} });
     document.documentElement.lang=code;document.documentElement.dir=RTL.has(code)?'rtl':'ltr';
     document.getElementById('langCode').textContent=code.toUpperCase();
-    document.querySelectorAll('#langMenu li').forEach(li=>li.setAttribute('aria-selected',li.dataset.code===code));
+    document.querySelectorAll('#langList li').forEach(li=>li.setAttribute('aria-selected',li.dataset.code===code));
     document.querySelectorAll('#mobileLang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.code===code));
     try{localStorage.setItem('ftm-lang',code)}catch(e){}
   };
-  const langMenu=document.getElementById('langMenu'),langBtn=document.getElementById('langBtn'),mobileLang=document.getElementById('mobileLang');
+  const langMenu=document.getElementById('langMenu'),langList=document.getElementById('langList'),langBtn=document.getElementById('langBtn'),mobileLang=document.getElementById('mobileLang');
+  /* English names so the search also finds "German" or "Chinese", not only the native spelling. */
+  const LANG_EN={en:'English',ar:'Arabic',fr:'French',es:'Spanish',pt:'Portuguese',ru:'Russian',it:'Italian',vi:'Vietnamese',de:'German',bn:'Bengali',sw:'Swahili',ko:'Korean',pl:'Polish',si:'Sinhala',zh:'Chinese Simplified Mandarin','zh-tw':'Chinese Traditional Taiwan',mn:'Mongolian',ta:'Tamil',hi:'Hindi',id:'Indonesian',ur:'Urdu',ja:'Japanese',tr:'Turkish',nl:'Dutch',uk:'Ukrainian',ro:'Romanian',th:'Thai',he:'Hebrew',el:'Greek',cs:'Czech',sv:'Swedish',hu:'Hungarian',ms:'Malay',fil:'Filipino Tagalog',fa:'Persian Farsi',mr:'Marathi',te:'Telugu',gu:'Gujarati',kn:'Kannada',ml:'Malayalam',pa:'Punjabi',ne:'Nepali',my:'Burmese Myanmar',km:'Khmer Cambodian',uz:'Uzbek',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic',zu:'Zulu'};
+  const norm=t=>t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const langMatch=(code,q)=>!q||norm(LANGS[code]+' '+code+' '+(LANG_EN[code]||'')).includes(q);
   Object.entries(LANGS).forEach(([code,name])=>{
     const li=document.createElement('li');li.tabIndex=0;li.role='option';li.dataset.code=code;li.textContent=name;
     const pick=()=>{applyLang(code);langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');};
     li.onclick=pick;li.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};
-    langMenu.appendChild(li);
+    langList.appendChild(li);
     const b=document.createElement('button');b.dataset.code=code;b.textContent=name;b.onclick=()=>applyLang(code);mobileLang.appendChild(b);
   });
   /* On phones the nav's own language button sits beside "Log in", but
@@ -2833,7 +2851,20 @@
       return;
     }
     const o=langMenu.classList.toggle('open');langBtn.setAttribute('aria-expanded',o);
+    if(o){ langSearch.value=''; filterLangs(); setTimeout(()=>langSearch.focus(),0); }
   };
+  /* Search above the list: filters by native name, English name or code; Enter picks the first match. */
+  const langSearch=document.getElementById('langSearch'),langEmpty=document.getElementById('langEmpty');
+  const filterLangs=()=>{
+    const q=norm(langSearch.value.trim()); let n=0;
+    langList.querySelectorAll('li').forEach(li=>{ const ok=langMatch(li.dataset.code,q); li.hidden=!ok; if(ok)n++; });
+    langEmpty.hidden=n>0;
+  };
+  langSearch.oninput=filterLangs;
+  langSearch.onkeydown=e=>{ if(e.key==='Enter'){ const f=langList.querySelector('li:not([hidden])'); if(f){e.preventDefault();f.click();} } };
+  const mobileLangSearch=document.getElementById('mobileLangSearch');
+  mobileLangSearch.oninput=()=>{ const q=norm(mobileLangSearch.value.trim()); mobileLang.querySelectorAll('button').forEach(b=>{ b.hidden=!langMatch(b.dataset.code,q); }); };
+  mobileLangSearch.onkeydown=e=>{ if(e.key==='Enter'){ const f=mobileLang.querySelector('button:not([hidden])'); if(f){e.preventDefault();f.click();} } };
   document.addEventListener('click',e=>{if(!e.target.closest('.lang-wrap')){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   let saved='en';try{saved=localStorage.getItem('ftm-lang')||'en'}catch(e){}
