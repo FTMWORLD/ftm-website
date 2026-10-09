@@ -2847,7 +2847,11 @@
     e.stopPropagation();
     if(window.innerWidth<=640){
       var mm=document.getElementById('mobileMenu'), bg=document.getElementById('burger');
-      if(mm){ mm.classList.add('open'); if(bg)bg.setAttribute('aria-expanded','true'); mobileLang.scrollIntoView({behavior:'smooth',block:'center'}); }
+      if(!mm) return;
+      if(mm.classList.contains('open')){ mm.classList.remove('open'); if(bg)bg.setAttribute('aria-expanded','false'); return; }
+      mm.classList.add('open'); if(bg)bg.setAttribute('aria-expanded','true');
+      mobileLangSearch.value=''; mobileLang.querySelectorAll('button').forEach(b=>{b.hidden=false;});
+      mobileLang.scrollIntoView({behavior:'smooth',block:'start'});
       return;
     }
     const o=langMenu.classList.toggle('open');langBtn.setAttribute('aria-expanded',o);
