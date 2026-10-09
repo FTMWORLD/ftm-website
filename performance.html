@@ -43,6 +43,10 @@ h3{font-size:16px;font-weight:700}
 p{margin:0;max-width:68ch}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
 .up{color:var(--up)} .down{color:var(--down)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.topbar .logo{color:inherit;text-decoration:none}
+.back{color:#fff;text-decoration:none;font-weight:600;font-size:14px;padding:10px 16px;border:1px solid rgba(255,255,255,.3);border-radius:99px;white-space:nowrap}
+.back:hover{background:rgba(255,255,255,.1)}
 header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24px;padding:28px clamp(20px,4vw,48px) 36px;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:48px 48px}
 .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:24px;color:#fff;letter-spacing:-.02em}
 .logo .mark{width:34px;height:34px;border-radius:10px;background:#1F3A93;display:grid;place-items:center}
@@ -101,7 +105,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 <body>
 <div class="wrap">
   <header>
-    <div class="logo"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+    <div class="topbar"><a class="logo" href="/" aria-label="FTM home"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a><a class="back" href="/#performance">&larr; Back to website</a></div>
     <div class="eyebrow">FTM MACHINE · Gold · January 2020 to October 2026</div>
     <h1 id="hero" class="marquee" aria-label="If FTM doesn't pay off in five years, FTM pays you back."><span class="track" aria-hidden="true"><span>If FTM doesn&rsquo;t pay off in five years, FTM pays you back.</span><span>If FTM doesn&rsquo;t pay off in five years, FTM pays you back.</span></span></h1>
     <p class="lead">Every year, month and week of a 6.8-year historical test on gold, losing periods included. Results are shown after broker spread and swap, for four risk profiles. The strategy is the same in all four; only the trade size changes.</p>
