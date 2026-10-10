@@ -1041,6 +1041,11 @@
   .allday .container{position:relative}
   .allday h2{color:#fff;font-size:clamp(48px,8vw,96px);letter-spacing:-.04em}
   .allday p{margin:16px 0 32px;font-size:18px;max-width:520px}
+  .clock .clock-min,.clock .clock-hr{transform-box:view-box;transform-origin:100px 100px;animation:clockspin linear infinite}
+  .clock .clock-min{animation-duration:12s}
+  .clock .clock-hr{animation-duration:144s}
+  @keyframes clockspin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.clock .clock-min,.clock .clock-hr{animation:none}}
   .clock{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:min(36vw,360px);opacity:.35}
 
   /* ---------- FEATURES ---------- */
@@ -1655,7 +1660,7 @@
 <!-- ===== 24/7 BANNER ===== -->
 <section class="allday">
   <div class="allday-bg"></div>
-  <svg class="clock" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="90" fill="none" stroke="#fff" stroke-width="3"/><path d="M100 30v10M170 100h-10M100 170v-10M30 100h10" stroke="#fff" stroke-width="3"/><path d="M100 100V50M100 100l35 20" stroke="#D4AF37" stroke-width="5" stroke-linecap="round"/></svg>
+  <svg class="clock" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="90" fill="none" stroke="#fff" stroke-width="3"/><path d="M100 30v10M170 100h-10M100 170v-10M30 100h10" stroke="#fff" stroke-width="3"/><path class="clock-min" d="M100 100V50" stroke="#D4AF37" stroke-width="5" stroke-linecap="round"/><path class="clock-hr" d="M100 100l35 20" stroke="#D4AF37" stroke-width="5" stroke-linecap="round"/></svg>
   <div class="container">
     <h2 data-i18n="allday.title">Trade all day</h2>
     <p>Our automated system and strategy are available 24/7. Markets never sleep, and neither does FTM.</p>
