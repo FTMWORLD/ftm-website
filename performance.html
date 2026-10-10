@@ -202,7 +202,7 @@ function compare(){
 
 function kpis(p){
   const mUp=p.monthly.filter(m=>m[1]>0).length,wUp=p.weekly.filter(w=>w[1]>0).length,yUp=p.yearly.filter(y=>y[1]>0).length;
-  const items=[['Final balance',usd(p.final),'from $100,000'],['Total return',pct((p.final/1e5-1)*100,0),'6.8 years'],['Average per year',pct(cagr(p)),'compounded'],['Max drawdown','-'+p.bdd+'%','balance · -'+p.edd+'% equity'],['Profit factor',p.pf,'gross profit ÷ gross loss'],['Profitable years',yUp+' of '+p.yearly.length,'2026 to 8 October'],['Profitable months',mUp+' of '+p.monthly.length,Math.round(mUp/p.monthly.length*100)+'%'],['Profitable weeks',wUp+' of '+p.weekly.length,Math.round(wUp/p.weekly.length*100)+'%']];
+  const items=[['Final balance',usd(p.final),'from $100,000'],['Total return',pct((p.final/1e5-1)*100,0),'6.8 years'],['Average per year',pct(cagr(p)),'compounded'],['Max drawdown','-'+p.bdd+'%','balance · -'+p.edd+'% equity'],['Profit factor',p.pf,'gross profit ÷ gross loss'],['Profitable years',yUp+' of '+p.yearly.length,'2026 to 8 October'],['Profitable months',mUp+' of '+p.monthly.length,Math.round(mUp/p.monthly.length*100)+'%'],['Profitable weeks',wUp+' of '+p.weekly.length,Math.round(wUp/p.weekly.length*100)+'%'],['Total trades',p.trades.toLocaleString('en-US'),p.win+'% winning trades'],['Recovery factor',p.rf,'net profit ÷ max drawdown']];
   $('kpis').innerHTML=items.map(([l,v,s])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join('');
 }
 
