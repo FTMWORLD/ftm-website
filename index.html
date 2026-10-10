@@ -951,6 +951,8 @@
   @keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.5);opacity:0}}
   .live-card .kv b{transition:color .3s}
   .live-card svg{min-height:90px}
+  .auto-eyebrow-m{display:none}
+  @media (max-width:820px){.auto-eyebrow-m{display:block;order:-2;margin:0 0 -16px}.auto-eyebrow-d{display:none}}
   @media (max-width:600px){.art-card.live-card{left:7%;right:7%;top:9%;bottom:9%;padding:18px;gap:10px}}
   .live-card .kv b.tick{color:#2fa66b}
   @media (prefers-reduced-motion:reduce){.running i,#livePulse{animation:none}}
@@ -1484,9 +1486,10 @@
 <section class="auto" id="auto">
   <div class="container">
     <div class="feature">
-      <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Auto Trading</p><h3>FTM MACHINE trades the plan, not the mood</h3><p>Subscribe, link your trading account and let FTM MACHINE execute a rules-based strategy automatically across Gold, Forex, Crypto and Stocks. You keep full control: pause, adjust or withdraw any time.</p>
-        <ul class="auto-list"><li>Live, verified track record with drawdown shown</li><li>Three risk profiles: Conservative, Balanced, Growth</li><li>Runs on FTM MT5, no extra software</li></ul>
+      <div><p class="eyebrow auto-eyebrow-d" style="color:var(--gold);margin-bottom:12px">Auto Trading</p><h3>FTM MACHINE trades the plan, not the mood</h3><p>Subscribe, link your trading account and let FTM MACHINE execute a rules-based strategy automatically across Gold, Forex, Crypto and Stocks. You keep full control: pause, adjust or withdraw any time.</p>
+        <ul class="auto-list"><li>Verified track record with drawdown shown</li><li>Three risk profiles: Conservative, Balanced, Growth</li><li>Runs on FTM MT5, no extra software</li><li>FTM MACHINE trades 24/7</li></ul>
         <a class="btn btn-red" href="#pricing">Explore FTM MACHINE</a></div>
+      <p class="eyebrow auto-eyebrow-m" style="color:var(--gold)">Auto Trading</p>
       <div class="feature-art dark"><div class="art-card live-card"><div class="t">FTM MACHINE · Balanced <span class="running"><i></i>Running</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>Since January 2020</span><b>+881%</b></div><div class="kv"><span>Max drawdown</span><b>-31.22%</b></div><a class="live-link" href="/performance.html">See the full performance record &rarr;</a></div></div>
     </div>
   </div>
