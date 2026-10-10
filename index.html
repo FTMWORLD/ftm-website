@@ -671,8 +671,7 @@
   .inv-marquee{margin-bottom:28px}
   .marquee-track.inv-track{gap:18px;animation-duration:45s}
   .inv-track .inv-step{flex:0 0 380px}
-  @media (max-width:700px){.inv-track .inv-step{flex-basis:290px}.marquee-track.inv-track{animation-duration:35s}}
-  @media (prefers-reduced-motion:reduce){.marquee-track.inv-track{animation:none;flex-wrap:wrap;width:auto}.inv-track .inv-step[aria-hidden]{display:none}}
+    @media (prefers-reduced-motion:reduce){.marquee-track.inv-track{animation:none;flex-wrap:wrap;width:auto}.inv-track .inv-step[aria-hidden]{display:none}}
   .inv-step{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:26px;display:grid;gap:8px;align-content:start}
   .inv-step .n{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:grid;place-items:center;margin-bottom:6px}
   .inv-step b{font-size:18px;color:#fff}
@@ -1106,6 +1105,20 @@
   .review .who small{color:var(--muted);font-size:12px}
   @media (max-width:520px){.review{flex-basis:300px;padding:24px}}
   @media (prefers-reduced-motion:reduce){.marquee-track{animation:none}.marquee{overflow-x:auto;mask-image:none;-webkit-mask-image:none}}
+  /* Phones: every sideways ticker flows upward instead (the stats row already does). */
+  @media (max-width:640px){
+    .trust-head .marquee,#reviewMarquee,.inv-marquee{mask-image:linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(180deg,transparent,#000 10%,#000 90%,transparent)}
+    .trust-head .marquee{height:150px}
+    #reviewMarquee{height:560px}
+    .inv-marquee{height:430px}
+    .trust-head .marquee-track,#reviewMarquee .marquee-track,.marquee-track.inv-track{flex-direction:column;width:100%;padding-inline:0;animation-name:marquee-vertical}
+    .trust-head .marquee-track{gap:16px;padding-block:8px}
+    .trust-head .marquee-track h2{white-space:normal!important}
+    #reviewMarquee .marquee-track{padding-block:12px;animation-duration:150s}
+    #reviewMarquee .review{flex:0 0 auto;width:100%}
+    .marquee-track.inv-track{padding-block:9px;animation-duration:30s}
+    .inv-track .inv-step{flex:0 0 auto;width:100%}
+  }
 
   /* ---------- STEPS ---------- */
   .step{display:grid;grid-template-columns:1fr 1fr;border-radius:32px;overflow:hidden;min-height:320px;align-items:center}
