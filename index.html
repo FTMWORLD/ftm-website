@@ -91,7 +91,8 @@
   .link:hover{text-decoration:underline}
   .link svg{width:16px;height:16px}
   .eyebrow{font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-  section{padding-block:96px}
+  section{padding-block:72px}
+  @media (max-width:760px){section{padding-block:52px}}
   .section-title{font-size:clamp(36px,5vw,56px);text-align:center;margin-bottom:56px}
 
   /* ---------- NAV ---------- */
@@ -941,7 +942,8 @@
   @media (max-width:520px){.awards{grid-template-columns:1fr}}
 
   /* ---------- AUTO ---------- */
-  .auto{background:var(--ink);color:#fff;padding-block:96px}
+  .auto{background:var(--ink);color:#fff;padding-block:72px}
+  @media (max-width:760px){.auto{padding-block:52px}}
   .auto h3,.auto .feature h3{color:#fff}
   .auto .feature p{color:rgba(255,255,255,.85)}
   .auto-list{margin:0 0 28px;padding:0;list-style:none;display:grid;gap:10px}
@@ -1047,12 +1049,12 @@
   @media (max-width:820px){.market{grid-template-columns:1fr}.market .phone{order:2}}
 
   /* ---------- 24/7 BANNER ---------- */
-  .allday{position:relative;color:#fff;padding-block:140px;overflow:hidden;background:#20232c}
+  .allday{position:relative;color:#fff;padding-block:112px;overflow:hidden;background:#20232c}
   .allday-bg{position:absolute;inset:0;background:radial-gradient(900px 500px at 75% 50%,rgba(212,175,55,.35),transparent 60%),linear-gradient(120deg,#0B1440,#1F3A93 60%,#3a1f3a)}
   .allday .container{position:relative}
   .allday h2{color:#fff;font-size:clamp(48px,8vw,96px);letter-spacing:-.04em}
   .allday p{margin:16px 0 32px;font-size:18px;max-width:520px}
-  @media (max-width:760px){.allday{display:flex;flex-direction:column;padding-block:88px 72px}.allday .container{order:1}.allday .clock{position:relative;order:2;right:auto;top:auto;transform:none;width:min(52vw,200px);margin:48px auto 0;opacity:.45}}
+  @media (max-width:760px){.allday{display:flex;flex-direction:column;padding-block:64px 56px}.allday .container{order:1}.allday .clock{position:relative;order:2;right:auto;top:auto;transform:none;width:min(52vw,200px);margin:48px auto 0;opacity:.45}}
   .clock .clock-min,.clock .clock-hr{transform-box:view-box;transform-origin:100px 100px;animation:clockspin linear infinite}
   .clock .clock-min{animation-duration:12s}
   .clock .clock-hr{animation-duration:144s}
@@ -1169,7 +1171,8 @@
   .brand-bar .foot-top{border-bottom:0;padding-bottom:0}
 
   /* ---------- CTA ---------- */
-  .cta{background:var(--red);color:#fff;text-align:center;position:relative;overflow:hidden;padding-block:140px}
+  .cta{background:var(--red);color:#fff;text-align:center;position:relative;overflow:hidden;padding-block:112px}
+  @media (max-width:760px){.cta{padding-block:72px}}
   .cta-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);background-size:96px 96px}
   .cta .tile{position:absolute;width:96px;height:96px;background:rgba(212,175,55,.35);border-radius:6px}
   .cta h2{color:#fff;font-size:clamp(44px,7vw,84px);letter-spacing:-.04em;position:relative;max-width:820px;margin:0 auto 32px}
