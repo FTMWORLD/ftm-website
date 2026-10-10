@@ -950,6 +950,8 @@
   #livePulse{animation:pulse 1.6s ease-out infinite;transform-origin:center;transform-box:fill-box}
   @keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.5);opacity:0}}
   .live-card .kv b{transition:color .3s}
+  .live-card svg{min-height:90px}
+  @media (max-width:600px){.art-card.live-card{left:7%;right:7%;top:9%;bottom:9%;padding:18px;gap:10px}}
   .live-card .kv b.tick{color:#2fa66b}
   @media (prefers-reduced-motion:reduce){.running i,#livePulse{animation:none}}
 
