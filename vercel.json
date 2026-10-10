@@ -1,8 +1,34 @@
 {
   "redirects": [
-    { "source": "/HANDOFF.md", "destination": "/", "permanent": false },
-    { "source": "/i18n/_tools/:path*", "destination": "/", "permanent": false },
-    { "source": "/i18n/_keyed_english.json", "destination": "/", "permanent": false },
-    { "source": "/i18n/_langs.json", "destination": "/", "permanent": false }
+    {
+      "source": "/HANDOFF.md",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/i18n/_tools/:path*",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/i18n/_keyed_english.json",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/i18n/_langs.json",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/CLAUDE.md",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/.github/:path*",
+      "destination": "/",
+      "permanent": false
+    }
   ]
 }

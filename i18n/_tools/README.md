@@ -15,3 +15,11 @@
 3. `python3 build_language.py <code> <file>` merges and validates. Run it once for the main strings (ids 0-615) and once for the rest.
 4. Commit `i18n/<code>.json`.
 Keys containing `{}` are patterns: `{} trades` translates "16 trades". The slot only matches numbers and amounts.
+
+## Keeping every language complete
+`python3 i18n/_tools/check_translations.py` lists every visible English string that any language
+file cannot translate, and exits with an error if there is one. GitHub runs it on every push
+(workflow "Translations"), so a red check means a change went live with English-only text.
+Any change that adds or edits customer-facing text must add the translation to all `i18n/<code>.json`
+files in the same commit. Add new JavaScript messages to `source_strings_js.json`; add names,
+codes and brands that must stay English to `keep_english.json`.
