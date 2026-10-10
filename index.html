@@ -1052,6 +1052,7 @@
   .allday .container{position:relative}
   .allday h2{color:#fff;font-size:clamp(48px,8vw,96px);letter-spacing:-.04em}
   .allday p{margin:16px 0 32px;font-size:18px;max-width:520px}
+  @media (max-width:760px){.allday{display:flex;flex-direction:column;padding-block:88px 72px}.allday .container{order:1}.allday .clock{position:relative;order:2;right:auto;top:auto;transform:none;width:min(52vw,200px);margin:48px auto 0;opacity:.45}}
   .clock .clock-min,.clock .clock-hr{transform-box:view-box;transform-origin:100px 100px;animation:clockspin linear infinite}
   .clock .clock-min{animation-duration:12s}
   .clock .clock-hr{animation-duration:144s}
