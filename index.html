@@ -66,6 +66,8 @@
   .btn-dark:hover{background:var(--ink-3);box-shadow:0 8px 20px -8px rgba(11,20,64,.45)}
   .btn-gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
   .btn-gold:hover{background:var(--gold-light);border-color:var(--gold-light);box-shadow:0 8px 20px -8px rgba(212,175,55,.6)}
+  .live-link{display:block;margin-top:14px;font-size:14px;font-weight:700;color:var(--blue)}
+  .live-link:hover{text-decoration:underline}
   .btn-outline{background:transparent;color:var(--ink);border-color:var(--ink)}
   .btn-outline:hover{background:var(--bg-2);border-color:var(--ink-3)}
   .btn-sm{padding:12px 20px;font-size:14px}
@@ -1483,7 +1485,7 @@
       <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Auto Trading</p><h3>FTM MACHINE trades the plan, not the mood</h3><p>Subscribe, link your trading account and let FTM MACHINE execute a rules-based strategy automatically across Gold, Forex, Crypto and Stocks. You keep full control: pause, adjust or withdraw any time.</p>
         <ul class="auto-list"><li>Live, verified track record with drawdown shown</li><li>Three risk profiles: Conservative, Balanced, Growth</li><li>Runs on FTM MT5, no extra software</li></ul>
         <a class="btn btn-red" href="#pricing">Explore FTM MACHINE</a></div>
-      <div class="feature-art dark"><div class="art-card live-card"><div class="t">FTM MACHINE · Account <span class="running"><i></i>Running</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>2024 till date</span><b id="liveReturn">+205%</b></div><div class="kv"><span>Max drawdown</span><b>-15%</b></div><div class="kv"><span>Open trades</span><b>6</b></div></div></div>
+      <div class="feature-art dark"><div class="art-card live-card"><div class="t">FTM MACHINE · Balanced <span class="running"><i></i>Backtest 2020–2026</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>2026 to 8 October</span><b id="liveReturn">+68.6%</b></div><div class="kv"><span>Since January 2020</span><b>+881%</b></div><div class="kv"><span>Max drawdown</span><b>-31.22%</b></div><a class="live-link" href="/performance.html">See the full performance record &rarr;</a></div></div>
     </div>
   </div>
 </section>
@@ -3017,31 +3019,16 @@
   try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
 
-  /* ---- Live FTM MACHINE card ---- */
+  /* ---- FTM MACHINE card: Balanced profile balance from the performance report (weekly, log scale) ---- */
   (()=>{
-    const line=document.getElementById('liveLine'),area=document.getElementById('liveArea'),dot=document.getElementById('liveDot'),pulse=document.getElementById('livePulse'),ret=document.getElementById('liveReturn');
+    const line=document.getElementById('liveLine'),area=document.getElementById('liveArea'),dot=document.getElementById('liveDot'),pulse=document.getElementById('livePulse');
     if(!line)return;
-    // Return figure: 205% at Sept 2026, then +5..20% per elapsed month (deterministic per month so every visitor sees the same number)
-    const base=205,baseYear=2026,baseMonth=8;const now=new Date();
-    const months=Math.max(0,(now.getFullYear()-baseYear)*12+(now.getMonth()-baseMonth));
-    let total=base;for(let m=1;m<=months;m++){const r=Math.abs(Math.sin(m*12.9898)*43758.5453)%1;total+=5+r*15;}
-    ret.textContent='+'+Math.round(total)+'%';
-    // Chart: random-walk equity curve that keeps moving
-    const N=48;let pts=[];let v=60;
-    for(let i=0;i<N;i++){v+=(Math.random()-0.42)*6;v=Math.max(20,Math.min(140,v));pts.push(v);}
-    const draw=()=>{
-      const W=300,H=160,step=W/(N-1);
-      const min=Math.min(...pts),max=Math.max(...pts),pad=12;
-      const y=val=>H-pad-((val-min)/((max-min)||1))*(H-pad*2);
-      const coords=pts.map((p,i)=>[i*step,y(p)]);
-      line.setAttribute('points',coords.map(c=>c.join(',')).join(' '));
-      area.setAttribute('d','M'+coords.map(c=>c.join(' ')).join(' L ')+` L ${W} ${H} L 0 ${H} Z`);
-      const last=coords[coords.length-1];
-      dot.setAttribute('cx',last[0]);dot.setAttribute('cy',last[1]);pulse.setAttribute('cx',last[0]);pulse.setAttribute('cy',last[1]);
-    };
-    draw();
-    const reduced=matchMedia('(prefers-reduced-motion:reduce)').matches;
-    if(!reduced){setInterval(()=>{const last=pts[pts.length-1];let nv=last+(Math.random()-0.42)*6;nv=Math.max(20,Math.min(140,nv));pts.push(nv);pts.shift();draw();ret.classList.add('tick');setTimeout(()=>ret.classList.remove('tick'),400);},1400);}
+    const pts=[5.0, 4.9768, 5.0045, 4.9876, 4.9942, 5.0122, 5.0314, 5.0508, 5.0644, 5.1089, 5.0789, 5.1195, 5.1924, 5.1683, 5.1436, 5.1793, 5.2048, 5.2169, 5.1999, 5.2198, 5.1647, 5.2291, 5.1989, 5.2242, 5.2327, 5.1551, 5.1358, 5.1541, 5.2751, 5.2675, 5.3222, 5.3422, 5.2822, 5.3374, 5.3277, 5.2889, 5.2696, 5.2814, 5.245, 5.2478, 5.2023, 5.285, 5.2612, 5.3041, 5.2841, 5.2901, 5.2527, 5.267, 5.2606, 5.3371, 5.4311, 5.3139, 5.3506, 5.4055, 5.3857, 5.4287, 5.443, 5.4572, 5.4634, 5.4403, 5.5409, 5.5355, 5.5662, 5.5756, 5.5874, 5.6266, 5.638, 5.6725, 5.6447, 5.683, 5.7273, 5.748, 5.7872, 5.7357, 5.819, 5.8309, 5.8063, 5.7783, 5.8427, 5.8873, 5.8926, 5.9402, 5.9583, 5.9932, 5.9916];
+    const W=300,H=160,pad=12,step=W/(pts.length-1),min=Math.min(...pts),max=Math.max(...pts);
+    const coords=pts.map((v,i)=>[+(i*step).toFixed(1),+(H-pad-((v-min)/(max-min))*(H-pad*2)).toFixed(1)]);
+    line.setAttribute('points',coords.map(c=>c.join(',')).join(' '));
+    area.setAttribute('d','M'+coords.map(c=>c.join(' ')).join(' L ')+` L ${W} ${H} L 0 ${H} Z`);
+    const last=coords[coords.length-1];dot.setAttribute('cx',last[0]);dot.setAttribute('cy',last[1]);pulse.setAttribute('cx',last[0]);pulse.setAttribute('cy',last[1]);
   })();
 
   /* ---- Compound calculator ---- */
