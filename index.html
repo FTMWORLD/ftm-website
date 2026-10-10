@@ -96,6 +96,7 @@
   .nav-wrap{position:fixed;top:16px;left:0;right:0;z-index:50;padding-inline:16px;pointer-events:none}
   .nav{position:relative;pointer-events:auto;max-width:var(--container);margin:0 auto;display:flex;align-items:center;gap:24px;padding:10px 12px 10px 24px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-radius:var(--radius-pill);box-shadow:0 8px 32px rgba(0,0,0,.10);transition:background .3s,box-shadow .3s}
   .nav.on-hero{background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+  .nav.on-hero.scrolled{background:rgba(11,20,64,.92);box-shadow:0 8px 32px rgba(0,0,0,.28);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
   .nav.on-hero .nav-links a,.nav.on-hero .lang{color:var(--cream)}
   .nav-links a:hover{color:var(--gold)}
   .nav.on-hero .btn-outline{color:var(--white);border-color:var(--white)}
@@ -2767,7 +2768,7 @@
 
   const nav=document.getElementById('nav');
   const heroH=()=>document.querySelector('.hero').offsetHeight-80;
-  const onScroll=()=>nav.classList.toggle('on-hero',window.scrollY<heroH());
+  const onScroll=()=>{nav.classList.toggle('on-hero',window.scrollY<heroH());nav.classList.toggle('scrolled',window.scrollY>8);};
   onScroll();addEventListener('scroll',onScroll,{passive:true});
   const burger=document.getElementById('burger'),menu=document.getElementById('mobileMenu');
   burger.addEventListener('click',()=>{const o=menu.classList.toggle('open');burger.setAttribute('aria-expanded',o);});
