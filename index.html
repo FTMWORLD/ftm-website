@@ -1110,7 +1110,8 @@
   .reviews{background:var(--bg-2);padding-inline:0;overflow:hidden}
   .marquee{overflow:hidden;width:100%;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
   .marquee-track{display:flex;gap:24px;width:max-content;animation:marquee 180s linear infinite;padding-inline:12px}
-  .marquee:hover .marquee-track{animation-play-state:paused}
+  @media (hover:hover){.marquee:hover .marquee-track{animation-play-state:paused}}
+  .marquee.held .marquee-track{animation-play-state:paused}
   @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
   .review{flex:0 0 400px;background:#fff;border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:20px;min-height:260px}
   .review p{color:var(--text);flex:1}
@@ -3036,6 +3037,13 @@
   let saved='en';try{saved=localStorage.getItem('ftm-lang')||'en'}catch(e){}
   try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
+
+  /* ---- Tickers on touch screens: pause while a finger is on them, resume when it lifts ---- */
+  document.querySelectorAll('.marquee').forEach(m=>{
+    const on=()=>m.classList.add('held'),off=()=>m.classList.remove('held');
+    m.addEventListener('touchstart',on,{passive:true});
+    ['touchend','touchcancel'].forEach(ev=>m.addEventListener(ev,off,{passive:true}));
+  });
 
   /* ---- FTM MACHINE card: Balanced profile balance from the performance report (weekly, log scale) ---- */
   (()=>{
