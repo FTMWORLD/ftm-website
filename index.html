@@ -66,7 +66,6 @@
   .btn-dark:hover{background:var(--ink-3);box-shadow:0 8px 20px -8px rgba(11,20,64,.45)}
   .btn-gold{background:var(--gold);color:var(--ink);border-color:var(--gold)}
   .btn-gold:hover{background:var(--gold-light);border-color:var(--gold-light);box-shadow:0 8px 20px -8px rgba(212,175,55,.6)}
-  .how-perf{margin-top:16px}
   .btn-outline{background:transparent;color:var(--ink);border-color:var(--ink)}
   .btn-outline:hover{background:var(--bg-2);border-color:var(--ink-3)}
   .btn-sm{padding:12px 20px;font-size:14px}
@@ -835,11 +834,12 @@
   .perf-tile small{font-size:13px;color:var(--muted);line-height:1.45}
   .perf-cta{display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:40px;font-size:14px;color:var(--muted)}
   .how-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
-  .how-steps li{background:var(--bg-2);border-radius:20px;padding:24px 20px;display:grid;gap:8px;align-content:start;counter-increment:step}
+  .how-steps li{background:var(--bg-2);border-radius:20px;padding:24px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;counter-increment:step}
   .how-steps li::before{content:counter(step);width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--gold-light);font-weight:800;display:grid;place-items:center;font-size:15px;margin-bottom:6px}
   .how-steps b{color:var(--ink);font-size:16px;line-height:1.3}
   .how-steps p{font-size:14px;color:var(--text)}
-  .how-steps .btn{justify-self:start;margin-top:6px}
+  .how-steps .btn{margin-top:auto}
+  .how-steps p{margin-bottom:10px}
   .step-plans{display:flex;flex-direction:column;gap:8px;margin-top:6px}
   .step-plans .btn{justify-self:stretch;margin-top:0;padding:10px 14px;font-size:13px}
   .how-security{margin-top:40px;background:var(--ink);color:#fff;border-radius:24px;padding:32px;display:flex;gap:20px;align-items:flex-start;border-left:6px solid var(--gold)}
