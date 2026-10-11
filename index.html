@@ -3003,10 +3003,10 @@
   const langMatch=(code,q)=>!q||norm(LANGS[code]+' '+code+' '+(LANG_EN[code]||'')).includes(q);
   Object.entries(LANGS).forEach(([code,name])=>{
     const li=document.createElement('li');li.tabIndex=0;li.role='option';li.dataset.code=code;li.textContent=name;
-    const pick=()=>{applyLang(code);langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');};
+    const pick=()=>{try{localStorage.setItem('ftm-lang-manual','1')}catch(e){}applyLang(code);langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');};
     li.onclick=pick;li.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();}};
     langList.appendChild(li);
-    const b=document.createElement('button');b.dataset.code=code;b.textContent=name;b.onclick=()=>applyLang(code);mobileLang.appendChild(b);
+    const b=document.createElement('button');b.dataset.code=code;b.textContent=name;b.onclick=()=>{try{localStorage.setItem('ftm-lang-manual','1')}catch(e){}applyLang(code)};mobileLang.appendChild(b);
   });
   /* On phones the nav's own language button sits beside "Log in", but
      the desktop lang-menu is a wide, centered grid never designed for
@@ -3041,7 +3041,17 @@
   mobileLangSearch.onkeydown=e=>{ if(e.key==='Enter'){ const f=mobileLang.querySelector('button:not([hidden])'); if(f){e.preventDefault();f.click();} } };
   document.addEventListener('click',e=>{if(!e.target.closest('.lang-wrap')){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){langMenu.classList.remove('open');langBtn.setAttribute('aria-expanded','false');}});
-  let saved='en';try{saved=localStorage.getItem('ftm-lang')||'en'}catch(e){}
+  /* Language: a visitor's own pick wins; otherwise follow the phone or browser language list. */
+  const detectLang=()=>{
+    const ALIAS={'tl':'fil','zh-hant':'zh-tw','zh-hk':'zh-tw','zh-mo':'zh-tw','zh-tw':'zh-tw','zh-hans':'zh','zh-cn':'zh','zh-sg':'zh','iw':'he','in':'id','pa-guru':'pa'};
+    const list=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'en']).map(x=>String(x).toLowerCase());
+    for(const tag of list){
+      const parts=tag.split('-');
+      for(const k of [tag,parts.slice(0,2).join('-'),parts[0]]){const c=ALIAS[k]||k;if(LANGS[c])return c}
+    }
+    return 'en';
+  };
+  let saved='en';try{saved=localStorage.getItem('ftm-lang-manual')==='1'?(localStorage.getItem('ftm-lang')||'en'):detectLang()}catch(e){saved=detectLang()}
   try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
 
