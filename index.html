@@ -989,6 +989,8 @@
   .compound-calc{background:#fff;border-radius:24px;padding:28px;display:grid;gap:10px;color:var(--ink)}
   .compound-calc label{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
   .compound-calc output{color:var(--blue);font-variant-numeric:tabular-nums}
+  output.calc-edit{cursor:text;border-bottom:1.5px dashed currentColor;padding:0 2px;outline:none;min-width:2ch;display:inline-block}
+  output.calc-edit:focus{background:var(--bg-2);border-bottom-style:solid;border-radius:4px}
   .compound-calc input[type=range]{width:100%;accent-color:var(--gold);margin-bottom:8px}
   .compound-result{display:grid;gap:2px;padding:16px 0 8px;border-top:1px solid var(--line);margin-top:6px}
   .compound-result span{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -1586,7 +1588,7 @@
         <label for="cStart">Starting balance <output id="cStartOut">10,000€</output></label>
         <input type="range" id="cStart" min="0" max="1000" step="1" value="167" data-lo="1000" data-hi="1000000000" aria-label="Starting balance">
         <label for="cRate">Annual return <output id="cRateOut">30%</output></label>
-        <input type="range" id="cRate" min="25" max="500" step="5" value="50">
+        <input type="range" id="cRate" min="25" max="500" step="1" value="50">
         <label for="cYears">Years <output id="cYearsOut">5</output></label>
         <input type="range" id="cYears" min="1" max="20" step="1" value="10">
         <div class="compound-result"><span>Projected balance</span><b id="cResult">37,129€</b><small id="cGain">+27,129€ growth</small></div>
@@ -3038,6 +3040,30 @@
   try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
 
+  /* ---- Calculators: every figure can also be typed. Click the number, type, press Enter. ---- */
+  (()=>{
+    const F=[['cStartOut','cStart','amt'],['cRateOut','cRate','pct'],['cYearsOut','cYears','int'],['ivcAmtO','ivcAmt','amt'],['ivcRetO','ivcRet','pct']];
+    F.forEach(([oid,sid,kind])=>{
+      const o=document.getElementById(oid),sl=document.getElementById(sid);if(!o||!sl)return;
+      o.classList.add('calc-edit');o.contentEditable='true';o.setAttribute('role','textbox');o.setAttribute('inputmode',kind==='pct'?'text':'numeric');o.setAttribute('aria-label','Type a value');o.spellcheck=false;
+      const clearExact=()=>{delete sl.dataset.exact};
+      sl.addEventListener('pointerdown',clearExact);sl.addEventListener('keydown',clearExact);
+      o.addEventListener('click',e=>e.preventDefault());
+      o.addEventListener('focus',()=>{const r=document.createRange();r.selectNodeContents(o);const sel=getSelection();sel.removeAllRanges();sel.addRange(r)});
+      const apply=()=>{
+        let t=o.textContent.replace(/\s/g,'');const neg=/^[-\u2212]/.test(t);
+        let n=kind==='amt'?parseInt(t.replace(/[^0-9]/g,''),10):parseFloat(t.replace(',','.').replace(/[^0-9.]/g,''));
+        if(isNaN(n)){sl.dispatchEvent(new Event('input',{bubbles:true}));return}
+        if(neg)n=-n;
+        if(kind==='amt'){const lo=+sl.dataset.lo,hi=+sl.dataset.hi;n=Math.min(hi,Math.max(lo,Math.round(n)));sl.dataset.exact=n;sl.value=Math.round(1000*Math.log(n/lo)/Math.log(hi/lo))}
+        else{n=Math.min(+sl.max,Math.max(+sl.min,kind==='int'?Math.round(n):n));sl.value=n}
+        sl.dispatchEvent(new Event('input',{bubbles:true}));
+      };
+      o.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();o.blur()}if(e.key==='Escape'){o.blur()}});
+      o.addEventListener('blur',apply);
+    });
+  })();
+
   /* ---- Tickers on touch screens: pause while a finger is on them, resume when it lifts ---- */
   document.querySelectorAll('.marquee').forEach(m=>{
     const on=()=>m.classList.add('held'),off=()=>m.classList.remove('held');
@@ -3059,7 +3085,7 @@
 
   /* ---- Compound calculator ---- */
   (()=>{
-    const logAmt=el=>{const lo=+el.dataset.lo,hi=+el.dataset.hi,v=lo*Math.pow(hi/lo,+el.value/1000),q=Math.pow(10,Math.max(2,Math.floor(Math.log10(v))-1));return Math.min(hi,Math.max(lo,Math.round(v/q)*q))};
+    const logAmt=el=>{if(el.dataset.exact)return +el.dataset.exact;const lo=+el.dataset.lo,hi=+el.dataset.hi,v=lo*Math.pow(hi/lo,+el.value/1000),q=Math.pow(10,Math.max(2,Math.floor(Math.log10(v))-1));return Math.min(hi,Math.max(lo,Math.round(v/q)*q))};
     const st=document.getElementById('cStart'),rt=document.getElementById('cRate'),yr=document.getElementById('cYears');
     if(!st)return;
     const eur=n=>Math.round(n).toLocaleString('de-DE')+'€';
@@ -6215,7 +6241,7 @@
       var amt=$('ivcAmt'), ret=$('ivcRet'), join=$('ivcJoin'); if(!amt)return;
       var n=new Date(); join.value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
       function calc(){
-        var a=(function(el){var lo=+el.dataset.lo,hi=+el.dataset.hi,v=lo*Math.pow(hi/lo,+el.value/1000),q=Math.pow(10,Math.max(2,Math.floor(Math.log10(v))-1));return Math.min(hi,Math.max(lo,Math.round(v/q)*q))})(amt), r=+ret.value, parts=(join.value||join.defaultValue||'').split('-');
+        var a=(function(el){if(el.dataset.exact)return +el.dataset.exact;var lo=+el.dataset.lo,hi=+el.dataset.hi,v=lo*Math.pow(hi/lo,+el.value/1000),q=Math.pow(10,Math.max(2,Math.floor(Math.log10(v))-1));return Math.min(hi,Math.max(lo,Math.round(v/q)*q))})(amt), r=+ret.value, parts=(join.value||join.defaultValue||'').split('-');
         var y=+parts[0]||n.getFullYear(), mo=(+parts[1]||n.getMonth()+1)-1;
         var el=new Date(y, mo+RULE.lockMonths+1, 1);
         var sharePct=Math.max(0,r)*RULE.share, profit=a*sharePct/100;
