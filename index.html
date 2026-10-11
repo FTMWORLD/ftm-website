@@ -989,8 +989,13 @@
   .compound-calc{background:#fff;border-radius:24px;padding:28px;display:grid;gap:10px;color:var(--ink)}
   .compound-calc label{display:flex;justify-content:space-between;font-size:14px;font-weight:600}
   .compound-calc output{color:var(--blue);font-variant-numeric:tabular-nums}
-  output.calc-edit{cursor:text;border-bottom:1.5px dashed currentColor;padding:0 2px;outline:none;min-width:2ch;display:inline-block}
-  output.calc-edit:focus{background:var(--bg-2);border-bottom-style:solid;border-radius:4px}
+  .calc-field{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg-2);cursor:text;transition:border-color .15s}
+  .calc-field:focus-within{border-color:var(--blue);background:#fff}
+  .calc-field svg{width:14px;height:14px;flex:none;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+  .calc-field input{border:0;background:transparent;font:inherit;font-weight:700;color:var(--blue);width:9.5ch;padding:6px 0;text-align:right;outline:none;font-variant-numeric:tabular-nums}
+  .calc-field .u{color:var(--muted);font-weight:600}
+  .compound-calc label,.inv-calc label{align-items:center;gap:10px}
+  .calc-out-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .compound-calc input[type=range]{width:100%;accent-color:var(--gold);margin-bottom:8px}
   .compound-result{display:grid;gap:2px;padding:16px 0 8px;border-top:1px solid var(--line);margin-top:6px}
   .compound-result span{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -3040,27 +3045,40 @@
   try{const q=new URLSearchParams(location.search).get('lang');if(q&&LANGS[q])saved=q;}catch(e){}
   applyLang(LANGS[saved]?saved:'en');
 
-  /* ---- Calculators: every figure can also be typed. Click the number, type, press Enter. ---- */
+  /* ---- Calculators: a typing box beside every figure. Type a number, press Enter or tap away. ---- */
   (()=>{
-    const F=[['cStartOut','cStart','amt'],['cRateOut','cRate','pct'],['cYearsOut','cYears','int'],['ivcAmtO','ivcAmt','amt'],['ivcRetO','ivcRet','pct']];
-    F.forEach(([oid,sid,kind])=>{
+    const pen='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
+    const F=[['cStartOut','cStart','amt','€'],['cRateOut','cRate','pct','%'],['cYearsOut','cYears','int',''],['ivcAmtO','ivcAmt','amt','€'],['ivcRetO','ivcRet','pct','%']];
+    const de=n=>Math.round(n).toLocaleString('de-DE');
+    F.forEach(([oid,sid,kind,unit])=>{
       const o=document.getElementById(oid),sl=document.getElementById(sid);if(!o||!sl)return;
-      o.classList.add('calc-edit');o.contentEditable='true';o.setAttribute('role','textbox');o.setAttribute('inputmode',kind==='pct'?'text':'numeric');o.setAttribute('aria-label','Type a value');o.spellcheck=false;
+      const box=document.createElement('span');box.className='calc-field';
+      box.innerHTML=pen+'<input type="text" autocomplete="off" spellcheck="false">'+(unit?'<span class="u">'+unit+'</span>':'');
+      const inp=box.querySelector('input');
+      inp.setAttribute('inputmode',kind==='pct'&&+sl.min<0?'text':'decimal');
+      inp.setAttribute('aria-label',(o.closest('label')?o.closest('label').firstChild.textContent.trim():'Value')+', type a value');
+      o.after(box);o.classList.add('calc-out-hidden');
+      box.addEventListener('click',()=>inp.focus());
+      const show=()=>{if(document.activeElement===inp)return;const t=o.textContent.replace(/[€%\s]/g,'');inp.value=t};
+      sl.addEventListener('input',show);show();
+      new MutationObserver(show).observe(o,{childList:true,characterData:true,subtree:true});
       const clearExact=()=>{delete sl.dataset.exact};
       sl.addEventListener('pointerdown',clearExact);sl.addEventListener('keydown',clearExact);
-      o.addEventListener('click',e=>e.preventDefault());
-      o.addEventListener('focus',()=>{const r=document.createRange();r.selectNodeContents(o);const sel=getSelection();sel.removeAllRanges();sel.addRange(r)});
+      inp.addEventListener('focus',()=>{inp.select()});
+      inp.addEventListener('input',()=>{const c=inp.value.replace(kind==='amt'?/[^0-9.,]/g:/[^0-9.,\-\u2212]/g,'');if(c!==inp.value)inp.value=c});
       const apply=()=>{
-        let t=o.textContent.replace(/\s/g,'');const neg=/^[-\u2212]/.test(t);
-        let n=kind==='amt'?parseInt(t.replace(/[^0-9]/g,''),10):parseFloat(t.replace(',','.').replace(/[^0-9.]/g,''));
-        if(isNaN(n)){sl.dispatchEvent(new Event('input',{bubbles:true}));return}
+        let t=inp.value.trim();const neg=/^[-−]/.test(t);
+        let n=kind==='amt'?parseInt(t.replace(/[^0-9]/g,''),10):parseFloat(t.replace(/\./g,'').replace(',','.').replace(/[^0-9.]/g,''));
+        if(kind!=='amt'&&/^\-?\d+(\.\d+)?$/.test(t.replace('−','-')))n=Math.abs(parseFloat(t.replace('−','-')));
+        if(isNaN(n)){inp.blur();show();return}
         if(neg)n=-n;
         if(kind==='amt'){const lo=+sl.dataset.lo,hi=+sl.dataset.hi;n=Math.min(hi,Math.max(lo,Math.round(n)));sl.dataset.exact=n;sl.value=Math.round(1000*Math.log(n/lo)/Math.log(hi/lo))}
-        else{n=Math.min(+sl.max,Math.max(+sl.min,kind==='int'?Math.round(n):n));sl.value=n}
+        else{n=Math.min(+sl.max,Math.max(+sl.min,Math.round(n)));sl.value=n}
         sl.dispatchEvent(new Event('input',{bubbles:true}));
+        inp.blur();show();
       };
-      o.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();o.blur()}if(e.key==='Escape'){o.blur()}});
-      o.addEventListener('blur',apply);
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();apply()}if(e.key==='Escape'){inp.blur();show()}});
+      inp.addEventListener('change',apply);
     });
   })();
 
