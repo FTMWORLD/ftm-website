@@ -740,6 +740,7 @@
   .pp-item.is-on{background:rgba(212,175,55,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(212,175,55,.22)}
   .pp-item.is-on svg{opacity:1;color:var(--gold-light)}
   @media (max-width:860px){.pp-item{white-space:nowrap;width:auto}}
+  .pp-sched{margin-top:14px;display:grid;gap:8px}.pp-sched p{margin:0;padding:10px 14px;border-radius:12px;background:var(--bg-3);font-weight:700;color:var(--ink);font-size:14px}
   .pp-empty{border:1.5px dashed var(--line);border-radius:16px;padding:48px 20px;text-align:center;color:var(--muted);font-size:14px;background:var(--bg-3)}
   .pp-bar{height:8px;border-radius:99px;background:var(--bg-2);margin-top:16px;overflow:hidden}.pp-bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
   .iv-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border:0;border-radius:11px;background:none;font:inherit;font-size:14.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;width:100%}
@@ -1800,7 +1801,7 @@
         <div class="inv-out">
           <div><span>Subscription</span><b id="prFee">&mdash;</b></div>
           <div><span>Account profit</span><b id="prProfit">&mdash;</b></div>
-          <div class="big"><span>Your 20% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prY2" class="ivc-year">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small><small id="prRest" class="ivc-year">&mdash;</small></div>
+          <div class="big"><span>Your 20% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small></div>
         </div>
       </div>
     </div>
@@ -2685,6 +2686,7 @@
                 <div><dt>Payout date</dt><dd id="ppPayDate">&mdash;</dd></div>
                 <div><dt>Paid to</dt><dd id="ppPayTo">&mdash;</dd></div>
               </dl>
+              <div class="pp-sched"><p id="ppW2">&mdash;</p><p id="ppW34">&mdash;</p><p id="ppW5">&mdash;</p></div>
             </div>
           </div>
           <div class="app-card">
@@ -6678,10 +6680,7 @@
       for(var y=1;y<=Y;y++){ pot*=1+r/100; acc+=e; if(y%5===0){pot+=acc;acc=0;} }
       var share=pot+acc, profit=size*r/100*Y;
       document.getElementById('prYearsO').textContent=Y;
-      var ys=size*r/100*0.2, early=ys*0.1; document.getElementById('prY2').textContent='In year 2: '+eu(early*2);
-      document.getElementById('prYear').textContent='Years 3 and 4, each year: '+eu(early); document.getElementById('prYear').hidden=Y<3;
-      document.getElementById('prRest').textContent='From year 5, the rest: '+eu(Math.max(0,share-early*Math.min(Y,4)));
-      document.getElementById('prRetO').textContent=r+'%';
+            document.getElementById('prRetO').textContent=r+'%';
       document.getElementById('prFee').textContent=eu(fee);
       document.getElementById('prProfit').textContent=eu(profit);
       document.getElementById('prShare').textContent=eu(share);
@@ -6717,6 +6716,8 @@
         $('ppLeft').textContent=Math.max(0,Math.ceil((end-Date.now())/864e5))+' days'; }
       if(a.balance!=null){ $('ppBal').textContent=eu(a.balance); $('ppProfit').textContent=(profit>=0?'+':'')+eu(profit);
         $('ppProfitPct').textContent=(profit>=0?'+':'')+(profit/a.size*100).toFixed(2)+'%'; $('ppShare').textContent=eu(share); $('ppPayNow').textContent=eu(share); }
+      if(a.start&&a.balance!=null){ var yrs=Math.max(1,(Date.now()-a.start)/(365.25*864e5)), e=share/yrs;
+        $('ppW2').textContent='In year 2: '+eu(e*0.2); $('ppW34').textContent='Years 3 and 4, each year: '+eu(e*0.1); $('ppW5').textContent='From year 5, the rest: '+eu(Math.max(0,share-e*0.4)); }
       if(a.equity!=null)$('ppEq').textContent=eu(a.equity);
       if(cl.length){ var w=cl.filter(function(t){return t.pl>0;}), gp=w.reduce(function(s,t){return s+t.pl;},0), gl=-cl.filter(function(t){return t.pl<0;}).reduce(function(s,t){return s+t.pl;},0);
         var run=a.size, pk=run, dd=0; cl.forEach(function(t){run+=t.pl; if(run>pk)pk=run; dd=Math.max(dd,(pk-run)/pk*100);});
