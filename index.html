@@ -1740,17 +1740,18 @@
   <div class="container">
     <p class="inv-eyebrow">FTM Prop</p>
     <h2 class="inv-title">A prop firm account, traded for you by FTM MACHINE</h2>
-    <p class="inv-lead">Choose the size of the prop firm account you want and pay one subscription. FTM MACHINE trades the account for the two-year contract, and you receive half of all the profit it makes.</p>
+    <p class="inv-lead">Choose the size of the prop firm account you want and pay one subscription. FTM MACHINE trades the account for at least two years, and you receive half of all the profit it makes.</p>
     <div class="prop-steps">
       <div class="inv-step"><span class="n">1</span><b>Choose your account</b><p>A 50.000&euro; account for a 1.000&euro; subscription, or a 100.000&euro; account for 2.000&euro;.</p></div>
       <div class="inv-step"><span class="n">2</span><b>FTM trades it</b><p>FTM MACHINE trades the prop account for you, every market day, for two years.</p></div>
-      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>At the end of the contract you receive 50% of the total profit made on the account.</p></div>
+      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>From year two you receive 50% of the profit made on the account, every year, for as long as you keep it.</p></div>
     </div>
     <div class="inv-grid">
       <div class="inv-rule">
         <h3>How FTM Prop works</h3>
         <ul>
-          <li><b>Contract.</b> Two years from the day your prop account starts trading.</li>
+          <li><b>Contract.</b> At least two years. Keep the account as long as you like: from year two you can withdraw your share every year.</li>
+          <li><b>Target.</b> FTM targets around 10% account profit in the first two years. If the account makes more, your share grows with it.</li>
           <li><b>Your share.</b> 50% of the total profit the account makes over the contract.</li>
           <li><b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.</li>
           <li><b>Accounts.</b> 50.000&euro; for a 1.000&euro; subscription. 100.000&euro; for a 2.000&euro; subscription.</li>
@@ -1767,12 +1768,14 @@
         <p class="inv-calc-note">An illustration to show how FTM Prop profit works.</p>
         <label>Prop account</label>
         <div class="prop-sizes" role="group" aria-label="Prop account"><button type="button" data-ps="50000" data-fee="1000">50.000&euro;</button><button type="button" data-ps="100000" data-fee="2000" aria-pressed="true">100.000&euro;</button></div>
-        <label for="prRet">Account profit over 2 years <output id="prRetO">10%</output></label>
-        <input type="range" id="prRet" min="0" max="200" step="1" value="10">
+        <label for="prRet">Account profit per year <output id="prRetO">5%</output></label>
+        <input type="range" id="prRet" min="0" max="100" step="1" value="5">
+        <label for="prYears">Years you keep the account <output id="prYearsO">2</output></label>
+        <input type="range" id="prYears" min="2" max="30" step="1" value="2">
         <div class="inv-out">
           <div><span>Subscription</span><b id="prFee">&mdash;</b></div>
           <div><span>Account profit</span><b id="prProfit">&mdash;</b></div>
-          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small></div>
+          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small></div>
         </div>
       </div>
     </div>
@@ -3300,7 +3303,7 @@
   /* ---- Calculators: a typing box beside every figure. Type a number, press Enter or tap away. ---- */
   (()=>{
     const pen='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
-    const F=[['cStartOut','cStart','amt','€'],['cRateOut','cRate','pct','%'],['cYearsOut','cYears','int',''],['ivcAmtO','ivcAmt','amt','€'],['ivcRetO','ivcRet','pct','%'],['ivcYearsO','ivcYears','int',''],['prRetO','prRet','pct','%']];
+    const F=[['cStartOut','cStart','amt','€'],['cRateOut','cRate','pct','%'],['cYearsOut','cYears','int',''],['ivcAmtO','ivcAmt','amt','€'],['ivcRetO','ivcRet','pct','%'],['ivcYearsO','ivcYears','int',''],['prRetO','prRet','pct','%'],['prYearsO','prYears','int','']];
     const de=n=>Math.round(n).toLocaleString('de-DE');
     F.forEach(([oid,sid,kind,unit])=>{
       const o=document.getElementById(oid),sl=document.getElementById(sid);if(!o||!sl)return;
@@ -6636,8 +6639,11 @@
     var eu=function(n){return Math.round(n).toLocaleString('de-DE')+'\u20AC';};
     var btns=document.querySelectorAll('.prop-sizes button');
     function calc(){
-      var b=document.querySelector('.prop-sizes button[aria-pressed="true"]'), size=+b.dataset.ps, fee=+b.dataset.fee, r=+ret.value;
-      var profit=size*r/100, share=profit/2;
+      var b=document.querySelector('.prop-sizes button[aria-pressed="true"]'), size=+b.dataset.ps, fee=+b.dataset.fee, r=+ret.value, Y=+document.getElementById('prYears').value;
+      /* profit is taken out of the prop account, so it does not compound */
+      var profit=size*r/100*Y, share=profit/2;
+      document.getElementById('prYearsO').textContent=Y;
+      document.getElementById('prYear').textContent='Available each year: '+eu(size*r/100/2);
       document.getElementById('prRetO').textContent=r+'%';
       document.getElementById('prFee').textContent=eu(fee);
       document.getElementById('prProfit').textContent=eu(profit);
@@ -6645,7 +6651,7 @@
       document.getElementById('prMult').textContent=(share/fee).toLocaleString('de-DE',{maximumFractionDigits:1})+'\u00D7 your subscription';
     }
     btns.forEach(function(x){x.addEventListener('click',function(){btns.forEach(function(y){y.setAttribute('aria-pressed',y===x?'true':'false');});calc();});});
-    ret.addEventListener('input',calc); calc();
+    ret.addEventListener('input',calc); document.getElementById('prYears').addEventListener('input',calc); calc();
   })();
 
   /* ---- FTM Prop client area. Figures come from F.prop once the engine reports the
