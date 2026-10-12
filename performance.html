@@ -76,6 +76,8 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .gl-price b{font-size:clamp(26px,3vw,34px);font-weight:800;color:#fff;font-variant-numeric:tabular-nums;transition:color .4s}
 .gl-price b.up{color:#3CC98A}.gl-price b.down{color:#FF6B74}
 .gl-sub{font-size:12.5px;color:rgba(255,255,255,.7)}
+.gl-ret{font-size:13.5px;color:rgba(255,255,255,.85);margin-top:6px;line-height:1.35}
+.gl-ret b{display:block;font-size:clamp(22px,2.4vw,28px);font-weight:800;color:#3CC98A}
 .gl-zones{overflow:hidden;border-top:1px solid rgba(255,255,255,.14);padding-top:10px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .gl-track{display:flex;width:max-content;animation:glz 60s linear infinite}
 .gl-zones:hover .gl-track{animation-play-state:paused}
@@ -194,7 +196,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 <g transform="translate(10,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><path d="M98 30l0 26" stroke="#7a5310"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
 <g transform="translate(112,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
 <g transform="translate(61,24)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
-<path d="M150 18l4 8 8 2-8 3-4 8-3-8-8-3 8-2z" fill="#fff" opacity=".85"/></svg><div class="gl-price"><span class="gl-lbl">XAU/USD · <i class="gl-dot"></i> Live</span><b id="gl-px">—</b><span class="gl-sub" id="gl-ch">Gold, US dollars per ounce</span></div></div><div class="gl-zones"><div class="gl-track" id="gl-zones"></div></div></div>
+<path d="M150 18l4 8 8 2-8 3-4 8-3-8-8-3 8-2z" fill="#fff" opacity=".85"/></svg><div class="gl-price"><span class="gl-lbl">XAU/USD · <i class="gl-dot"></i> Live</span><b id="gl-px">—</b><span class="gl-sub" id="gl-ch">Gold, US dollars per ounce</span><span class="gl-ret" id="gl-ret"></span></div></div><div class="gl-zones"><div class="gl-track" id="gl-zones"></div></div></div>
   </div>
   <section id="compare">
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare">Higher risk earned more, of course</h2></div>
@@ -622,10 +624,12 @@ $('m-next').onclick=()=>{const m=P[cur].monthly,i=m.findIndex(x=>x[0]===mKey);if
     if(open===null)open=v;
     px.classList.remove('up','down');if(last!==null&&v!==last){px.classList.add(v>last?'up':'down');setTimeout(()=>px.classList.remove('up','down'),1200)}
     last=v;px.textContent='$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-    const d=v-open,dp=d/open*100;ch.textContent=Math.abs(d)<.005?'Gold, US dollars per ounce':`${d>0?'▲':'▼'} ${d>0?'+':''}${d.toFixed(2)} (${dp>0?'+':''}${dp.toFixed(2)}%) since you opened this page`;};
+    };
   const pull=async()=>{for(let k=0;k<SRC.length;k++){const i=(src+k)%SRC.length;
       try{const r=await fetch(SRC[i][0],{cache:'no-store'});if(!r.ok)throw 0;show(SRC[i][1](await r.json()));src=i;return}catch(e){}}
     if(last===null){px.textContent='—';ch.textContent='Live price unavailable right now'}};
+  ch.textContent='Gold, US dollars per ounce';
+  {const g=GS['100000'].g2,r=(g.final/S0(g)-1)*100;document.getElementById('gl-ret').innerHTML=`<b>+${Math.round(r).toLocaleString('en-US')}%</b> total return on gold, 2020 to 2026, in under 7 years`;}
   pull();setInterval(pull,10000);
   const Z=[['UTC','UTC'],['New York','America/New_York'],['London','Europe/London'],['Zurich','Europe/Zurich'],['Lagos','Africa/Lagos'],['Johannesburg','Africa/Johannesburg'],['Dubai','Asia/Dubai'],['Mumbai','Asia/Kolkata'],['Shanghai','Asia/Shanghai'],['Hong Kong','Asia/Hong_Kong'],['Singapore','Asia/Singapore'],['Tokyo','Asia/Tokyo'],['Sydney','Australia/Sydney']];
   const track=document.getElementById('gl-zones');
