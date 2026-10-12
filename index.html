@@ -1751,14 +1751,14 @@
     <div class="prop-steps">
       <div class="inv-step"><span class="n">1</span><b>Choose your account</b><p>A 50.000&euro; account for a 1.000&euro; subscription, or a 100.000&euro; account for 2.000&euro;.</p></div>
       <div class="inv-step"><span class="n">2</span><b>FTM trades it</b><p>FTM MACHINE trades the prop account for you, every market day, for two years.</p></div>
-      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>You earn 50% of the profit made on the account. In years 1 to 4 you can take 10% of each year's share, and from year 5 all of it.</p></div>
+      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>You earn 50% of the profit made on the account. From year 2 you can take 10% of each year's share, and from year 5 all of it.</p></div>
     </div>
     <div class="inv-grid">
       <div class="inv-rule">
         <h3>How FTM Prop works</h3>
         <ul>
           <li><b>Contract.</b> At least two years. Keep the account as long as you like.</li>
-          <li><b>Withdrawals.</b> In years 1 to 4 you can withdraw 10% of that year's profit share. Anything you do not take adds up for later. From year 5 you can withdraw all of your profit share.</li>
+          <li><b>Withdrawals.</b> From year 2 you can withdraw 10% of each year's profit share, year 1 included, so 20% in year 2. Anything you do not take adds up for later. From year 5 you can withdraw all of your profit share.</li>
           <li><b>Target.</b> FTM targets around 10% account profit in the first two years. If the account makes more, your share grows with it.</li>
           <li><b>Your share.</b> 50% of the total profit the account makes over the contract.</li>
           <li><b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.</li>
@@ -1783,7 +1783,7 @@
         <div class="inv-out">
           <div><span>Subscription</span><b id="prFee">&mdash;</b></div>
           <div><span>Account profit</span><b id="prProfit">&mdash;</b></div>
-          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small><small id="prRest" class="ivc-year">&mdash;</small></div>
+          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prY2" class="ivc-year">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small><small id="prRest" class="ivc-year">&mdash;</small></div>
         </div>
       </div>
     </div>
@@ -6651,7 +6651,8 @@
       /* profit is taken out of the prop account, so it does not compound */
       var profit=size*r/100*Y, share=profit/2;
       document.getElementById('prYearsO').textContent=Y;
-      var ys=size*r/100/2, early=ys*0.1; document.getElementById('prYear').textContent='Years 1 to 4, each year: '+eu(early);
+      var ys=size*r/100/2, early=ys*0.1; document.getElementById('prY2').textContent='In year 2: '+eu(early*2);
+      document.getElementById('prYear').textContent='Years 3 and 4, each year: '+eu(early); document.getElementById('prYear').hidden=Y<3;
       document.getElementById('prRest').textContent='From year 5, the rest: '+eu(Math.max(0,share-early*Math.min(Y,4)));
       document.getElementById('prRetO').textContent=r+'%';
       document.getElementById('prFee').textContent=eu(fee);
