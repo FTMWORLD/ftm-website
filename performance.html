@@ -207,6 +207,12 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .clegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
 .clegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 
+.pp-head,.pp-soon{display:none}
+body.pg-prop .pp-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:22px}
+body.pg-prop .pp-soon:not([hidden]){display:block;color:rgba(255,255,255,.8);font-size:14px;margin-top:10px}
+.pp-head .sz-pills{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
+.pp-head .sz-pills button{color:rgba(255,255,255,.8);font-size:14px;padding:8px 16px}
+.pp-head .pp-get{margin:0}
 /* ---- report menu + prop firm page ---- */
 .rside{position:fixed;left:0;top:50%;transform:translate(-100%,-50%);z-index:60;transition:transform .25s}
 .rside.open{transform:translate(0,-50%)}
@@ -249,6 +255,7 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 <div class="wrap">
   <header>
     <div class="topbar"><a class="logo" href="/" aria-label="FTM home"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a><a class="back" href="/#performance">&larr; Back to website</a></div>
+    <div class="pp-head"><div class="pp-sizes sz-pills" role="group" aria-label="Prop account size"><button type="button" data-ps="50000">$50k</button><button type="button" data-ps="100000" aria-pressed="true">$100k</button><button type="button" data-ps="200000">$200k</button><button type="button" data-ps="1000000">$1M</button></div><a class="invest-btn pp-get" href="/#prop">Get FTM Prop</a></div><p class="pp-soon" id="pp-soon" hidden></p>
     <div class="eyebrow" id="hero-eyebrow">FTM MACHINE · Gold and Bitcoin · January 2020 to October 2026</div>
     <h1 id="hero" class="marquee" aria-label="Give FTM five years of your trust and watch it pay off."><span class="track" aria-hidden="true"><span>Give FTM five years of your trust and watch it pay off.</span><span>Give FTM five years of your trust and watch it pay off.</span></span></h1>
     <p class="lead" id="hero-lead">Every year, month and week of a 6.8-year historical test on gold and on Bitcoin, losing periods included. Results are shown after broker spread and swap, for each risk profile. The strategy is the same in every profile; only the trade size changes.</p>
@@ -842,6 +849,10 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
     document.getElementById('pp-cmp').innerHTML='<thead><tr><th>Funded risk</th><th>Challenges bought</th><th>Funded accounts lost</th><th>Paid out</th></tr></thead><tbody>'+
       V.map(([n,v])=>`<tr><td><b>${n}</b></td><td>${v.challenges_bought}</td><td>${v.funded_lost}</td><td class="up">${usd(v.payout_total)}</td></tr>`).join('')+'</tbody>';
   }
+  document.querySelectorAll('.pp-sizes button').forEach(b=>b.addEventListener('click',()=>{
+    const z=+b.dataset.ps,so=document.getElementById('pp-soon');
+    if(z!==100000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon. Showing the $100k account.';so.hidden=false;return}
+    so.hidden=true;document.querySelectorAll('.pp-sizes button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'))}));
   function go(pg){
     const prop=pg==='prop';document.getElementById('pg-auto').hidden=prop;document.getElementById('pg-prop').hidden=!prop;document.body.classList.toggle('pg-prop',prop);
     rs.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.pg===pg));rs.classList.remove('open');
