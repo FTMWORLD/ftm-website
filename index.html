@@ -1711,7 +1711,7 @@
     </div>
     <div class="step red">
       <div class="txt"><h3 data-i18n="step.trade">AutoTrade</h3><p>Start your trading journey and anticipate profits.</p><a class="btn btn-dark" href="#pricing">Explore FTM MACHINE</a></div>
-      <div class="visual"><div class="form-card"><b style="text-align:center;font-size:14px">EUR/USD</b><div class="ticket"><div><small>Bid</small><b>1.08651</b></div><div><small>Ask</small><b>1.08670</b></div></div><div class="ticket"><span class="btn btn-outline" style="padding:10px">Buy</span><span class="btn btn-outline" style="padding:10px">Sell</span></div></div></div>
+      <div class="visual"><div class="form-card"><b style="text-align:center;font-size:14px">Gold</b><div class="ticket"><div><small>Bid</small><b id="gtBid">&mdash;</b></div><div><small>Ask</small><b id="gtAsk">&mdash;</b></div></div><a class="btn btn-red" href="#auto" style="padding:12px;text-align:center">Activate FTM</a></div></div>
     </div>
     <div class="step dark">
       <div class="txt"><h3>Monitor</h3><p>Withdraw, pause, or cancel trading anytime.</p><button class="btn btn-red js-login">Log in</button></div>
@@ -6599,6 +6599,14 @@
     else if(h==='#paid-invest')show('invest');
     else if(h==='#paid')show('');
   })();
+</script>
+<script>
+/* Live gold price for the ticket card: first source that answers, every 5 s. */
+(function(){var SRC=[['https://api.gold-api.com/price/XAU',function(j){return +j.price;}],['https://api.coinbase.com/v2/prices/PAXG-USD/spot',function(j){return +j.data.amount;}],['https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT',function(j){return +j.price;}]];
+var f=function(v){return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});};
+function tick(i){i=i||0;if(i>=SRC.length)return;fetch(SRC[i][0],{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){var v=SRC[i][1](j);if(!(v>500))throw 0;
+var b=document.getElementById('gtBid'),a=document.getElementById('gtAsk');if(b){b.textContent=f(v-0.15);a.textContent=f(v+0.15);}}).catch(function(){tick(i+1);});}
+tick();setInterval(tick,5000);})();
 </script>
 </body>
 </html>
