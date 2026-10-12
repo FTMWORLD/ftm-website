@@ -92,6 +92,9 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .sz-pills button{font:inherit;font-size:13px;font-weight:700;border:0;background:transparent;color:var(--muted);border-radius:99px;padding:6px 12px;cursor:pointer}
 .sz-pills button[aria-pressed="true"]{background:var(--red);color:#fff}
 .sz-pills button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.mh4{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.mh4 h4{margin:0!important}
+.mback:not([data-mk="gold"]) .mz{display:none}
 .size-note{font-size:13.5px;color:#FFD9A0;background:rgba(255,180,60,.12);border:1px solid rgba(255,180,60,.35);border-radius:12px;padding:10px 14px;margin:0}
 .jump .sz{display:flex;gap:6px;align-items:center;margin-left:8px}
 .jump .sz a{padding:7px 14px;font-size:13px;background:transparent!important;border-color:rgba(255,255,255,.25)!important}
@@ -224,7 +227,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 <path d="M150 18l4 8 8 2-8 3-4 8-3-8-8-3 8-2z" fill="#fff" opacity=".85"/></svg><div class="gl-price"><span class="gl-lbl">XAU/USD · <i class="gl-dot"></i> Live</span><b id="gl-px">—</b><span class="gl-sub" id="gl-ch">Gold, US dollars per ounce</span><span class="gl-ret" id="gl-ret"></span></div></div><div class="gl-zones"><div class="gl-track" id="gl-zones"></div></div></div>
   </div>
   <section id="compare">
-    <div class="sec-head"><div class="eyebrow">At a glance</div><div class="sh-row"><h2 id="h-compare">Higher risk earned more, of course</h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare">Higher risk earned more, of course</h2></div>
     <div class="panel scroll"><table id="t-compare"></table></div>
     <p class="note">All four profiles take the same trades. Conservative uses positions half the size of Balanced; Growth 1.2× and 1.5× use positions 1.2 and 1.5 times larger.</p>
     <div class="hint-row"><p class="hint">Click any row in the table, or choose a risk profile above, to see its full results.</p><a class="invest-btn" href="/#pricing">Invest in Gold</a></div>
@@ -233,25 +236,25 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="kpis" id="kpis"></div>
 
   <section id="growth">
-    <div class="sec-head"><div class="eyebrow">1 · Account growth</div><div class="sh-row"><h2 id="h-growth"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">1 · Account growth</div><h2 id="h-growth"></h2></div>
     <div class="panel"><div class="legend"><span><i style="background:var(--gold)"></i>Account balance (log scale)</span><span><i style="background:var(--down-soft);border:1px solid var(--down)"></i>Distance below the previous high</span></div><div class="chart" id="c-equity"></div></div>
     <p class="note">A log scale shows growth fairly: the same height means the same percentage gain in 2020 and in 2026. The lower panel shows how far the balance sat below its previous high each week.</p>
   </section>
 
   <section id="years">
-    <div class="sec-head"><div class="eyebrow">2 · Year by year</div><div class="sh-row"><h2 id="h-years"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">2 · Year by year</div><h2 id="h-years"></h2></div>
     <div class="panel"><div class="chart" id="c-years"></div></div>
     <div class="panel scroll"><table id="t-years"></table></div>
   </section>
 
   <section id="months">
-    <div class="sec-head"><div class="eyebrow">3 · Month by month</div><div class="sh-row"><h2 id="h-months"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">3 · Month by month</div><h2 id="h-months"></h2></div>
     <div class="panel scroll"><div class="heat" id="heat"></div></div>
     <p class="note">Each cell is the month's return on the balance at the start of the month; darker green is a bigger gain, darker red a bigger loss. October 2026 covers 1 to 8 October.</p>
   </section>
 
   <section id="weeks">
-    <div class="sec-head"><div class="eyebrow">4 · Week by week</div><div class="sh-row"><h2 id="h-weeks"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">4 · Week by week</div><h2 id="h-weeks"></h2></div>
     <div class="panel"><div class="chart" id="c-weeks"></div></div>
     <div class="two">
       <div class="panel"><h3>Winning weeks vs losing weeks</h3><div class="chart" id="c-whist"></div></div>
@@ -260,7 +263,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   </section>
 
   <section id="trades">
-    <div class="sec-head"><div class="eyebrow">5 · Trades</div><div class="sh-row"><h2 id="h-trades"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">5 · Trades</div><h2 id="h-trades"></h2></div>
     <div class="panel"><div class="facts" id="f-trades"></div></div>
     <div class="two">
       <div class="panel"><h3>Result of each trade, % of the balance</h3><div class="chart" id="c-dist"></div></div>
@@ -270,7 +273,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   </section>
 
   <section id="risk">
-    <div class="sec-head"><div class="eyebrow">6 · Risk</div><div class="sh-row"><h2 id="h-risk"></h2><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div></div>
+    <div class="sec-head"><div class="eyebrow">6 · Risk</div><h2 id="h-risk"></h2></div>
     <div class="panel scroll"><table id="t-dd"></table></div>
     <div class="two">
       <div class="panel"><h3>Worst periods</h3><div class="facts" id="f-worst"></div></div>
@@ -371,17 +374,17 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="msub" id="m-sub"></div>
   <div class="mkpis" id="m-kpis"></div>
   <div class="mgrid">
-    <div class="panel"><h4>Balance through the month</h4><div id="m-chart"></div><div class="mnote">Balance at the start of the month and at the end of each trading week.</div></div>
-    <div class="panel"><h4>Week by week</h4><table class="mtable" id="m-weeks"></table></div>
+    <div class="panel"><div class="mh4"><h4>Balance through the month</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-chart"></div><div class="mnote">Balance at the start of the month and at the end of each trading week.</div></div>
+    <div class="panel"><div class="mh4"><h4>Week by week</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><table class="mtable" id="m-weeks"></table></div>
   </div>
   <div class="mgrid">
-    <div class="panel"><h4>Same month, every risk profile</h4><table class="mtable" id="m-profiles"></table></div>
-    <div class="panel"><h4>Drawdowns in this month</h4><div id="m-dd"></div></div>
+    <div class="panel"><div class="mh4"><h4>Same month, every risk profile</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><table class="mtable" id="m-profiles"></table></div>
+    <div class="panel"><div class="mh4"><h4>Drawdowns in this month</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-dd"></div></div>
   </div>
-  <div class="panel" id="m-trades" hidden><h4>Trades this month</h4><div id="m-trades-body"></div></div>
-  <div class="panel" id="m-wk" hidden><h4>Week by week</h4><div class="scroll"><div id="m-wk-body"></div></div><p class="mnote">Each box is one trading day, by the day trades closed: green for a profit, red for a loss, grey for no closed trades. Darker means a bigger move.</p></div>
-  <div class="panel" id="m-days" hidden><h4>Day by day</h4><div id="m-days-body"></div></div>
-  <div class="panel" id="m-candles"><h4 id="m-candles-h">Gold price this month, with every trade</h4><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
+  <div class="panel" id="m-trades" hidden><div class="mh4"><h4>Trades this month</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-trades-body"></div></div>
+  <div class="panel" id="m-wk" hidden><div class="mh4"><h4>Week by week</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div class="scroll"><div id="m-wk-body"></div></div><p class="mnote">Each box is one trading day, by the day trades closed: green for a profit, red for a loss, grey for no closed trades. Darker means a bigger move.</p></div>
+  <div class="panel" id="m-days" hidden><div class="mh4"><h4>Day by day</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-days-body"></div></div>
+  <div class="panel" id="m-candles"><div class="mh4"><h4 id="m-candles-h">Gold price this month, with every trade</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
 </div></div>
 
 
@@ -535,7 +538,7 @@ function draw(){
     marketText();const p=P[cur];compare();kpis(p);equity(p);years(p);heat(p);weeks(p);trades(p);risk(p);});
   SUF='';
 }
-const setSize=(z,el)=>{if(!GS[z])return;const t=el?el.getBoundingClientRect().top:0;SIZE=z;draw();if(el){const d=el.getBoundingClientRect().top-t;if(Math.abs(d)>1)window.scrollBy(0,d)}};
+const setSize=(z,el)=>{if(!GS[z])return;if(el&&el.closest('#mback')&&mKey){const t=el.getBoundingClientRect().top;SIZE=z;draw();ctx('gold');SUF='';keepDays=true;openMonth(mKey);keepDays=false;const fix=()=>{const d=el.getBoundingClientRect().top-t;if(Math.abs(d)>1)$('mback').scrollTop+=d};requestAnimationFrame(fix);[150,400,800,1500].forEach(ms=>setTimeout(fix,ms));return}const t=el?el.getBoundingClientRect().top:0;SIZE=z;draw();if(el){const d=el.getBoundingClientRect().top-t;if(Math.abs(d)>1)window.scrollBy(0,d)}};
 document.querySelectorAll('[data-z]').forEach(b=>b.addEventListener('click',()=>setSize(b.dataset.z,b.closest('.sz-pills')?b:null)));
 document.querySelectorAll('[data-jz]').forEach(a=>a.addEventListener('click',()=>setSize(a.dataset.jz)));
 const blockOf=el=>{const b=el.closest('.mblock');return b?b.dataset.mk:'gold'};
@@ -603,6 +606,7 @@ function renderWeeks(key,rows){
     d=monday+7;w++}
   body.innerHTML=h+'</div>';box.hidden=false;
 }
+let keepDays=false;
 function renderDays(key){
   const box=$('m-days'),body=$('m-days-body'),size=mkt==='gold'?SIZE:'100000',path=`/data/trades/${mkt}/${size}/${cur}/${key}.json`,ck=path;
   const show=rows=>{if(mKey!==key)return;renderWeeks(key,rows);if(!rows||!rows.length){box.hidden=true;return}
@@ -617,7 +621,7 @@ function renderDays(key){
     h+='<p class="mnote">Grouped by the day each trade closed. Time is the closing time, broker server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
     body.innerHTML=h};
   if(TRADES[ck]!==undefined){show(TRADES[ck]);return}
-  box.hidden=true;$('m-wk').hidden=true;fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
+  if(!keepDays){box.hidden=true;$('m-wk').hidden=true}fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
 }
 /* ---- Month detail panel ---- */
 /* Per-month trades from the same real-tick backtest reports (closed trades; drawdown on closed-trade balance). */
@@ -672,6 +676,7 @@ function openMonth(key){
     <p class="mnote" style="margin-top:10px">Result is the share of the balance when the trade opened, after commission and swap. Times are broker server time.</p>`}
   $('m-candles-h').textContent=`${MKT[mkt].name} price this month, with every trade`;
   renderCandles(key);renderDays(key);
+  $('mback').dataset.mk=mkt;document.querySelectorAll('.mz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.z===SIZE?'true':'false'));
   $('m-prev').disabled=st.idx===0;$('m-next').disabled=st.idx===st.n-1;
   const back=$('mback');if(back.hidden){back.hidden=false;document.body.style.overflow='hidden';$('m-close').focus()}
 }
