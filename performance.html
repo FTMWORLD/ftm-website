@@ -417,9 +417,9 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 </div>
 <div id="pg-prop" hidden>
   <section class="pp-hero">
-    <div class="eyebrow">FTM PROP · one $100,000 prop account · 1 Jan 2020 to 8 Oct 2026</div>
+    <div class="eyebrow" id="pp-eyebrow">FTM PROP · one $100,000 prop account · 1 Jan 2020 to 8 Oct 2026</div>
     <h2>Prop firm</h2>
-    <p class="pp-lead">The story of one $100,000 prop firm account run with the FTM PROP plan for 6.8 years: every challenge, every verification and every funded account, passed or failed. When an account failed, a new $100,000 challenge started the next day.</p>
+    <p class="pp-lead">The story of one <span class="pp-acct">$100,000</span> prop firm account run with the FTM PROP plan for 6.8 years: every challenge, every verification and every funded account, passed or failed. When an account failed, a new <span class="pp-acct">$100,000</span> challenge started the next day.</p>
     <div class="pp-steps">
       <div><b>1 · Challenge</b><span>Gold and Bitcoin. +10% to pass.</span></div>
       <div><b>2 · Verification</b><span>Gold. +5% to pass.</span></div>
@@ -435,7 +435,7 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
   <section><div class="sec-head"><div class="eyebrow">3 · Funded months</div><h2>Every month on a funded account</h2></div>
     <div class="panel"><div class="pp-scroll"><table class="pp-table" id="pp-months"></table></div></div></section>
   <section><div class="sec-head"><div class="eyebrow">4 · Funded risk</div><h2>Plan vs lower risk on the funded account</h2></div>
-    <div class="panel"><div class="pp-scroll"><table class="pp-table" id="pp-cmp"></table></div><p class="pp-note">At 1&times; and 0.35&times; risk the first funded account, reached in August 2020, never failed, so only 4 challenges were bought. The plan pays more but loses funded accounts more often.</p></div></section>
+    <div class="panel"><div class="pp-scroll"><table class="pp-table" id="pp-cmp"></table></div><p class="pp-note">Lower risk on the funded account loses fewer funded accounts, so fewer challenges are bought, but it pays out less. The plan pays the most.</p></div></section>
   <section class="notes">
     <h3>How this was tested</h3>
     <p>A historical simulation built from FTM PROP, 1 January 2020 to 8 October 2026, each month run on a fresh $100,000 account. Prop firm rules were applied on closed trades. Live daily-loss rules also count open trades, so live results can be worse.</p>
@@ -811,7 +811,7 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   const usd=v=>'$'+Math.round(v).toLocaleString('en-US'),MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const ml=k=>MN[+k.slice(5)-1]+' '+k.slice(0,4);
   function build(J){
-    const P=J.variants.plan,A=J.about,fee=A.fee_assumed;
+    const P=J.variants.plan,A=J.about;document.querySelectorAll('.pp-acct').forEach(x=>x.textContent=usd(A.account));document.getElementById('pp-eyebrow').textContent='FTM PROP · one '+usd(A.account)+' prop account · 1 Jan 2020 to 8 Oct 2026';
     document.getElementById('pp-kpis').innerHTML=[
       ['Profit paid out',usd(P.payout_total),P.payouts.length+' paying months'],
       ['Challenges passed',P.challenge_passed+' of '+(P.challenge_passed+P.challenge_failed),P.challenges_bought+' challenges bought'],
@@ -828,7 +828,7 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
     for(let y=2020;y<=2026;y++){const x=X(Date.UTC(y,0,1));g+=`<line x1="${x}" x2="${x}" y1="6" y2="62" stroke="var(--grid)"/><text x="${x+3}" y="80">${y}</text>`}
     const tl=document.getElementById('pp-tl');tl.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Prop account journey">${g}${mk}</svg>`;
     const ev=document.getElementById('pp-ev');ev.textContent='Tap a dot for details.';
-    tl.addEventListener('click',e=>{const c=e.target.closest('circle');if(!c)return;const x=P.events[+c.dataset.i];ev.textContent=`${x.date}: ${x.phase} ${x.result} after ${x.days} days`+(x.next?` → next: ${x.next}`:'')});
+    tl.onclick=(e=>{const c=e.target.closest('circle');if(!c)return;const x=P.events[+c.dataset.i];ev.textContent=`${x.date}: ${x.phase} ${x.result} after ${x.days} days`+(x.next?` → next: ${x.next}`:'')});
     /* payouts */
     const pm=Object.fromEntries(P.payouts),mx=Math.max(...P.payouts.map(p=>p[1]));let bars='',n=0;const months=[];
     for(let y=2020;y<=2026;y++)for(let m=1;m<=12;m++){const k=y+'-'+String(m).padStart(2,'0');if(k>'2026-10')break;months.push(k)}
@@ -851,8 +851,9 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   }
   document.querySelectorAll('.pp-sizes button').forEach(b=>b.addEventListener('click',()=>{
     const z=+b.dataset.ps,so=document.getElementById('pp-soon');
-    if(z!==100000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon. Showing the $100k account.';so.hidden=false;return}
-    so.hidden=true;document.querySelectorAll('.pp-sizes button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'))}));
+    if(z!==100000&&z!==50000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon.';so.hidden=false;return}
+    so.hidden=true;document.querySelectorAll('.pp-sizes button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+    fetch(z===50000?'data/prop/ftm-prop-journey-50k.json':'data/prop/ftm-prop-journey.json').then(r=>r.json()).then(J=>{built=true;build(J)})}));
   function go(pg){
     const prop=pg==='prop';document.getElementById('pg-auto').hidden=prop;document.getElementById('pg-prop').hidden=!prop;document.body.classList.toggle('pg-prop',prop);
     rs.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.pg===pg));rs.classList.remove('open');
