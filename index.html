@@ -383,6 +383,18 @@
   }
 
   /* ---------- performance ---------- */
+  .px-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.px-two>*{min-width:0}
+  @media(max-width:860px){.px-two{grid-template-columns:1fr}}
+  .px-heat{display:grid;grid-template-columns:52px repeat(12,minmax(44px,1fr)) 64px;gap:4px;min-width:640px;font-variant-numeric:tabular-nums}
+  .px-heat>div{border-radius:8px;padding:9px 2px;text-align:center;font-size:12.5px;font-weight:700;background:var(--bg-3);color:var(--muted)}
+  .px-heat>.h{background:none;font-size:12px;padding:2px}.px-heat>.y{background:none;color:var(--ink);font-weight:800;text-align:left}
+  .px-bars{display:flex;align-items:flex-end;gap:6px;height:170px;padding-top:18px}
+  .px-bars>div{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+  .px-bars i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:var(--line);min-height:2px}
+  .px-bars i.up{background:#2fae74}.px-bars i.down{background:#e2475a}.px-bars i.nt{background:var(--blue)}
+  .px-bars b{font-size:11.5px;color:var(--ink)}.px-bars small{font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .px-sk i{background:var(--line)!important;opacity:.6}
+  .px-empty{font-size:13.5px;color:var(--muted);margin-top:10px}
   .perf-row{display:grid;grid-template-columns:70px repeat(13,minmax(76px,1fr));gap:7px;margin-top:14px}
   .perf-row .yr{display:flex;align-items:center;font-weight:800;color:var(--ink);font-size:15px}
   .perf-head{color:var(--muted);font-size:12px;font-weight:700;text-align:center;padding-bottom:2px}
@@ -2105,6 +2117,33 @@
             <h3>By market</h3>
             <p class="hint">Which instruments FTM MACHINE made and lost money on.</p>
             <div class="app-scroll"><table class="app-trades" id="perfSymbols"></table></div>
+          </div>
+          <div class="app-card">
+            <h3>Year by year</h3>
+            <p class="hint">Balance at the start and end of each year, the return, and the best and worst month.</p>
+            <div class="app-scroll"><table class="app-trades" id="pxYears"></table></div>
+          </div>
+          <div class="app-card">
+            <h3>Month by month</h3>
+            <p class="hint">Return of each month as a percentage of the balance at the start of that month.</p>
+            <div class="app-scroll"><div id="pxHeat"></div></div>
+          </div>
+          <div class="px-two">
+            <div class="app-card"><h3>Winning weeks vs losing weeks</h3><p class="hint">How many weeks ended in each range of return.</p><div id="pxWhist"></div></div>
+            <div class="app-card"><h3>Weekly figures</h3><dl class="mg" id="pxWeeks"></dl></div>
+          </div>
+          <div class="px-two">
+            <div class="app-card"><h3>Result of each trade, % of the balance</h3><p class="hint">How many trades ended in each range.</p><div id="pxDist"></div></div>
+            <div class="app-card"><h3>How long trades stay open</h3><p class="hint">Number of trades by time from open to close.</p><div id="pxHold"></div></div>
+          </div>
+          <div class="app-card">
+            <h3>Largest drawdowns</h3>
+            <p class="hint">The deepest falls from a balance high, and when the balance got back.</p>
+            <div class="app-scroll"><table class="app-trades" id="pxDD"></table></div>
+          </div>
+          <div class="px-two">
+            <div class="app-card"><h3>Worst periods</h3><dl class="mg" id="pxWorst"></dl></div>
+            <div class="app-card"><h3>Best periods</h3><dl class="mg" id="pxBest"></dl></div>
           </div>
         </div>
       </section>
@@ -4983,8 +5022,76 @@
         list.map(function(k){ var b=bySym[k];
           return '<tr><td><b>'+k+'</b></td><td>'+b.n+'</td><td>'+(b.w/b.n*100).toFixed(1)+'%</td><td>'+b.lots.toFixed(2)+'</td>'+
                  '<td class="'+(b.pl>=0?'pl-up':'pl-down')+'">'+signed(b.pl,0)+'</td></tr>'; }).join('')+'</tbody>';
+      renderPerfX();
     }
 
+
+    /* Same figures as the FTM MACHINE performance report, computed from the
+       connected account's own closed trades. Empty account: grey skeleton. */
+    function renderPerfX(){
+      var cov=F.data.closed.filter(function(t){return t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
+      var m=F.metrics(), A=m.anchor>0?m.anchor:(m.deposits-m.withdrawals), bal=A, has=cov.length>0&&A>0;
+      var loc=window.FTM_LOCALE||'en-GB', dS=function(t){return new Date(t).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'});};
+      var mS=function(k){return new Date(k+'-01T00:00:00').toLocaleDateString(loc,{month:'short',year:'numeric'});};
+      var pc=function(v){return (v>=0?'+':'')+v.toFixed(2)+'%';};
+      var empty='<p class="px-empty">Connect a trading account to see your figures here.</p>';
+      function bars(list,cls){ var mx=Math.max.apply(null,list.map(function(x){return x.n;}).concat([1]));
+        return '<div class="px-bars'+(has?'':' px-sk')+'">'+list.map(function(x,i){ var h=has?x.n/mx*100:20+((i*37)%60);
+          return '<div><b>'+(has?x.n:'')+'</b><i class="'+(cls?cls(x):'nt')+'" style="height:'+h+'%"></i><small>'+x.l+'</small></div>';}).join('')+'</div>'+(has?'':empty); }
+      function facts(id,rows){ el(id).innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+(has?r[1]:'&mdash;')+'</dd></div>';}).join(''); }
+      /* per-trade %, and day / week / month groups, against the balance before each trade */
+      var tr=[], G={d:{},w:{},m:{},y:{}}, ord={d:[],w:[],m:[],y:[]};
+      function grp(k,key,b,pl){ if(!G[k][key]){G[k][key]={s:b,pl:0,n:0};ord[k].push(key);} G[k][key].pl+=pl; G[k][key].n++; }
+      cov.forEach(function(t){ var d=new Date(t.closeTime), day=d.toISOString().slice(0,10);
+        var mo=new Date(d); mo.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));
+        tr.push({p:bal>0?t.pl/bal*100:0, h:(t.closeTime-t.openTime)/36e5});
+        grp('d',day,bal,t.pl); grp('w',mo.toISOString().slice(0,10),bal,t.pl); grp('m',day.slice(0,7),bal,t.pl); grp('y',day.slice(0,4),bal,t.pl);
+        bal+=t.pl; });
+      function ret(k){ return ord[k].map(function(key){var g=G[k][key];return {k:key,r:g.s>0?g.pl/g.s*100:0,pl:g.pl,s:g.s};}); }
+      var Y=ret('y'), M=ret('m'), W=ret('w'), D=ret('d');
+      /* year by year */
+      el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
+        (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
+          var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.s+y.pl,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="pl-up">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="pl-down">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
+         :'<tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>')+'</tbody>';
+      /* month heatmap */
+      var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      var yrs=has?Y.map(function(y){return y.k;}).reverse():[String(new Date().getFullYear())];
+      el('pxHeat').innerHTML='<div class="px-heat"><div class="h"></div>'+mn.map(function(n){return '<div class="h">'+n+'</div>';}).join('')+'<div class="h">Total</div>'+
+        yrs.map(function(y){ var row='<div class="y">'+y+'</div>';
+          for(var i=1;i<=12;i++){ var x=M.filter(function(q){return q.k===y+'-'+String(i).padStart(2,'0');})[0];
+            if(!x){row+='<div></div>';continue;} var a=Math.min(Math.abs(x.r)/15,1)*.75+.15, c=x.r>=0?'47,174,116':'226,71,90';
+            row+='<div style="background:rgba('+c+','+a.toFixed(2)+');color:'+(a>.55?'#fff':'var(--ink)')+'" title="'+mS(x.k)+': '+pc(x.r)+'">'+(x.r>0?'+':'')+x.r.toFixed(1)+'</div>'; }
+          var yy=Y.filter(function(q){return q.k===y;})[0];
+          return row+'<div class="'+(yy&&yy.r<0?'pl-down':'pl-up')+'" style="background:none;color:'+(yy?(yy.r<0?'var(--red-dark)':'#1f8a5b'):'')+'">'+(yy?pc(yy.r):'')+'</div>'; }).join('')+'</div>'+(has?'':empty);
+      /* weeks */
+      var wb=[[-1e9,-5,'< −5%'],[-5,-2,'−5 – −2%'],[-2,0,'−2 – 0%'],[0,2,'0 – 2%'],[2,5,'2 – 5%'],[5,1e9,'> 5%']];
+      el('pxWhist').innerHTML=bars(wb.map(function(b){return {l:b[2],lo:b[0],n:W.filter(function(x){return x.r>=b[0]&&x.r<b[1];}).length};}),function(x){return x.lo<0?'down':'up';});
+      var wUp=W.filter(function(x){return x.r>0;}).length, best=function(L){return L.reduce(function(a,x){return x.r>a.r?x:a;},L[0]||{r:0});}, worst=function(L){return L.reduce(function(a,x){return x.r<a.r?x:a;},L[0]||{r:0});};
+      var avgW=W.length?W.reduce(function(a,x){return a+x.r;},0)/W.length:0;
+      facts('pxWeeks',[['Weeks traded',W.length],['Winning weeks',wUp+' ('+(W.length?(wUp/W.length*100).toFixed(1):'0')+'%)'],['Losing weeks',W.length-wUp],['Average week',pc(avgW)],['Best week',pc(best(W).r)+' · '+dS(best(W).k)],['Worst week',pc(worst(W).r)+' · '+dS(worst(W).k)]]);
+      /* trade result and holding time */
+      var db=[[-1e9,-2,'< −2%'],[-2,-1,'−2 – −1%'],[-1,0,'−1 – 0%'],[0,1,'0 – 1%'],[1,2,'1 – 2%'],[2,1e9,'> 2%']];
+      el('pxDist').innerHTML=bars(db.map(function(b){return {l:b[2],lo:b[0],n:tr.filter(function(x){return x.p>=b[0]&&x.p<b[1];}).length};}),function(x){return x.lo<0?'down':'up';});
+      var hb=[[0,1,'< 1 h'],[1,4,'1 – 4 h'],[4,24,'4 – 24 h'],[24,72,'1 to 3 days'],[72,1e9,'More than 3 days']];
+      el('pxHold').innerHTML=bars(hb.map(function(b){return {l:b[2],n:tr.filter(function(x){return x.h>=b[0]&&x.h<b[1];}).length};}));
+      /* drawdown episodes off the running peak */
+      var eps=[], pk=A, pkT=cov.length?cov[0].openTime:0, cur=null; bal=A;
+      cov.forEach(function(t){ bal+=t.pl;
+        if(bal>=pk){ if(cur){cur.rec=t.closeTime;eps.push(cur);cur=null;} pk=bal; pkT=t.closeTime; }
+        else { var dd=pk>0?(pk-bal)/pk*100:0; if(!cur)cur={pk:pkT,dd:0}; if(dd>cur.dd){cur.dd=dd;cur.lo=t.closeTime;} } });
+      if(cur)eps.push(cur);
+      eps=eps.filter(function(e){return e.dd>0&&e.lo;});
+      eps.sort(function(a,b){return b.dd-a.dd;});
+      el('pxDD').innerHTML='<thead><tr><th>From the high on</th><th>Lowest point</th><th>Depth</th><th>Back to the high</th></tr></thead><tbody>'+
+        (has&&eps.length?eps.slice(0,5).map(function(e){return '<tr><td>'+dS(e.pk)+'</td><td>'+dS(e.lo)+'</td><td class="pl-down">−'+e.dd.toFixed(2)+'%</td><td>'+(e.rec?dS(e.rec):'Not yet')+'</td></tr>';}).join('')
+         :'<tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>')+'</tbody>';
+      var bt=tr.reduce(function(a,x){return x.p>a?x.p:a;},tr.length?tr[0].p:0), wt=tr.reduce(function(a,x){return x.p<a?x.p:a;},tr.length?tr[0].p:0);
+      facts('pxWorst',[['Worst trade',pc(wt)],['Worst day',pc(worst(D).r)+' · '+dS(worst(D).k)],['Worst week',pc(worst(W).r)+' · '+dS(worst(W).k)],['Worst month',pc(worst(M).r)+' · '+mS(worst(M).k||'2000-01')]]);
+      facts('pxBest',[['Best trade',pc(bt)],['Best day',pc(best(D).r)+' · '+dS(best(D).k)],['Best week',pc(best(W).r)+' · '+dS(best(W).k)],['Best month',pc(best(M).r)+' · '+mS(best(M).k||'2000-01')]]);
+    }
+    F.renderPerfX=renderPerfX;
     /* ====================== ACCOUNTS ====================== */
     function ago(ts){
       if(!ts)return 'Never';
