@@ -167,6 +167,15 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .mnote{font-size:12.5px;color:var(--muted)}
 .mkpis.m5{grid-template-columns:repeat(5,1fr)}
 @media (max-width:760px){.mkpis,.mkpis.m5{grid-template-columns:1fr 1fr}.mgrid{grid-template-columns:1fr}}
+.wkg{display:grid;grid-template-columns:64px repeat(5,minmax(64px,1fr)) 104px;gap:6px;min-width:560px;font-variant-numeric:tabular-nums}
+.wkg .h{font-size:12px;color:var(--muted);text-align:center;padding-bottom:2px}
+.wkg .wl{font-size:12.5px;font-weight:700;color:var(--ink);display:flex;align-items:center}
+.wkg .c{border-radius:10px;padding:8px 4px;text-align:center;font-size:12.5px;line-height:1.25;min-height:46px;display:grid;align-content:center;cursor:default}
+.wkg .c small{display:block;font-size:10.5px;opacity:.8}
+.wkg .c.none{background:var(--bg);color:var(--muted)}
+.wkg .c.out{background:transparent}
+.wkg .wt{border-radius:10px;padding:8px 6px;text-align:right;font-size:12.5px;font-weight:700;display:grid;align-content:center;border:1px solid var(--line)}
+.wkg .wt small{font-weight:600;font-size:10.5px;color:var(--muted)}
 .dday{border-top:1px solid var(--line);padding:12px 0}
 .dday:first-child{border-top:0;padding-top:0}
 .dhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:700;color:var(--ink);font-size:14.5px;margin-bottom:6px}
@@ -365,6 +374,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
     <div class="panel"><h4>Drawdowns in this month</h4><div id="m-dd"></div></div>
   </div>
   <div class="panel" id="m-trades" hidden><h4>Trades this month</h4><div id="m-trades-body"></div></div>
+  <div class="panel" id="m-wk" hidden><h4>Week by week</h4><div class="scroll"><div id="m-wk-body"></div></div><p class="mnote">Each box is one trading day, by the day trades closed: green for a profit, red for a loss, grey for no closed trades. Darker means a bigger move.</p></div>
   <div class="panel" id="m-days" hidden><h4>Day by day</h4><div id="m-days-body"></div></div>
   <div class="panel" id="m-candles"><h4 id="m-candles-h">Gold price this month, with every trade</h4><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
 </div></div>
@@ -568,9 +578,29 @@ function renderCandles(key){
 
 /* ---- Month panel: every trade of the chosen profile, grouped by day (data/trades/<market>/<size>/<profile>/<month>.json) ---- */
 const TRADES={};
+
+function renderWeeks(key,rows){
+  const box=$('m-wk'),body=$('m-wk-body');if(!rows||!rows.length){box.hidden=true;return}
+  const y=+key.slice(0,4),m=+key.slice(5)-1,day={};
+  rows.forEach(t=>{const d=new Date(t[1]*1000);if(d.getUTCMonth()!==m)return;const k=d.getUTCDate();(day[k]=day[k]||{usd:0,p:0,n:0});day[k].usd+=t[6];day[k].p+=t[7];day[k].n++});
+  const mx=Math.max(1,...Object.values(day).map(v=>Math.abs(v.p))),last=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+  const money=v=>(v<0?'−$':'+$')+Math.abs(Math.round(v)).toLocaleString('en-US');
+  let h='<div class="wkg"><div class="h"></div>'+['Mon','Tue','Wed','Thu','Fri'].map(d=>`<div class="h">${d}</div>`).join('')+'<div class="h">Week</div>';
+  let d=1,w=1;while(d<=last){const dt=new Date(Date.UTC(y,m,d)),wd=(dt.getUTCDay()+6)%7;const monday=d-wd;
+    let cells='',wu=0,wp=0,any=false;
+    for(let i=0;i<5;i++){const dd=monday+i;if(dd<1||dd>last){cells+='<div class="c out"></div>';continue}
+      const v=day[dd];if(!v){cells+=`<div class="c none">${dd}<small>no trades</small></div>`;continue}
+      any=true;wu+=v.usd;wp+=v.p;const a=Math.min(Math.abs(v.p)/mx,1)*.75+.15,c=css(v.p>=0?'--up':'--down');
+      cells+=`<div class="c" style="background:color-mix(in srgb, ${c} ${Math.round(a*100)}%, transparent);color:${a>.55?'#fff':'var(--ink)'}" title="${dd} ${MON[m]}: ${v.n} trade${v.n>1?'s':''}, ${money(v.usd)}">${dd}<small>${pct(v.p,2)}</small></div>`}
+    // weekend days of this week also count, so the week total includes trades closed on Sat/Sun
+    for(let dd=monday+5;dd<=monday+6;dd++){const v=day[dd];if(v&&dd>=1&&dd<=last){any=true;wu+=v.usd;wp+=v.p}}
+    h+=`<div class="wl">Week ${w}</div>${cells}<div class="wt ${any?(wp>=0?'up':'down'):''}">${any?pct(wp,2):'–'}<small>${any?money(wu):'no trades'}</small></div>`;
+    d=monday+7;w++}
+  body.innerHTML=h+'</div>';box.hidden=false;
+}
 function renderDays(key){
   const box=$('m-days'),body=$('m-days-body'),size=mkt==='gold'?SIZE:'100000',path=`/data/trades/${mkt}/${size}/${cur}/${key}.json`,ck=path;
-  const show=rows=>{if(mKey!==key)return;if(!rows||!rows.length){box.hidden=true;return}
+  const show=rows=>{if(mKey!==key)return;renderWeeks(key,rows);if(!rows||!rows.length){box.hidden=true;return}
     box.hidden=false;const fmtD=u=>{const d=new Date(u*1000);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+d.getUTCFullYear()},hm=u=>{const d=new Date(u*1000);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
     const money=v=>(v<0?'−$':'+$')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     const days={};rows.slice().sort((a,b)=>a[1]-b[1]).forEach(t=>{const d=fmtD(t[1]);(days[d]=days[d]||[]).push(t)});
@@ -582,7 +612,7 @@ function renderDays(key){
     h+='<p class="mnote">Grouped by the day each trade closed. Time is the closing time, broker server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
     body.innerHTML=h};
   if(TRADES[ck]!==undefined){show(TRADES[ck]);return}
-  box.hidden=true;fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
+  box.hidden=true;$('m-wk').hidden=true;fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
 }
 /* ---- Month detail panel ---- */
 /* Per-month trades from the same real-tick backtest reports (closed trades; drawdown on closed-trade balance). */
