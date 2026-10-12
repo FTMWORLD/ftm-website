@@ -567,7 +567,7 @@ function candleChart(D){
   const idx=u=>{let a=0,b=n-1;if(u<=c[0][0])return 0;while(a<b){const m=(a+b+1)>>1;if(c[m][0]<=u)a=m;else b=m-1}return a};
   const up=css('--up'),dn=css('--down');let g='';
   const ticks=5;for(let i=0;i<=ticks;i++){const v=lo+(hi-lo)*i/ticks,y=Y(v);g+=`<line x1="${pl}" x2="${W-pr}" y1="${y}" y2="${y}" stroke="var(--grid)"/><text x="${W-pr+6}" y="${y+4}">${px(v)}</text>`}
-  let lastDay=-1;c.forEach((k,i)=>{const d=new Date(k[0]*1000),wd=d.getUTCDay(),dd=d.getUTCDate();if(dd!==lastDay){if(wd===1||i===0){g+=`<line x1="${X(i)}" x2="${X(i)}" y1="${pt}" y2="${H-pb}" stroke="var(--grid)"/><text x="${X(i)}" y="${H-8}" text-anchor="${i===0?'start':'middle'}">${dd} ${MON[d.getUTCMonth()]}</text>`}lastDay=dd}});
+  let lastDay=-1,lastX=-1e9;c.forEach((k,i)=>{const d=new Date(k[0]*1000),wd=d.getUTCDay(),dd=d.getUTCDate();if(dd!==lastDay){if((wd===1||i===0)&&X(i)-lastX>=95){lastX=X(i);g+=`<line x1="${X(i)}" x2="${X(i)}" y1="${pt}" y2="${H-pb}" stroke="var(--grid)"/><text x="${X(i)}" y="${H-8}" text-anchor="${i===0?'start':'middle'}">${dd} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}</text>`}lastDay=dd}});
   c.forEach((k,i)=>{const [_,o,h,l,cl]=k,col=cl>=o?up:dn,x=X(i);g+=`<line x1="${x}" x2="${x}" y1="${Y(h)}" y2="${Y(l)}" stroke="${col}" stroke-width="1"/><rect x="${x-bw/2}" y="${Y(Math.max(o,cl))}" width="${bw}" height="${Math.max(1,Math.abs(Y(o)-Y(cl)))}" fill="${col}"/>`});
   let drawn=0,skipped=0;
   t.forEach(x=>{if(!inR(x)){skipped++;return}drawn++;const [ot,ct,dir,op,cp,pnl]=x,i1=idx(ot),i2=idx(ct),col=pnl>0?up:dn,x1=X(i1),y1=Y(op),x2=X(i2),y2=Y(cp);
