@@ -94,6 +94,9 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .sz-pills button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mh4{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .mh4 h4{margin:0!important}
+.cc-sum{margin-left:auto;text-align:right;display:grid;line-height:1.2}
+.cc-sum b{font-size:clamp(18px,2.2vw,24px);font-weight:800;font-variant-numeric:tabular-nums}
+.cc-sum small{font-size:12px;color:var(--muted)}
 .mback:not([data-mk="gold"]) .mz{display:none}
 .size-note{font-size:13.5px;color:#FFD9A0;background:rgba(255,180,60,.12);border:1px solid rgba(255,180,60,.35);border-radius:12px;padding:10px 14px;margin:0}
 .jump .sz{display:flex;gap:6px;align-items:center;margin-left:8px}
@@ -384,7 +387,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="panel" id="m-trades" hidden><div class="mh4"><h4>Trades this month</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-trades-body"></div></div>
   <div class="panel" id="m-wk" hidden><div class="mh4"><h4>Week by week</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div class="scroll"><div id="m-wk-body"></div></div><p class="mnote">Each box is one trading day, by the day trades closed: green for a profit, red for a loss, grey for no closed trades. Darker means a bigger move.</p></div>
   <div class="panel" id="m-days" hidden><div class="mh4"><h4>Day by day</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div id="m-days-body"></div></div>
-  <div class="panel" id="m-candles"><div class="mh4"><h4 id="m-candles-h">Gold price this month, with every trade</h4><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
+  <div class="panel" id="m-candles"><div class="mh4"><h4 id="m-candles-h">Gold price this month, with every trade</h4><span class="cc-sum" id="m-cc-sum" hidden></span><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
 </div></div>
 
 
@@ -607,9 +610,12 @@ function renderWeeks(key,rows){
   body.innerHTML=h+'</div>';box.hidden=false;
 }
 let keepDays=false;
+function ccSum(key,rows){const el=$('m-cc-sum');if(!rows||!rows.length){el.hidden=true;return}
+  const net=rows.reduce((a,t)=>a+t[6],0),st=monthStats(P[cur],key).start,pc=net/st*100,cls=net>=0?'up':'down';
+  el.innerHTML=`<b class="${cls}">${(net<0?'−$':'+$')+Math.abs(net).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} <span>(${pct(pc,2)})</span></b><small>made on ${MKT[mkt].sym} this month · ${NAMES[cur]}${mkt==='gold'?' · '+usd(+SIZE).replace(',000','k'):''}</small>`;el.hidden=false}
 function renderDays(key){
   const box=$('m-days'),body=$('m-days-body'),size=mkt==='gold'?SIZE:'100000',path=`/data/trades/${mkt}/${size}/${cur}/${key}.json`,ck=path;
-  const show=rows=>{if(mKey!==key)return;renderWeeks(key,rows);if(!rows||!rows.length){box.hidden=true;return}
+  const show=rows=>{if(mKey!==key)return;renderWeeks(key,rows);ccSum(key,rows);if(!rows||!rows.length){box.hidden=true;return}
     box.hidden=false;const fmtD=u=>{const d=new Date(u*1000);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+d.getUTCFullYear()},hm=u=>{const d=new Date(u*1000);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
     const money=v=>(v<0?'−$':'+$')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
     const days={};rows.slice().sort((a,b)=>a[1]-b[1]).forEach(t=>{const d=fmtD(t[1]);(days[d]=days[d]||[]).push(t)});
@@ -621,7 +627,7 @@ function renderDays(key){
     h+='<p class="mnote">Grouped by the day each trade closed. Time is the closing time, broker server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
     body.innerHTML=h};
   if(TRADES[ck]!==undefined){show(TRADES[ck]);return}
-  if(!keepDays){box.hidden=true;$('m-wk').hidden=true}fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
+  if(!keepDays){box.hidden=true;$('m-wk').hidden=true;$('m-cc-sum').hidden=true}fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
 }
 /* ---- Month detail panel ---- */
 /* Per-month trades from the same real-tick backtest reports (closed trades; drawdown on closed-trade balance). */
