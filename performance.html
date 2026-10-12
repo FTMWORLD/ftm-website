@@ -373,7 +373,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 </div>
 <div class="tip" id="tip" hidden></div>
 <div class="mback" id="mback" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="m-title">
-  <div class="mtop"><h3 id="m-title"></h3><div class="mret"><span class="ret" id="m-ret"></span><span class="mamt" id="m-amt"></span><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div>
+  <div class="mtop"><h3 id="m-title"></h3><div class="mret"><span class="ret" id="m-ret"></span><span class="sz-pills mz" role="group" aria-label="Account size"><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button></span></div>
     <div class="mnav"><button type="button" id="m-prev" aria-label="Previous month">&larr;</button><button type="button" id="m-next" aria-label="Next month">&rarr;</button></div>
     <button type="button" class="mclose" id="m-close" aria-label="Close">&times;</button></div>
   <div class="msub" id="m-sub"></div>
@@ -665,7 +665,7 @@ let mKey=null;
 function openMonth(key){
   const p=P[cur],st=monthStats(p,key);mKey=key;
   $('m-title').textContent=monLabel(key)+' · '+MKT[mkt].name+(mkt==='gold'?' '+usd(+SIZE).replace(',000','k'):'')+' · '+NAMES[cur];
-  $('m-ret').textContent=pct(st.ret,2);$('m-ret').className='ret '+(st.ret>=0?'up':'down');{const d=st.end-st.start;$('m-amt').textContent=(d<0?'−$':'+$')+Math.abs(d).toLocaleString('en-US',{maximumFractionDigits:0});$('m-amt').className='mamt '+(d>=0?'up':'down')}
+  $('m-ret').textContent=pct(st.ret,2);$('m-ret').className='ret '+(st.ret>=0?'up':'down');
   $('m-sub').textContent=`${usd(st.start)} to ${usd(st.end)} · ${ord(st.rank)} best of ${st.n} months`;
   const deep=st.weeks.length?Math.min(...st.weeks.map(w=>w.dd)):0,up=st.weeks.filter(w=>w.ret>0).length;
   const bw=st.weeks.length?st.weeks.reduce((a,b)=>b.ret>a.ret?b:a):null,ww=st.weeks.length?st.weeks.reduce((a,b)=>b.ret<a.ret?b:a):null;
