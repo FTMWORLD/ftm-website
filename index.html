@@ -690,6 +690,13 @@
   .inv-step .n{width:36px;height:36px;border-radius:50%;background:var(--gold);color:var(--ink);font-weight:800;display:grid;place-items:center;margin-bottom:6px}
   .inv-step b{font-size:18px;color:#fff}
   .inv-step p{font-size:14.5px;color:rgba(255,255,255,.78);line-height:1.5}
+  .prop{background:linear-gradient(160deg,#0b1440 0%,#1b1a3f 100%)}
+  .prop-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:32px}
+  @media (max-width:900px){.prop-steps{grid-template-columns:1fr}}
+  .prop-sizes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .prop-sizes button{font:inherit;font-weight:800;font-size:17px;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg-3);color:var(--ink);cursor:pointer}
+  .prop-sizes button[aria-pressed="true"]{border-color:var(--gold);background:#fff8e6}
+  .inv-out .big small{display:block;color:rgba(255,255,255,.75);font-size:13px;margin-top:4px}
   .inv-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:start}
   .inv-rule{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:24px;padding:32px}
   .inv-rule h3,.inv-calc h3{color:#fff;font-size:24px;margin-bottom:16px}
@@ -1356,6 +1363,21 @@
         </div>
       </div>
       <div class="has-dd">
+        <a href="#prop" class="dd-toggle" aria-haspopup="true" aria-expanded="false">FTM Prop <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></a>
+        <div class="dd" role="menu">
+          <div class="dd-col">
+            <div class="dd-head">Prop accounts</div>
+            <a href="#prop">50.000&euro; account<small>1.000&euro; subscription, 2-year contract</small></a>
+            <a href="#prop">100.000&euro; account<small>2.000&euro; subscription, 2-year contract</small></a>
+          </div>
+          <div class="dd-col">
+            <div class="dd-head">How it works</div>
+            <a href="#prop">FTM trades it for you<small>FTM MACHINE trades the account for two years</small></a>
+            <a href="#propCalc">Work out your profit<small>You receive 50% of the profit made</small></a>
+          </div>
+        </div>
+      </div>
+      <div class="has-dd">
         <a href="#company" class="dd-toggle" aria-haspopup="true" aria-expanded="false" data-i18n="nav.about">About <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></a>
         <div class="dd" role="menu">
           <div class="dd-col">
@@ -1437,7 +1459,7 @@
   </nav>
 </div>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#auto">Auto Trading</a><a href="#how">How it works</a><a href="#invest">Investment</a><a href="/performance.html">Performance</a><a href="#partner">Partner</a><a href="#company">About</a><a href="#markets">Markets</a><a href="#support">Learning &amp; support</a>
+  <a href="#auto">Auto Trading</a><a href="#how">How it works</a><a href="#invest">Investment</a><a href="/performance.html">Performance</a><a href="#partner">Partner</a><a href="#prop">FTM Prop</a><a href="#company">About</a><a href="#markets">Markets</a><a href="#support">Learning &amp; support</a>
   <div class="mobile-lang" id="mobileLang"><label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="mobileLangSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label></div>
   <button class="btn btn-outline js-login">Log in</button>
 </div>
@@ -1700,6 +1722,49 @@
       <div class="partner-card"><span class="tag">Local payments</span><h3>Payment agent</h3><p>Help traders in your region deposit and withdraw using local methods, and earn a fee on each transaction.</p><ul><li>Set your own service fee</li><li>Verified agent listing</li><li>Fast settlement</li></ul><a class="btn btn-outline" href="https://t.deriv.link?t=M8A8ZGSDWZNB" target="_blank" rel="noopener">Apply now</a></div>
     </div>
     <p class="partner-note">Deriv is a separate company and brand. FTM's relationship with Deriv is as an affiliate partner. Commission terms are set by the Deriv affiliate programme and may change.</p>
+  </div>
+</section>
+
+<!-- ===== FTM PROP ===== -->
+<section class="invest prop" id="prop">
+  <div class="container">
+    <p class="inv-eyebrow">FTM Prop</p>
+    <h2 class="inv-title">A prop firm account, traded for you by FTM MACHINE</h2>
+    <p class="inv-lead">Choose the size of the prop firm account you want and pay one subscription. FTM MACHINE trades the account for the two-year contract, and you receive half of all the profit it makes.</p>
+    <div class="prop-steps">
+      <div class="inv-step"><span class="n">1</span><b>Choose your account</b><p>A 50.000&euro; account for a 1.000&euro; subscription, or a 100.000&euro; account for 2.000&euro;.</p></div>
+      <div class="inv-step"><span class="n">2</span><b>FTM trades it</b><p>FTM MACHINE trades the prop account for you, every market day, for two years.</p></div>
+      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>At the end of the contract you receive 50% of the total profit made on the account.</p></div>
+    </div>
+    <div class="inv-grid">
+      <div class="inv-rule">
+        <h3>How FTM Prop works</h3>
+        <ul>
+          <li><b>Contract.</b> Two years from the day your prop account starts trading.</li>
+          <li><b>Your share.</b> 50% of the total profit the account makes over the contract.</li>
+          <li><b>Accounts.</b> 50.000&euro; for a 1.000&euro; subscription. 100.000&euro; for a 2.000&euro; subscription.</li>
+          <li><b>Example.</b> A 100.000&euro; account makes 10% in two years: 10.000&euro; profit. Your share is 5.000&euro;, on a 2.000&euro; subscription.</li>
+        </ul>
+        <p class="fomo">Every week you wait, the machine trades without you.</p>
+        <div class="inv-cta">
+          <a class="btn btn-red" href="#propCalc">Get FTM Prop</a>
+        </div>
+      </div>
+
+      <div class="inv-calc" id="propCalc">
+        <h3>Work out your profit</h3>
+        <p class="inv-calc-note">An illustration to show how FTM Prop profit works.</p>
+        <label>Prop account</label>
+        <div class="prop-sizes" role="group" aria-label="Prop account"><button type="button" data-ps="50000" data-fee="1000">50.000&euro;</button><button type="button" data-ps="100000" data-fee="2000" aria-pressed="true">100.000&euro;</button></div>
+        <label for="prRet">Account profit over 2 years <output id="prRetO">10%</output></label>
+        <input type="range" id="prRet" min="0" max="200" step="1" value="10">
+        <div class="inv-out">
+          <div><span>Subscription</span><b id="prFee">&mdash;</b></div>
+          <div><span>Account profit</span><b id="prProfit">&mdash;</b></div>
+          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -3114,7 +3179,7 @@
   /* ---- Calculators: a typing box beside every figure. Type a number, press Enter or tap away. ---- */
   (()=>{
     const pen='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
-    const F=[['cStartOut','cStart','amt','€'],['cRateOut','cRate','pct','%'],['cYearsOut','cYears','int',''],['ivcAmtO','ivcAmt','amt','€'],['ivcRetO','ivcRet','pct','%'],['ivcYearsO','ivcYears','int','']];
+    const F=[['cStartOut','cStart','amt','€'],['cRateOut','cRate','pct','%'],['cYearsOut','cYears','int',''],['ivcAmtO','ivcAmt','amt','€'],['ivcRetO','ivcRet','pct','%'],['ivcYearsO','ivcYears','int',''],['prRetO','prRet','pct','%']];
     const de=n=>Math.round(n).toLocaleString('de-DE');
     F.forEach(([oid,sid,kind,unit])=>{
       const o=document.getElementById(oid),sl=document.getElementById(sid);if(!o||!sl)return;
@@ -6442,6 +6507,24 @@
     })();
   })();
 
+
+  /* ---- FTM Prop calculator: 50% of the account profit over the 2-year contract ---- */
+  (function(){
+    var ret=document.getElementById('prRet'); if(!ret)return;
+    var eu=function(n){return Math.round(n).toLocaleString('de-DE')+'\u20AC';};
+    var btns=document.querySelectorAll('.prop-sizes button');
+    function calc(){
+      var b=document.querySelector('.prop-sizes button[aria-pressed="true"]'), size=+b.dataset.ps, fee=+b.dataset.fee, r=+ret.value;
+      var profit=size*r/100, share=profit/2;
+      document.getElementById('prRetO').textContent=r+'%';
+      document.getElementById('prFee').textContent=eu(fee);
+      document.getElementById('prProfit').textContent=eu(profit);
+      document.getElementById('prShare').textContent=eu(share);
+      document.getElementById('prMult').textContent=(share/fee).toLocaleString('de-DE',{maximumFractionDigits:1})+'\u00D7 your subscription';
+    }
+    btns.forEach(function(x){x.addEventListener('click',function(){btns.forEach(function(y){y.setAttribute('aria-pressed',y===x?'true':'false');});calc();});});
+    ret.addEventListener('input',calc); calc();
+  })();
   /* ---- Get started chooser ---- */
   (function(){
     var ov=document.getElementById('gsOverlay'); if(!ov)return;
