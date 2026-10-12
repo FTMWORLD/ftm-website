@@ -92,6 +92,10 @@ svg text{font-family:var(--font);font-size:11px;fill:var(--muted)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-bottom:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
 .note{font-size:14px;color:var(--muted)}
+.hint-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.invest-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--red);color:#fff;font-weight:700;font-size:15px;text-decoration:none;border-radius:96px;padding:13px 26px;white-space:nowrap;transition:filter .15s,transform .12s}
+.invest-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+@media (max-width:600px){.invest-btn{width:100%}}
 .hint{font-size:14px;font-weight:600;color:color-mix(in srgb, var(--down) 80%, var(--muted))}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
 .scroll{overflow-x:auto}
@@ -169,7 +173,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare">Higher risk earned more, of course</h2></div>
     <div class="panel scroll"><table id="t-compare"></table></div>
     <p class="note">All four profiles take the same trades. Conservative uses positions half the size of Balanced; Growth 1.2× and 1.5× use positions 1.2 and 1.5 times larger.</p>
-    <p class="hint">Click any row in the table, or choose a risk profile above, to see its full results.</p>
+    <div class="hint-row"><p class="hint">Click any row in the table, or choose a risk profile above, to see its full results.</p><a class="invest-btn" href="/#pricing">Invest in Gold</a></div>
   </section>
 
   <div class="kpis" id="kpis"></div>
@@ -236,7 +240,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare-b">Higher risk earned more, of course</h2></div>
     <div class="panel scroll"><table id="t-compare-b"></table></div>
     <p class="note">All four profiles take the same trades. Conservative uses positions half the size of Balanced; Growth 1.2× and 1.5× use positions 1.2 and 1.5 times larger.</p>
-    <p class="hint">Click any row in the table, or choose a risk profile above, to see its full results.</p>
+    <div class="hint-row"><p class="hint">Click any row in the table, or choose a risk profile above, to see its full results.</p><a class="invest-btn" href="/#pricing">Invest in Bitcoin</a></div>
   </section>
 
   <div class="kpis" id="kpis-b"></div>
