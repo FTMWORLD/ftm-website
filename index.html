@@ -1389,7 +1389,7 @@
           <div class="dd-col">
             <div class="dd-head">How it works</div>
             <a href="#prop">FTM trades it for you<small>FTM MACHINE trades the account for two years</small></a>
-            <a href="#propCalc">Work out your profit<small>You receive 50% of the profit made</small></a>
+            <a href="#propCalc">Work out your profit<small>You receive 20% of the profit made</small></a>
           </div>
         </div>
       </div>
@@ -1747,11 +1747,11 @@
   <div class="container">
     <p class="inv-eyebrow">FTM Prop</p>
     <h2 class="inv-title">A prop firm account, traded for you by FTM MACHINE</h2>
-    <p class="inv-lead">Choose the size of the prop firm account you want and pay one subscription. FTM MACHINE trades the account for at least two years, and you receive half of all the profit it makes.</p>
+    <p class="inv-lead">Choose the size of the prop firm account you want and pay one subscription. FTM MACHINE trades the account for at least two years, and you receive 20% of all the profit it makes.</p>
     <div class="prop-steps">
       <div class="inv-step"><span class="n">1</span><b>Choose your account</b><p>A 50.000&euro; account for a 1.000&euro; subscription, or a 100.000&euro; account for 2.000&euro;.</p></div>
       <div class="inv-step"><span class="n">2</span><b>FTM trades it</b><p>FTM MACHINE trades the prop account for you, every market day, for two years.</p></div>
-      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>You earn 50% of the profit made on the account. From year 2 you can take 10% of each year's share, and from year 5 all of it.</p></div>
+      <div class="inv-step"><span class="n">3</span><b>Your profit after 2 years</b><p>You earn 20% of the profit made on the account. From year 2 you can take 10% of each year's share, and from year 5 all of it.</p></div>
     </div>
     <div class="inv-grid">
       <div class="inv-rule">
@@ -1760,10 +1760,10 @@
           <li><b>Contract.</b> At least two years. Keep the account as long as you like.</li>
           <li><b>Withdrawals.</b> From year 2 you can withdraw 10% of each year's profit share, year 1 included, so 20% in year 2. Anything you do not take adds up for later. From year 5 you can withdraw all of your profit share.</li>
           <li><b>Target.</b> FTM targets around 10% account profit in the first two years. If the account makes more, your share grows with it.</li>
-          <li><b>Your share.</b> 50% of the total profit the account makes over the contract.</li>
+          <li><b>Your share.</b> 20% of the total profit the account makes over the contract.</li>
           <li><b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.</li>
           <li><b>Accounts.</b> 50.000&euro; for a 1.000&euro; subscription. 100.000&euro; for a 2.000&euro; subscription.</li>
-          <li><b>Example.</b> A 100.000&euro; account makes 10% in two years: 10.000&euro; profit. Your share is 5.000&euro;, on a 2.000&euro; subscription.</li>
+          <li><b>Example.</b> A 100.000&euro; account makes 10% a year for five years: 50.000&euro; profit. Your 20% share is 10.000&euro;, on a 2.000&euro; subscription.</li>
         </ul>
         <p class="fomo">Every week you wait, the machine trades without you.</p>
         <div class="inv-cta">
@@ -1777,13 +1777,13 @@
         <label>Prop account</label>
         <div class="prop-sizes" role="group" aria-label="Prop account"><button type="button" data-ps="50000" data-fee="1000">50.000&euro;</button><button type="button" data-ps="100000" data-fee="2000" aria-pressed="true">100.000&euro;</button></div>
         <label for="prRet">Account profit per year <output id="prRetO">10%</output></label>
-        <input type="range" id="prRet" min="0" max="100" step="1" value="10">
+        <input type="range" id="prRet" min="0" max="10" step="1" value="10">
         <label for="prYears">Years you keep the account <output id="prYearsO">5</output></label>
         <input type="range" id="prYears" min="2" max="30" step="1" value="5">
         <div class="inv-out">
           <div><span>Subscription</span><b id="prFee">&mdash;</b></div>
           <div><span>Account profit</span><b id="prProfit">&mdash;</b></div>
-          <div class="big"><span>Your 50% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prY2" class="ivc-year">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small><small id="prRest" class="ivc-year">&mdash;</small></div>
+          <div class="big"><span>Your 20% share</span><b id="prShare">&mdash;</b><small id="prMult">&mdash;</small><small id="prY2" class="ivc-year">&mdash;</small><small id="prYear" class="ivc-year">&mdash;</small><small id="prRest" class="ivc-year">&mdash;</small></div>
         </div>
       </div>
     </div>
@@ -2604,7 +2604,7 @@
             <div class="app-tile"><span>Prop account</span><b id="ppSize">&mdash;</b></div>
             <div class="app-tile"><span>Account balance</span><b id="ppBal">&mdash;</b></div>
             <div class="app-tile"><span>Profit so far</span><b id="ppProfit">&mdash;</b><small class="muted" id="ppProfitPct">&mdash;</small></div>
-            <div class="app-tile"><span>Your 50% share</span><b id="ppShare">&mdash;</b></div>
+            <div class="app-tile"><span>Your 20% share</span><b id="ppShare">&mdash;</b></div>
           </div>
           <div class="app-card">
             <h3>Account balance</h3>
@@ -2655,7 +2655,7 @@
             <div class="app-card">
               <h3>What you get and when</h3>
               <ul class="wd-notes">
-                <li>You receive 50% of the total profit your prop account makes over the two-year contract.</li>
+                <li>You receive 20% of the total profit your prop account makes over the contract.</li>
                 <li>You do not withdraw anything from the prop firm yourself. FTM withdraws the profit and sends your share to you.</li>
                 <li>Your share is paid at the end of the contract, to the bank account you give FTM.</li>
                 <li>If the prop account loses money, you carry that loss, not FTM.</li>
@@ -6649,9 +6649,9 @@
     function calc(){
       var b=document.querySelector('.prop-sizes button[aria-pressed="true"]'), size=+b.dataset.ps, fee=+b.dataset.fee, r=+ret.value, Y=+document.getElementById('prYears').value;
       /* profit is taken out of the prop account, so it does not compound */
-      var profit=size*r/100*Y, share=profit/2;
+      var profit=size*r/100*Y, share=profit*0.2;
       document.getElementById('prYearsO').textContent=Y;
-      var ys=size*r/100/2, early=ys*0.1; document.getElementById('prY2').textContent='In year 2: '+eu(early*2);
+      var ys=size*r/100*0.2, early=ys*0.1; document.getElementById('prY2').textContent='In year 2: '+eu(early*2);
       document.getElementById('prYear').textContent='Years 3 and 4, each year: '+eu(early); document.getElementById('prYear').hidden=Y<3;
       document.getElementById('prRest').textContent='From year 5, the rest: '+eu(Math.max(0,share-early*Math.min(Y,4)));
       document.getElementById('prRetO').textContent=r+'%';
@@ -6683,7 +6683,7 @@
     F.renderProp=function(){
       var a=F.prop; if(!a||!a.size)return;
       var end=new Date(a.start); end.setFullYear(end.getFullYear()+2);
-      var cl=(a.closed||[]).filter(function(t){return t.pl!=null;}), profit=(a.balance!=null?a.balance:a.size)-a.size, share=Math.max(0,profit)/2;
+      var cl=(a.closed||[]).filter(function(t){return t.pl!=null;}), profit=(a.balance!=null?a.balance:a.size)-a.size, share=Math.max(0,profit)*0.2;
       $('ppHdrSize').textContent=eu(a.size); $('ppSize').textContent=eu(a.size); $('ppFee').textContent=eu(a.fee);
       if(a.start){ $('ppStart').textContent=dt(a.start); $('ppEnd').textContent=dt(end); $('ppHdrEnd').textContent=dt(end); $('ppPayDate').textContent=dt(end);
         var tot=end-a.start, gone=Math.min(tot,Math.max(0,Date.now()-a.start)); $('ppBarFill').style.width=(gone/tot*100).toFixed(1)+'%';
