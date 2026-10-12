@@ -64,6 +64,26 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .mhead{display:grid;gap:12px;background:var(--navy);color:#fff;border-radius:24px;padding:24px clamp(20px,4vw,40px);scroll-margin-top:16px}
 .mhead h2{color:#fff;font-size:clamp(28px,4vw,40px)}
 @media (max-width:600px){#mk-gold .switch{grid-template-columns:repeat(3,1fr)}#mk-gold .switch button{padding:12px 4px}}
+.mhead-gold{grid-template-columns:minmax(0,1fr) minmax(280px,420px);align-items:center;column-gap:28px}
+.mh-left{display:grid;gap:12px;min-width:0}
+.gold-live{display:grid;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:16px;min-width:0;overflow:hidden}
+.gl-top{display:flex;align-items:center;gap:14px}
+.gold-bars{width:150px;flex:none;filter:drop-shadow(0 8px 14px rgba(0,0,0,.35))}
+.gl-price{display:grid;gap:2px;min-width:0}
+.gl-lbl{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--gold);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.gl-dot{width:8px;height:8px;border-radius:50%;background:#3CC98A;display:inline-block;animation:gldot 1.6s ease-in-out infinite}
+@keyframes gldot{50%{opacity:.25}}
+.gl-price b{font-size:clamp(26px,3vw,34px);font-weight:800;color:#fff;font-variant-numeric:tabular-nums;transition:color .4s}
+.gl-price b.up{color:#3CC98A}.gl-price b.down{color:#FF6B74}
+.gl-sub{font-size:12.5px;color:rgba(255,255,255,.7)}
+.gl-zones{overflow:hidden;border-top:1px solid rgba(255,255,255,.14);padding-top:10px;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.gl-track{display:flex;width:max-content;animation:glz 60s linear infinite}
+.gl-zones:hover .gl-track{animation-play-state:paused}
+@keyframes glz{to{transform:translateX(-50%)}}
+.glz{display:flex;gap:6px;align-items:baseline;padding:0 14px;white-space:nowrap;color:#fff;font-size:13px;border-right:1px solid rgba(255,255,255,.14)}
+.glz b{font-variant-numeric:tabular-nums}.glz small{color:var(--gold);font-weight:700}
+@media (max-width:860px){.mhead-gold{grid-template-columns:minmax(0,1fr);row-gap:18px}}
+@media (prefers-reduced-motion:reduce){.gl-track{animation:none}}
 .size-note{font-size:13.5px;color:#FFD9A0;background:rgba(255,180,60,.12);border:1px solid rgba(255,180,60,.35);border-radius:12px;padding:10px 14px;margin:0}
 .jump .sz{display:flex;gap:6px;align-items:center;margin-left:8px}
 .jump .sz a{padding:7px 14px;font-size:13px;background:transparent!important;border-color:rgba(255,255,255,.25)!important}
@@ -165,10 +185,16 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   </header>
 
   <div class="mblock" data-mk="gold">
-  <div class="mhead" id="mk-gold"><div class="eyebrow">XAUUSD · 1 Jan 2020 to 8 Oct 2026</div><h2>Gold</h2>
+  <div class="mhead mhead-gold" id="mk-gold"><div class="mh-left"><div class="eyebrow">XAUUSD · 1 Jan 2020 to 8 Oct 2026</div><h2>Gold</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-z="100000">$100k</button><button data-z="10000">$10k</button><button data-z="1000">$1k</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative" data-p="conservative">Conservative</button><button id="p-balanced" data-p="balanced">Balanced</button><button id="p-g2" data-p="g2">Growth 2×</button></div>
     <p class="size-note" id="n-size" hidden>Small accounts trade the 0.01 minimum lot more often, so risk per trade, and drawdown, is higher than the profile setting.</p>
+</div>
+  <div class="gold-live"><div class="gl-top"><svg class="gold-bars" viewBox="0 0 220 150" aria-hidden="true"><defs><linearGradient id="gbT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E8B93A"/></linearGradient><linearGradient id="gbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3A82B"/><stop offset="1" stop-color="#A9761A"/></linearGradient><linearGradient id="gbS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8E6113"/><stop offset="1" stop-color="#C38A22"/></linearGradient></defs>
+<g transform="translate(10,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><path d="M98 30l0 26" stroke="#7a5310"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
+<g transform="translate(112,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
+<g transform="translate(61,24)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><text x="49" y="47" text-anchor="middle" font-size="9" font-weight="800" fill="#6b470c" font-family="Inter,sans-serif">FTM 999.9</text></g>
+<path d="M150 18l4 8 8 2-8 3-4 8-3-8-8-3 8-2z" fill="#fff" opacity=".85"/></svg><div class="gl-price"><span class="gl-lbl">XAU/USD · <i class="gl-dot"></i> Live</span><b id="gl-px">—</b><span class="gl-sub" id="gl-ch">Gold, US dollars per ounce</span></div></div><div class="gl-zones"><div class="gl-track" id="gl-zones"></div></div></div>
   </div>
   <section id="compare">
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare">Higher risk earned more, of course</h2></div>
@@ -582,6 +608,32 @@ $('mback').addEventListener('click',e=>{if(e.target===$('mback'))closeMonth()});
 document.addEventListener('keydown',e=>{if($('mback').hidden)return;if(e.key==='Escape')closeMonth();if(e.key==='ArrowLeft'&&!$('m-prev').disabled)$('m-prev').click();if(e.key==='ArrowRight'&&!$('m-next').disabled)$('m-next').click()});
 $('m-prev').onclick=()=>{const m=P[cur].monthly,i=m.findIndex(x=>x[0]===mKey);if(i>0)openMonth(m[i-1][0])};
 $('m-next').onclick=()=>{const m=P[cur].monthly,i=m.findIndex(x=>x[0]===mKey);if(i<m.length-1)openMonth(m[i+1][0])};
+
+/* ---- Gold header: live XAU/USD price (several free sources, first that answers wins) and moving world times ---- */
+(()=>{
+  const px=document.getElementById('gl-px'),ch=document.getElementById('gl-ch');if(!px)return;
+  const SRC=[
+    ['https://api.gold-api.com/price/XAU',j=>+j.price],
+    ['https://api.coinbase.com/v2/prices/PAXG-USD/spot',j=>+j.data.amount],
+    ['https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT',j=>+j.price]
+  ];
+  let last=null,open=null,src=0;
+  const show=v=>{if(!(v>500&&v<100000))throw 0;
+    if(open===null)open=v;
+    px.classList.remove('up','down');if(last!==null&&v!==last){px.classList.add(v>last?'up':'down');setTimeout(()=>px.classList.remove('up','down'),1200)}
+    last=v;px.textContent='$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const d=v-open,dp=d/open*100;ch.textContent=Math.abs(d)<.005?'Gold, US dollars per ounce':`${d>0?'▲':'▼'} ${d>0?'+':''}${d.toFixed(2)} (${dp>0?'+':''}${dp.toFixed(2)}%) since you opened this page`;};
+  const pull=async()=>{for(let k=0;k<SRC.length;k++){const i=(src+k)%SRC.length;
+      try{const r=await fetch(SRC[i][0],{cache:'no-store'});if(!r.ok)throw 0;show(SRC[i][1](await r.json()));src=i;return}catch(e){}}
+    if(last===null){px.textContent='—';ch.textContent='Live price unavailable right now'}};
+  pull();setInterval(pull,10000);
+  const Z=[['UTC','UTC'],['New York','America/New_York'],['London','Europe/London'],['Zurich','Europe/Zurich'],['Lagos','Africa/Lagos'],['Johannesburg','Africa/Johannesburg'],['Dubai','Asia/Dubai'],['Mumbai','Asia/Kolkata'],['Shanghai','Asia/Shanghai'],['Hong Kong','Asia/Hong_Kong'],['Singapore','Asia/Singapore'],['Tokyo','Asia/Tokyo'],['Sydney','Australia/Sydney']];
+  const track=document.getElementById('gl-zones');
+  const fz=tz=>{try{return {t:new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}),o:new Intl.DateTimeFormat('en-GB',{timeZone:tz,timeZoneName:'shortOffset'})}}catch(e){return null}};
+  const F=Z.map(([n,tz])=>[n,tz,fz(tz)]).filter(x=>x[2]);
+  const draw=()=>{const d=new Date();const row=F.map(([n,tz,f])=>{const o=tz==='UTC'?'UTC':((f.o.formatToParts(d).find(x=>x.type==='timeZoneName')||{}).value||'').replace('GMT','UTC').replace('-','−');return `<span class="glz">${n} <b>${f.t.format(d)}</b> <small>${o}</small></span>`}).join('');track.innerHTML=row+row};
+  draw();setInterval(draw,30000);
+})();
 draw();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
 new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
