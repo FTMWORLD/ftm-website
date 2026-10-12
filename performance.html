@@ -235,7 +235,12 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 .pp-table th{font-size:12px;color:var(--muted);font-weight:700}
 .pp-table .up{color:var(--up);font-weight:700}.pp-table .down{color:var(--down);font-weight:700}
 .pp-note{font-size:13px;color:var(--muted);margin-top:12px}
-#pp-tl{overflow-x:auto}#pp-tl svg{min-width:860px}
+#pp-tl{overflow-x:auto}
+.pb{cursor:pointer;outline:none}.pb .pbar{transform-box:fill-box;transform-origin:bottom;animation:ppGrow .7s cubic-bezier(.2,.8,.2,1) both;transition:fill .15s,filter .15s}
+.pb:hover .pbar,.pb.on .pbar,.pb:focus .pbar{fill:var(--up);filter:drop-shadow(0 4px 8px rgba(0,0,0,.18))}
+@keyframes ppGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){.pb .pbar{animation:none}}
+#pp-tl svg{min-width:860px}
 #pp-tl svg text,#pp-pay svg text{font-size:11px;fill:var(--muted)}
 </style>
 
@@ -824,9 +829,14 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
     const pm=Object.fromEntries(P.payouts),mx=Math.max(...P.payouts.map(p=>p[1]));let bars='',n=0;const months=[];
     for(let y=2020;y<=2026;y++)for(let m=1;m<=12;m++){const k=y+'-'+String(m).padStart(2,'0');if(k>'2026-10')break;months.push(k)}
     const bw=W/months.length,PH=200;
-    months.forEach((k,i)=>{const v=pm[k];if(v){const h=v/mx*(PH-30);bars+=`<rect x="${(i*bw+1).toFixed(1)}" y="${(PH-12-h).toFixed(1)}" width="${(bw-2).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="var(--gold)"><title>${ml(k)}: ${usd(v)}</title></rect>`}
+    const fm=Object.fromEntries(P.funded_months);let cum=0;const cumAt={};P.payouts.forEach(([k,v])=>{cum+=v;cumAt[k]=cum});
+    for(let y=0;y<=4;y++){const yy=(PH-12)-(y/4)*(PH-30);bars+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="var(--grid)"/>`+(y?`<text x="2" y="${yy-3}">${usd(mx*y/4)}</text>`:'')}
+    let n2=0;months.forEach((k,i)=>{const v=pm[k];if(v){n2++;const h=v/mx*(PH-30);
+      bars+=`<g class="pb" tabindex="0" data-tip="${ml(k)} · paid out ${usd(v)} · account ${fm[k]!=null?(fm[k]>0?'+':'')+fm[k].toFixed(2)+'% that month':'—'} · total so far ${usd(cumAt[k])}"><rect x="${(i*bw-3).toFixed(1)}" y="0" width="${(bw+6).toFixed(1)}" height="${PH-12}" fill="transparent"/><rect class="pbar" style="animation-delay:${n2*60}ms" x="${(i*bw+1).toFixed(1)}" y="${(PH-12-h).toFixed(1)}" width="${(bw-2).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="var(--gold)"/></g>`}
       if(k.endsWith('-01'))bars+=`<text x="${i*bw}" y="${PH}">${k.slice(0,4)}</text>`});
-    document.getElementById('pp-pay').innerHTML=`<svg viewBox="0 0 ${W} ${PH+4}" width="100%" role="img" aria-label="Payouts by month">${bars}</svg><p class="pp-note">${P.payouts.length} paying months, ${usd(P.payout_total)} in total. Largest month: ${usd(mx)}.</p>`;
+    const pay=document.getElementById('pp-pay');pay.innerHTML=`<svg viewBox="0 0 ${W} ${PH+4}" width="100%" role="img" aria-label="Payouts by month">${bars}</svg><p class="pp-note" id="pp-payread">${P.payouts.length} paying months, ${usd(P.payout_total)} in total. Largest month: ${usd(mx)}. Hover or tap a bar for details.</p>`;
+    bindTips(pay);const rd=document.getElementById('pp-payread'),base=rd.textContent;
+    pay.querySelectorAll('.pb').forEach(g=>{const f=()=>{rd.textContent=g.dataset.tip;pay.querySelectorAll('.pb').forEach(x=>x.classList.toggle('on',x===g))};g.addEventListener('click',f);g.addEventListener('focus',f)});
     /* funded months */
     document.getElementById('pp-months').innerHTML='<thead><tr><th>Month</th><th>Account return</th><th>Paid out</th></tr></thead><tbody>'+
       P.funded_months.slice().reverse().map(([k,v])=>`<tr><td>${ml(k)}</td><td class="${v>=0?'up':'down'}">${v>0?'+':''}${v.toFixed(2)}%</td><td>${pm[k]?usd(pm[k]):'–'}</td></tr>`).join('')+'</tbody>';
