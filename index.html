@@ -734,6 +734,14 @@
   .prod-switch button{border:0;background:none;color:#fff;font:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:99px;cursor:pointer}
   .prod-switch button.on{background:#fff;color:var(--ink)}
   .app-who{flex-wrap:wrap}
+  .pp-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border:0;border-radius:11px;background:none;font:inherit;font-size:14.5px;font-weight:600;color:rgba(255,255,255,.72);cursor:pointer;text-align:left;width:100%}
+  .pp-item svg{width:19px;height:19px;flex:none;opacity:.75}
+  .pp-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .pp-item.is-on{background:rgba(212,175,55,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(212,175,55,.22)}
+  .pp-item.is-on svg{opacity:1;color:var(--gold-light)}
+  @media (max-width:860px){.pp-item{white-space:nowrap;width:auto}}
+  .pp-empty{border:1.5px dashed var(--line);border-radius:16px;padding:48px 20px;text-align:center;color:var(--muted);font-size:14px;background:var(--bg-3)}
+  .pp-bar{height:8px;border-radius:99px;background:var(--bg-2);margin-top:16px;overflow:hidden}.pp-bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
   .iv-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border:0;border-radius:11px;background:none;font:inherit;font-size:14.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;width:100%}
   .iv-item svg{width:19px;height:19px;flex:none;opacity:.7}
   .iv-item:hover{background:var(--bg-2)}
@@ -795,7 +803,7 @@
   .np-panel h2{font-size:30px}
   .np-panel p{color:var(--text);font-size:16px;line-height:1.55}
   .np-panel .np-small{font-size:13px;color:var(--muted)}
-  .app.noprod .app-view,.app.noprod .iv-view,.app.noprod .app-crumb,.app.noprod .app-title,.app.noprod .app-nav{display:none!important}
+  .app.noprod .app-view,.app.noprod .iv-view,.app.noprod .pp-view,.app.noprod .app-crumb,.app.noprod .app-title,.app.noprod .app-nav{display:none!important}
   .ftm-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%);z-index:130;background:var(--ink);color:#fff;padding:14px 20px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:0 20px 50px rgba(0,0,0,.35);max-width:min(520px,calc(100vw - 32px));line-height:1.45}
   .ivc-min{font-size:12.5px;color:var(--muted);margin:-4px 0 2px;font-weight:600}
   .inv-out .big small{display:block;font-size:12.5px;font-weight:700;color:rgba(255,255,255,.6);margin-top:5px;font-variant-numeric:tabular-nums}
@@ -1956,7 +1964,7 @@
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div>Signed in as <b id="appEmail">sam@example.com</b> <button class="btn btn-outline btn-sm js-pw" type="button" style="color:#fff;border-color:rgba(255,255,255,.5)">Change password</button> <button class="btn btn-outline btn-sm" id="appLogout" style="color:#fff;border-color:rgba(255,255,255,.5)">Log out</button></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button><button type="button" data-p="prop">FTM Prop</button></div>Signed in as <b id="appEmail">sam@example.com</b> <button class="btn btn-outline btn-sm js-pw" type="button" style="color:#fff;border-color:rgba(255,255,255,.5)">Change password</button> <button class="btn btn-outline btn-sm" id="appLogout" style="color:#fff;border-color:rgba(255,255,255,.5)">Log out</button></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2441,7 +2449,7 @@
 <div class="app" id="invView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="invHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div>Signed in as <b id="invEmail">&mdash;</b> <button class="btn btn-outline btn-sm js-pw" type="button" style="color:#fff;border-color:rgba(255,255,255,.5)">Change password</button> <button class="btn btn-outline btn-sm" id="invLogout" style="color:#fff;border-color:rgba(255,255,255,.5)">Log out</button></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button><button type="button" data-p="prop">FTM Prop</button></div>Signed in as <b id="invEmail">&mdash;</b> <button class="btn btn-outline btn-sm js-pw" type="button" style="color:#fff;border-color:rgba(255,255,255,.5)">Change password</button> <button class="btn btn-outline btn-sm" id="invLogout" style="color:#fff;border-color:rgba(255,255,255,.5)">Log out</button></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Investor area">
@@ -2544,6 +2552,116 @@
           <div class="app-card">
             <h3>Withdrawal history</h3>
             <div class="app-scroll"><table class="app-trades" id="ivWHist"></table></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="propView" hidden>
+  <div class="app-bar">
+    <a class="logo app-home" href="#top" id="propHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchC" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button><button type="button" data-p="prop">FTM Prop</button></div>Signed in as <b id="propEmail">&mdash;</b> <button class="btn btn-outline btn-sm js-pw" type="button" style="color:#fff;border-color:rgba(255,255,255,.5)">Change password</button> <button class="btn btn-outline btn-sm" id="propLogout" style="color:#fff;border-color:rgba(255,255,255,.5)">Log out</button></div>
+  </div>
+  <div class="app-body">
+    <nav class="app-nav" aria-label="FTM Prop area">
+      <button class="pp-item is-on" data-pp="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Overview</span></button>
+      <button class="pp-item" data-pp="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg><span>Statistics</span></button>
+      <button class="pp-item" data-pp="payouts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg><span>Payouts</span></button>
+    </nav>
+    <div class="app-content">
+      <div class="np-panel" id="noprodC" hidden>
+        <span class="np-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
+        <h2>No results</h2><p>There is no FTM Prop account on this email yet. Choose a prop account to open your FTM Prop client area.</p>
+        <a class="btn btn-red" href="#prop" id="npPropBtn">Get FTM Prop</a>
+        <p class="np-small">Paid with a different email? Log out and log in with that one.</p>
+      </div>
+      <div class="app-crumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11 12 4l8 7M6 10v9h12v-9"/></svg><span>Client area</span><em>/</em><span>FTM Prop</span><em>/</em><span class="cur" id="ppCrumb">Overview</span></div>
+      <div class="app-title">
+        <span class="app-title-ic" id="ppIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span>
+        <div class="app-title-txt"><h2 id="ppTitle">Overview</h2><p id="ppSub">Your prop account and your share of its profit.</p></div>
+        <div class="app-title-meta">
+          <div><span>Prop account</span><b id="ppHdrSize">&mdash;</b></div>
+          <div><span>Contract ends</span><b id="ppHdrEnd">&mdash;</b></div>
+        </div>
+      </div>
+
+      <section class="pp-view" data-pp="overview">
+        <div class="app-main">
+          <div class="app-grid">
+            <div class="app-tile"><span>Prop account</span><b id="ppSize">&mdash;</b></div>
+            <div class="app-tile"><span>Account balance</span><b id="ppBal">&mdash;</b></div>
+            <div class="app-tile"><span>Profit so far</span><b id="ppProfit">&mdash;</b><small class="muted" id="ppProfitPct">&mdash;</small></div>
+            <div class="app-tile"><span>Your 50% share</span><b id="ppShare">&mdash;</b></div>
+          </div>
+          <div class="app-card">
+            <h3>Account balance</h3>
+            <p class="hint">Balance of your prop account after every closed trade.</p>
+            <div class="pp-empty" id="ppChart">The chart appears here once FTM MACHINE starts trading your prop account.</div>
+          </div>
+          <div class="app-card">
+            <h3>Your contract</h3>
+            <dl class="mg">
+              <div><dt>Subscription</dt><dd id="ppFee">&mdash;</dd></div>
+              <div><dt>Trading started</dt><dd id="ppStart">&mdash;</dd></div>
+              <div><dt>Contract ends</dt><dd id="ppEnd">&mdash;</dd></div>
+              <div><dt>Time left</dt><dd id="ppLeft">&mdash;</dd></div>
+            </dl>
+            <div class="pp-bar"><i id="ppBarFill" style="width:0%"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pp-view" data-pp="stats" hidden>
+        <div class="app-main">
+          <div class="metrics">
+            <div class="app-card"><h4 class="mg-title">Risk</h4><dl class="mg">
+              <div><dt>Max balance drawdown</dt><dd id="ppDD">&mdash;</dd></div>
+              <div><dt>Highest balance</dt><dd id="ppHigh">&mdash;</dd></div>
+              <div><dt>Current equity</dt><dd id="ppEq">&mdash;</dd></div></dl></div>
+            <div class="app-card"><h4 class="mg-title">Trade stats</h4><dl class="mg">
+              <div><dt>Trade count</dt><dd id="ppCount">&mdash;</dd></div>
+              <div><dt>Win rate</dt><dd id="ppWin">&mdash;</dd></div>
+              <div><dt>Profit factor</dt><dd id="ppPF">&mdash;</dd></div>
+              <div><dt>Avg trade duration</dt><dd id="ppDur">&mdash;</dd></div></dl></div>
+          </div>
+          <div class="app-card">
+            <h3>Month by month</h3>
+            <p class="hint">Profit and loss of your prop account for every month.</p>
+            <div class="app-scroll"><table class="app-trades" id="ppMonths"><tbody><tr><td style="color:var(--muted)">No trades yet.</td></tr></tbody></table></div>
+          </div>
+          <div class="app-card">
+            <h3>Recently closed trades</h3>
+            <div class="app-scroll"><table class="app-trades"><thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead><tbody id="ppTrades"><tr><td colspan="6" style="color:var(--muted)">No trades yet.</td></tr></tbody></table></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pp-view" data-pp="payouts" hidden>
+        <div class="app-main">
+          <div class="app-cols">
+            <div class="app-card">
+              <h3>What you get and when</h3>
+              <ul class="wd-notes">
+                <li>You receive 50% of the total profit your prop account makes over the two-year contract.</li>
+                <li>You do not withdraw anything from the prop firm yourself. FTM withdraws the profit and sends your share to you.</li>
+                <li>Your share is paid at the end of the contract, to the bank account you give FTM.</li>
+                <li>If the prop account loses money, you carry that loss, not FTM.</li>
+              </ul>
+            </div>
+            <div class="app-card">
+              <h3>Your next payout</h3>
+              <div class="wd-avail"><span>Your share so far</span><b id="ppPayNow">&mdash;</b></div>
+              <dl class="mg" style="margin-top:14px">
+                <div><dt>Payout date</dt><dd id="ppPayDate">&mdash;</dd></div>
+                <div><dt>Paid to</dt><dd id="ppPayTo">&mdash;</dd></div>
+              </dl>
+            </div>
+          </div>
+          <div class="app-card">
+            <h3>Payout history</h3>
+            <div class="app-scroll"><table class="app-trades"><tbody><tr><td style="color:var(--muted)">No payouts yet.</td></tr></tbody></table></div>
           </div>
         </div>
       </section>
@@ -6449,21 +6567,23 @@
          opens, so refreshing the plain homepage while logged in stays on
          the homepage, matching what a customer would expect. */
       try{ sessionStorage.setItem('ftm_in_app','1'); }catch(e){}
-      var A=$('appView'), I=$('invView'), s=F.session||{email:'',products:[p]};
-      $('appEmail').textContent=s.email; $('invEmail').textContent=s.email;
+      var A=$('appView'), I=$('invView'), PP=$('propView'), s=F.session||{email:'',products:[p]};
+      $('appEmail').textContent=s.email; $('invEmail').textContent=s.email; $('propEmail').textContent=s.email;
       /* every client gets the switch; a product they do not have shows "No results" */
-      ['prodSwitchA','prodSwitchB'].forEach(function(id){
+      ['prodSwitchA','prodSwitchB','prodSwitchC'].forEach(function(id){
         var el=$(id); el.hidden=false;
         el.querySelectorAll('button').forEach(function(b){ b.classList.toggle('on',b.dataset.p===p); });
       });
       var has=s.products.indexOf(p)!==-1;
-      A.hidden=p!=='auto'; I.hidden=p!=='invest';
+      A.hidden=p!=='auto'; I.hidden=p!=='invest'; PP.hidden=p!=='prop';
+      PP.classList.toggle('noprod', p==='prop' && !has); $('noprodC').hidden=!(p==='prop' && !has);
       A.classList.toggle('noprod', p==='auto' && !has);
       I.classList.toggle('noprod', p==='invest' && !has);
       $('noprodA').hidden=!(p==='auto' && !has);
       $('noprodB').hidden=!(p==='invest' && !has);
       document.body.style.overflow='hidden';
-      if(p==='invest'){ if(has){ current='overview'; show('overview'); } }
+      if(p==='prop'){ if(has && F.renderProp) F.renderProp(); }
+      else if(p==='invest'){ if(has){ current='overview'; show('overview'); } }
       else if(has && F.render){ F.render(); }
     };
     document.querySelectorAll('.prod-switch button').forEach(function(b){ b.addEventListener('click',function(){ F.openArea(b.dataset.p); }); });
@@ -6526,6 +6646,46 @@
     }
     btns.forEach(function(x){x.addEventListener('click',function(){btns.forEach(function(y){y.setAttribute('aria-pressed',y===x?'true':'false');});calc();});});
     ret.addEventListener('input',calc); calc();
+  })();
+
+  /* ---- FTM Prop client area. Figures come from F.prop once the engine reports the
+     customer's prop account: {size, fee, start:ms, balance, equity, closed:[trades]}.
+     Until then every figure stays a dash; nothing is invented. ---- */
+  (function(){
+    var F=window.FTM, $=function(i){return document.getElementById(i);}; if(!$('propView'))return;
+    var eu=function(n){return Math.round(n).toLocaleString('de-DE')+'€';};
+    var dt=function(t){return new Date(t).toLocaleDateString(window.FTM_LOCALE||'en-GB',{day:'numeric',month:'long',year:'numeric'});};
+    var META={overview:['Overview','Your prop account and your share of its profit.'],stats:['Statistics','How your prop account is trading.'],payouts:['Payouts','What you get, and when FTM pays it to you.']};
+    function show(v){
+      document.querySelectorAll('.pp-view').forEach(function(x){x.hidden=x.dataset.pp!==v;});
+      document.querySelectorAll('.pp-item').forEach(function(b){b.classList.toggle('is-on',b.dataset.pp===v);});
+      $('ppCrumb').textContent=META[v][0]; $('ppTitle').textContent=META[v][0]; $('ppSub').textContent=META[v][1];
+      var ic=document.querySelector('.pp-item[data-pp="'+v+'"] svg'); if(ic)$('ppIcon').innerHTML=ic.outerHTML;
+      $('propView').scrollTop=0;
+    }
+    document.querySelectorAll('.pp-item').forEach(function(b){b.addEventListener('click',function(){show(b.dataset.pp);});});
+    F.renderProp=function(){
+      var a=F.prop; if(!a||!a.size)return;
+      var end=new Date(a.start); end.setFullYear(end.getFullYear()+2);
+      var cl=(a.closed||[]).filter(function(t){return t.pl!=null;}), profit=(a.balance!=null?a.balance:a.size)-a.size, share=Math.max(0,profit)/2;
+      $('ppHdrSize').textContent=eu(a.size); $('ppSize').textContent=eu(a.size); $('ppFee').textContent=eu(a.fee);
+      if(a.start){ $('ppStart').textContent=dt(a.start); $('ppEnd').textContent=dt(end); $('ppHdrEnd').textContent=dt(end); $('ppPayDate').textContent=dt(end);
+        var tot=end-a.start, gone=Math.min(tot,Math.max(0,Date.now()-a.start)); $('ppBarFill').style.width=(gone/tot*100).toFixed(1)+'%';
+        $('ppLeft').textContent=Math.max(0,Math.ceil((end-Date.now())/864e5))+' days'; }
+      if(a.balance!=null){ $('ppBal').textContent=eu(a.balance); $('ppProfit').textContent=(profit>=0?'+':'')+eu(profit);
+        $('ppProfitPct').textContent=(profit>=0?'+':'')+(profit/a.size*100).toFixed(2)+'%'; $('ppShare').textContent=eu(share); $('ppPayNow').textContent=eu(share); }
+      if(a.equity!=null)$('ppEq').textContent=eu(a.equity);
+      if(cl.length){ var w=cl.filter(function(t){return t.pl>0;}), gp=w.reduce(function(s,t){return s+t.pl;},0), gl=-cl.filter(function(t){return t.pl<0;}).reduce(function(s,t){return s+t.pl;},0);
+        var run=a.size, pk=run, dd=0; cl.forEach(function(t){run+=t.pl; if(run>pk)pk=run; dd=Math.max(dd,(pk-run)/pk*100);});
+        $('ppCount').textContent=cl.length; $('ppWin').textContent=(w.length/cl.length*100).toFixed(1)+'%'; $('ppPF').textContent=gl>0?(gp/gl).toFixed(2):'—';
+        $('ppDD').textContent='−'+dd.toFixed(2)+'%'; $('ppHigh').textContent=eu(pk);
+        var pts=[a.size],r2=a.size; cl.forEach(function(t){r2+=t.pl;pts.push(r2);}); var mn=Math.min.apply(null,pts),mx=Math.max.apply(null,pts),W=600,H=180,sp=(mx-mn)||1;
+        $('ppChart').className=''; $('ppChart').innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Account balance"><polyline fill="none" stroke="#D4AF37" stroke-width="2.5" points="'+pts.map(function(v,i){return (i*W/(pts.length-1)).toFixed(1)+','+(H-8-(v-mn)/sp*(H-16)).toFixed(1);}).join(' ')+'"/></svg>';
+        $('ppDur').textContent=(cl.reduce(function(s,t){return s+(t.closeTime-t.openTime);},0)/cl.length/36e5).toFixed(1)+' h'; }
+    };
+    $('propLogout').addEventListener('click',function(){ var lo=$('appLogout'); if(lo)lo.click(); $('propView').hidden=true; document.body.style.overflow=''; });
+    $('propHome').addEventListener('click',function(e){ e.preventDefault(); $('propView').hidden=true; document.body.style.overflow=''; window.scrollTo({top:0,behavior:'instant'}); });
+    $('npPropBtn').addEventListener('click',function(){ $('propView').hidden=true; document.body.style.overflow=''; try{sessionStorage.removeItem('ftm_in_app');}catch(e){} });
   })();
   /* ---- Get started chooser ---- */
   (function(){
