@@ -23,6 +23,7 @@
 "<b>Example.</b> The account makes 40% over your period. Your share is 20% of what you invested, so 2.000€ on 10.000€.": "<b>ตัวอย่าง</b> บัญชีทำกำไรได้ 40% ในช่วงของคุณ ส่วนแบ่งของคุณคือ 20% ของเงินที่ลงทุน หรือ 2.000€ จาก 10.000€",
 "<b>FTM only asks for your MT5 master password inside the Connect account form in your client area. We will never ask for it by message, chat or email, and never ask for a transfer to a personal account.</b> If a member does, report them straight away.": "<b>FTM ขอรหัสผ่านหลัก MT5 ของคุณเฉพาะในแบบฟอร์มเชื่อมต่อบัญชีในพื้นที่ลูกค้าของคุณเท่านั้น เราจะไม่ขอผ่านข้อความ แชต หรืออีเมล และจะไม่ขอให้โอนเงินเข้าบัญชีส่วนตัว</b> หากสมาชิกคนใดทำเช่นนั้น โปรดรายงานทันที",
 "<b>Lock period.</b> You become eligible on the 1st of the month after 13 full months. Join in September 2026 and you are eligible on 1 November 2027.": "<b>ช่วงล็อก</b> คุณมีสิทธิ์ในวันที่ 1 ของเดือนถัดจากครบ 13 เดือนเต็ม หากเข้าร่วมในเดือนกันยายน 2026 คุณจะมีสิทธิ์ในวันที่ 1 พฤศจิกายน 2027",
+"<b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.": "<b>การขาดทุน</b> หากบัญชี prop ขาดทุน คุณเป็นผู้รับภาระการขาดทุนนั้น ไม่ใช่ FTM",
 "<b>Minimum.</b> The smallest investment FTM accepts is 1.000€.": "<b>ขั้นต่ำ</b> เงินลงทุนที่น้อยที่สุดที่ FTM รับคือ 1.000€",
 "<b>Minimum.</b> The smallest investment FTM accepts is 5.000€.": "<b>ขั้นต่ำ</b> เงินลงทุนที่น้อยที่สุดที่ FTM รับคือ 5.000€",
 "<b>Your share.</b> 50% of the total profit the account makes over the contract.": "<b>ส่วนแบ่งของคุณ</b> 50% ของกำไรทั้งหมดที่บัญชีทำได้ตลอดสัญญา",

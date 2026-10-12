@@ -23,6 +23,7 @@
 "<b>Example.</b> The account makes 40% over your period. Your share is 20% of what you invested, so 2.000€ on 10.000€.": "<b>示例。</b>账户在您的期间内收益 40%。您的份额为投资额的 20%，即 10.000€ 获得 2.000€。",
 "<b>FTM only asks for your MT5 master password inside the Connect account form in your client area. We will never ask for it by message, chat or email, and never ask for a transfer to a personal account.</b> If a member does, report them straight away.": "<b>FTM 仅会在您客户专区的“连接账户”表单中要求输入 MT5 主密码。我们绝不会通过消息、聊天或电子邮件索要，也绝不会要求您转账到个人账户。</b>如有成员这样做，请立即举报。",
 "<b>Lock period.</b> You become eligible on the 1st of the month after 13 full months. Join in September 2026 and you are eligible on 1 November 2027.": "<b>锁定期。</b>满 13 个整月后的次月 1 日起，您即具备资格。若 2026 年 9 月加入，则 2027 年 11 月 1 日起具备资格。",
+"<b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.": "<b>亏损。</b>若 prop 账户亏损，该亏损由您承担，而非 FTM。",
 "<b>Minimum.</b> The smallest investment FTM accepts is 1.000€.": "<b>最低投资额。</b>FTM 接受的最低投资额为 1.000€。",
 "<b>Minimum.</b> The smallest investment FTM accepts is 5.000€.": "<b>最低投资额。</b>FTM 接受的最低投资额为 5.000€。",
 "<b>Your share.</b> 50% of the total profit the account makes over the contract.": "<b>您的分成。</b>合约期内账户总利润的 50%。",
