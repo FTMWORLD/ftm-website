@@ -790,6 +790,7 @@
 "{} minutes ago": "{} мин. назад",
 "{} position currently open.": "Сейчас открыта позиций: {}.",
 "{} positions currently open.": "Сейчас открыто позиций: {}.",
+"{} profit": "{} прибыли",
 "{} to {}": "{} – {}",
 "{} total return · {} max drawdown": "{} общая доходность · {} макс. просадка",
 "{} trade closed this day. Click a row for full details.": "Закрыто сделок за этот день: {}. Нажмите на строку для всех подробностей.",

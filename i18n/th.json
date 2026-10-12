@@ -792,6 +792,7 @@
 "{} minutes ago": "{} นาทีที่แล้ว",
 "{} position currently open.": "ตำแหน่งที่เปิดอยู่ในขณะนี้ {} ตำแหน่ง",
 "{} positions currently open.": "ตำแหน่งที่เปิดอยู่ในขณะนี้ {} ตำแหน่ง",
+"{} profit": "กำไร {}",
 "{} to {}": "{} ถึง {}",
 "{} total return · {} max drawdown": "ผลตอบแทนรวม {} · การย่อตัวสูงสุด {}",
 "{} trade closed this day. Click a row for full details.": "ปิดการเทรด {} รายการในวันนี้ คลิกแถวเพื่อดูรายละเอียดทั้งหมด",

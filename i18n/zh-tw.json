@@ -790,6 +790,7 @@
 "{} minutes ago": "{} 分鐘前",
 "{} position currently open.": "當前有 {} 個持倉。",
 "{} positions currently open.": "當前有 {} 個持倉。",
+"{} profit": "{} 獲利",
 "{} to {}": "{} 至 {}",
 "{} total return · {} max drawdown": "總報酬 {} · 最大回撤 {}",
 "{} trade closed this day. Click a row for full details.": "當天平倉 {} 筆交易。點選某一行檢視全部詳情。",

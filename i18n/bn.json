@@ -790,6 +790,7 @@
 "{} minutes ago": "{} মিনিট আগে",
 "{} position currently open.": "বর্তমানে {}টি পজিশন খোলা আছে।",
 "{} positions currently open.": "বর্তমানে {}টি পজিশন খোলা আছে।",
+"{} profit": "{} মুনাফা",
 "{} to {}": "{} থেকে {}",
 "{} total return · {} max drawdown": "মোট রিটার্ন {} · সর্বোচ্চ ড্রডাউন {}",
 "{} trade closed this day. Click a row for full details.": "এই দিনে {}টি ট্রেড বন্ধ হয়েছে। সব বিবরণের জন্য একটি সারিতে ক্লিক করুন।",

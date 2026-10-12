@@ -792,6 +792,7 @@
 "{} minutes ago": "{}分前",
 "{} position currently open.": "{}件のポジションが現在オープン中です。",
 "{} positions currently open.": "{}件のポジションが現在オープン中です。",
+"{} profit": "{} の利益",
 "{} to {}": "{}〜{}",
 "{} total return · {} max drawdown": "累計リターン {} ・ 最大ドローダウン {}",
 "{} trade closed this day. Click a row for full details.": "この日に{}件の取引が決済されました。行をクリックすると詳細が表示されます。",

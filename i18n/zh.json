@@ -790,6 +790,7 @@
 "{} minutes ago": "{} 分钟前",
 "{} position currently open.": "当前有 {} 个持仓。",
 "{} positions currently open.": "当前有 {} 个持仓。",
+"{} profit": "{} 收益",
 "{} to {}": "{} 至 {}",
 "{} total return · {} max drawdown": "总收益 {} · 最大回撤 {}",
 "{} trade closed this day. Click a row for full details.": "当天平仓 {} 笔交易。点击某一行查看全部详情。",

@@ -1011,6 +1011,7 @@
   .compound-calc input[type=range]{width:100%;accent-color:var(--gold);margin-bottom:8px}
   .compound-result{display:grid;gap:2px;padding:16px 0 8px;border-top:1px solid var(--line);margin-top:6px}
   .compound-result span{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .compound-result .c-pct{font-size:14px;font-weight:700;color:var(--gold)}
   .compound-result b{font-size:36px;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
   .compound-result small{color:#2fa66b;font-weight:700;font-size:14px}
   #cChart{width:100%;height:110px}
@@ -1617,7 +1618,7 @@
         <input type="range" id="cRate" min="25" max="500" step="1" value="50">
         <label for="cYears">Years <output id="cYearsOut">5</output></label>
         <input type="range" id="cYears" min="1" max="20" step="1" value="10">
-        <div class="compound-result"><span>Projected balance</span><b id="cResult">37,129€</b><small id="cGain">+27,129€ growth</small></div>
+        <div class="compound-result"><span>Projected balance</span><b id="cResult">37,129€</b><small id="cGain">+27,129€ growth</small><small id="cPct" class="c-pct">+271% profit</small></div>
         <svg id="cChart" viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true"><path id="cArea" fill="rgba(212,175,55,.25)"/><polyline id="cLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round"/></svg>
       </div>
     </div>
@@ -3201,6 +3202,7 @@
       const end=series[Y];
       document.getElementById('cResult').textContent=eur(end);
       document.getElementById('cGain').textContent='+'+eur(end-P)+' growth';
+      document.getElementById('cPct').textContent='+'+Math.round((end-P)/P*100).toLocaleString('de-DE')+'% profit';
       const W=300,H=120,max=Math.max(...series);
       const pts=series.map((v,i)=>[i*(W/Y||0),H-6-(v/max)*(H-12)]);
       document.getElementById('cLine').setAttribute('points',pts.map(p=>p.join(',')).join(' '));

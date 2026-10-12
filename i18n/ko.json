@@ -790,6 +790,7 @@
 "{} minutes ago": "{}분 전",
 "{} position currently open.": "현재 열린 포지션 {}개.",
 "{} positions currently open.": "현재 열린 포지션 {}개.",
+"{} profit": "{} 수익",
 "{} to {}": "{}~{}",
 "{} total return · {} max drawdown": "총 수익률 {} · 최대 낙폭 {}",
 "{} trade closed this day. Click a row for full details.": "이날 청산된 거래 {}건. 행을 클릭하면 모든 상세 정보를 볼 수 있습니다.",
