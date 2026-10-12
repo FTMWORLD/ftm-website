@@ -716,6 +716,7 @@
   .inv-out b{display:block;font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:3px}
   .inv-out .big{grid-column:1/-1;background:var(--ink);border-radius:14px;padding:14px 16px}
   .inv-out .big span{color:rgba(255,255,255,.65)}
+  .inv-out .big .ivc-year{display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.15);color:var(--gold-light);font-weight:700;font-size:15px}
   .inv-out .big b{color:var(--gold-light);font-size:30px}
   .inv-out-note{font-size:13px;color:var(--muted);line-height:1.5}
   .inv-risk{margin-top:26px;background:rgba(229,50,62,.14);border:1px solid rgba(229,50,62,.4);border-radius:16px;padding:18px 22px;font-size:14px;line-height:1.55;color:rgba(255,255,255,.9)}
@@ -1703,7 +1704,7 @@
         <div class="inv-out">
           <div><span>First withdrawal on</span><b id="ivcElig">&mdash;</b></div><div><span>First withdrawal</span><b id="ivcFirst">&mdash;</b></div>
           <div><span>Your profit share</span><b id="ivcPct">&mdash;</b></div><div><span>Contract ends</span><b id="ivcEnd">&mdash;</b></div>
-          <div class="big"><span>Payable to you</span><b id="ivcEur">&mdash;</b><small id="ivcBreak">&mdash;</small></div>
+          <div class="big"><span>Payable to you</span><b id="ivcEur">&mdash;</b><small id="ivcBreak">&mdash;</small><small id="ivcYear" class="ivc-year">&mdash;</small></div>
         </div>
         <p class="inv-out-note" id="ivcNote"></p>
       </div>
@@ -6495,7 +6496,7 @@
         $('ivcAmtO').textContent=eur(a); $('ivcRetO').textContent=pct(ry,0).replace('+',''); $('ivcYearsO').textContent=Y;
         $('ivcElig').textContent=fmt(el); $('ivcEnd').textContent=fmt(endD); $('ivcFirst').textContent=eur(first);
         $('ivcPct').textContent=sharePct.toFixed(1)+'%';
-        $('ivcEur').textContent=eur(payable);
+        $('ivcEur').textContent=eur(payable); $('ivcYear').textContent='Available each year: '+eur(Math.max(0,profit)*0.2);
         $('ivcBreak').textContent = r>=0
           ? eur(a)+' deposit + '+eur(profit)+' profit share'
           : 'Your deposit after a '+Math.abs(r)+'% loss';
