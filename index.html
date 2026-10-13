@@ -6804,7 +6804,10 @@ tick();setInterval(tick,5000);})();
           .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return r.ok&&j.ok;});})
           .then(function(ok){b.disabled=false;
             if(ok){f.reset();
-              if(f.getAttribute('data-source')==='signup'){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError'); if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
+              if(f.getAttribute('data-source')==='signup'){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError');
+                /* Real accounts (Supabase): send the 6-digit code straight away; the login form's own code step takes over. */
+                if(window.FTM&&FTM.auth&&FTM.auth.ready()){ var pw=document.getElementById('authPass'); if(pw)pw.value=''; var af=document.getElementById('authForm'); if(af&&af.requestSubmit)af.requestSubmit(); }
+                else if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
               else msg(f,'You are subscribed. Thank you.',true);
               try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}}
             else msg(f,'Something went wrong. Please try again later.',false);})
