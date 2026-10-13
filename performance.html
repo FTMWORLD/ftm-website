@@ -267,7 +267,6 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
   <div class="mhead mhead-gold" id="mk-gold"><div class="mh-left"><div class="eyebrow">XAUUSD · 1 Jan 2020 to 8 Oct 2026</div><h2>Gold</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-z="1000000">$1M</button><button data-z="100000">$100k</button><button data-z="10000">$10k</button><button data-z="1000">$1k</button><button data-z="500">$500</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative" data-p="conservative">Conservative</button><button id="p-balanced" data-p="balanced">Balanced</button><button id="p-g2" data-p="g2">Growth 2×</button></div>
-    <p class="size-note" id="n-size5" hidden>At $500, most trades open at the 0.01-lot minimum: 96% of trades in Conservative, 68% in Balanced and 23% in Growth 2&times;. Risk per trade, and drawdown, is therefore much higher than the profile setting. Conservative at $500 had a 30% drawdown, against 10.5% at $100k. Even so, every profile ended the backtest in profit.</p>
     <p class="size-note" id="n-size" hidden>Small accounts trade the 0.01 minimum lot more often, so risk per trade, and drawdown, is higher than the profile setting. Even so, in the backtest since 2020, FTM MACHINE stayed profitable on these accounts in every risk profile.</p>
 </div>
   <div class="gold-live"><div class="gl-top"><svg class="gold-bars" viewBox="0 0 220 150" aria-hidden="true"><defs><linearGradient id="gbT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E8B93A"/></linearGradient><linearGradient id="gbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3A82B"/><stop offset="1" stop-color="#A9761A"/></linearGradient><linearGradient id="gbS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8E6113"/><stop offset="1" stop-color="#C38A22"/></linearGradient></defs>
@@ -505,7 +504,7 @@ function marketText(){const M=MKT[mkt];
   $('t-method').textContent=$('t-method').textContent.replace(/Starting balance \$[\d,]+/,'Starting balance '+usd(S0(P[cur])));
   const cn=document.querySelector(`.mblock[data-mk="${mkt}"] #compare${SUF} .note`);
   if(cn)cn.textContent=mkt==='gold'?'All three profiles take the same trades. Conservative uses positions half the size of Balanced, and Growth 2× twice the size.':'All four profiles take the same trades. Conservative uses positions half the size of Balanced; Growth 1.2× and 1.5× use positions 1.2 and 1.5 times larger.';
-  if(mkt==='gold'){const n=document.getElementById('n-size');if(n)n.hidden=SIZE!=='1000';const n5=document.getElementById('n-size5');if(n5)n5.hidden=SIZE!=='500';
+  if(mkt==='gold'){const n=document.getElementById('n-size');if(n)n.hidden=SIZE!=='1000'&&SIZE!=='500';
     document.querySelectorAll('[data-z]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.z===SIZE?'true':'false'));
     document.querySelectorAll('[data-jz]').forEach(a=>a.setAttribute('aria-current',a.dataset.jz===SIZE?'true':'false'));}
 }
