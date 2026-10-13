@@ -855,9 +855,9 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   }
   document.querySelectorAll('.pp-sizes button').forEach(b=>b.addEventListener('click',()=>{
     const z=+b.dataset.ps,so=document.getElementById('pp-soon');
-    if(z!==100000&&z!==50000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon.';so.hidden=false;return}
+    if(z!==100000&&z!==50000&&z!==200000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon.';so.hidden=false;return}
     so.hidden=true;document.querySelectorAll('.pp-sizes button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
-    fetch(z===50000?'data/prop/ftm-prop-journey-50k.json':'data/prop/ftm-prop-journey.json').then(r=>r.json()).then(J=>{built=true;build(J)})}));
+    fetch(z===50000?'data/prop/ftm-prop-journey-50k.json':z===200000?'data/prop/ftm-prop-journey-200k.json':'data/prop/ftm-prop-journey.json').then(r=>r.json()).then(J=>{built=true;build(J)})}));
   function go(pg){
     const prop=pg==='prop';document.getElementById('pg-auto').hidden=prop;document.getElementById('pg-prop').hidden=!prop;document.body.classList.toggle('pg-prop',prop);
     rs.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.pg===pg));rs.classList.remove('open');
