@@ -35,5 +35,11 @@
     "deploymentEnabled": {
       "claude/*": false
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/v1/brevo-ping",
+      "schedule": "0 6 * * 1"
+    }
+  ]
 }
