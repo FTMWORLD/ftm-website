@@ -96,6 +96,7 @@
   }
   @media (max-width:520px){.float-support{right:14px;bottom:14px}.fs-panel{width:calc(100vw - 28px)}}
 </style>
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
@@ -371,6 +372,21 @@
     }
     if(sections.length) setActive(sections[0].id);
   })();
+</script>
+<script>
+  /* Click tracking for the main buttons, sent to Vercel Analytics as custom events. */
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a,button'); if(!a||!window.va)return;
+    var h=a.getAttribute('href')||'', n=null, d={page:location.pathname};
+    if(a.classList.contains('js-login'))n='Log in';
+    else if(h.indexOf('buy.stripe.com')!==-1){n='Checkout';d.link=h.split('/').pop();}
+    else if(/wa\.me|whatsapp|t\.me\//.test(h)||a.closest('.chat-fab,.fab'))n='Contact';
+    else if(h.indexOf('deriv')!==-1)n='Broker link';
+    else if(h.indexOf('performance')!==-1)n='Performance';
+    else if(h==='#pricing'||h.indexOf('#pricing')!==-1)n='See plans';
+    else if(a.id==='authToSignup')n='Free account';
+    if(n)try{window.va('event',{name:n,data:d});}catch(x){}
+  },true);
 </script>
 </body>
 </html>
