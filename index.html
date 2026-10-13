@@ -256,6 +256,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .auth-panel input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg-3)}
   .auth-panel input:focus{outline:2px solid var(--blue);outline-offset:1px;background:#fff}
   .auth-panel .btn{width:100%;margin-top:10px}
+  .auth-error.ok{background:#E8F7EE;color:#11663A}
   .auth-error{background:#FDECEE;color:#9B1C24;border-radius:10px;padding:11px 13px;font-size:13.5px;font-weight:600;margin:0}
   .auth-foot{font-size:14px;color:var(--muted);text-align:center;margin-top:4px}
   .auth-foot a{color:var(--red);font-weight:700}
@@ -839,6 +840,11 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .auth-reset{background:none;border:0;padding:0;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer;color:inherit}
   .np-panel{max-width:600px;margin:0 auto;padding:110px 24px;text-align:center;display:grid;gap:14px;justify-items:center}
   .np-panel[hidden]{display:none!important}
+  .free-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#fff7e0,#fff);border:1px solid #f0d78c}
+  .free-bar[hidden]{display:none!important}.free-bar p{margin:0;flex:1;font-size:14.5px;line-height:1.45;color:#1b2340}
+  .free-bar .fb-ic{width:36px;height:36px;border-radius:10px;background:#D4AF37;color:#fff;display:grid;place-items:center;flex:none}.free-bar .fb-ic svg{width:20px;height:20px}
+  .app.free #appConnect,.app.free #acctAdd{opacity:.55}
+  .app.free #appConnect::before,.app.free #acctAdd::before{content:"\1F512  "}
   .np-ic{width:68px;height:68px;border-radius:50%;background:var(--bg-2);color:var(--blue);display:grid;place-items:center}
   .np-ic svg{width:30px;height:30px}
   .np-panel h2{font-size:30px}
@@ -1951,7 +1957,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     </div>
     <div class="auth-form">
     <h2 id="authTitle">Client log in</h2>
-    <p class="auth-sub" id="authSub">Use the email you paid with when you subscribed or invested.</p>
+    <p class="auth-sub" id="authSub">Log in with the email on your FTM account.</p>
     <div class="auth-note"><b>Preview only.</b> This is a design mock-up, not a real account system, so do not type a password you use anywhere else. Log in with the email used to subscribe or invest: <b>ftmwebnation@gmail.com</b> (both services), <b>sam@example.com</b> (Auto Trading only) or <b>investor@example.com</b> (Investment only). The first password you enter becomes that email's password in this browser. <button type="button" class="auth-reset" id="authReset">Reset saved preview passwords</button></div>
     <form id="authForm" novalidate>
       <div id="authEmailRow">
@@ -2011,6 +2017,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <button class="app-nav-item" data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Sessions</span></button>
     </nav>
     <div class="app-content">
+      <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> Subscribe to link your trading account and let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
       <div class="np-panel" id="noprodA" hidden>
         <span class="np-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
         <h2>No results</h2><p>There is no FTM Auto Trading subscription on this email yet. Choose a plan to get started.</p>
@@ -2915,7 +2922,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
          (and this code) must say the same generic thing either way, or
          the response itself would tell an attacker which emails have
          paid FTM subscriptions. */
-      sendOtp: function(email){ return client.auth.signInWithOtp({email:email, options:{shouldCreateUser:false}}); },
+      sendOtp: function(email){ return client.auth.signInWithOtp({email:email, options:{shouldCreateUser:true}}); },
       /* Verifies the 6-digit code and completes login. Resolves {email,
          products, userId, passwordSet}, same shape as everything else
          here. passwordSet comes from user_metadata — Supabase has no
@@ -3362,7 +3369,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       document.getElementById('authFirstTimeHint').hidden=true;
       var note=document.querySelector('.auth-note'); if(note) note.hidden=true;
       document.getElementById('authPassRow').hidden=true;
-      document.getElementById('authSub').textContent='Use the email you paid with when you subscribed or invested. We’ll send you a 6-digit code.';
+      document.getElementById('authSub').textContent='Log in with the email on your FTM account. We’ll send you a 6-digit code.';
     }
 
     function open(){
@@ -3393,7 +3400,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
     document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!overlay.hidden)close();});
     document.getElementById('authToPricing').addEventListener('click',close);
-    function fail(msg){err.textContent=msg;err.hidden=false;}
+    function fail(msg){err.classList.remove('ok');err.textContent=msg;err.hidden=false;}
     /* Raw browser fetch errors ("Load failed" on Safari, "Failed to
        fetch" on Chrome) leaked straight to the customer as the error
        message — meaningless to them, and the underlying Supabase client
@@ -3674,15 +3681,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         e.preventDefault();
         var mail=emailEl.value.trim().toLowerCase(), pw=passEl.value;
         if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return fail('Enter a valid email address.');
-        if(!ACCOUNTS[mail])return fail('We could not find a subscription or investment for that email. Use the email you paid with, or choose a plan or invest first.');
         if(!pw)return fail('Enter your password.');
         var db=loadPw(), rec=db[mail];
         if(!rec){
           if(pw.length<8)return fail('Choose a password of at least 8 characters. This first password becomes your password.');
           var salt=makeSalt();
-          hashPw(pw,salt).then(function(h){ db[mail]={salt:salt,hash:h}; savePw(db); enter(mail,ACCOUNTS[mail],true); });
+          hashPw(pw,salt).then(function(h){ db[mail]={salt:salt,hash:h}; savePw(db); enter(mail,ACCOUNTS[mail]||[],true); });
         } else {
-          hashPw(pw,rec.salt).then(function(h){ if(h!==rec.hash)return fail('That password is not correct.'); enter(mail,ACCOUNTS[mail],false); });
+          hashPw(pw,rec.salt).then(function(h){ if(h!==rec.hash)return fail('That password is not correct.'); enter(mail,ACCOUNTS[mail]||[],false); });
         }
       });
     }
@@ -4786,6 +4792,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       });
     }
 
+    F.emptyLiveData = emptyLiveData;
     loadLive().then(function(){ F.render(); });
     /* Exposed so the login flow (a separate closure, earlier in this file)
        can re-fetch real account data the moment a fresh login succeeds —
@@ -5357,7 +5364,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         (on?on.name+' ('+on.number+')':'no account')+
         '</b>. Connecting a different account closes every open position on this one first, then starts trading on the new account.';
       var st=document.getElementById('mStatus');
-      if(st) st.innerHTML='<i></i>FTM MACHINE is running on '+(on?on.name:'no account');
+      if(st) st.innerHTML=on?'<i></i>FTM MACHINE is running on '+on.name:'FTM MACHINE is not running yet';
     }
     /* So a fresh login (or any later real-data refresh) can repaint the
        Accounts table on demand, not just the first time it happens to be
@@ -6513,16 +6520,40 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         var el=$(id); el.hidden=false;
         el.querySelectorAll('button').forEach(function(b){ b.classList.toggle('on',b.dataset.p===p); });
       });
-      var has=s.products.indexOf(p)!==-1;
+      var has=s.products.indexOf(p)!==-1, free=!s.products.length;
       A.hidden=p!=='auto'; I.hidden=p!=='invest';
+      /* Free account (no product yet): the Auto Trading client area opens
+         with everything at zero, community and leaderboard open, and
+         linking a trading account locked behind an upgrade. */
+      if(free && F.emptyLiveData){ if(!F._sample)F._sample=F.data; F.data=F.emptyLiveData(); }
+      else if(F._sample && !(window.FTM.auth&&window.FTM.auth.ready())){ F.data=F._sample; F._sample=null; }
+      A.classList.toggle('free', p==='auto' && !has);
+      $('freeBar').hidden=!(p==='auto' && !has);
+      has=has||(p==='auto');
       A.classList.toggle('noprod', p==='auto' && !has);
       I.classList.toggle('noprod', p==='invest' && !has);
       $('noprodA').hidden=!(p==='auto' && !has);
       $('noprodB').hidden=!(p==='invest' && !has);
       document.body.style.overflow='hidden';
       if(p==='invest'){ if(has){ current='overview'; show('overview'); } }
-      else if(has && F.render){ F.render(); }
+      else if(has && F.render){ F.render();
+        if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); }
+        if(F.redrawAllViews)F.redrawAllViews(); }
     };
+    function toPlans(e){
+      e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
+      try{ sessionStorage.removeItem('ftm_in_app'); }catch(e2){}
+      var t=document.getElementById('pricing'); document.documentElement.style.scrollBehavior='auto';
+      window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); document.documentElement.style.scrollBehavior='';
+    }
+    document.querySelectorAll('.js-free-plans').forEach(function(a){ a.addEventListener('click',toPlans); });
+    ['appConnect','acctAdd'].forEach(function(id){
+      $(id).addEventListener('click',function(e){
+        if(!$('appView').classList.contains('free'))return;
+        e.preventDefault(); e.stopImmediatePropagation();
+        alert('Linking a trading account is for subscribers. Upgrade to a plan to let FTM MACHINE trade for you.');
+      },true);
+    });
     document.querySelectorAll('.prod-switch button').forEach(function(b){ b.addEventListener('click',function(){ F.openArea(b.dataset.p); }); });
     $('npAutoBtn').addEventListener('click',function(e){
       e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
@@ -6772,7 +6803,9 @@ tick();setInterval(tick,5000);})();
         fetch('/api/v1/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,consent:true,source:f.getAttribute('data-source')})})
           .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return r.ok&&j.ok;});})
           .then(function(ok){b.disabled=false;
-            if(ok){f.reset();msg(f,f.getAttribute('data-source')==='signup'?'Your free account is ready. FTM updates will come to your inbox.':'You are subscribed. Thank you.',true);
+            if(ok){f.reset();
+              if(f.getAttribute('data-source')==='signup'){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError'); if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
+              else msg(f,'You are subscribed. Thank you.',true);
               try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}}
             else msg(f,'Something went wrong. Please try again later.',false);})
           .catch(function(){b.disabled=false;msg(f,'Something went wrong. Please try again later.',false);});
