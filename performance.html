@@ -258,7 +258,6 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 <div class="wrap">
   <header>
     <div class="topbar"><a class="logo" href="/" aria-label="FTM home"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a><a class="back" href="/#performance">&larr; Back to website</a></div>
-    <div class="pp-head"><div class="pp-sizes sz-pills" role="group" aria-label="Prop account size"><button type="button" data-ps="50000">$50k</button><button type="button" data-ps="100000" aria-pressed="true">$100k</button><button type="button" data-ps="200000">$200k</button><button type="button" data-ps="1000000">$1M</button></div><a class="invest-btn pp-get" href="/#prop">Get FTM Prop</a></div><p class="pp-soon" id="pp-soon" hidden></p>
     <div class="eyebrow" id="hero-eyebrow">FTM MACHINE · Gold and Bitcoin · January 2020 to October 2026</div>
     <h1 id="hero" class="marquee" aria-label="Give FTM five years of your trust and watch it pay off."><span class="track" aria-hidden="true"><span>Give FTM five years of your trust and watch it pay off.</span><span>Give FTM five years of your trust and watch it pay off.</span></span></h1>
     <p class="lead" id="hero-lead">Every year, month and week of a 6.8-year historical test on gold and on Bitcoin, losing periods included. Results are shown after broker spread and swap, for each risk profile. The strategy is the same in every profile; only the trade size changes.</p>
@@ -446,8 +445,7 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
   </section>
 </div>
 </div>
-<nav class="rside" id="rside" aria-label="Reports"><button type="button" class="rs-tab" id="rs-tab" aria-expanded="false" aria-controls="rside">Reports</button>
-  <div class="rs-in"><div class="rs-h">Reports</div><a href="#auto" data-pg="auto">Auto trading<small>Gold, then Bitcoin</small></a><a href="#prop" data-pg="prop">Prop firm<small>Challenge to funded</small></a></div></nav>
+
 <div class="tip" id="tip" hidden></div>
 <div class="mback" id="mback" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="m-title">
   <div class="mtop"><h3 id="m-title"></h3><div class="mret"><span class="ret" id="m-ret"></span><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div>
@@ -811,63 +809,8 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
 
 /* ---- report menu and Prop firm page (data/prop/ftm-prop-journey.json) ---- */
 (()=>{
-  const rs=document.getElementById('rside'),tab=document.getElementById('rs-tab');
-  tab.onclick=()=>{const o=!rs.classList.contains('open');rs.classList.toggle('open',o);tab.setAttribute('aria-expanded',o)};
-  let built=false;
-  const usd=v=>'$'+Math.round(v).toLocaleString('en-US'),MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const ml=k=>MN[+k.slice(5)-1]+' '+k.slice(0,4);
-  function build(J){
-    const P=J.variants.plan,A=J.about;document.querySelectorAll('.pp-acct').forEach(x=>x.textContent=usd(A.account));document.getElementById('pp-eyebrow').textContent='FTM PROP · one '+usd(A.account)+' prop account · 1 Jan 2020 to 8 Oct 2026';
-    document.getElementById('pp-kpis').innerHTML=[
-      ['Profit paid out',usd(P.payout_total),P.payouts.length+' paying months'],
-      ['Challenges passed',P.challenge_passed+' of '+(P.challenge_passed+P.challenge_failed),P.challenges_bought+' challenges bought'],
-      ['Funded accounts',P.verification_passed,'all '+P.funded_lost+' later lost'],
-      ['Median days to pass',P.days_to_pass_challenge_median+' + '+P.days_to_pass_verification_median,'challenge + verification']
-    ].map(k=>`<div class="kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
-    /* timeline */
-    const t0=Date.UTC(2020,0,1),t1=Date.UTC(2026,9,8),W=1000,H=86,X=t=>(t-t0)/(t1-t0)*W,col={challenge:'#5b7bd6',verification:'var(--gold)',funded:'var(--up)'};
-    let g='',mk='';
-    P.events.forEach((e,i)=>{const end=Date.parse(e.date),st=end-e.days*864e5,x0=Math.max(0,X(st)),x1=X(end);
-      g+=`<rect x="${x0.toFixed(1)}" y="18" width="${Math.max(1.5,x1-x0).toFixed(1)}" height="30" fill="${col[e.phase]}" opacity=".85"/>`;
-      const ok=/passed/.test(e.result),run=/running/.test(e.result);
-      if(!run)mk+=`<circle data-i="${i}" cx="${x1.toFixed(1)}" cy="${ok?12:54}" r="4.5" fill="${ok?'var(--up)':'var(--down)'}" style="cursor:pointer"><title>${e.date} · ${e.phase} ${e.result} after ${e.days} days</title></circle>`});
-    for(let y=2020;y<=2026;y++){const x=X(Date.UTC(y,0,1));g+=`<line x1="${x}" x2="${x}" y1="6" y2="62" stroke="var(--grid)"/><text x="${x+3}" y="80">${y}</text>`}
-    const tl=document.getElementById('pp-tl');tl.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Prop account journey">${g}${mk}</svg>`;
-    const ev=document.getElementById('pp-ev');ev.textContent='Tap a dot for details.';
-    tl.onclick=(e=>{const c=e.target.closest('circle');if(!c)return;const x=P.events[+c.dataset.i];ev.textContent=`${x.date}: ${x.phase} ${x.result} after ${x.days} days`+(x.next?` → next: ${x.next}`:'')});
-    /* payouts */
-    const pm=Object.fromEntries(P.payouts),mx=Math.max(...P.payouts.map(p=>p[1]));let bars='',n=0;const months=[];
-    for(let y=2020;y<=2026;y++)for(let m=1;m<=12;m++){const k=y+'-'+String(m).padStart(2,'0');if(k>'2026-10')break;months.push(k)}
-    const bw=W/months.length,PH=200;
-    const fm=Object.fromEntries(P.funded_months);let cum=0;const cumAt={};P.payouts.forEach(([k,v])=>{cum+=v;cumAt[k]=cum});
-    for(let y=0;y<=4;y++){const yy=(PH-12)-(y/4)*(PH-30);bars+=`<line x1="0" x2="${W}" y1="${yy}" y2="${yy}" stroke="var(--grid)"/>`+(y?`<text x="2" y="${yy-3}">${usd(mx*y/4)}</text>`:'')}
-    let n2=0;months.forEach((k,i)=>{const v=pm[k];if(v){n2++;const h=v/mx*(PH-30);
-      bars+=`<g class="pb" tabindex="0" data-tip="${ml(k)} · paid out ${usd(v)} · account ${fm[k]!=null?(fm[k]>0?'+':'')+fm[k].toFixed(2)+'% that month':'—'} · total so far ${usd(cumAt[k])}"><rect x="${(i*bw-3).toFixed(1)}" y="0" width="${(bw+6).toFixed(1)}" height="${PH-12}" fill="transparent"/><rect class="pbar" style="animation-delay:${n2*60}ms" x="${(i*bw+1).toFixed(1)}" y="${(PH-12-h).toFixed(1)}" width="${(bw-2).toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="var(--gold)"/></g>`}
-      if(k.endsWith('-01'))bars+=`<text x="${i*bw}" y="${PH}">${k.slice(0,4)}</text>`});
-    const pay=document.getElementById('pp-pay');pay.innerHTML=`<svg viewBox="0 0 ${W} ${PH+4}" width="100%" role="img" aria-label="Payouts by month">${bars}</svg><p class="pp-note" id="pp-payread">${P.payouts.length} paying months, ${usd(P.payout_total)} in total. Largest month: ${usd(mx)}. Hover or tap a bar for details.</p>`;
-    bindTips(pay);const rd=document.getElementById('pp-payread'),base=rd.textContent;
-    pay.querySelectorAll('.pb').forEach(g=>{const f=()=>{rd.textContent=g.dataset.tip;pay.querySelectorAll('.pb').forEach(x=>x.classList.toggle('on',x===g))};g.addEventListener('click',f);g.addEventListener('focus',f)});
-    /* funded months */
-    document.getElementById('pp-months').innerHTML='<thead><tr><th>Month</th><th>Account return</th><th>Paid out</th></tr></thead><tbody>'+
-      P.funded_months.slice().reverse().map(([k,v])=>`<tr><td>${ml(k)}</td><td class="${v>=0?'up':'down'}">${v>0?'+':''}${v.toFixed(2)}%</td><td>${pm[k]?usd(pm[k]):'–'}</td></tr>`).join('')+'</tbody>';
-    /* comparison */
-    const V=[['Plan',P],['1× risk',J.variants.funded_1x],['0.35× risk',J.variants.funded_035x]];
-    document.getElementById('pp-cmp').innerHTML='<thead><tr><th>Funded risk</th><th>Challenges bought</th><th>Funded accounts lost</th><th>Paid out</th></tr></thead><tbody>'+
-      V.map(([n,v])=>`<tr><td><b>${n}</b></td><td>${v.challenges_bought}</td><td>${v.funded_lost}</td><td class="up">${usd(v.payout_total)}</td></tr>`).join('')+'</tbody>';
-  }
-  document.querySelectorAll('.pp-sizes button').forEach(b=>b.addEventListener('click',()=>{
-    const z=+b.dataset.ps,so=document.getElementById('pp-soon');
-    if(z!==100000&&z!==50000&&z!==200000){so.textContent='The $'+(z>=1e6?'1M':(z/1000)+'k')+' account report is coming soon.';so.hidden=false;return}
-    so.hidden=true;document.querySelectorAll('.pp-sizes button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
-    fetch(z===50000?'data/prop/ftm-prop-journey-50k.json':z===200000?'data/prop/ftm-prop-journey-200k.json':'data/prop/ftm-prop-journey.json').then(r=>r.json()).then(J=>{built=true;build(J)})}));
-  function go(pg){
-    const prop=pg==='prop';document.getElementById('pg-auto').hidden=prop;document.getElementById('pg-prop').hidden=!prop;document.body.classList.toggle('pg-prop',prop);
-    rs.querySelectorAll('a').forEach(a=>a.classList.toggle('on',a.dataset.pg===pg));rs.classList.remove('open');
-    if(prop&&!built){built=true;fetch('data/prop/ftm-prop-journey.json').then(r=>r.json()).then(build).catch(()=>{built=false})}
-  }
-  rs.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();history.replaceState(null,'','#'+a.dataset.pg);go(a.dataset.pg);scrollTo({top:0})}));
-  addEventListener('hashchange',()=>go(location.hash==='#prop'?'prop':'auto'));
-  go(location.hash==='#prop'?'prop':'auto');
+  /* FTM Prop is withdrawn: the report always shows Auto trading */
+  document.getElementById('pg-prop').hidden=true;document.getElementById('pg-auto').hidden=false;
 })();
 </script>
 
