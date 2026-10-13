@@ -29,6 +29,23 @@
      is meant to be public — it identifies the project, not a privileged
      credential; Supabase's own access rules (RLS) are what actually protect
      data, not keeping this key secret. -->
+<script>
+/* Client-area idle rule: if the client area has been closed or out of sight for more than 5 minutes, log in again. */
+var FTM_IDLE_MS=5*60*1000;
+function ftmAppOpen(){ var a=document.querySelectorAll('.app'); for(var i=0;i<a.length;i++){ if(!a[i].hidden) return true; } return false; }
+function ftmIdleExpired(){ try{ var t=+(localStorage.getItem('ftm_app_seen')||0); return !!t && (Date.now()-t)>FTM_IDLE_MS; }catch(e){ return false; } }
+var ftmIdleExpiredAtLoad=ftmIdleExpired();
+function ftmStamp(){ try{ if(document.visibilityState!=='hidden' && ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} }
+setInterval(ftmStamp,10000);
+document.addEventListener('visibilitychange',function(){
+  if(document.visibilityState==='hidden'){ try{ if(ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} return; }
+  if(ftmAppOpen() && ftmIdleExpired()){ var lo=document.getElementById('appLogout'); if(lo) lo.click(); document.querySelectorAll('.app').forEach(function(x){x.hidden=true;}); document.body.style.overflow='';
+    if(window.FTM) FTM.session=null; var b=document.querySelector('.js-login'); if(b) b.click(); }
+  else ftmStamp();
+});
+addEventListener('pagehide',function(){ try{ if(ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} });
+document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.app-home,#invHome,#appHome'); if(t){ try{ localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(x){} } },true);
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
   :root{
@@ -206,6 +223,30 @@
   /* ---------- CLIENT AREA ---------- */
   .auth-overlay{position:fixed;inset:0;z-index:100;background:rgba(11,20,64,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:24px;overflow-y:auto}
   .auth-panel{background:#fff;border-radius:28px;width:min(440px,100%);padding:40px;display:grid;gap:14px;position:relative;box-shadow:0 40px 100px rgba(0,0,0,.4)}
+  .auth-split{width:min(1080px,100%);padding:0;grid-template-columns:1.05fr 1fr;gap:0;overflow:hidden;min-height:min(640px,92vh)}
+  .auth-split .auth-form{padding:56px 52px;display:grid;gap:14px;align-content:center}
+  .auth-media{position:relative;background:#070d2e;color:#fff;padding:36px;display:flex;flex-direction:column;overflow:hidden;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px}
+  .am-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:-.03em}.am-logo .mark{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#1F3A93}.am-logo svg{width:20px;height:20px}
+  .am-slides{position:relative;flex:1;min-height:300px}
+  .am-slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;opacity:0;transform:translateY(14px);transition:opacity .6s,transform .6s}
+  .am-slide.on{opacity:1;transform:none}
+  .am-slide p{color:rgba(255,255,255,.75);font-size:15px;max-width:320px}
+  .am-big{font-size:56px;font-weight:800;letter-spacing:-.03em;color:#D4AF37}
+  .am-chart{width:100%;max-width:400px}
+  .am-slide.on .am-line{stroke-dasharray:700;stroke-dashoffset:700;animation:amDraw 2.4s ease-out forwards}
+  .am-slide.on .am-area{opacity:0;animation:amFade 1s 1.4s forwards}
+  @keyframes amDraw{to{stroke-dashoffset:0}}@keyframes amFade{to{opacity:1}}
+  .am-coins{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}.am-coins span{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:radial-gradient(circle at 35% 30%,#3a4a8f,#121c52);border:2px solid rgba(212,175,55,.55);animation:amBob 3s ease-in-out infinite}
+  .am-coins span:nth-child(2){animation-delay:.4s}.am-coins span:nth-child(3){animation-delay:.8s}.am-coins span:nth-child(4){animation-delay:1.2s}
+  @keyframes amBob{50%{transform:translateY(-10px)}}
+  .am-shield svg{width:120px;height:120px;animation:amBob 3s ease-in-out infinite}
+  .am-title{font-size:28px;line-height:1.2;color:#fff;margin:6px 0 18px}
+  .am-bars{display:flex;gap:10px}.am-bars i{flex:1;height:4px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden;position:relative}
+  .am-bars i.on::after{content:"";position:absolute;inset:0;background:#E5323E;transform-origin:left;animation:amBar 4s linear forwards}
+  .am-bars i.done{background:#E5323E}
+  @keyframes amBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @media (prefers-reduced-motion:reduce){.am-slide.on .am-line,.am-slide.on .am-area,.am-coins span,.am-shield svg,.am-bars i.on::after{animation:none}.am-slide.on .am-line{stroke-dashoffset:0}}
+  @media (max-width:860px){.auth-split{grid-template-columns:1fr}.auth-media{display:none}.auth-split .auth-form{padding:40px 28px}}
   .auth-close{position:absolute;top:18px;right:18px;width:36px;height:36px;border:0;border-radius:50%;background:var(--bg-2);font-size:20px;line-height:1;cursor:pointer;color:var(--ink)}
   .auth-close:hover{background:#e6e9f2}
   .auth-panel h2{font-size:28px}
@@ -1884,8 +1925,19 @@
 
 <!-- ===== CLIENT LOG IN ===== -->
 <div class="auth-overlay" id="authOverlay" hidden>
-  <div class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-panel auth-split" role="dialog" aria-modal="true" aria-labelledby="authTitle">
     <button class="auth-close" id="authClose" aria-label="Close">&times;</button>
+    <div class="auth-media" aria-hidden="true">
+      <div class="am-logo"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+      <div class="am-slides">
+        <div class="am-slide on"><svg class="am-chart" viewBox="0 0 400 220"><defs><linearGradient id="amg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><path class="am-area" d="M0 200 L0 180 40 172 70 176 100 160 130 150 160 156 190 132 220 138 250 112 280 104 310 86 340 70 370 46 400 30 L400 220 0 220Z" fill="url(#amg)"/><polyline class="am-line" fill="none" stroke="#D4AF37" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" points="0,180 40,172 70,176 100,160 130,150 160,156 190,132 220,138 250,112 280,104 310,86 340,70 370,46 400,30"/></svg><b class="am-big">+734%</b><p>FTM MACHINE Balanced, backtest since 2020</p></div>
+        <div class="am-slide"><div class="am-coins"><span>XAU</span><span>BTC</span><span>EUR</span><span>US500</span></div><b class="am-big">24/7</b><p>Gold, forex, crypto and stocks, traded for you around the clock</p></div>
+        <div class="am-slide"><div class="am-shield"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.6"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg></div><b class="am-big">Your account</b><p>Your money stays with your broker. FTM only places the trades.</p></div>
+      </div>
+      <h3 class="am-title">Automated trading that follows the rules, not the mood.</h3>
+      <div class="am-bars"><i class="on"></i><i></i><i></i></div>
+    </div>
+    <div class="auth-form">
     <h2 id="authTitle">Client log in</h2>
     <p class="auth-sub" id="authSub">Use the email you paid with when you subscribed or invested.</p>
     <div class="auth-note"><b>Preview only.</b> This is a design mock-up, not a real account system, so do not type a password you use anywhere else. Log in with the email used to subscribe or invest: <b>ftmwebnation@gmail.com</b> (both services), <b>sam@example.com</b> (Auto Trading only) or <b>investor@example.com</b> (Investment only). The first password you enter becomes that email's password in this browser. <button type="button" class="auth-reset" id="authReset">Reset saved preview passwords</button></div>
@@ -1911,6 +1963,7 @@
     <p class="auth-foot" id="authOtpBackRow" hidden><a href="#" id="authOtpBack">Use a different email, or resend the code</a></p>
     <p class="auth-foot" id="authPwToggleRow" hidden><a href="#" id="authPwToggle">Forgot password?</a></p>
     <p class="auth-foot">No subscription yet? <a href="#pricing" id="authToPricing">See the plans</a></p>
+    </div>
   </div>
 </div>
 
@@ -3290,7 +3343,10 @@
          restoreSession below) but the client area wasn't auto-opened
          because the refresh happened on the homepage — so "Log in" here
          means "open what I already am", not "ask again". */
-      if(LIVE && window.FTM && FTM.session && FTM.session.email){ enter(FTM.session.email, FTM.session.products, false); return; }
+      if(LIVE && window.FTM && FTM.session && FTM.session.email){
+        if(!ftmIdleExpired()){ enter(FTM.session.email, FTM.session.products, false); return; }
+        FTM.session=null; try{ window.FTM.auth.signOut(); }catch(e3){}
+      }
       open();
     });});
     /* A link from elsewhere on the site (e.g. terms.html) can send a
@@ -3531,9 +3587,12 @@
          manual "Log in" click right after doesn't ask for credentials
          again, it just opens straight in. */
       var wasInApp=false; try{ wasInApp = sessionStorage.getItem('ftm_in_app')==='1'; }catch(e2){}
+      /* Away from the client area for more than 5 minutes: ask for the log in again. */
+      if(ftmIdleExpired()){ wasInApp=false; try{ sessionStorage.removeItem('ftm_in_app'); localStorage.removeItem('ftm_app_seen'); }catch(e4){}
+        try{ window.FTM.auth.signOut(); }catch(e5){} }
       var lift=function(){ document.documentElement.classList.remove('ftm-restoring'); };
       setTimeout(lift,5000); // never leave the gate up if Supabase hangs
-      window.FTM.auth.restoreSession().then(function(r){
+      (ftmIdleExpiredAtLoad?Promise.resolve(null):window.FTM.auth.restoreSession()).then(function(r){
         if(r){
           if(wasInApp){
             // Wait for enter()'s real-data fetch too, not just the
@@ -6412,6 +6471,7 @@
          opens, so refreshing the plain homepage while logged in stays on
          the homepage, matching what a customer would expect. */
       try{ sessionStorage.setItem('ftm_in_app','1'); }catch(e){}
+      try{ localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){}
       var A=$('appView'), I=$('invView'), s=F.session||{email:'',products:[p]};
       $('appEmail').textContent=s.email; $('invEmail').textContent=s.email;
       /* every client gets the switch; a product they do not have shows "No results" */
@@ -6485,6 +6545,13 @@
       i=1-i; [n,r,d].forEach(function(e){e.style.opacity=0;});
       setTimeout(function(){ n.textContent=P[i][0]; r.textContent=P[i][1]; d.textContent=P[i][2]; [n,r,d].forEach(function(e){e.style.opacity=1;}); },350);
     },3000);
+  })();
+
+  /* ---- Log-in screen: rotating story panel, like a short video ---- */
+  (function(){
+    var sl=document.querySelectorAll('.am-slide'), bars=document.querySelectorAll('.am-bars i'); if(!sl.length)return; var i=0;
+    function go(n){ sl.forEach(function(x,k){x.classList.toggle('on',k===n);}); bars.forEach(function(b,k){b.classList.remove('on');b.classList.toggle('done',k<n); if(k===n){void b.offsetWidth;b.classList.add('on');}}); }
+    setInterval(function(){ var ov=document.getElementById('authOverlay'); if(ov&&ov.hidden)return; i=(i+1)%sl.length; go(i); },4000);
   })();
   /* ---- Get started chooser ---- */
   (function(){
