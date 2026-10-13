@@ -1553,7 +1553,7 @@
         <ul class="auto-list"><li>Takes emotion out of trading: every decision follows the rules</li><li>Better than copy trading: no 4 a.m. signals to catch, and no missed trades while you sleep or shower</li><li>Built for busy people: doctors, pilots and anyone who cannot watch the market all day</li><li>Averaged 18–70% a year in the backtest since 2020, depending on the risk profile</li><li>Full track record, drawdown included</li><li>Three risk profiles: Conservative, Balanced, Growth</li><li>Runs on the FTM trading engine, no extra software needed</li><li>FTM MACHINE trades 24/7 for you</li></ul>
         <a class="btn btn-red" href="#pricing">Explore FTM MACHINE</a></div>
       <div class="auto-art-col">
-        <div class="feature-art dark"><div class="art-card live-card"><div class="t">FTM MACHINE · Balanced <span class="running"><i></i>Running</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>Since January 2020</span><b>+734%</b></div><div class="kv"><span>Max drawdown</span><b>-20.31%</b></div><a class="live-link" href="/performance.html">See the full performance record &rarr;</a></div></div>
+        <div class="feature-art dark"><div class="art-card live-card"><div class="t">FTM MACHINE · <span id="lcName">Balanced</span> <span class="running"><i></i>Running</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>Since January 2020</span><b id="lcRet">+734%</b></div><div class="kv"><span>Max drawdown</span><b id="lcDD">-20.31%</b></div><a class="live-link" href="/performance.html">See the full performance record &rarr;</a></div></div>
       </div>
     </div>
   </div>
@@ -6471,6 +6471,18 @@
 
 
 
+
+  /* ---- Auto Trading card: alternate Balanced and Growth 2x every 3 seconds ---- */
+  (function(){
+    var n=document.getElementById('lcName'); if(!n)return;
+    var r=document.getElementById('lcRet'), d=document.getElementById('lcDD'), i=0;
+    var P=[['Balanced','+734%','-20.31%'],['Growth 2×','+3,658%','-39.05%']];
+    [n,r,d].forEach(function(e){e.style.transition='opacity .35s';});
+    setInterval(function(){
+      i=1-i; [n,r,d].forEach(function(e){e.style.opacity=0;});
+      setTimeout(function(){ n.textContent=P[i][0]; r.textContent=P[i][1]; d.textContent=P[i][2]; [n,r,d].forEach(function(e){e.style.opacity=1;}); },350);
+    },3000);
+  })();
   /* ---- Get started chooser ---- */
   (function(){
     var ov=document.getElementById('gsOverlay'); if(!ov)return;
