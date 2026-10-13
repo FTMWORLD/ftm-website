@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   const source = String(body.source || 'site').slice(0, 30);
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 200) return res.status(400).json({ ok: false, error: 'BAD_EMAIL' });
   if (body.consent !== true) return res.status(400).json({ ok: false, error: 'NO_CONSENT' });
-  const key = process.env.BREVO_API_KEY, list = parseInt(process.env.BREVO_LIST_ID, 10);
+  const key = process.env.BREVO_API_KEY, list = parseInt(String(process.env.BREVO_LIST_ID || '').replace(/\D/g, ''), 10);
   if (!key || !list) return res.status(503).json({ ok: false, error: 'NOT_CONFIGURED' });
   try {
     const r = await fetch('https://api.brevo.com/v3/contacts', {
