@@ -645,6 +645,7 @@
 "Running": "稼働中",
 "Running P/L": "現在の損益",
 "Runs on FTM MT5, no extra software": "FTM MT5で稼働、追加ソフトウェア不要",
+"Runs on the FTM engine, no extra software needed": "FTMエンジンで稼働、追加ソフトは不要",
 "Sample": "サンプル",
 "Sat": "土",
 "Save new password": "新しいパスワードを保存",

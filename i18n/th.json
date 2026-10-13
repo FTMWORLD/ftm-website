@@ -645,6 +645,7 @@
 "Running": "กำลังทำงาน",
 "Running P/L": "กำไรขาดทุนที่กำลังเกิด",
 "Runs on FTM MT5, no extra software": "ทำงานบน FTM MT5 ไม่ต้องใช้ซอฟต์แวร์เพิ่มเติม",
+"Runs on the FTM engine, no extra software needed": "ทำงานบนเอนจิน FTM ไม่ต้องใช้ซอฟต์แวร์เพิ่ม",
 "Sample": "ตัวอย่าง",
 "Sat": "ส.",
 "Save new password": "บันทึกรหัสผ่านใหม่",
