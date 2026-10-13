@@ -150,6 +150,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .heat .h{color:var(--muted)} .heat .y{text-align:left;color:var(--ink);font-weight:700}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 24px}
 .facts div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-block:7px;font-size:14px}
+.facts1{grid-template-columns:1fr}.facts1 span:last-child{white-space:nowrap}
 .facts4{grid-template-columns:repeat(4,minmax(0,1fr))}.facts4 span:last-child{white-space:nowrap}
 @media (max-width:1000px){.facts4{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:560px){.facts4{grid-template-columns:1fr}}
 .facts span:last-child{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -327,8 +328,8 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
     <div class="sec-head"><div class="eyebrow">6 · Risk</div><h2 id="h-risk"></h2></div>
     <div class="panel scroll"><table id="t-dd"></table></div>
     <div class="two">
-      <div class="panel"><h3>Worst periods</h3><div class="facts" id="f-worst"></div></div>
-      <div class="panel"><h3>Best periods</h3><div class="facts" id="f-best"></div></div>
+      <div class="panel"><h3>Worst periods</h3><div class="facts facts1" id="f-worst"></div></div>
+      <div class="panel"><h3>Best periods</h3><div class="facts facts1" id="f-best"></div></div>
     </div>
     <p class="note" id="n-risk"></p>
   </section>
@@ -402,8 +403,8 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
     <div class="sec-head"><div class="eyebrow">6 · Risk</div><h2 id="h-risk-b"></h2></div>
     <div class="panel scroll"><table id="t-dd-b"></table></div>
     <div class="two">
-      <div class="panel"><h3>Worst periods</h3><div class="facts" id="f-worst-b"></div></div>
-      <div class="panel"><h3>Best periods</h3><div class="facts" id="f-best-b"></div></div>
+      <div class="panel"><h3>Worst periods</h3><div class="facts facts1" id="f-worst-b"></div></div>
+      <div class="panel"><h3>Best periods</h3><div class="facts facts1" id="f-best-b"></div></div>
     </div>
     <p class="note" id="n-risk-b"></p>
   </section>
@@ -484,6 +485,7 @@ const usd=v=>(v<0?'-$':'$')+Math.abs(Math.round(v)).toLocaleString('en-US');
 const kfmt=v=>v>=1e6?'$'+(v/1e6).toFixed(1)+'M':'$'+Math.round(v/1e3)+'k';
 const pct=(v,d=1)=>(v>0?'+':'')+Number(v).toFixed(d)+'%';
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const wk=k=>{const y=+k.slice(0,4),w=+k.slice(6),j=new Date(Date.UTC(y,0,4)),d=(j.getUTCDay()+6)%7,m=new Date(j.getTime()+((w-1)*7-d)*864e5);return 'week of '+m.getUTCDate()+' '+MON[m.getUTCMonth()]+' '+y};
 const YEARS=6.77;
 const S0=p=>p.start||100000;
 const cagr=p=>(Math.pow(p.final/S0(p),1/YEARS)-1)*100;
@@ -608,9 +610,9 @@ function risk(p){
   const lim=p.episodes.some(e=>e.dd>=20)?20:10;const ep=p.episodes.filter(e=>e.dd>=lim).sort((a,b)=>b.dd-a.dd);
   $('t-dd').innerHTML='<tr><th>From high on</th><th>Lowest on</th><th>Drawdown</th><th>Balance</th><th>Back to a new high</th><th>High to recovery</th></tr>'+ep.map(e=>`<tr><td>${d(e.peak)}</td><td>${d(e.trough)}</td><td class="down">-${e.dd.toFixed(1)}%</td><td>${usd(e.pv)} → ${usd(e.tv)}</td><td>${e.rec?d(e.rec):'not yet'}</td><td>${e.rec?days(e.peak,e.rec)+' days':''}</td></tr>`).join('');
   const ms=p.monthly.slice().sort((a,b)=>a[1]-b[1]),ws=p.weekly.slice().sort((a,b)=>a[1]-b[1]),ys=p.yearly.slice().sort((a,b)=>a[1]-b[1]),ml=k=>MON[+k.slice(5)-1]+' '+k.slice(0,4);
-  $('f-worst').innerHTML=[['Worst month',pct(ms[0][1])+' · '+ml(ms[0][0])],['2nd worst month',pct(ms[1][1])+' · '+ml(ms[1][0])],['3rd worst month',pct(ms[2][1])+' · '+ml(ms[2][0])],['Worst week',pct(ws[0][1])+' · '+ws[0][0]],['Worst year',pct(ys[0][1])+' · '+ys[0][0]],['Months below -10%',p.monthly.filter(m=>m[1]<-10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="down">${b}</span></div>`).join('');
+  $('f-worst').innerHTML=[['Worst month',pct(ms[0][1])+' · '+ml(ms[0][0])],['2nd worst month',pct(ms[1][1])+' · '+ml(ms[1][0])],['3rd worst month',pct(ms[2][1])+' · '+ml(ms[2][0])],['Worst week',pct(ws[0][1])+' · '+wk(ws[0][0])],['Worst year',pct(ys[0][1])+' · '+ys[0][0]],['Months below -10%',p.monthly.filter(m=>m[1]<-10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="down">${b}</span></div>`).join('');
   const mb=ms.slice().reverse(),wb=ws.slice().reverse(),yb=ys.slice().reverse();
-  $('f-best').innerHTML=[['Best month',pct(mb[0][1])+' · '+ml(mb[0][0])],['2nd best month',pct(mb[1][1])+' · '+ml(mb[1][0])],['3rd best month',pct(mb[2][1])+' · '+ml(mb[2][0])],['Best week',pct(wb[0][1])+' · '+wb[0][0]],['Best year',pct(yb[0][1])+' · '+yb[0][0]+(yb[0][0]==='2026'?' (to Oct)':'')],['Months above +10%',p.monthly.filter(m=>m[1]>10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="up">${b}</span></div>`).join('');
+  $('f-best').innerHTML=[['Best month',pct(mb[0][1])+' · '+ml(mb[0][0])],['2nd best month',pct(mb[1][1])+' · '+ml(mb[1][0])],['3rd best month',pct(mb[2][1])+' · '+ml(mb[2][0])],['Best week',pct(wb[0][1])+' · '+wk(wb[0][0])],['Best year',pct(yb[0][1])+' · '+yb[0][0]+(yb[0][0]==='2026'?' (to Oct)':'')],['Months above +10%',p.monthly.filter(m=>m[1]>10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="up">${b}</span></div>`).join('');
   const top=ep[0];$('h-risk').textContent=`The deepest drawdown was ${top.dd.toFixed(1)}%, from ${d(top.peak)} to ${d(top.trough)}`;
   $('n-risk').textContent=`Drawdowns of ${lim}% or more happened ${ep.length} times in 6.8 years at this profile, and each one ${ep.every(e=>e.rec)?'recovered to a new high':'is listed with its recovery date'}. Expect losing stretches like these when trading live.`;
 }
