@@ -150,6 +150,8 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .heat .h{color:var(--muted)} .heat .y{text-align:left;color:var(--ink);font-weight:700}
 .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px 24px}
 .facts div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-block:7px;font-size:14px}
+.facts4{grid-template-columns:repeat(4,minmax(0,1fr))}.facts4 span:last-child{white-space:nowrap}
+@media (max-width:1000px){.facts4{grid-template-columns:repeat(2,minmax(0,1fr))}}@media (max-width:560px){.facts4{grid-template-columns:1fr}}
 .facts span:last-child{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .disclaimer{border-top:1px solid var(--line);padding-top:22px;display:grid;gap:10px;font-size:13px;color:var(--muted)}
 .disclaimer p{max-width:90ch}
@@ -313,7 +315,7 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 
   <section id="trades">
     <div class="sec-head"><div class="eyebrow">5 · Trades</div><h2 id="h-trades"></h2></div>
-    <div class="panel"><div class="facts" id="f-trades"></div></div>
+    <div class="panel"><div class="facts facts4" id="f-trades"></div></div>
     <div class="two">
       <div class="panel"><h3>Result of each trade, % of the balance</h3><div class="chart" id="c-dist"></div></div>
       <div class="panel"><h3>How long trades stay open</h3><div class="chart" id="c-hold"></div></div>
@@ -388,7 +390,7 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
 
   <section id="trades-b">
     <div class="sec-head"><div class="eyebrow">5 · Trades</div><h2 id="h-trades-b"></h2></div>
-    <div class="panel"><div class="facts" id="f-trades-b"></div></div>
+    <div class="panel"><div class="facts facts4" id="f-trades-b"></div></div>
     <div class="two">
       <div class="panel"><h3>Result of each trade, % of the balance</h3><div class="chart" id="c-dist-b"></div></div>
       <div class="panel"><h3>How long trades stay open</h3><div class="chart" id="c-hold-b"></div></div>
@@ -592,7 +594,9 @@ function bars(el,counts,labels,colorFn,aria,unit){
 }
 
 function trades(p){
-  $('f-trades').innerHTML=[['Total trades',p.trades.toLocaleString('en-US')],['Winning trades',p.win+'%'],['Average win',pct(p.avgw,2)+' of balance'],['Average loss',pct(p.avgl,2)+' of balance'],['Biggest single win',pct(p.best_trade)+' of balance'],['Biggest single loss',pct(p.worst_trade)+' of balance'],['Profit factor',p.pf],['Sharpe ratio (monthly)',p.sharpe],['Recovery factor',p.rf],['Buy trades',p.buys[0].toLocaleString('en-US')+' ('+p.buys[1]+'% won)'],['Sell trades',p.sells[0].toLocaleString('en-US')+' ('+p.sells[1]+'% won)'],['Longest winning streak',p.streak_win+' trades'],['Longest losing streak',p.streak_loss+' trades']].map(([a,b])=>`<div><span>${a}</span><span>${b}</span></div>`).join('');
+  $('f-trades').innerHTML=[['Total trades',p.trades.toLocaleString('en-US')],['Winning trades',p.win+'%'],['Buy trades',p.buys[0].toLocaleString('en-US')+' · '+p.buys[1]+'% won'],['Sell trades',p.sells[0].toLocaleString('en-US')+' · '+p.sells[1]+'% won'],
+    ['Average win',pct(p.avgw,2)],['Average loss',pct(p.avgl,2)],['Biggest win',pct(p.best_trade)],['Biggest loss',pct(p.worst_trade)],
+    ['Profit factor',p.pf],['Sharpe ratio (monthly)',p.sharpe],['Recovery factor',p.rf],['Streaks',p.streak_win+' wins · '+p.streak_loss+' losses']].map(([a,b])=>`<div><span>${a}</span><span>${b}</span></div>`).join('');
   const dl=['≤ -8','-8 to -6','-6 to -4','-4 to -2','-2 to -1','-1 to -0.5','-0.5 to 0','0 to 0.5','0.5 to 1','1 to 2','2 to 4','4 to 6','6 to 8','> 8'];
   bars('c-dist',p.dist,dl,i=>css(i<7?'--down':'--up'),'Result of each trade','trades');
   bars('c-hold',p.hold,['< 1 hour','1-4 hours','4-8 hours','8-24 hours','1-2 days','2-4 days','> 4 days'],()=>css('--gold'),'How long trades stay open','trades');
