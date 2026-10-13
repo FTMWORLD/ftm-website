@@ -210,47 +210,6 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .clegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:8px}
 .clegend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 
-.pp-head,.pp-soon{display:none}
-body.pg-prop .pp-head{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin-top:22px}
-body.pg-prop .pp-soon:not([hidden]){display:block;color:rgba(255,255,255,.8);font-size:14px;margin-top:10px}
-.pp-head .sz-pills{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}
-.pp-head .sz-pills button{color:rgba(255,255,255,.8);font-size:14px;padding:8px 16px}
-.pp-head .pp-get{margin:0}
-/* ---- report menu + prop firm page ---- */
-.rside{position:fixed;left:0;top:50%;transform:translate(-100%,-50%);z-index:60;transition:transform .25s}
-.rside.open{transform:translate(0,-50%)}
-.rs-in{background:var(--panel);border:1px solid var(--line);border-left:0;border-radius:0 18px 18px 0;box-shadow:0 12px 40px rgba(11,20,64,.16);padding:12px;display:grid;gap:6px;width:170px}
-.rs-h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:2px 8px}
-.rs-in a{display:grid;padding:10px 12px;border-radius:12px;font-weight:800;color:var(--ink);text-decoration:none;font-size:15px}
-.rs-in a small{font-weight:500;font-size:12px;color:var(--muted)}
-.rs-in a.on{background:var(--navy);color:#fff}.rs-in a.on small{color:rgba(255,255,255,.7)}
-.rs-tab{position:absolute;left:100%;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;background:var(--navy);color:#fff;border:0;border-radius:12px 0 0 12px;padding:14px 8px;font:inherit;font-weight:800;font-size:13px;letter-spacing:.06em;cursor:pointer}
-@media (min-width:1460px){.rside{transform:translate(0,-50%)}.rs-tab{display:none}}
-body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,body.pg-prop header .meta,body.pg-prop header .jump{display:none}
-#pg-auto,#pg-prop{display:grid;gap:56px}#pg-auto[hidden],#pg-prop[hidden]{display:none}
-.pp-lead{font-size:17px;color:var(--text);max-width:760px;line-height:1.6}
-.pp-hero h2{font-size:clamp(34px,5vw,56px);margin:6px 0 10px}
-.pp-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:18px}
-.pp-steps div{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:grid;gap:4px}
-.pp-steps b{color:var(--ink)}.pp-steps span{font-size:14px;color:var(--muted)}
-.pp-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--muted);margin-bottom:10px}
-.pp-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.pp-legend .c{background:#5b7bd6}.pp-legend .v{background:var(--gold)}.pp-legend .f{background:var(--up)}.pp-legend .ok{background:var(--up);border-radius:50%}.pp-legend .no{background:var(--down);border-radius:50%}
-.pp-ev{font-size:13px;color:var(--muted);min-height:20px;margin-top:8px}
-.pp-scroll{overflow-x:auto}
-.pp-table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
-.pp-table th,.pp-table td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-.pp-table th:first-child,.pp-table td:first-child{text-align:left}
-.pp-table th{font-size:12px;color:var(--muted);font-weight:700}
-.pp-table .up{color:var(--up);font-weight:700}.pp-table .down{color:var(--down);font-weight:700}
-.pp-note{font-size:13px;color:var(--muted);margin-top:12px}
-#pp-tl{overflow-x:auto}
-.pb{cursor:pointer;outline:none}.pb .pbar{transform-box:fill-box;transform-origin:bottom;animation:ppGrow .7s cubic-bezier(.2,.8,.2,1) both;transition:fill .15s,filter .15s}
-.pb:hover .pbar,.pb.on .pbar,.pb:focus .pbar{fill:var(--up);filter:drop-shadow(0 4px 8px rgba(0,0,0,.18))}
-@keyframes ppGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-@media (prefers-reduced-motion:reduce){.pb .pbar{animation:none}}
-#pp-tl svg{min-width:860px}
-#pp-tl svg text,#pp-pay svg text{font-size:11px;fill:var(--muted)}
 </style>
 
 </head>
@@ -416,33 +375,6 @@ body.pg-prop header .eyebrow,body.pg-prop header h1,body.pg-prop header .lead,bo
     <a class="invest-btn imp-btn" href="/#pricing">Invest in Bitcoin</a>
   </section>
   </div>
-</div>
-<div id="pg-prop" hidden>
-  <section class="pp-hero">
-    <div class="eyebrow" id="pp-eyebrow">FTM PROP · one $100,000 prop account · 1 Jan 2020 to 8 Oct 2026</div>
-    <h2>Prop firm</h2>
-    <p class="pp-lead">The story of one <span class="pp-acct">$100,000</span> prop firm account run with the FTM PROP plan for 6.8 years: every challenge, every verification and every funded account, passed or failed. When an account failed, a new <span class="pp-acct">$100,000</span> challenge started the next day.</p>
-    <div class="pp-steps">
-      <div><b>1 · Challenge</b><span>Gold and Bitcoin. +10% to pass.</span></div>
-      <div><b>2 · Verification</b><span>Gold. +5% to pass.</span></div>
-      <div><b>3 · Funded</b><span>Gold. The month pauses at +10%. Profits paid monthly at an 80% split.</span></div>
-      <div><b>Rules</b><span>5% daily loss limit, 10% maximum loss.</span></div>
-    </div>
-  </section>
-  <div class="kpis" id="pp-kpis"></div>
-  <section><div class="sec-head"><div class="eyebrow">1 · Journey</div><h2>Every pass and every fail</h2></div>
-    <div class="panel"><div class="pp-legend"><span><i class="c"></i>Challenge</span><span><i class="v"></i>Verification</span><span><i class="f"></i>Funded</span><span><i class="ok"></i>Passed</span><span><i class="no"></i>Failed</span></div><div id="pp-tl"></div><div class="pp-ev" id="pp-ev"></div></div></section>
-  <section><div class="sec-head"><div class="eyebrow">2 · Payouts</div><h2>Profit paid out, month by month</h2></div>
-    <div class="panel"><div id="pp-pay"></div></div></section>
-  <section><div class="sec-head"><div class="eyebrow">3 · Funded months</div><h2>Every month on a funded account</h2></div>
-    <div class="panel"><div class="pp-scroll"><table class="pp-table" id="pp-months"></table></div></div></section>
-  <section><div class="sec-head"><div class="eyebrow">4 · Funded risk</div><h2>Plan vs lower risk on the funded account</h2></div>
-    <div class="panel"><div class="pp-scroll"><table class="pp-table" id="pp-cmp"></table></div><p class="pp-note">Lower risk on the funded account loses fewer funded accounts, so fewer challenges are bought, but it pays out less. The plan pays the most.</p></div></section>
-  <section class="notes">
-    <h3>How this was tested</h3>
-    <p>A historical simulation built from FTM PROP, 1 January 2020 to 8 October 2026, each month run on a fresh $100,000 account. Prop firm rules were applied on closed trades. Live daily-loss rules also count open trades, so live results can be worse.</p>
-    <a class="invest-btn imp-btn" href="/#prop">Get FTM Prop</a>
-  </section>
 </div>
 </div>
 
@@ -807,11 +739,6 @@ draw();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
 new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
-/* ---- report menu and Prop firm page (data/prop/ftm-prop-journey.json) ---- */
-(()=>{
-  /* FTM Prop is withdrawn: the report always shows Auto trading */
-  document.getElementById('pg-prop').hidden=true;document.getElementById('pg-auto').hidden=false;
-})();
 </script>
 
 </body>
