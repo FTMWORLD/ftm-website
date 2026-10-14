@@ -78,6 +78,7 @@ module.exports = async function handler(req, res) {
   } catch (e) {
     console.error('FTM chat failed:', e && e.status, e && e.message);
     const status = e instanceof Anthropic.RateLimitError ? 429 : 502;
-    return res.status(status).json({ ok: false, error: 'CHAT_FAILED' });
+    const detail = (e && e.status ? e.status + ' ' : '') + String((e && e.error && e.error.error && e.error.error.message) || (e && e.message) || '').slice(0, 160);
+    return res.status(status).json({ ok: false, error: 'CHAT_FAILED', detail });
   }
 };
