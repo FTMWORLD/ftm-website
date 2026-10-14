@@ -841,6 +841,22 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .auth-reset{background:none;border:0;padding:0;font:inherit;font-weight:800;text-decoration:underline;cursor:pointer;color:inherit}
   .np-panel{max-width:600px;margin:0 auto;padding:110px 24px;text-align:center;display:grid;gap:14px;justify-items:center}
   .np-panel[hidden]{display:none!important}
+  .faq-link{display:inline-block;margin-top:18px;font-weight:700;color:var(--gold);text-decoration:none}.faq-link:hover{text-decoration:underline}
+  .faq-ov{position:fixed;inset:0;z-index:2000;background:#f5f7fb;overflow-y:auto}.faq-ov[hidden]{display:none}
+  .faq-bar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:var(--blue);z-index:1}.faq-bar .logo{color:#fff}
+  .faq-x{border:0;background:rgba(255,255,255,.14);color:#fff;width:40px;height:40px;border-radius:12px;font-size:24px;cursor:pointer}
+  .faq-wrap{max-width:860px;margin:0 auto;padding:40px 20px 80px}
+  .faq-wrap h1{font-size:clamp(28px,4vw,40px);color:var(--ink);margin:0 0 10px}.faq-wrap h2{font-size:22px;color:var(--ink);margin:40px 0 14px}
+  .faq-lead{font-size:17px;color:var(--text);margin:0}
+  .faq-tw{overflow-x:auto;background:#fff;border-radius:16px;border:1px solid #e5e8f0}
+  .faq-t{width:100%;border-collapse:collapse;font-size:14.5px;min-width:520px}.faq-t th,.faq-t td{padding:13px 16px;text-align:left;border-bottom:1px solid #eef0f5;vertical-align:top;color:var(--ink)}
+  .faq-t thead th{background:var(--blue);color:#fff;font-size:14px}.faq-t tbody th{width:28%;color:var(--muted);font-weight:600}.faq-t tr:last-child>*{border-bottom:0}
+  .faq-note{margin:12px 2px 0;font-size:14px;color:var(--text)}
+  .faq-q{background:#fff;border:1px solid #e5e8f0;border-radius:14px;margin-bottom:10px}
+  .faq-q summary{cursor:pointer;padding:16px 18px;font-weight:700;color:var(--ink);list-style:none;display:flex;justify-content:space-between;gap:12px}
+  .faq-q summary::-webkit-details-marker{display:none}.faq-q summary::after{content:"+";color:var(--red);font-size:20px;line-height:1}.faq-q[open] summary::after{content:"\2212"}
+  .faq-q p{margin:0;padding:0 18px 16px;color:var(--text);line-height:1.55}
+  .faq-end{margin-top:36px;text-align:center;display:grid;gap:14px;justify-items:center}.faq-end p{margin:0;color:var(--text)}
   .free-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#fff7e0,#fff);border:1px solid #f0d78c}
   .free-bar[hidden]{display:none!important}.free-bar p{margin:0;flex:1;font-size:14.5px;line-height:1.45;color:#1b2340}
   .free-bar .fb-ic{width:36px;height:36px;border-radius:10px;background:#D4AF37;color:#fff;display:grid;place-items:center;flex:none}.free-bar .fb-ic svg{width:20px;height:20px}
@@ -1786,6 +1802,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           <a class="btn btn-red js-invest" href="#invest">Invest now</a>
           <button class="btn btn-outline js-login" type="button">Investor log in</button>
         </div>
+        <a class="faq-link js-faq" href="#faq">Frequently asked questions and fees <span aria-hidden="true">&rarr;</span></a>
       </div>
 
       <div class="inv-calc" id="ivCalc">
@@ -1977,6 +1994,32 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 </main>
 
 <!-- ===== CLIENT LOG IN ===== -->
+<!-- ===== FAQ & FEES ===== -->
+<div class="faq-ov" id="faqView" hidden role="dialog" aria-modal="true" aria-labelledby="faqTitle">
+  <div class="faq-bar"><a class="logo" href="#top" id="faqHome"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a><button type="button" class="faq-x" id="faqClose" aria-label="Close">&times;</button></div>
+  <div class="faq-wrap">
+    <h1 id="faqTitle">Frequently asked questions</h1>
+    <p class="faq-lead">What you pay, what you get, and how your money is handled. No hidden costs.</p>
+    <h2>What you pay, what you get</h2>
+    <div class="faq-tw"><table class="faq-t">
+      <thead><tr><th></th><th>FTM Auto Trading</th><th>FTM Investment</th></tr></thead>
+      <tbody>
+        <tr><th>What you pay</th><td>999€ a year, 3,999€ for 5 years or 9,999€ for life</td><td>Your deposit only, from 1.000€</td></tr>
+        <tr><th>FTM’s share of your profit</th><td><b>0%</b>. Your profit is all yours</td><td>FTM keeps half of the account’s profit, you get the other half</td></tr>
+        <tr><th>Monthly or hidden fees</th><td>None</td><td>None</td></tr>
+        <tr><th>Where your money is</th><td>In your own broker account</td><td>In the FTM account</td></tr>
+        <tr><th>Withdrawals</th><td>Any time, through your broker</td><td>Up to 20% a year from month 13</td></tr>
+        <tr><th>Refunds</th><td>No (subscription)</td><td>Capital on request after 1 year</td></tr>
+        <tr><th>Trading costs</th><td>Your broker’s spreads and swap, paid to the broker</td><td>Paid by the FTM account</td></tr>
+      </tbody>
+    </table></div>
+    <p class="faq-note">Many managed-account and copy-trading services take a share of your profits. FTM Auto Trading takes 0%.</p>
+    <h2>Questions and answers</h2>
+    <details class="faq-q"><summary>What does FTM Auto Trading cost?</summary><p>One payment for your plan: 999€ a year, 3,999€ for 5 years, or 9,999€ for life. Nothing else is charged by FTM.</p></details><details class="faq-q"><summary>Does FTM take a share of my Auto Trading profit?</summary><p>No. FTM takes 0% of your profit. Everything FTM MACHINE makes on your account is yours.</p></details><details class="faq-q"><summary>Are there monthly or hidden fees?</summary><p>No. The only other costs are your broker’s normal spreads and swap, which go to the broker, not to FTM.</p></details><details class="faq-q"><summary>Where is my money?</summary><p>In your own broker account. FTM only places trades and never has withdrawal access. Your MT5 password is stored encrypted.</p></details><details class="faq-q"><summary>Can I pause or stop any time?</summary><p>Yes. Pause, withdraw or stop trading from your dashboard at any time. Trading also stops automatically if your subscription ends.</p></details><details class="faq-q"><summary>Do I need to install anything?</summary><p>No. FTM MACHINE runs on FTM’s cloud servers. You only link your MT5 account, or open one through FTM.</p></details><details class="faq-q"><summary>Which risk profile should I choose?</summary><p>Conservative trades smaller, Balanced is our default, and Growth 2× trades twice the size for experienced clients. You can change profile any time. The choice is yours; FTM does not give personal investment advice.</p></details><details class="faq-q"><summary>Are the results guaranteed?</summary><p>No. Published results come from a historical backtest since 2020 and are shown with their drawdowns. Trading carries risk and you can lose money.</p></details><details class="faq-q"><summary>How does FTM Investment work?</summary><p>You deposit into the FTM account, with no broker account needed. Over a 5-year contract you receive half of what the account makes, applied to your investment. The minimum is 1.000€.</p></details><details class="faq-q"><summary>When can I withdraw from FTM Investment?</summary><p>From the 1st of the month after 13 full months, up to 20% of your investment each year. The rest of your share and your deposit are paid at the end of the 5 years.</p></details><details class="faq-q"><summary>Can I get a refund?</summary><p>Auto Trading subscriptions are not refundable. For FTM Investment you can ask for your capital back after 1 year; you receive its value at that time, so any loss is borne by you. See section 6.5 of the Terms.</p></details><details class="faq-q"><summary>Is there a free account?</summary><p>Yes. Create one from Log in, then Create a free account. You get FTM updates by email and access to the client area. Linking a trading account needs a plan.</p></details>
+    <div class="faq-end"><p>Still have a question? Ask FTM AI in the chat button, or email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>.</p><a class="btn btn-red" href="#pricing" id="faqPlans">See the plans</a></div>
+  </div>
+</div>
+
 <div class="auth-overlay" id="authOverlay" hidden>
   <div class="auth-panel auth-split" role="dialog" aria-modal="true" aria-labelledby="authTitle">
     <button class="auth-close" id="authClose" aria-label="Close">&times;</button>
@@ -6936,6 +6979,20 @@ tick();setInterval(tick,5000);})();
     else if(a.id==='authToSignup')n='Free account';
     if(n)try{window.va('event',{name:n,data:d});}catch(x){}
   },true);
+</script>
+<script>
+  /* FAQ & fees page (opens over the site; #faq links straight to it). */
+  (function(){
+    var v=document.getElementById('faqView'); if(!v)return;
+    function open(){ v.hidden=false; v.scrollTop=0; document.body.style.overflow='hidden'; try{window.va&&window.va('event',{name:'FAQ'});}catch(x){} }
+    function shut(){ v.hidden=true; document.body.style.overflow=''; if(location.hash==='#faq'&&history.replaceState)history.replaceState(null,'',location.pathname+location.search); }
+    document.querySelectorAll('.js-faq').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); open(); }); });
+    document.getElementById('faqClose').addEventListener('click',shut);
+    document.getElementById('faqHome').addEventListener('click',function(e){ e.preventDefault(); shut(); window.scrollTo(0,0); });
+    document.getElementById('faqPlans').addEventListener('click',function(e){ e.preventDefault(); shut(); var t=document.getElementById('pricing'); if(t)window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); });
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!v.hidden)shut(); });
+    if(location.hash==='#faq')open();
+  })();
 </script>
 </body>
 </html>
