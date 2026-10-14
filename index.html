@@ -34,7 +34,8 @@
 var FTM_IDLE_MS=5*60*1000;
 function ftmAppOpen(){ var a=document.querySelectorAll('.app'); for(var i=0;i<a.length;i++){ if(!a[i].hidden) return true; } return false; }
 function ftmIdleExpired(){ try{ var t=+(localStorage.getItem('ftm_app_seen')||0); return !!t && (Date.now()-t)>FTM_IDLE_MS; }catch(e){ return false; } }
-var ftmIdleExpiredAtLoad=ftmIdleExpired();
+var ftmFromEmailLink=/access_token=|[?&]code=|type=(signup|magiclink|invite|recovery)/.test(location.hash+location.search);
+var ftmIdleExpiredAtLoad=ftmIdleExpired() && !ftmFromEmailLink;
 function ftmStamp(){ try{ if(document.visibilityState!=='hidden' && ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} }
 setInterval(ftmStamp,10000);
 document.addEventListener('visibilitychange',function(){
