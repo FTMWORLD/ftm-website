@@ -1293,7 +1293,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .news label.ck,.su-ck{display:flex!important;text-align:left;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4}
   .news .nmsg{font-size:13px;margin:0}.news .nmsg.ok{color:#4ade80}.news .nmsg.bad{color:#f87171}
   .auth-form[hidden]{display:none!important}
-  .su-msg{font-size:14px;margin:0}.su-msg.ok{color:#16a34a}.su-msg.bad{color:#dc2626}
+  .su-msg{font-size:14px;margin:0}#suSent{display:grid;gap:10px}#suSent[hidden]{display:none}.su-msg.ok{color:#16a34a}.su-msg.bad{color:#dc2626}
   .foot-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-bottom:40px;border-bottom:1px solid var(--ink-3)}
   .foot-top .logo{color:#fff}
   .socials{display:flex;gap:20px}
@@ -1995,6 +1995,13 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <p class="su-msg" hidden></p>
       <button type="submit" class="btn btn-red">Create free account</button>
     </form>
+    <div id="suSent" hidden>
+      <p class="su-msg ok"><b>Check your email.</b> We sent a link to:</p>
+      <p class="su-msg"><b id="suSentTo" data-noi18n></b></p>
+      <p class="su-msg">Click it to create your password and log in.</p>
+      <a class="btn btn-red" id="suOpenMail" href="#" target="_blank" rel="noopener" hidden>Open my email</a>
+      <p class="auth-agree-note">No email after a minute? Check your spam folder.</p>
+    </div>
     <p class="auth-foot">Already have an account? <a href="#" id="signupToLogin">Log in</a></p>
     </div>
   </div>
@@ -6795,6 +6802,17 @@ tick();setInterval(tick,5000);})();
   /* Mailing-list sign-up (footer box and "Create a free account").
      Sends the email to /api/v1/subscribe, which adds it to Brevo. */
   (function(){
+    /* Webmail inbox for the common providers, so "Open my email" can take people straight there. */
+    function mailWeb(m){
+      var d=(m.split('@')[1]||'').toLowerCase();
+      if(/^(gmail|googlemail)\.com$/.test(d))return 'https://mail.google.com/mail/u/0/#inbox';
+      if(/^(outlook|hotmail|live|msn)\./.test(d))return 'https://outlook.live.com/mail/0/';
+      if(/^yahoo\./.test(d)||d==='ymail.com')return 'https://mail.yahoo.com/';
+      if(/^(icloud|me|mac)\.com$/.test(d))return 'https://www.icloud.com/mail';
+      if(/^(gmx|web)\.(de|net|com)$/.test(d))return d.indexOf('web.de')===0?'https://web.de/':'https://www.gmx.net/';
+      if(d==='proton.me'||d==='protonmail.com')return 'https://mail.proton.me/';
+      return '';
+    }
     function msg(f,t,ok){var m=f.querySelector('.nmsg,.su-msg');m.textContent=t;m.className=(m.classList.contains('su-msg')?'su-msg ':'nmsg ')+(ok?'ok':'bad');m.hidden=false;}
     document.querySelectorAll('form.js-news').forEach(function(f){
       f.addEventListener('submit',function(e){
@@ -6809,7 +6827,13 @@ tick();setInterval(tick,5000);})();
             if(ok){f.reset();
               if(f.getAttribute('data-source')==='signup'){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError');
                 /* Real accounts (Supabase): send the 6-digit code straight away; the login form's own code step takes over. */
-                if(window.FTM&&FTM.auth&&FTM.auth.ready()){ var pw=document.getElementById('authPass'); if(pw)pw.value=''; var af=document.getElementById('authForm'); if(af&&af.requestSubmit)af.requestSubmit(); }
+                if(window.FTM&&FTM.auth&&FTM.auth.ready()){
+                  /* Real accounts: Supabase emails a confirmation link; clicking it opens "create your password". */
+                  show(true); f.hidden=true;
+                  var sent=document.getElementById('suSent'); document.getElementById('suSentTo').textContent=mail; sent.hidden=false;
+                  var web=mailWeb(mail), om=document.getElementById('suOpenMail'); om.hidden=!web; if(web)om.href=web;
+                  FTM.auth.sendOtp(mail).catch(function(){});
+                }
                 else if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
               else msg(f,'You are subscribed. Thank you.',true);
               try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}}
@@ -6819,7 +6843,8 @@ tick();setInterval(tick,5000);})();
     });
     var lp=document.querySelector('#authOverlay .auth-form:not(#signupPane)')||document.querySelectorAll('.auth-form')[0], sp=document.getElementById('signupPane');
     function show(signup){if(!lp||!sp)return;lp.hidden=signup;sp.hidden=!signup;}
-    document.getElementById('authToSignup').addEventListener('click',function(e){e.preventDefault();show(true);});
+    function resetSignup(){var sf=sp&&sp.querySelector('form.js-news');if(sf)sf.hidden=false;var ss=document.getElementById('suSent');if(ss)ss.hidden=true;}
+    document.getElementById('authToSignup').addEventListener('click',function(e){e.preventDefault();resetSignup();show(true);});
     document.getElementById('signupToLogin').addEventListener('click',function(e){e.preventDefault();show(false);});
     document.querySelectorAll('.js-login').forEach(function(a){a.addEventListener('click',function(){show(false);});});
   })();
