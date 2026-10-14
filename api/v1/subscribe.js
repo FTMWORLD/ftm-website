@@ -20,8 +20,10 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({ email, listIds: [list], updateEnabled: true })
     });
     if (r.ok || r.status === 204) return res.status(200).json({ ok: true, source });
-    console.error('Brevo error', r.status, await r.text());
-    return res.status(502).json({ ok: false, error: 'LIST_FAILED' });
+    const txt = await r.text();
+    console.error('Brevo error', r.status, txt);
+    let code = ''; try { code = String(JSON.parse(txt).code || ''); } catch (e) {}
+    return res.status(502).json({ ok: false, error: 'LIST_FAILED', brevo: r.status + (code ? ' ' + code : ''), list });
   } catch (e) {
     console.error('Brevo unreachable', e.message);
     return res.status(502).json({ ok: false, error: 'LIST_FAILED' });
