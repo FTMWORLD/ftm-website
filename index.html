@@ -2882,7 +2882,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
         // Read before createClient — supabase-js clears the URL hash once
         // it has consumed the token in it.
-        inviteLink = /[#&?]type=invite(&|$)/.test((location.hash||'')+'&'+(location.search||''));
+        inviteLink = /[#&?]type=(invite|signup)(&|$)/.test((location.hash||'')+'&'+(location.search||''));
         client = window.supabase.createClient(url, anonKey);
         wireRecovery();
       },
@@ -3543,7 +3543,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       close();
       var pwm=document.getElementById('pwModal');
       document.getElementById('pwTitle').textContent = invited ? 'Welcome to FTM — create your password' : 'Set a password for next time';
-      document.querySelector('#pwModal .hint').textContent = invited
+      document.querySelector('#pwModal .hint').textContent = (invited && !(r.products&&r.products.length))
+        ? 'Your free FTM account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
+        : invited
         ? 'Your payment went through and your account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
         : 'You logged in with an emailed code. Set a password now so you can skip that step next time — or keep using the code, entirely up to you.';
       document.getElementById('pwCurRow').hidden=true;
