@@ -174,6 +174,10 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // Paying customers go on the Brevo "Customers" list, so marketing
+    // automations can skip people who already bought. Never blocks the reply.
+    report.brevo = await addToCustomerList(email);
+
     res.status(200).json(report);
   } catch (e) {
     console.error('Stripe webhook: unexpected error:', e.message);
@@ -206,3 +210,23 @@ module.exports = async function handler(req, res) {
       This endpoint's reply body reports what happened (error / detail
       / granted), readable in the Stripe Dashboard's event delivery log.
    --------------------------------------------------------------------- */
+
+async function addToCustomerList(email) {
+  const key = process.env.BREVO_API_KEY;
+  const list = parseInt(String(process.env.BREVO_CUSTOMERS_LIST_ID || '').replace(/\D/g, ''), 10);
+  if (!key || !list) return 'not configured';
+  try {
+    const r = await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ email: String(email).toLowerCase(), listIds: [list], updateEnabled: true }),
+      signal: AbortSignal.timeout(5000)
+    });
+    if (r.ok || r.status === 204) return 'added';
+    console.error('Stripe webhook: Brevo customer list failed', r.status, await r.text());
+    return 'failed ' + r.status;
+  } catch (e) {
+    console.error('Stripe webhook: Brevo unreachable', e.message);
+    return 'failed';
+  }
+}
