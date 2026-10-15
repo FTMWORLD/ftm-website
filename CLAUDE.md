@@ -15,3 +15,6 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Before pushing
 - Check every inline script in `index.html` and `performance.html` still parses.
 - Keep customer replies short: the key facts only.
+
+## Emails (owner instruction, 15 October 2026)
+- Every FTM email ends with the full-width dark-blue footer (#0b1640): "Invest today, secure tomorrow." in gold, then the FTM logo (blue square with the gold chart line, https://www.ftmwealthnation.com/email-logo.png, plus the white word FTM), then the risk note and unsubscribe link.
