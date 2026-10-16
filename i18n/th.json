@@ -50,6 +50,7 @@
 "<b>Losses.</b> If the prop account loses money, you carry that loss, not FTM.": "<b>การขาดทุน</b> หากบัญชี prop ขาดทุน คุณเป็นผู้รับภาระการขาดทุนนั้น ไม่ใช่ FTM",
 "<b>Minimum.</b> The smallest investment FTM accepts is 1.000€.": "<b>ขั้นต่ำ</b> เงินลงทุนที่น้อยที่สุดที่ FTM รับคือ 1.000€",
 "<b>Minimum.</b> The smallest investment FTM accepts is 5.000€.": "<b>ขั้นต่ำ</b> เงินลงทุนที่น้อยที่สุดที่ FTM รับคือ 5.000€",
+"<b>Sale prices end on 1 January 2028.</b> After that, every plan goes back to full price.<br><small>Figures from the FTM MACHINE gold backtest.</small>": "<b>ราคาพิเศษสิ้นสุดวันที่ 1 มกราคม 2028</b> หลังจากนั้นทุกแผนจะกลับเป็นราคาเต็ม<br><small>ตัวเลขจากการจำลองย้อนหลังทองคำของ FTM MACHINE</small>",
 "<b>Sale:</b> up to 50% off every plan until 1 January 2028.": "<b>ลดราคา:</b> ลดสูงสุด 50% ทุกแผนถึง 1 มกราคม 2028",
 "<b>Target.</b> FTM targets around 10% account profit in the first two years. If the account makes more, your share grows with it.": "<b>เป้าหมาย</b> FTM ตั้งเป้ากำไรบัญชีประมาณ 10% ในสองปีแรก หากบัญชีทำกำไรได้มากกว่านั้น ส่วนแบ่งของคุณก็เพิ่มขึ้นตาม",
 "<b>Withdrawals.</b> From year 2 you can withdraw 10% of each year's profit share, year 1 included, so 20% in year 2. Anything you do not take adds up for later. From year 5 you can withdraw all of your profit share.": "<b>การถอนเงิน</b> ตั้งแต่ปีที่ 2 คุณสามารถถอน 10% ของส่วนแบ่งกำไรของแต่ละปี รวมถึงปีที่ 1 ด้วย ดังนั้นในปีที่ 2 จึงเป็น 20% ส่วนที่คุณไม่ได้ถอนจะสะสมไว้สำหรับภายหลัง ตั้งแต่ปีที่ 5 คุณสามารถถอนส่วนแบ่งกำไรทั้งหมดได้",
