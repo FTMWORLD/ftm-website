@@ -1095,6 +1095,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .plan-name{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .plan-price b{font-size:44px;color:var(--ink);letter-spacing:-.03em;line-height:1;display:block;font-variant-numeric:tabular-nums}
   .plan-price span{font-size:14px;color:var(--muted)}
+  .plan-price .old{display:block;font-size:20px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px;margin-bottom:4px;font-variant-numeric:tabular-nums}
+  .plan-price b.sale{color:var(--red)}
+  .sale-banner{display:table;margin:0 auto 14px;padding:8px 18px;border-radius:30px;background:var(--red);color:#fff;font-size:15px;text-align:center}
   .plan-bonus{display:inline-block;justify-self:start;background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:99px}
   .plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
   .plan li{padding-left:24px;position:relative}
@@ -1717,11 +1720,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     <p class="eyebrow" style="color:var(--gold);text-align:center;margin-bottom:12px">FTM Auto Trading subscription</p>
     <h2 class="section-title" style="margin-bottom:16px" data-i18n="pricing.title">Pay once, let the machine work for years</h2>
     <p class="perf-sub">One subscription for every market FTM MACHINE trades. Commit longer, get more months free.</p>
+    <p class="sale-banner"><b>Sale:</b> up to 50% off every plan until 1 January 2028.</p>
     <p class="fomo fomo-c">Gold moved again today. Was your account in it?</p>
     <div class="plans">
       <div class="plan">
         <div class="plan-name">Annual</div>
-        <div class="plan-price"><b>999€</b><span>per year</span></div>
+        <div class="plan-price"><s class="old">999€</s><b class="sale">499€</b><span>per year</span></div>
         <div class="plan-bonus">+1 month free</div>
         <ul><li>13 months active for the price of 12</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Cloud execution, nothing to install</li><li>Dashboard and 24/7 support</li></ul>
         <a class="btn btn-outline" href="https://buy.stripe.com/eVq00idqj6Fm7Jo2Jm7wA0f">Start annual plan</a>
@@ -1730,15 +1734,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <div class="plan featured">
         <div class="plan-tag">Popular</div>
         <div class="plan-name">5 Years</div>
-        <div class="plan-price"><b>3,999€</b><span>one payment</span></div>
+        <div class="plan-price"><s class="old">3,999€</s><b class="sale">1,999€</b><span>one payment</span></div>
         <div class="plan-bonus">+4 months free</div>
         <ul><li>64 months connected, you pay for 60</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Locked price, no renewals for 5 years</li><li>Priority support and early access to new setups</li></ul>
         <a class="btn btn-red" href="https://buy.stripe.com/aFa3cubib3ta3t897K7wA0g">Lock in 5 years</a>
-        <p class="plan-fomo">Around 67€ a month, fixed. Renewal prices for annual plans can rise. This one cannot.</p>
+        <p class="plan-fomo">Around 33€ a month, fixed. Renewal prices for annual plans can rise. This one cannot.</p>
       </div>
       <div class="plan">
         <div class="plan-name">Lifetime</div>
-        <div class="plan-price"><b>9,999€</b><span>once, forever</span></div>
+        <div class="plan-price"><s class="old">9,999€</s><b class="sale">4,999€</b><span>once, forever</span></div>
         <div class="plan-bonus">Never pay again</div>
         <ul><li>FTM MACHINE for life</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Every future strategy and market at no extra cost</li><li>Dedicated account manager</li></ul>
         <a class="btn btn-dark" href="https://buy.stripe.com/dRmbJ0dqj4xee7M5Vy7wA0h">Access for life</a>
@@ -2015,7 +2019,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     <div class="faq-tw"><table class="faq-t">
       <thead><tr><th></th><th>FTM Auto Trading</th><th>FTM Investment</th></tr></thead>
       <tbody>
-        <tr><th>What you pay</th><td>999€ a year, 3,999€ for 5 years or 9,999€ for life</td><td>Your deposit only, from 1.000€</td></tr>
+        <tr><th>What you pay</th><td>499€ a year, 1,999€ for 5 years or 4,999€ for life (sale prices until 1 January 2028)</td><td>Your deposit only, from 1.000€</td></tr>
         <tr><th>FTM’s share of your profit</th><td><b>0%</b>. Your profit is all yours</td><td>FTM keeps half of the account’s profit, you get the other half</td></tr>
         <tr><th>Monthly or hidden fees</th><td>None</td><td>None</td></tr>
         <tr><th>Where your money is</th><td>In your own broker account</td><td>In the FTM account</td></tr>
@@ -2026,7 +2030,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     </table></div>
     <p class="faq-note">Many managed-account and copy-trading services take a share of your profits. FTM Auto Trading takes 0%.</p>
     <h2>Questions and answers</h2>
-    <details class="faq-q"><summary>What does FTM Auto Trading cost?</summary><p>One payment for your plan: 999€ a year, 3,999€ for 5 years, or 9,999€ for life. Nothing else is charged by FTM.</p></details><details class="faq-q"><summary>Does FTM take a share of my Auto Trading profit?</summary><p>No. FTM takes 0% of your profit. Everything FTM MACHINE makes on your account is yours.</p></details><details class="faq-q"><summary>Are there monthly or hidden fees?</summary><p>No. The only other costs are your broker’s normal spreads and swap, which go to the broker, not to FTM.</p></details><details class="faq-q"><summary>Where is my money?</summary><p>In your own broker account. FTM only places trades and never has withdrawal access. Your MT5 password is stored encrypted.</p></details><details class="faq-q"><summary>Can I pause or stop any time?</summary><p>Yes. Pause, withdraw or stop trading from your dashboard at any time. Trading also stops automatically if your subscription ends.</p></details><details class="faq-q"><summary>Do I need to install anything?</summary><p>No. FTM MACHINE runs on FTM’s cloud servers. You only link your MT5 account, or open one through FTM.</p></details><details class="faq-q"><summary>Which risk profile should I choose?</summary><p>Conservative trades smaller, Balanced is our default, and Growth 2× trades twice the size for experienced clients. You can change profile any time. The choice is yours; FTM does not give personal investment advice.</p></details><details class="faq-q"><summary>Are the results guaranteed?</summary><p>No. Published results come from a historical backtest since 2020 and are shown with their drawdowns. Trading carries risk and you can lose money.</p></details><details class="faq-q"><summary>How does FTM Investment work?</summary><p>You deposit into the FTM account, with no broker account needed. Over a 5-year contract you receive half of what the account makes, applied to your investment. The minimum is 1.000€.</p></details><details class="faq-q"><summary>When can I withdraw from FTM Investment?</summary><p>From the 1st of the month after 13 full months, up to 20% of your investment each year. The rest of your share and your deposit are paid at the end of the 5 years.</p></details><details class="faq-q"><summary>Can I get a refund?</summary><p>Auto Trading subscriptions are not refundable. For FTM Investment you can ask for your capital back after 1 year; you receive its value at that time, so any loss is borne by you. See section 6.5 of the Terms.</p></details><details class="faq-q"><summary>Is there a free account?</summary><p>Yes. Create one from Log in, then Create a free account. You get FTM updates by email and access to the client area. Linking a trading account needs a plan.</p></details>
+    <details class="faq-q"><summary>What does FTM Auto Trading cost?</summary><p>One payment for your plan. Sale prices until 1 January 2028: 499€ a year, 1,999€ for 5 years, or 4,999€ for life (normally 999€, 3,999€ and 9,999€). Nothing else is charged by FTM.</p></details><details class="faq-q"><summary>Does FTM take a share of my Auto Trading profit?</summary><p>No. FTM takes 0% of your profit. Everything FTM MACHINE makes on your account is yours.</p></details><details class="faq-q"><summary>Are there monthly or hidden fees?</summary><p>No. The only other costs are your broker’s normal spreads and swap, which go to the broker, not to FTM.</p></details><details class="faq-q"><summary>Where is my money?</summary><p>In your own broker account. FTM only places trades and never has withdrawal access. Your MT5 password is stored encrypted.</p></details><details class="faq-q"><summary>Can I pause or stop any time?</summary><p>Yes. Pause, withdraw or stop trading from your dashboard at any time. Trading also stops automatically if your subscription ends.</p></details><details class="faq-q"><summary>Do I need to install anything?</summary><p>No. FTM MACHINE runs on FTM’s cloud servers. You only link your MT5 account, or open one through FTM.</p></details><details class="faq-q"><summary>Which risk profile should I choose?</summary><p>Conservative trades smaller, Balanced is our default, and Growth 2× trades twice the size for experienced clients. You can change profile any time. The choice is yours; FTM does not give personal investment advice.</p></details><details class="faq-q"><summary>Are the results guaranteed?</summary><p>No. Published results come from a historical backtest since 2020 and are shown with their drawdowns. Trading carries risk and you can lose money.</p></details><details class="faq-q"><summary>How does FTM Investment work?</summary><p>You deposit into the FTM account, with no broker account needed. Over a 5-year contract you receive half of what the account makes, applied to your investment. The minimum is 1.000€.</p></details><details class="faq-q"><summary>When can I withdraw from FTM Investment?</summary><p>From the 1st of the month after 13 full months, up to 20% of your investment each year. The rest of your share and your deposit are paid at the end of the 5 years.</p></details><details class="faq-q"><summary>Can I get a refund?</summary><p>Auto Trading subscriptions are not refundable. For FTM Investment you can ask for your capital back after 1 year; you receive its value at that time, so any loss is borne by you. See section 6.5 of the Terms.</p></details><details class="faq-q"><summary>Is there a free account?</summary><p>Yes. Create one from Log in, then Create a free account. You get FTM updates by email and access to the client area. Linking a trading account needs a plan.</p></details>
     <div class="faq-end"><p>Still have a question? Ask FTM AI in the chat button, or email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>.</p><a class="btn btn-red" href="#pricing" id="faqPlans">See the plans</a></div>
   </div>
 </div>
