@@ -1100,6 +1100,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .plan-price b.sale{color:#16a34a}
   .plans-note{text-align:center;color:rgba(255,255,255,.6);font-size:13px;margin:18px 0 0}
   .sale-banner{display:table;margin:0 auto 28px;padding:8px 18px;border-radius:30px;background:#16a34a;color:#fff;font-size:15px;text-align:center}
+  .sale-banner{animation:saleWiggle 3s ease-in-out infinite;transform-origin:50% 0}
+  @keyframes saleWiggle{0%,82%,100%{transform:rotate(0)}85%{transform:rotate(-3deg)}88%{transform:rotate(3deg)}91%{transform:rotate(-2deg)}94%{transform:rotate(1.5deg)}97%{transform:rotate(-.5deg)}}
+  @media (prefers-reduced-motion:reduce){.sale-banner{animation:none}}
   .plan-bonus{display:inline-block;justify-self:start;background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:99px}
   .plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
   .plan li{padding-left:24px;position:relative}
