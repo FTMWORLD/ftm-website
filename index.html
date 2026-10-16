@@ -6297,23 +6297,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     /* Starting set. The backend should serve the full, current list, since
        brokers add and rename servers regularly. */
     var SERVERS=[
-      'Deriv-Demo','Deriv-Server','Deriv-Server-02','DerivBVI-Server','DerivSVG-Server','DerivSVG-Server-02',
-      'DerivVU-Server','DerivVU-Server-02','DerivVU-Server-03',
-      'Exness-MT5Real','Exness-MT5Real2','Exness-MT5Real3','Exness-MT5Trial',
-      'FPMarkets-Demo','FPMarkets-Live',
-      'FTMO-Demo','FTMO-Demo2','FTMO-Server','FTMO-Server2','FTMO-Server3','FTMO-Server4','FTMO-Server5',
-      'Fundedelite-Server','FundedNext-Server','FundedNext-Server 2','FundedNext-Server 3','FundedNext-Server 4',
-      'FundedTraderMarkets-Server','FundedTradingPlus-Live','FundedUnicorn-Server',
-      'GoatFunded-Server','GoldenFortuneDerivatives-Server',
-      'HFMarketsGlobal-Demo','HFMarketsGlobal-Live',
-      'ICDX-Demo','ICDX-Live','ICMarketsSC-Demo','ICMarketsSC-MT5','ICMarketsSC-MT5-2','ICMarketsSC-MT5-4',
-      'KudoFunded-Server','MetaQuotes-Demo',
-      'Pepperstone-Demo','Pepperstone-MT5-Live01',
-      'PPDExchange-Demo','PPDExchange-Global','PPDExchange-Live','PPDExchange-LIVE2',
-      'RoboForex-Demo','RoboForex-ECN','RoboForex-Pro',
-      'TickmillSC-Demo','TickmillSC-Live',
-      'VantageInternational-Demo','VantageInternational-Live',
-      'WSFunded-Server'
+      'Deriv-Demo','Deriv-Server','Deriv-Server-02','DerivBVI-Server','DerivSVG-Server','DerivSVG-Server-02','DerivVU-Server','DerivVU-Server-02','DerivVU-Server-03','Exness-MT5Real','Exness-MT5Real2','Exness-MT5Real3','Exness-MT5Trial','FPMarketsKE-Demo','FPMarketsKE-Demo2','FPMarketsKE-Live','FPMarketsKE-Live2','FPMarketsLtd-Demo2','FPMarketsLtd-Live2','FTMO-Demo','FTMO-Server','FTMO-Server2','FTMO-Server3','FTMO-Server4','FTMO-Server5','Fundedelite-Server','FundedNext-Server','FundedNext-Server 2','FundedNext-Server 3','FundedTraderMarkets-Server','FundedTradingPlus-Live','GoatFunded-Server','GoldenFortuneDerivatives-Server','HFMarketsGlobal-Demo','HFMarketsGlobal-Live1','ICDX-Demo','ICDX-Live','ICMarketsEU-Demo','ICMarketsEU-MT5-5','ICMarketsInternational-Demo','ICMarketsInternational-MT5','ICMarketsInternational-MT5-2','ICMarketsInternational-MT5-4','KudoFunded-Server','MetaQuotes-Demo','Pepperstone-Demo','Pepperstone-MT5-Live01','PPDExchange-Demo','PPDExchange-Live','RoboForex-ECN','RoboForex-Pro','Tickmill-Demo','Tickmill-Live','VantageMarkets-Demo','VantageMarkets-Live'
     ].sort(function(a,b){ return a.toLowerCase()<b.toLowerCase()?-1:1; });
     var chosen='', hl=-1, items=[];
 
