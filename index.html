@@ -1089,20 +1089,21 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .pricing .section-title,.pricing .perf-sub{color:#fff}
   .pricing .perf-sub{color:rgba(255,255,255,.8)}
   .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
-  .plan{background:#fff;color:var(--text);border-radius:24px;padding:32px 28px;display:grid;gap:16px;align-content:start;position:relative}
-  .plan.featured{background:linear-gradient(180deg,#fff,#fff8e3);box-shadow:0 0 0 3px var(--gold),0 30px 70px rgba(0,0,0,.35);transform:translateY(-12px)}
+  .plan{background:#fff;color:var(--text);border-radius:24px;padding:32px 28px;display:flex;flex-direction:column;gap:16px;position:relative}
+  .plan ul{flex:1}.plan-bonus{align-self:flex-start}
+  .plan.featured{background:linear-gradient(180deg,#fff,#fff8e3);box-shadow:0 0 0 3px var(--gold),0 30px 70px rgba(0,0,0,.35)}
   .plan-tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:99px}
   .plan-name{font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
   .plan-price b{font-size:44px;color:var(--ink);letter-spacing:-.03em;line-height:1;display:block;font-variant-numeric:tabular-nums}
   .plan-price span{font-size:14px;color:var(--muted)}
-  .plan-price .old{display:block;font-size:20px;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px;margin-bottom:4px;font-variant-numeric:tabular-nums}
-  .plan-price b.sale{color:var(--red)}
-  .sale-banner{display:table;margin:0 auto 14px;padding:8px 18px;border-radius:30px;background:var(--red);color:#fff;font-size:15px;text-align:center}
+  .plan-price .old{display:inline-block;font-size:24px;font-weight:700;color:#5b6378;text-decoration:line-through;text-decoration-color:#e63946;text-decoration-thickness:2px;margin-bottom:6px;font-variant-numeric:tabular-nums}
+  .plan-price b.sale{color:#16a34a}
+  .sale-banner{display:table;margin:0 auto 28px;padding:8px 18px;border-radius:30px;background:#16a34a;color:#fff;font-size:15px;text-align:center}
   .plan-bonus{display:inline-block;justify-self:start;background:var(--blue);color:#fff;font-size:13px;font-weight:700;padding:6px 12px;border-radius:99px}
   .plan ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
   .plan li{padding-left:24px;position:relative}
   .plan li::before{content:"";position:absolute;left:0;top:7px;width:12px;height:12px;border-radius:50%;background:var(--gold)}
-  .plan .btn{justify-self:stretch;margin-top:8px}
+  .plan .btn{align-self:stretch;margin-top:auto}
   .plan-fomo{font-size:13px;color:var(--red-dark);font-weight:600;line-height:1.4}
   .compound{margin-top:64px;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;background:var(--blue-dark);border-radius:32px;padding:48px}
   .compound h3{color:#fff;font-size:clamp(28px,3vw,40px);margin-bottom:16px}
@@ -1719,34 +1720,30 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   <div class="container">
     <p class="eyebrow" style="color:var(--gold);text-align:center;margin-bottom:12px">FTM Auto Trading subscription</p>
     <h2 class="section-title" style="margin-bottom:16px" data-i18n="pricing.title">Pay once, let the machine work for years</h2>
-    <p class="perf-sub">One subscription for every market FTM MACHINE trades. Commit longer, get more months free.</p>
+    <p class="perf-sub">One plan for every market FTM MACHINE trades.</p>
     <p class="sale-banner"><b>Sale:</b> up to 50% off every plan until 1 January 2028.</p>
-    <p class="fomo fomo-c">Gold moved again today. Was your account in it?</p>
     <div class="plans">
       <div class="plan">
         <div class="plan-name">Annual</div>
         <div class="plan-price"><s class="old">999€</s><b class="sale">499€</b><span>per year</span></div>
         <div class="plan-bonus">+1 month free</div>
-        <ul><li>13 months active for the price of 12</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Cloud execution, nothing to install</li><li>Dashboard and 24/7 support</li></ul>
+        <ul><li>13 months for the price of 12</li><li><b>+734%</b> on gold since 2020 (Balanced, backtest)</li><li>All markets and all 3 risk profiles</li><li>24/7 support</li></ul>
         <a class="btn btn-outline" href="https://buy.stripe.com/eVq00idqj6Fm7Jo2Jm7wA0f">Start annual plan</a>
-        <p class="plan-fomo">Every month you wait is a month FTM MACHINE trades without you.</p>
       </div>
       <div class="plan featured">
         <div class="plan-tag">Popular</div>
         <div class="plan-name">5 Years</div>
         <div class="plan-price"><s class="old">3,999€</s><b class="sale">1,999€</b><span>one payment</span></div>
         <div class="plan-bonus">+4 months free</div>
-        <ul><li>64 months connected, you pay for 60</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Locked price, no renewals for 5 years</li><li>Priority support and early access to new setups</li></ul>
+        <ul><li>64 months, you pay for 60</li><li><b>+3,658%</b> on gold since 2020 (Growth 2×, backtest)</li><li>Price locked, about 33€ a month</li><li>Priority support</li></ul>
         <a class="btn btn-red" href="https://buy.stripe.com/aFa3cubib3ta3t897K7wA0g">Lock in 5 years</a>
-        <p class="plan-fomo">Around 33€ a month, fixed. Renewal prices for annual plans can rise. This one cannot.</p>
       </div>
       <div class="plan">
         <div class="plan-name">Lifetime</div>
         <div class="plan-price"><s class="old">9,999€</s><b class="sale">4,999€</b><span>once, forever</span></div>
         <div class="plan-bonus">Never pay again</div>
-        <ul><li>FTM MACHINE for life</li><li>Access to trade all markets</li><li>All three risk profiles</li><li>Every future strategy and market at no extra cost</li><li>Dedicated account manager</li></ul>
+        <ul><li>FTM MACHINE for life</li><li><b>18–70%</b> a year on average since 2020 (backtest)</li><li>Every future market included</li><li>Dedicated account manager</li></ul>
         <a class="btn btn-dark" href="https://buy.stripe.com/dRmbJ0dqj4xee7M5Vy7wA0h">Access for life</a>
-        <p class="plan-fomo">Lifetime seats are limited so our infrastructure stays fast for every account.</p>
       </div>
     </div>
 
