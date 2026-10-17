@@ -1099,6 +1099,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .plan-price .old{display:inline-block;font-size:24px;font-weight:700;color:#5b6378;text-decoration:line-through;text-decoration-color:#e63946;text-decoration-thickness:2px;margin-bottom:6px;font-variant-numeric:tabular-nums}
   .plan-price b.sale{color:#16a34a}
   .plans-note{text-align:center;color:#fff;font-size:16px;margin:22px 0 0;line-height:1.5}.plans-note b{color:var(--gold)}.plans-note small{color:rgba(255,255,255,.55);font-size:12px}
+  .mobile-menu .mm-sec{border-bottom:1px solid var(--line)}
+  .mobile-menu .mm-sec summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:16px 8px;font-weight:700;font-size:16px;color:var(--ink)}
+  .mobile-menu .mm-sec summary::-webkit-details-marker{display:none}
+  .mobile-menu .mm-sec summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+  .mobile-menu .mm-sec[open] summary::after{transform:rotate(-135deg)}
+  .mobile-menu .mm-links{padding:0 0 10px 8px;display:grid}
+  .mobile-menu .mm-links a{border-bottom:0;padding:10px 8px;font-weight:500;color:var(--text);border-left:2px solid var(--line)}
+  .mobile-menu .mm-lang .mobile-lang{padding:0 0 12px}
   .mobile-menu .mm-start{justify-content:center;text-align:center;color:#fff;margin-bottom:8px}
   .sale-banner{display:table;margin:0 auto 28px;padding:8px 18px;border-radius:30px;background:#16a34a;color:#fff;font-size:15px;text-align:center}
   .sale-banner{animation:saleWiggle 3s ease-in-out infinite;transform-origin:50% 0}
@@ -1573,8 +1581,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 </div>
 <div class="mobile-menu" id="mobileMenu">
   <a class="btn btn-red js-start mm-start" href="#get-started" data-i18n="btn.start">Get started</a>
-  <a href="#auto">Auto Trading</a><a href="#how">How it works</a><a href="#invest">Investment</a><a href="/performance.html">Performance</a><a href="#partner">Partner</a><a href="#company">About</a><a href="#markets">Markets</a><a href="#support">Learning &amp; support</a>
+  <details class="mm-sec"><summary>Auto Trading</summary><div class="mm-links"><a href="#auto">FTM MACHINE</a><a href="#how">How it works</a><a href="#pricing">Subscription plans</a><a href="/performance.html">Performance record</a></div></details>
+  <details class="mm-sec"><summary>Investment</summary><div class="mm-links"><a href="#invest">Investment</a><a href="#ivCalc">Work out your share</a><a href="#faq" class="js-faq">Frequently asked questions</a></div></details>
+  <details class="mm-sec"><summary>Markets</summary><div class="mm-links"><a href="#markets">Forex</a><a href="#markets">Derived Indices</a><a href="#markets">Stocks</a><a href="#markets">Commodities</a><a href="#markets">Cryptos</a><a href="#markets">Stock Indices</a></div></details>
+  <details class="mm-sec"><summary>Partner</summary><div class="mm-links"><a href="https://t.deriv.link?t=M8A8ZGSDWZNB" target="_blank" rel="noopener">Become an FTM affiliate</a><a href="https://t.deriv.link?t=M8A8ZGSDWZNB" target="_blank" rel="noopener">Introducing broker</a><a href="https://t.deriv.link?t=M8A8ZGSDWZNB" target="_blank" rel="noopener">Payment agent</a><a href="https://t.deriv.link?t=M8A8ZGSDWZNB" target="_blank" rel="noopener">Partner login</a></div></details>
+  <details class="mm-sec"><summary>About</summary><div class="mm-links"><a href="#company">Follow The Market Ltd.</a><a href="/terms.html">Terms and Conditions</a></div></details>
+  <details class="mm-sec"><summary>Learning &amp; support</summary><div class="mm-links"><a href="#" class="js-ask-ai">Ask FTM AI</a><a href="mailto:ftmwebnation@gmail.com">Email support</a><a href="#support">Get answers when you need</a></div></details>
+  <details class="mm-sec mm-lang"><summary>Language</summary>
   <div class="mobile-lang" id="mobileLang"><label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="mobileLangSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label></div>
+  </details>
   <button class="btn btn-outline js-login">Log in</button>
 </div>
 
@@ -6995,6 +7010,14 @@ tick();setInterval(tick,5000);})();
     document.getElementById('faqPlans').addEventListener('click',function(e){ e.preventDefault(); shut(); var t=document.getElementById('pricing'); if(t)window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!v.hidden)shut(); });
     if(location.hash==='#faq')open();
+  })();
+</script>
+<script>
+  /* Phone menu: one section open at a time; "Ask FTM AI" opens the chat. */
+  (function(){
+    var m=document.getElementById('mobileMenu'); if(!m)return;
+    m.querySelectorAll('.mm-sec').forEach(function(d){ d.addEventListener('toggle',function(){ if(d.open) m.querySelectorAll('.mm-sec[open]').forEach(function(o){ if(o!==d) o.open=false; }); }); });
+    m.querySelectorAll('.js-ask-ai').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); m.classList.remove('open'); var t=document.getElementById('fsToggle'), p=document.getElementById('fsPanel'); setTimeout(function(){ if(t&&p&&p.hidden) t.click(); var ai=document.getElementById('fsAi'); if(ai) ai.click(); },30); }); });
   })();
 </script>
 </body>
