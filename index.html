@@ -1106,6 +1106,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .fc-m.me{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
   .fc-m.wait{color:var(--muted);font-style:italic}
   .fc-in{display:flex;gap:6px;padding:10px;border-top:1px solid #e5e8f0;background:#fff}
+  .fc-in[hidden],.fc-gate[hidden]{display:none}
+  .fc-gate{display:grid;gap:8px;padding:14px;border-top:1px solid #e5e8f0;background:#fff}
+  .fc-gate b{font-size:15px;color:var(--ink)}
+  .fc-gate p{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
+  .fc-gate input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:14.5px}
+  .fc-gate .fc-gate-err{color:var(--red-dark);font-size:12.5px}
   .fc-in input{flex:1;min-width:0;border:1px solid #d8dce6;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px}
   .fc-mic,.fc-send{border:0;width:42px;height:42px;border-radius:12px;cursor:pointer;display:grid;place-items:center;flex:none}
   .fc-mic{background:#eef1f7;color:var(--blue)}.fc-mic.on{background:var(--red);color:#fff;animation:fcPulse 1s infinite}
@@ -1733,6 +1739,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     <div class="fs-chat" id="fsChat" hidden>
       <div class="fc-bar"><button type="button" class="fc-back" id="fcBack" aria-label="Back">&larr;</button><b>FTM AI</b><button type="button" class="fc-voice" id="fcVoice" aria-pressed="false" aria-label="Read answers aloud" title="Read answers aloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>
       <div class="fc-log" id="fcLog" aria-live="polite"><div class="fc-m bot">Hi! I am the FTM assistant. Ask me anything about FTM MACHINE, plans, investing or your account.</div></div>
+      <form class="fc-gate" id="fcGate" hidden novalidate><b>Before we start</b><p>Enter your email so FTM support can follow up on your question if needed.</p><input type="email" id="fcGateMail" placeholder="you@example.com" autocomplete="email" aria-label="Your email" required><p class="fc-gate-err" id="fcGateErr" hidden>Enter a valid email address.</p><button type="submit" class="btn btn-red">Continue</button></form>
       <form class="fc-in" id="fcForm">
         <button type="button" class="fc-mic" id="fcMic" aria-label="Speak your question" title="Speak your question"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
         <input type="text" id="fcText" placeholder="Type your question" maxlength="1500" autocomplete="off" aria-label="Your question">
@@ -3252,7 +3259,17 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         form=document.getElementById('fcForm'), text=document.getElementById('fcText'), mic=document.getElementById('fcMic'),
         voice=document.getElementById('fcVoice'), hist=[], busy=false, speak=false;
     function lang(){ return document.documentElement.lang||'en'; }
-    function showChat(on){ menu.hidden=on; chat.hidden=!on; panel.classList.toggle('chat',on); if(on)setTimeout(function(){text.focus();},50); }
+    /* Ask for an email once per device before the first question; logged-in clients are known already. */
+    function chatMail(){ try{ return localStorage.getItem('ftm_chat_email')||''; }catch(e){ return ''; } }
+    function gateOn(){ var known=chatMail()||(window.FTM&&FTM.session&&FTM.session.email); var g=document.getElementById('fcGate'), f=document.getElementById('fcForm'); g.hidden=!!known; f.hidden=!known; return !known; }
+    document.getElementById('fcGate').addEventListener('submit',function(e){
+      e.preventDefault(); var v=document.getElementById('fcGateMail').value.trim(), er=document.getElementById('fcGateErr');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){ er.hidden=false; return; }
+      er.hidden=true; try{ localStorage.setItem('ftm_chat_email',v.toLowerCase()); }catch(x){}
+      try{window.va&&window.va('event',{name:'AI chat email'});}catch(x){}
+      gateOn(); text.focus();
+    });
+    function showChat(on){ menu.hidden=on; chat.hidden=!on; panel.classList.toggle('chat',on); if(on)setTimeout(function(){ if(gateOn()) document.getElementById('fcGateMail').focus(); else text.focus(); },50); }
     document.getElementById('fsAi').addEventListener('click',function(){ showChat(true); try{window.va&&window.va('event',{name:'AI chat'});}catch(x){} });
     document.getElementById('fcBack').addEventListener('click',function(){ showChat(false); });
     function add(cls,t){ var d=document.createElement('div'); d.className='fc-m '+cls; d.textContent=t; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
@@ -3266,7 +3283,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     function ask(q){
       q=q.trim(); if(!q||busy)return; busy=true;
       add('me',q); hist.push({role:'user',content:q}); var w=add('bot wait','Thinking…');
-      fetch('/api/v1/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:hist.slice(-12),lang:lang()})})
+      fetch('/api/v1/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:hist.slice(-12),lang:lang(),email:chatMail()||(window.FTM&&FTM.session&&FTM.session.email)||''})})
         .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return{ok:r.ok&&j.ok,j:j,s:r.status};});})
         .then(function(x){ w.remove(); busy=false;
           if(x.ok){ hist.push({role:'assistant',content:x.j.reply}); add('bot',x.j.reply); say(x.j.reply); }

@@ -51,6 +51,9 @@ module.exports = async function handler(req, res) {
 
   let body = req.body || {};
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
+  // Email the visitor gave before chatting; logged with each question so support can follow up.
+  const askerEmail = String(body.email || '').trim().toLowerCase().slice(0, 120);
+  const askerOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(askerEmail);
   const lang = String(body.lang || 'en').replace(/[^a-zA-Z-]/g, '').slice(0, 8) || 'en';
   const msgs = (Array.isArray(body.messages) ? body.messages : [])
     .filter(m => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string' && m.content.trim())
@@ -59,6 +62,7 @@ module.exports = async function handler(req, res) {
   if (!msgs.length || msgs[0].role !== 'user' || msgs[msgs.length - 1].role !== 'user') {
     return res.status(400).json({ ok: false, error: 'BAD_MESSAGES' });
   }
+  console.log('FTM AI chat from', askerOk ? askerEmail : 'no email', ':', msgs[msgs.length - 1].content.slice(0, 300));
 
   try {
     const response = await client.beta.messages.create({
