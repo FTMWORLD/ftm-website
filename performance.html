@@ -1059,7 +1059,7 @@ function ccSum(key,rows){const el=$('m-cc-sum');if(!rows||!rows.length){el.hidde
   const net=rows.reduce((a,t)=>a+t[6],0),st=monthStats(P[cur],key).start,pc=net/st*100,cls=net>=0?'up':'down';
   el.innerHTML=`<b class="${cls}">${(net<0?'−$':'+$')+Math.abs(net).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})} <span>(${pct(pc,2)})</span></b><small>made on ${MKT[mkt].sym} this month · ${NAMES[cur]}${mkt==='gold'?' · '+usd(+SIZE).replace(',000','k'):''}</small>`;el.hidden=false}
 function renderDays(key){
-  const box=$('m-days'),body=$('m-days-body'),size=mkt==='gold'?SIZE:'100000',path=`/data/trades/${mkt}/${size}/${cur}/${key}.json`,ck=path;
+  const box=$('m-days'),body=$('m-days-body'),size=mkt==='gold'?SIZE:mkt==='btc'?BSIZE:(MSZ[mkt]||'100000'),path=`/data/trades/${mkt}/${size}/${cur}/${key}.json`,ck=path;
   const show=rows=>{if(mKey!==key)return;renderWeeks(key,rows);ccSum(key,rows);if(!rows||!rows.length){box.hidden=true;return}
     box.hidden=false;const fmtD=u=>{const d=new Date(u*1000);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+d.getUTCFullYear()},hm=u=>{const d=new Date(u*1000);return String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
     const money=v=>(v<0?'−$':'+$')+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
