@@ -391,26 +391,28 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-card b{font-size:15px}.dx-card p{font-size:13px;color:var(--muted);line-height:1.5}
   .dx-btn{justify-self:start;margin-top:6px;padding:8px 14px;border-radius:999px;background:#0b1640;color:#fff;font-size:12.5px;font-weight:700}
   .float-support.over-app{z-index:130}
+  .dx-view{display:grid;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+  .dx-view select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:14px;color:var(--ink);background:var(--bg-3)}
   #appView .app-view[data-view="metrics"]{padding-top:0}
   #appView .app-content:has(.app-view[data-view="metrics"]:not([hidden])) .app-title-meta{display:none}
   @media (max-width:1000px){.dx-top{grid-template-columns:1fr}}
   @media (max-width:860px){.sb-ask,.sb-foot{display:none}.dx-feat{grid-template-columns:1fr}.dx-hero{padding:22px}}
   @media (prefers-reduced-motion:reduce){.sb-pill i,.dx-ref.spin svg{animation:none}}
   /* client area account menu: one two-bar button that opens name, email and account actions */
-  .acct{position:relative}
-  .acct-btn{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);display:grid;place-content:center;gap:6px;cursor:pointer}
-  .acct-btn span{display:block;width:20px;height:2px;border-radius:2px;background:#fff;transition:transform .2s}
-  .acct-btn[aria-expanded="true"] span:first-child{transform:translateY(4px) rotate(45deg)}
-  .acct-btn[aria-expanded="true"] span:last-child{transform:translateY(-4px) rotate(-45deg)}
-  .acct-menu{position:absolute;right:0;top:calc(100% + 10px);z-index:20;width:260px;background:#fff;color:var(--ink);border-radius:16px;padding:8px;box-shadow:0 24px 50px rgba(11,20,64,.35);display:grid;gap:2px}
-  .acct-menu[hidden]{display:none}
-  .acct-who{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:4px;display:grid;gap:2px;min-width:0}
-  .acct-who small{font-size:12px;color:var(--muted)}
-  .acct-who b{font-size:15px;color:var(--ink)!important;overflow-wrap:anywhere}
-  .acct-who em{font-style:normal;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
-  .acct-i{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:10px;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;cursor:pointer}
-  .acct-i:hover,.acct-i:focus-visible{background:var(--bg-3)}
-  .acct-out{color:var(--red-dark)}
+  .um{position:relative}
+  .um-btn{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);display:grid;place-content:center;gap:6px;cursor:pointer}
+  .um-btn span{display:block;width:20px;height:2px;border-radius:2px;background:#fff;transition:transform .2s}
+  .um-btn[aria-expanded="true"] span:first-child{transform:translateY(4px) rotate(45deg)}
+  .um-btn[aria-expanded="true"] span:last-child{transform:translateY(-4px) rotate(-45deg)}
+  .um-list{position:absolute;right:0;top:calc(100% + 10px);z-index:20;width:260px;background:#fff;color:var(--ink);border-radius:16px;padding:8px;box-shadow:0 24px 50px rgba(11,20,64,.35);display:grid;gap:2px}
+  .um-list[hidden]{display:none}
+  .um-who{padding:10px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:4px;display:grid;gap:2px;min-width:0}
+  .um-who small{font-size:12px;color:var(--muted)}
+  .um-who b{font-size:15px;color:var(--ink)!important;overflow-wrap:anywhere}
+  .um-who em{font-style:normal;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+  .um-i{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:10px;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;cursor:pointer}
+  .um-i:hover,.um-i:focus-visible{background:var(--bg-3)}
+  .um-out{color:var(--red-dark)}
   /* ---------- client area shell ---------- */
   .app-body{display:flex;align-items:flex-start;min-height:calc(100vh - 68px)}
   .app-nav{position:sticky;top:68px;width:240px;flex:none;padding:28px 16px;display:grid;gap:3px;align-content:start;background:linear-gradient(190deg,#0E1A52,#0B1440 60%);min-height:calc(100vh - 68px);box-shadow:inset -1px 0 0 rgba(255,255,255,.05)}
@@ -2212,7 +2214,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="acct"><button type="button" class="acct-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="acct-menu" id="acctA" hidden><div class="acct-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="acct-mail"></em></div><a href="/performance.html" class="acct-i">Trust engine</a><a href="#pricing" class="acct-i acct-home">Subscription plans</a><button type="button" class="acct-i acct-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="acct-i">Email support</a><button type="button" class="acct-i js-pw">Change password</button><button type="button" class="acct-i acct-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2267,6 +2269,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
         <div class="dx-acc-row"><span class="dx-acc-ic">MT5</span><div><b id="dxAcct">&mdash;</b><small id="dxPlan">&mdash;</small></div><b class="dx-acc-bal" id="dxBal">&mdash;</b></div>
         <div class="dx-acc-st" id="dxSt">&mdash;</div>
+        <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
     </div>
     <h3 class="dx-sec">Featured</h3>
@@ -2725,7 +2728,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 <div class="app" id="invView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="invHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="acct"><button type="button" class="acct-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="acct-menu" id="acctB" hidden><div class="acct-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="acct-mail"></em></div><a href="/performance.html" class="acct-i">Trust engine</a><a href="#pricing" class="acct-i acct-home">Subscription plans</a><button type="button" class="acct-i acct-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="acct-i">Email support</a><button type="button" class="acct-i js-pw">Change password</button><button type="button" class="acct-i acct-out" id="invLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctB" hidden><div class="um-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="invLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Investor area">
@@ -5039,7 +5042,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         // chain sharing a single catch, so a real, fully-connected
         // account could still render as "no account" whenever this ran.
         F.data.accounts = accounts;
-        var primary = accounts.find(function(a){return a.active;}) || accounts[0];
+        // Statistics follow the account the customer chose to view, which
+        // need not be the one FTM MACHINE is trading on.
+        var primary = accounts.find(function(a){return F.viewNum && String(a.number)===String(F.viewNum);}) || accounts.find(function(a){return a.active;}) || accounts[0];
         // Every amount on screen belongs to this account, so it takes this
         // account's own currency (null until the account has connected once).
         F.data.account = {currency: primary.currency || null, deposits:0, withdrawals:0};
@@ -5073,6 +5078,18 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     }
 
     F.emptyLiveData = emptyLiveData;
+    /* Show the statistics of any added account; trading stays on the active one. */
+    try{ F.viewNum = localStorage.getItem('ftm_view_acct') || null; }catch(e){ F.viewNum=null; }
+    F.viewAccount = function(num){
+      F.viewNum = num ? String(num) : null;
+      try{ if(F.viewNum) localStorage.setItem('ftm_view_acct',F.viewNum); else localStorage.removeItem('ftm_view_acct'); }catch(e){}
+      var done=function(){ if(F.redrawAllViews)F.redrawAllViews(); else if(F.render)F.render(); if(F.renderAccounts)F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } };
+      if(F.remote && F.remote.ready()) loadLive().then(done); else done();
+    };
+    F.viewedAccount = function(){
+      var A=F.data.accounts||[];
+      return A.find(function(a){return F.viewNum && String(a.number)===String(F.viewNum);}) || A.find(function(a){return a.active;}) || A[0] || null;
+    };
     loadLive().then(function(){ F.render(); });
     /* Exposed so the login flow (a separate closure, earlier in this file)
        can re-fetch real account data the moment a fresh login succeeds —
@@ -5598,6 +5615,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           // "contact support" message as the Your-subscription button.
           if(a.displayStatus==='ACTIVE') items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
           if(!a.active) items+='<button class="acct-menu-item" data-switch="'+i+'">Activate</button>';
+          if(F.viewedAccount && F.viewedAccount()!==a) items+='<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>';
           items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
           status+='<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button>'+
             '<div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+items+'</div></div>';
@@ -5605,6 +5623,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           status = a.active
             ? '<span class="conn conn-good">Connected</span>'
             : '<button class="conn-btn" data-connect="'+i+'">Connect</button>';
+          if(F.viewedAccount && F.viewedAccount()!==a) status+=' <button class="conn-btn" data-viewst="'+i+'">View statistics</button>';
         }
         /* Money figures are only trusted live while the account is ACTIVE —
            if the terminal has gone stale (OFFLINE etc.) the last-known
@@ -5689,6 +5708,11 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
        visibly with a clear message rather than silently doing nothing
        or faking a switch client-side, which would show a status the
        engine never actually set. */
+    el('acctRows').addEventListener('click',function(e){
+      var b=e.target.closest('[data-viewst]'); if(!b)return;
+      var a=F.data.accounts[+b.dataset.viewst]; if(!a)return;
+      closeAcctMenus(); F.viewAccount(a.number);
+    });
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-switch]'); if(!b)return;
       alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
@@ -5946,7 +5970,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     };
     function header(name){
       var m=F.metrics(), A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0];
-      var lead = on || A[0];
+      var lead = (F.viewedAccount && F.viewedAccount()) || on || A[0];
       var meta=VIEW_META[name]||VIEW_META.metrics;
       var acctLabel = on ? ('Account '+(name==='metrics'?'metrics ':'')+on.number) : 'No account connected';
       document.getElementById('crumbView').textContent=meta.t;
@@ -5954,8 +5978,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       // whose account is still being verified should still see it named
       // here, rather than "No account" implying nothing was submitted.
       document.getElementById('crumbAcct').textContent= lead ? (lead.name+' '+lead.number) : 'No account';
-      document.getElementById('pageTitle').textContent = name==='metrics' ? ('Account metrics '+(on?on.number:'')) : meta.t;
-      document.getElementById('pageSub').textContent=meta.s;
+      document.getElementById('pageTitle').textContent = name==='metrics' ? ('Account metrics '+(lead?lead.number:'')) : meta.t;
+      document.getElementById('pageSub').textContent = (lead && on && lead!==on && name==='metrics') ? 'Viewing statistics of {}. FTM MACHINE keeps trading on {}.'.replace('{}',lead.name+' '+lead.number).replace('{}',on.name+' '+on.number) : meta.s;
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
       ic.innerHTML = src ? src.outerHTML : '';
@@ -7153,7 +7177,12 @@ tick();setInterval(tick,5000);})();
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
+    var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
+    $('dxViewW').hidden=A.length<2;
+    if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+(a.active?' · {}'.replace('{}',TRADING):'')+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h;}
   }
+  var TRADING='Trading';
+  $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
   ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true});});
   new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
   sync();
@@ -7172,17 +7201,17 @@ tick();setInterval(tick,5000);})();
 <script>
 /* Client area account menu */
 (function(){
-  document.querySelectorAll('.acct').forEach(function(w){
-    var b=w.querySelector('.acct-btn'),m=w.querySelector('.acct-menu');
+  document.querySelectorAll('.um').forEach(function(w){
+    var b=w.querySelector('.um-btn'),m=w.querySelector('.um-list');
     function shut(){m.hidden=true;b.setAttribute('aria-expanded','false')}
-    b.addEventListener('click',function(e){e.stopPropagation();var o=m.hidden;document.querySelectorAll('.acct-menu').forEach(function(x){x.hidden=true});m.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');
-      var em=m.querySelector('.acct-mail');if(em)em.textContent=(window.FTM&&FTM.session&&FTM.session.email)||''});
-    m.addEventListener('click',function(e){if(e.target.closest('.acct-i'))shut()});
+    b.addEventListener('click',function(e){e.stopPropagation();var o=m.hidden;document.querySelectorAll('.um-list').forEach(function(x){x.hidden=true});m.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');
+      var em=m.querySelector('.um-mail');if(em)em.textContent=(window.FTM&&FTM.session&&FTM.session.email)||''});
+    m.addEventListener('click',function(e){if(e.target.closest('.um-i'))shut()});
     document.addEventListener('click',function(e){if(!w.contains(e.target))shut()});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')shut()});
-    var ai=m.querySelector('.acct-ai');if(ai)ai.addEventListener('click',function(){var t=document.querySelector('#appView:not([hidden]) .js-app-ai');if(t){t.click();return}
+    var ai=m.querySelector('.um-ai');if(ai)ai.addEventListener('click',function(){var t=document.querySelector('#appView:not([hidden]) .js-app-ai');if(t){t.click();return}
       var f=document.getElementById('floatSupport'),tg=document.getElementById('fsToggle'),p=document.getElementById('fsPanel');if(f)f.classList.add('over-app');setTimeout(function(){if(tg&&p&&p.hidden)tg.click();setTimeout(function(){var a=document.getElementById('fsAi');if(a)a.click()},30)},0)});
-    var h=m.querySelector('.acct-home');if(h)h.addEventListener('click',function(){var o=document.getElementById('appHome')||document.getElementById('invHome');if(o)o.click()});
+    var h=m.querySelector('.um-home');if(h)h.addEventListener('click',function(){var o=document.getElementById('appHome')||document.getElementById('invHome');if(o)o.click()});
   });
 })();
 </script>
