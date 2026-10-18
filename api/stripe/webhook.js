@@ -126,6 +126,8 @@ module.exports = async function handler(req, res) {
   // what actually happened, since a plain {ok:true} hid real failures.
   // error/detail are listed first (null when fine) so they are the first
   // lines Stripe's delivery log shows.
+  // Name typed on the card at checkout; shown in the client area as "Signed in as".
+  const payerName = String((session.customer_details && session.customer_details.name) || '').trim().slice(0, 80);
   const report = { ok: true, error: null, detail: null, granted: false, product: product, invited: false, existingUser: false };
 
   try {
@@ -150,6 +152,11 @@ module.exports = async function handler(req, res) {
       }
     } else {
       report.invited = true;
+    }
+
+    if (userId && payerName) {
+      const upd = await admin.auth.admin.updateUserById(userId, { user_metadata: { full_name: payerName } });
+      if (upd.error) console.error('Stripe webhook: name save failed:', upd.error.message);
     }
 
     if (!userId) {

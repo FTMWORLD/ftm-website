@@ -3105,7 +3105,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         return client.auth.signInWithPassword({email:email, password:password}).then(function(r){
           if(r.error) throw new Error(r.error.message==='Invalid login credentials' ? 'That email or password is not correct.' : r.error.message);
           return fetchEntitlements(r.data.user.id).then(function(products){
-            return {email:r.data.user.email, products:products, userId:r.data.user.id};
+            return {email:r.data.user.email, products:products, userId:r.data.user.id, name:((r.data.user.user_metadata||{}).full_name||'')};
           });
         });
       },
@@ -3134,7 +3134,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         return client.auth.verifyOtp({email:email, token:code, type:'email'}).then(function(r){
           if(r.error) throw new Error(r.error.message.indexOf('expired')!==-1 ? 'That code has expired. Request a new one.' : 'That code is not correct.');
           return fetchEntitlements(r.data.user.id).then(function(products){
-            return {email:r.data.user.email, products:products, userId:r.data.user.id, passwordSet:!!(r.data.user.user_metadata && r.data.user.user_metadata.password_set)};
+            return {email:r.data.user.email, products:products, userId:r.data.user.id, name:((r.data.user.user_metadata||{}).full_name||''), passwordSet:!!(r.data.user.user_metadata && r.data.user.user_metadata.password_set)};
           });
         });
       },
@@ -3156,7 +3156,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         return client.auth.signInWithPassword({email:email, password:password}).then(function(r){
           if(r.error) throw new Error(r.error.message==='Invalid login credentials' ? 'That email or password is not correct.' : r.error.message);
           return fetchEntitlements(r.data.user.id).then(function(products){
-            return {email:r.data.user.email, products:products, userId:r.data.user.id};
+            return {email:r.data.user.email, products:products, userId:r.data.user.id, name:((r.data.user.user_metadata||{}).full_name||'')};
           });
         });
       },
@@ -3178,7 +3178,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           var session=r.data && r.data.session;
           if(!session) return null;
           return fetchEntitlements(session.user.id).then(function(products){
-            return {email:session.user.email, products:products, userId:session.user.id, passwordSet:!!(session.user.user_metadata && session.user.user_metadata.password_set)};
+            return {email:session.user.email, products:products, userId:session.user.id, name:((session.user.user_metadata||{}).full_name||''), passwordSet:!!(session.user.user_metadata && session.user.user_metadata.password_set)};
           });
         });
       }
@@ -3763,7 +3763,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
          the sample-data flash this reintroduces is a real, known issue,
          but it is strictly better than the page silently failing to open. */
       close(); passEl.value='';
-      window.FTM=window.FTM||{}; FTM.session={email:mail,products:products};
+      window.FTM=window.FTM||{}; FTM.session={email:mail,products:products,name:''};
       if(products && products.length) FTM.openArea(products[0]);
       else FTM.openArea('auto'); /* opens the "No results" panel already built for this case */
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
@@ -3883,7 +3883,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
             // is exactly the flash this gate exists to prevent.
             return enter(r.email,r.products,false).then(lift);
           }
-          window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products};
+          window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products,name:r.name||''};
         }
         lift();
       }).catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
@@ -6738,7 +6738,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       try{ sessionStorage.setItem('ftm_in_app','1'); }catch(e){}
       try{ localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){}
       var A=$('appView'), I=$('invView'), s=F.session||{email:'',products:[p]};
-      $('appEmail').textContent=s.email; $('invEmail').textContent=s.email;
+      var who=s.name||'FTM Trades'; $('appEmail').textContent=who; $('invEmail').textContent=who; $('sbEmail').textContent=who;
       /* every client gets the switch; a product they do not have shows "No results" */
       ['prodSwitchA','prodSwitchB'].forEach(function(id){
         var el=$(id); el.hidden=false;
@@ -7109,6 +7109,7 @@ tick();setInterval(tick,5000);})();
   function free(){return app.classList.contains('free');}
   function sync(){
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
+    var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
