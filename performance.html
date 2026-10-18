@@ -108,7 +108,7 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .jrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .jump .lbl{min-width:118px}
 .jump .sz{margin-left:0!important}
-@media (max-width:600px){.jump .lbl{min-width:0;width:100%}.jump a{padding:8px 16px}}
+@media (max-width:600px){.jump .lbl{min-width:0;width:100%}.jump a{padding:8px 16px}.jump .jrow:first-child{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.jump .jrow:first-child .lbl{grid-column:1/-1}.jump .jrow:first-child a{padding:9px 6px;text-align:center;font-size:13px;white-space:nowrap}}
 .jump .lbl{font-size:13px;color:rgba(255,255,255,.7);margin-right:4px}
 .jump a{font-size:14px;font-weight:700;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.25);border-radius:96px;padding:9px 22px}
 .jump a:hover{background:rgba(255,255,255,.1)}
