@@ -3025,7 +3025,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     document.addEventListener('DOMContentLoaded', function(){
-      var targets = document.querySelectorAll('section:not(.hero), .partner-card, .trust-card, .plan, .review, .step');
+      // Never inside the client area: its sections are taller than a phone
+      // screen, so the 12% threshold was never met and they stayed invisible.
+      var targets = [].filter.call(document.querySelectorAll('section:not(.hero), .partner-card, .trust-card, .plan, .review, .step'),function(t){ return !t.closest('.app'); });
       if (!targets.length) return;
       if (!('IntersectionObserver' in window)) { targets.forEach(function(t){ t.classList.add('is-visible'); }); return; }
       targets.forEach(function(t){ t.classList.add('reveal'); });
