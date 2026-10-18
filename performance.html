@@ -348,10 +348,10 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
         <div class="calc-amt" id="calcAmtV">$10,000</div>
         <input type="range" id="calcAmt" min="0" max="1000" step="1" value="394" aria-label="Starting amount, $500 to $1,000,000">
         <label>Market</label>
-        <div class="calc-mk" id="calcMk"><button data-m="gold" aria-pressed="true">Gold</button><button data-m="btc">Bitcoin</button><button data-m="jpy">USD/JPY</button><button data-m="ndx">US Tech 100</button><button data-m="boom">Boom 1000</button><button data-m="all">All in one</button></div>
+        <div class="calc-mk" id="calcMk"><button data-m="gold">Gold</button><button data-m="btc">Bitcoin</button><button data-m="jpy">USD/JPY</button><button data-m="ndx">US Tech 100</button><button data-m="boom">Boom 1000</button><button data-m="all" aria-pressed="true">All in one</button></div>
       </div>
       <div class="calc-out">
-        <small id="calcLbl">Gold · Growth 2× · Jan 2020 to Oct 2026</small>
+        <small id="calcLbl">All in one · Growth 2× · Jan 2020 to Oct 2026</small>
         <b id="calcRes">$0</b>
         <em id="calcGain">+0%</em>
         <div class="calc-cta"><a class="c1" href="/#pricing">Start auto trading</a><a class="c2" href="/#invest">Invest with FTM</a></div>
@@ -1241,7 +1241,7 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   if(!red)document.querySelectorAll('header,.mhead').forEach(function(h){var d=document.createElement('div');d.className='sparks';d.setAttribute('aria-hidden','true');
     for(var i=0;i<14;i++){var e=document.createElement('i');e.style.left=(Math.random()*100)+'%';e.style.animationDuration=(6+Math.random()*8)+'s';e.style.animationDelay=(-Math.random()*12)+'s';var z=2+Math.random()*4;e.style.width=e.style.height=z+'px';d.appendChild(e)}h.prepend(d)});
   var SRC={gold:[GS['100000'].g2,'Gold · Growth 2× · Jan 2020 to Oct 2026'],btc:[BS['100000'].g2,'Bitcoin · Growth 2× · Jan 2020 to Oct 2026'],jpy:[PJ.g2,'USD/JPY · Growth 2× · Jan 2020 to Oct 2026'],ndx:[PU.g2,'US Tech 100 · Growth 2× · Nov 2022 to Oct 2026'],boom:[PX.g2,'Boom 1000 · Growth 2× · Jan 2020 to Oct 2026'],all:[PA.g2,'All in one · Growth 2× · Jan 2020 to Oct 2026']};
-  var amt=document.getElementById('calcAmt'),m='gold',shown=0,raf;
+  var amt=document.getElementById('calcAmt'),m='all',shown=0,raf;
   var f=function(v){return '$'+Math.round(v).toLocaleString('en-US')};
   /* slider runs on a log scale so $500 to $1M are all easy to reach; amounts snap to round numbers */
   function val(){var r=500*Math.pow(2000,+amt.value/1000),st=r<1e4?100:r<1e5?1000:r<1e6?10000:1e6;return Math.max(500,Math.min(1e6,Math.round(r/st)*st))}
