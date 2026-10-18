@@ -156,6 +156,9 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .facts span:last-child{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
 .disclaimer{border-top:1px solid var(--line);padding-top:22px;display:grid;gap:10px;font-size:13px;color:var(--muted)}
 .disclaimer p{max-width:90ch}
+.disclaimer[hidden]{display:none}
+#method-all{max-width:1080px;margin:56px auto 0}
+#method-all ul{margin:0;padding-left:18px;display:grid;gap:6px}
 .tip{position:fixed;z-index:5;pointer-events:none;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-size:12px;padding:6px 10px;border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.18)}
 
 /* Month detail panel */
@@ -416,7 +419,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <p class="note" id="n-risk"></p>
   </section>
 
-  <section class="disclaimer" id="method">
+  <section class="disclaimer" id="method" hidden>
     <h3>How this was tested</h3>
     <p id="t-method">Historical simulation in MetaTrader 5 on XAUUSD (gold), 1 January 2020 to 8 October 2026. Starting balance $100,000, leverage 1:100, all profits reinvested. Every trade has a stop loss and is sized from the account balance according to the risk profile.</p>
     <h3>Important</h3>
@@ -493,7 +496,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <p class="note" id="n-risk-b"></p>
   </section>
 
-  <section class="disclaimer" id="method-b">
+  <section class="disclaimer" id="method-b" hidden>
     <h3>How this was tested</h3>
     <p id="t-method-b">Historical test in MetaTrader 5 on BTCUSD (Bitcoin) at FundedNext, 1 January 2020 to 16 October 2026, using one-minute price data with the broker's real spread, commission and swap. Starting balance $100,000, leverage 1:100, all profits reinvested. Every trade has a stop loss and is sized from the account balance according to the risk profile.</p>
     <h3>Important</h3>
@@ -563,7 +566,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <p class="note" id="n-risk-j"></p>
   </section>
 
-  <section class="disclaimer" id="method-j">
+  <section class="disclaimer" id="method-j" hidden>
     <h3>How this was tested</h3>
     <p id="t-method-j">Historical test in MetaTrader 5 on USDJPY (US dollar / Japanese yen) at FundedNext, 1 January 2020 to 16 October 2026, using one-minute price data with the broker's real spread, commission and swap. Starting balance $100,000, all profits reinvested. Every trade has a stop loss and is sized from the account balance according to the risk profile.</p>
     <h3>Important</h3>
@@ -633,7 +636,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <p class="note" id="n-risk-u"></p>
   </section>
 
-  <section class="disclaimer" id="method-u">
+  <section class="disclaimer" id="method-u" hidden>
     <h3>How this was tested</h3>
     <p id="t-method-u">Historical test in MetaTrader 5 on NDX100 (US Tech 100 stock index) at FundedNext, 1 November 2022 to 16 October 2026 (all the history the broker has for this market), using one-minute price data with the broker's real spread, commission and swap. Starting balance $100,000, all profits reinvested. Every trade has a stop loss and is sized from the account balance according to the risk profile.</p>
     <h3>Important</h3>
@@ -643,6 +646,20 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   </div>
 </div>
 </div>
+
+<section class="disclaimer" id="method-all">
+  <h3>How this was tested</h3>
+  <p>Historical tests of FTM MACHINE in MetaTrader 5, with all profits reinvested and leverage 1:100. Every trade has a stop loss and is sized from the account balance according to the risk profile.</p>
+  <ul>
+    <li><b>Gold</b> (XAUUSD): 1 January 2020 to 8 October 2026, starting balances from $500 to $1M.</li>
+    <li><b>Bitcoin</b> (BTCUSD): 1 January 2020 to 16 October 2026 at FundedNext, one-minute price data with the broker's real spread, commission and swap, starting balances from $1k to $100k.</li>
+    <li><b>USD/JPY</b> (USDJPY): 1 January 2020 to 16 October 2026 at FundedNext, one-minute price data with the broker's real spread, commission and swap, starting balance $100,000.</li>
+    <li><b>US Tech 100</b> (NDX100): 1 November 2022 to 16 October 2026 at FundedNext (all the history the broker has for this market), one-minute price data with the broker's real spread, commission and swap, starting balance $100,000.</li>
+  </ul>
+  <h3>Important</h3>
+  <p>Past performance, real or simulated, does not guarantee future results. Trading leveraged gold, Bitcoin, currency and stock index contracts carries a high risk of loss, and losses can be larger than those shown. Only trade with money you can afford to lose, at least 20% of it.</p>
+  <a class="invest-btn imp-btn" href="/#pricing">Start auto trading</a>
+</section>
 
 <div class="tip" id="tip" hidden></div>
 <div class="mback" id="mback" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="m-title">
@@ -814,7 +831,7 @@ function risk(p){
   const mb=ms.slice().reverse(),wb=ws.slice().reverse(),yb=ys.slice().reverse();
   $('f-best').innerHTML=[['Best month',pct(mb[0][1])+' · '+ml(mb[0][0])],['2nd best month',pct(mb[1][1])+' · '+ml(mb[1][0])],['3rd best month',pct(mb[2][1])+' · '+ml(mb[2][0])],['Best week',pct(wb[0][1])+' · '+wk(wb[0][0])],['Best year',pct(yb[0][1])+' · '+yb[0][0]+(yb[0][0]==='2026'?' (to Oct)':'')],['Months above +10%',p.monthly.filter(m=>m[1]>10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="up">${b}</span></div>`).join('');
   const top=ep[0];$('h-risk').textContent=`The deepest drawdown was ${top.dd.toFixed(1)}%, from ${d(top.peak)} to ${d(top.trough)}`;
-  $('n-risk').textContent=`Drawdowns of ${lim}% or more happened ${ep.length} times in 6.8 years at this profile, and each one ${ep.every(e=>e.rec)?'recovered to a new high':'is listed with its recovery date'}. Expect losing stretches like these when trading live.`;
+  $('n-risk').textContent=`Drawdowns of ${lim}% or more happened ${ep.length} times in ${YEARS.toFixed(1)} years at this profile, and each one ${ep.every(e=>e.rec)?'recovered to a new high':'is listed with its recovery date'}. Expect losing stretches like these when trading live.`;
 }
 
 function draw(){
