@@ -413,6 +413,11 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .um-i{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:10px;background:none;font:inherit;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;cursor:pointer}
   .um-i:hover,.um-i:focus-visible{background:var(--bg-3)}
   .um-out{color:var(--red-dark)}
+  .um-act{color:#fff!important;background:var(--red)!important;margin:2px 0 6px}
+  .um-act:hover{background:#c72330!important}
+  .nodata-bar{margin:16px 24px 0;padding:14px 16px;border-radius:14px;background:#fdecee;border:1px solid #f5b5bb;color:#8a1520;font-size:14px;line-height:1.5}
+  .nodata-bar b{color:#b3202b}
+  @media (max-width:860px){.nodata-bar{margin:12px 16px 0}}
   /* ---------- client area shell ---------- */
   .app-body{display:flex;align-items:flex-start;min-height:calc(100vh - 68px)}
   .app-nav{position:sticky;top:68px;width:240px;flex:none;padding:28px 16px;display:grid;gap:3px;align-content:start;background:linear-gradient(190deg,#0E1A52,#0B1440 60%);min-height:calc(100vh - 68px);box-shadow:inset -1px 0 0 rgba(255,255,255,.05)}
@@ -2221,7 +2226,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask FTM AI</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2241,6 +2246,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     </nav>
     <div class="app-content">
       <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> Subscribe to link your trading account and let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
+      <div class="nodata-bar" id="noDataBar" hidden><b>FTM has no data from this account.</b> FTM MACHINE has not traded on it yet, so there are no statistics to show. Choose the account FTM MACHINE trades on to see its results.</div>
       <div class="np-panel" id="noprodA" hidden>
         <span class="np-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
         <h2>No results</h2><p>There is no FTM Auto Trading subscription on this email yet. Choose a plan to get started.</p>
@@ -5102,6 +5108,11 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     F.viewAccount = function(num){
       F.viewNum = num ? String(num) : null;
       try{ if(F.viewNum) localStorage.setItem('ftm_view_acct',F.viewNum); else localStorage.removeItem('ftm_view_acct'); }catch(e){}
+      if(!(F.remote && F.remote.ready())){
+        var A=F.data.accounts||[], on=A.find(function(a){return a.active;}), v=F.viewedAccount();
+        if(!F._own) F._own={closed:F.data.closed, open:F.data.open};
+        if(v && on && v!==on){ F.data.closed=[]; F.data.open=[]; } else { F.data.closed=F._own.closed; F.data.open=F._own.open; }
+      }
       var done=function(){ if(F.redrawAllViews)F.redrawAllViews(); else if(F.render)F.render(); if(F.renderAccounts)F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } };
       if(F.remote && F.remote.ready()) loadLive().then(done); else done();
     };
@@ -5991,6 +6002,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var m=F.metrics(), A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0];
       var lead = (F.viewedAccount && F.viewedAccount()) || on || A[0];
       var meta=VIEW_META[name]||VIEW_META.metrics;
+      var nd=document.getElementById('noDataBar');
+      if(nd) nd.hidden = !(lead && on && lead!==on && !(F.data.closed||[]).length && !(F.data.open||[]).length);
       var acctLabel = on ? ('Account '+(name==='metrics'?'metrics ':'')+on.number) : 'No account connected';
       document.getElementById('crumbView').textContent=meta.t;
       // Any connected account, not only one already ACTIVE — a customer
@@ -6014,8 +6027,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         st.textContent=s.text;
         st.className = s.tone==='good' ? 'ok' : (s.tone==='bad' ? 'val-down' : 'val-wait');
       } else {
-        st.textContent = on ? 'Running' : 'Not connected';
-        st.className = on ? 'ok' : 'val-down';
+        var run = on && (!lead || lead===on);
+        st.textContent = run ? 'Running' : 'Not connected';
+        st.className = run ? 'ok' : 'val-down';
       }
     }
     F.header=header;
@@ -7193,7 +7207,7 @@ tick();setInterval(tick,5000);})();
   function sync(){
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
-    var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
+    var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); var ndb=$('noDataBar'); if(ndb&&!ndb.hidden) bal='\u2014'; $('dxVal').textContent=bal; $('dxBal').textContent=bal;
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
@@ -7202,8 +7216,10 @@ tick();setInterval(tick,5000);})();
   }
   var TRADING='Trading';
   $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
-  ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true});});
+  ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus','noDataBar'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});});
   new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
+  // Re-apply a remembered "show statistics of" choice when the client area opens.
+  new MutationObserver(function(){ if(!app.hidden && window.FTM && FTM.viewNum && FTM.viewAccount && !app._viewed){ app._viewed=true; setTimeout(function(){ FTM.viewAccount(FTM.viewNum); },300); } if(app.hidden) app._viewed=false; }).observe(app,{attributes:true,attributeFilter:['hidden']});
   sync();
   var t0=Date.now();
   setInterval(function(){var m=Math.floor((Date.now()-t0)/60000); $('dxUpd').textContent=m<1?'Updated just now':'Updated {} min ago'.replace('{}',m);},30000);
@@ -7230,6 +7246,7 @@ tick();setInterval(tick,5000);})();
     document.addEventListener('keydown',function(e){if(e.key==='Escape')shut()});
     var ai=m.querySelector('.um-ai');if(ai)ai.addEventListener('click',function(){var t=document.querySelector('#appView:not([hidden]) .js-app-ai');if(t){t.click();return}
       var f=document.getElementById('floatSupport'),tg=document.getElementById('fsToggle'),p=document.getElementById('fsPanel');if(f)f.classList.add('over-app');setTimeout(function(){if(tg&&p&&p.hidden)tg.click();setTimeout(function(){var a=document.getElementById('fsAi');if(a)a.click()},30)},0)});
+    var act=m.querySelector('.um-act');if(act)act.addEventListener('click',function(){var n=document.querySelector('#appView .app-nav-item[data-view="accounts"]');if(n)n.click();setTimeout(function(){var a=document.getElementById('acctAdd');if(a){a.scrollIntoView({block:'center'});a.click();}},120)});
     var h=m.querySelector('.um-home');if(h)h.addEventListener('click',function(){var o=document.getElementById('appHome')||document.getElementById('invHome');if(o)o.click()});
   });
 })();
