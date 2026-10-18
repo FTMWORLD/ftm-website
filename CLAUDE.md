@@ -21,3 +21,6 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Advertising figures (owner instruction, 18 October 2026)
 - Lead with the best results: Growth 2× (the most aggressive profile a market has) is the default and headline figure everywhere, on every market and in every design.
+
+## Risk warnings (owner instruction, 18 October 2026)
+- Risk and past-performance warnings live only in the homepage footer and in terms.html. Never add them to statistics, backtests, the trust engine or designs.
