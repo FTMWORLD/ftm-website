@@ -234,6 +234,24 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .mk-menu a i{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#fff}
 .mk-menu a span{display:grid}.mk-menu a b{font-size:14px}.mk-menu a small{font-size:12px;color:#6B7188}
 @media (max-width:760px){.mk-tabs{display:none}.mkbar-in{justify-content:space-between}}
+/* ---- promo loop: animated best-results reel on the right of USD/JPY and US Tech 100 headers ---- */
+.promo{position:relative;min-height:250px;border-radius:20px;overflow:hidden;background:radial-gradient(120% 120% at 100% 0,rgba(227,182,47,.35),transparent 55%),linear-gradient(140deg,#121d5c,#0a1238);border:1px solid rgba(227,182,47,.35);box-shadow:0 0 0 1px rgba(255,255,255,.04),0 20px 50px -20px rgba(227,182,47,.45)}
+.promo::after{content:'';position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 45%,rgba(255,255,255,.14) 50%,transparent 55%);animation:prShine 4.5s ease-in-out infinite;pointer-events:none}
+@keyframes prShine{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}
+.promo svg{position:absolute;left:0;right:0;bottom:0;width:100%;height:62%}
+.promo .pr-line{fill:none;stroke:#E3B62F;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(227,182,47,.8))}
+.promo .pr-area{fill:url(#prG)}
+.promo .pr-top{position:absolute;left:18px;right:18px;top:16px;display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#E3B62F}
+.promo .pr-top i{font-style:normal;color:#fff;background:#E5323E;border-radius:999px;padding:3px 9px;letter-spacing:.06em;animation:prPulse 1.6s ease-in-out infinite}
+@keyframes prPulse{50%{box-shadow:0 0 0 6px rgba(229,50,62,.0),0 0 16px rgba(229,50,62,.8)}}
+.promo .pr-big{position:absolute;left:18px;top:40px;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(227,182,47,.45)}
+.promo .pr-sub{position:absolute;left:18px;top:92px;font-size:13px;color:rgba(255,255,255,.75)}
+.promo .pr-slide{position:absolute;right:16px;top:44px;text-align:right;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.promo .pr-slide.on{opacity:1;transform:none}
+.promo .pr-slide b{display:block;font-size:24px;font-weight:800;color:#3ddc84;text-shadow:0 0 14px rgba(61,220,132,.5)}
+.promo .pr-slide small{font-size:12px;color:rgba(255,255,255,.7)}
+@media (max-width:500px){.promo .pr-slide{top:auto;bottom:12px;right:auto;left:18px;text-align:left}}
+@media (prefers-reduced-motion:reduce){.promo::after,.promo .pr-top i{animation:none}}
 </style>
 
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -422,6 +440,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="mhead mhead-gold" id="mk-jpy"><div class="mh-left"><div class="eyebrow">USDJPY · 1 Jan 2020 to 16 Oct 2026</div><h2>USD/JPY</h2>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-j" data-p="conservative">Conservative</button><button id="p-balanced-j" data-p="balanced">Balanced</button><button id="p-g2-j" data-p="g2">Growth 2×</button></div>
 </div>
+  <div class="promo" data-promo="jpy" aria-hidden="true"></div>
   </div>
   <section id="compare-j">
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare-j">Higher risk earned more, of course</h2></div>
@@ -491,6 +510,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="mhead mhead-gold" id="mk-ndx"><div class="mh-left"><div class="eyebrow">NDX100 · 1 Nov 2022 to 16 Oct 2026</div><h2>US Tech 100</h2>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-u" data-p="conservative">Conservative</button><button id="p-balanced-u" data-p="balanced">Balanced</button><button id="p-g2-u" data-p="g2">Growth 2×</button></div>
 </div>
+  <div class="promo" data-promo="ndx" aria-hidden="true"></div>
   </div>
   <section id="compare-u">
     <div class="sec-head"><div class="eyebrow">At a glance</div><h2 id="h-compare-u">Higher risk earned more, of course</h2></div>
@@ -955,6 +975,36 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   var tabs=document.querySelectorAll('.mk-tabs a');
   function spy(){var on='gold';['gold','btc','jpy','ndx'].forEach(function(k){var b=document.querySelector('.mblock[data-mk="'+k+'"]');if(b&&b.getBoundingClientRect().top<160)on=k});tabs.forEach(function(a){a.classList.toggle('on',a.dataset.k===on)})}
   addEventListener('scroll',spy,{passive:true});spy();
+})();
+</script>
+<script>
+/* Promo reel: draws the Growth 2× balance curve, counts up to the final balance, cycles headline stats, repeats. */
+(function(){
+  var red=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fmt=function(v){return '$'+Math.round(v).toLocaleString('en-US')};
+  document.querySelectorAll('[data-promo]').forEach(function(box){
+    var mk=box.dataset.promo,P=mk==='jpy'?PJ:PU,p=P.g2,st=p.start||100000,wb=p.weekly_bal.map(function(w){return w[1]});
+    var ys=p.yearly,best=ys.reduce(function(a,b){return b[1]>a[1]?b:a}),upY=ys.filter(function(y){return y[1]>0}).length;
+    var upM=p.monthly.filter(function(m){return m[1]>0}).length;
+    var W=400,H=160,mn=Math.min.apply(null,wb),mx=Math.max.apply(null,wb);
+    var pts=wb.map(function(v,i){return [(i/(wb.length-1)*W).toFixed(1),(H-8-(v-mn)/(mx-mn)*(H-24)).toFixed(1)]});
+    var d='M'+pts.map(function(q){return q.join(' ')}).join(' L');
+    var slides=[[ '+'+Math.round((p.final/st-1)*100)+'%','total return'],['+'+best[1].toFixed(1)+'%','best year, '+best[0]],[upY+' of '+ys.length,'years profitable'],[upM+' of '+p.monthly.length,'months profitable']];
+    box.innerHTML='<div class="pr-top"><span>Growth 2× · best results</span><i>▶ Results</i></div><b class="pr-big">'+fmt(st)+'</b><span class="pr-sub">from '+fmt(st)+' · historical test</span>'+
+      slides.map(function(x){return '<div class="pr-slide"><b>'+x[0]+'</b><small>'+x[1]+'</small></div>'}).join('')+
+      '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><defs><linearGradient id="prG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".45"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path class="pr-area" d="'+d+' L'+W+' '+H+' L0 '+H+' Z"/><path class="pr-line" d="'+d+'"/></svg>';
+    var line=box.querySelector('.pr-line'),area=box.querySelector('.pr-area'),big=box.querySelector('.pr-big'),sl=box.querySelectorAll('.pr-slide'),L=line.getTotalLength();
+    line.style.strokeDasharray=L;
+    function show(i){sl.forEach(function(e,j){e.classList.toggle('on',j===i)})}
+    if(red){line.style.strokeDashoffset=0;big.textContent=fmt(p.final);show(0);return}
+    var t0=null,DUR=4000,CYCLE=12000;
+    function frame(t){if(t0===null)t0=t;var e=(t-t0)%CYCLE,k=Math.min(e/DUR,1),ease=1-Math.pow(1-k,3);
+      line.style.strokeDashoffset=L*(1-ease);area.style.opacity=ease;
+      var idx=Math.min(wb.length-1,Math.floor(ease*(wb.length-1)));big.textContent=fmt(k<1?wb[idx]:p.final);
+      show(k<1?-1:Math.min(sl.length-1,Math.floor((e-DUR)/((CYCLE-DUR)/sl.length))));
+      requestAnimationFrame(frame)}
+    requestAnimationFrame(frame);
+  });
 })();
 </script>
 </body>
