@@ -1000,7 +1000,7 @@ document.addEventListener('keydown',e=>{const r=e.target.closest&&e.target.close
 /* ---- Month candle chart (XAUUSD H1 from the backtest broker history) ---- */
 const CANDLES={};
 const fmtT=u=>{const d=new Date(u*1000);return d.getUTCDate()+' '+MON[d.getUTCMonth()]+' '+String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')};
-const px=v=>Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const px=v=>{const d=mkt==='jpy'||(v>50&&v<250&&mkt==='all'&&String(v).split('.')[1]&&String(v).split('.')[1].length===3)?3:2;return Number(v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})};
 function candleChart(D){
   const c=D.c,t=D.t;if(!c.length)return {svg:'',drawn:0,skipped:t.length};
   const W=1000,H=380,pl=10,pr=62,pt=14,pb=26,n=c.length,step=(W-pl-pr)/n,bw=Math.max(1,step*.62);
@@ -1068,7 +1068,7 @@ function renderDays(key){
     let h=`<div class="dsum"><span><b>${rows.length}</b> trades</span><span><b>${win}</b> won</span><span><b>${Object.keys(days).length}</b> trading days</span><span>Net <b class="${tot>=0?'up':'down'}">${money(tot)}</b></span></div>`;
     Object.entries(days).forEach(([d,ts])=>{const sum=ts.reduce((a,t)=>a+t[6],0),sp=ts.reduce((a,t)=>a+t[7],0);
       h+=`<div class="dday"><div class="dhead"><span>${d}</span><span class="${sum>=0?'up':'down'}">${money(sum)} · ${pct(sp,2)}</span></div>`+
-        ts.map(t=>`<div class="dtr"><span>${hm(t[1])}</span><span class="side ${t[2]==='B'?'b':'s'}">${t[2]==='B'?'Buy':'Sell'}</span><span>${px(t[3])} → ${px(t[4])} · ${(+t[5]).toFixed(2)} lots</span><span class="r ${t[6]>=0?'up':'down'}">${money(t[6])}</span><span class="r ${t[7]>=0?'up':'down'}">${pct(t[7],2)}</span></div>`).join('')+'</div>'});
+        ts.map(t=>`<div class="dtr"><span>${hm(t[1])}</span><span class="side ${t[2]==='B'?'b':'s'}">${t[2]==='B'?'Buy':'Sell'}</span><span>${t[8]?'<b>'+(t[8]==='USDJPY'?'USD/JPY':t[8])+'</b> · ':''}${px(t[3])} → ${px(t[4])} · ${(+t[5]).toFixed(2)} lots</span><span class="r ${t[6]>=0?'up':'down'}">${money(t[6])}</span><span class="r ${t[7]>=0?'up':'down'}">${pct(t[7],2)}</span></div>`).join('')+'</div>'});
     h+='<p class="mnote">Grouped by the day each trade closed. Time is the closing time, broker server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
     body.innerHTML=h};
   if(TRADES[ck]!==undefined){show(TRADES[ck]);return}
