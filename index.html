@@ -343,6 +343,59 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   @media (max-width:1000px){.metrics{grid-template-columns:1fr 1fr}.app-cols3{grid-template-columns:1fr}}
   @media (max-width:560px){.metrics{grid-template-columns:1fr}}
 
+  /* ---------- dashboard home (hero, accounts, featured) ---------- */
+  .sb-ask{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:14px;padding:12px 14px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.7);font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
+  .sb-ask:hover{background:rgba(255,255,255,.1);color:#fff}
+  .sb-ask svg{width:18px;height:18px;flex:none;color:var(--gold-light)}
+  .sb-foot{margin-top:22px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:grid;gap:14px}
+  .sb-pill{justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border:0;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-light));color:#0b1640;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+  .sb-pill i{width:8px;height:8px;border-radius:50%;background:#0b1640;animation:blink 1.4s ease-in-out infinite}
+  .sb-user{display:flex;align-items:center;gap:10px;min-width:0}
+  .sb-av{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:#0b1640;font-weight:800;text-transform:uppercase}
+  .sb-user div{min-width:0}.sb-user b{display:block;color:#fff;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sb-user small{color:rgba(255,255,255,.5);font-size:12px}
+  .dx-top{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+  .dx-top>*{min-width:0}
+  .dx-hero{position:relative;overflow:hidden;border-radius:24px;padding:28px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;background:radial-gradient(120% 140% at 100% 0,rgba(212,175,55,.28),transparent 55%),linear-gradient(135deg,#0b1640,#1a2a6c);box-shadow:0 22px 44px -22px rgba(11,22,64,.7)}
+  .dx-hero-l{display:grid;gap:6px;min-width:0}
+  .dx-tag{justify-self:start;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px;font-weight:700;margin-bottom:10px}
+  .dx-lbl{font-size:13.5px;color:rgba(255,255,255,.7)}
+  .dx-val{font-size:clamp(30px,4.2vw,44px);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05;overflow-wrap:anywhere}
+  .dx-upd{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.6)}
+  .dx-ref{width:26px;height:26px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer}
+  .dx-ref svg{width:14px;height:14px}.dx-ref.spin svg{animation:dxSpin .7s linear}
+  @keyframes dxSpin{to{transform:rotate(360deg)}}
+  .dx-go{flex:none;display:grid;justify-items:center;gap:6px;border:0;background:none;color:#fff;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+  .dx-go svg{width:58px;height:58px;padding:16px;border-radius:50%;background:var(--red);box-shadow:0 12px 26px rgba(229,50,62,.45);transition:transform .15s}
+  .dx-go:hover svg{transform:scale(1.06)}
+  .dx-acc{background:#fff;border-radius:24px;padding:24px;display:grid;gap:14px;align-content:start;box-shadow:0 16px 36px -20px rgba(11,20,64,.16);border:1px solid rgba(11,20,64,.04)}
+  .dx-acc-h{display:flex;justify-content:space-between;align-items:center}
+  .dx-acc-h h3{font-size:17px}
+  .dx-link{border:0;background:none;font:inherit;font-size:13px;font-weight:700;color:var(--blue);cursor:pointer}
+  .dx-acc-row{display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;background:var(--bg-3)}
+  .dx-acc-row>div{flex:1;min-width:0}
+  .dx-acc-row b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dx-acc-row small{font-size:12.5px;color:var(--muted)}
+  .dx-acc-ic{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:#0b1640;color:var(--gold-light);font-size:11px;font-weight:800}
+  .dx-acc-bal{font-variant-numeric:tabular-nums;flex:none}
+  .dx-acc-st{font-size:13px;font-weight:700;color:#1f8a5b}
+  .dx-sec{font-size:17px;margin-bottom:-8px}
+  .dx-feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .dx-card{display:grid;gap:8px;align-content:start;text-align:left;font:inherit;color:inherit;text-decoration:none;cursor:pointer;background:#fff;border:1px solid rgba(11,20,64,.04);border-radius:20px;padding:20px;box-shadow:0 14px 32px -20px rgba(11,20,64,.16);transition:transform .2s,box-shadow .2s}
+  .dx-card:hover{transform:translateY(-2px);box-shadow:0 18px 36px -16px rgba(11,20,64,.22)}
+  .dx-art{height:92px;border-radius:14px;display:grid;place-items:center;color:#fff;margin-bottom:6px}
+  .dx-art svg{width:34px;height:34px}
+  .dx-art.a1{background:linear-gradient(135deg,#0b1640,#2d4bd8)}
+  .dx-art.a2{background:linear-gradient(135deg,#7a5a0c,#d4af37)}
+  .dx-art.a3{background:linear-gradient(135deg,#b3202b,#ff6b6b)}
+  .dx-card b{font-size:15px}.dx-card p{font-size:13px;color:var(--muted);line-height:1.5}
+  .dx-btn{justify-self:start;margin-top:6px;padding:8px 14px;border-radius:999px;background:#0b1640;color:#fff;font-size:12.5px;font-weight:700}
+  .float-support.over-app{z-index:130}
+  #appView .app-view[data-view="metrics"]{padding-top:0}
+  #appView .app-content:has(.app-view[data-view="metrics"]:not([hidden])) .app-title-meta{display:none}
+  @media (max-width:1000px){.dx-top{grid-template-columns:1fr}}
+  @media (max-width:860px){.sb-ask,.sb-foot{display:none}.dx-feat{grid-template-columns:1fr}.dx-hero{padding:22px}}
+  @media (prefers-reduced-motion:reduce){.sb-pill i,.dx-ref.spin svg{animation:none}}
   /* ---------- client area shell ---------- */
   .app-body{display:flex;align-items:flex-start;min-height:calc(100vh - 68px)}
   .app-nav{position:sticky;top:68px;width:240px;flex:none;padding:28px 16px;display:grid;gap:3px;align-content:start;background:linear-gradient(190deg,#0E1A52,#0B1440 60%);min-height:calc(100vh - 68px);box-shadow:inset -1px 0 0 rgba(255,255,255,.05)}
@@ -2126,6 +2179,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
+      <button type="button" class="sb-ask js-app-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>What's on your mind?</span></button>
       <button class="app-nav-item is-on" data-view="metrics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Dashboard</span></button>
       <button class="app-nav-item" data-view="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg><span>Accounts</span></button>
       <button class="app-nav-item" data-view="perf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg><span>Performance</span></button>
@@ -2134,6 +2188,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <button class="app-nav-item" data-view="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0M16.5 5.2a3.4 3.4 0 0 1 0 6.6M17 20a6 6 0 0 0-2.2-4.6"/></svg><span>Community</span></button>
       <button class="app-nav-item" data-view="charts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M4 9h6M14 14h6"/></svg><span>Charts</span></button>
       <button class="app-nav-item" data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Sessions</span></button>
+      <div class="sb-foot">
+        <button type="button" class="sb-pill js-app-ai"><i></i>Ask FTM AI</button>
+        <div class="sb-user"><span class="sb-av" id="sbAv">F</span><div><b id="sbEmail">&mdash;</b><small>FTM client</small></div></div>
+      </div>
     </nav>
     <div class="app-content">
       <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> Subscribe to link your trading account and let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
@@ -2158,6 +2216,28 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       </div>
       <section class="app-view" data-view="metrics">
 <div class="app-main">
+    <div class="dx-top">
+      <div class="dx-hero">
+        <div class="dx-hero-l">
+          <span class="dx-tag" id="dxTag">Auto Trading</span>
+          <span class="dx-lbl">Total account value</span>
+          <b class="dx-val" id="dxVal">&mdash;</b>
+          <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
+        </div>
+        <button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button>
+      </div>
+      <div class="dx-acc">
+        <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
+        <div class="dx-acc-row"><span class="dx-acc-ic">MT5</span><div><b id="dxAcct">&mdash;</b><small id="dxPlan">&mdash;</small></div><b class="dx-acc-bal" id="dxBal">&mdash;</b></div>
+        <div class="dx-acc-st" id="dxSt">&mdash;</div>
+      </div>
+    </div>
+    <h3 class="dx-sec">Featured</h3>
+    <div class="dx-feat">
+      <a class="dx-card" href="performance.html"><span class="dx-art a1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg></span><b>Performance report</b><p>Every month of FTM MACHINE results, market by market.</p><span class="dx-btn">Open report</span></a>
+      <button type="button" class="dx-card" data-go="calendar"><span class="dx-art a2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span><b>Trading calendar</b><p>See each day's profit and loss on your account.</p><span class="dx-btn">View calendar</span></button>
+      <button type="button" class="dx-card js-app-ai"><span class="dx-art a3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/></svg></span><b>Ask FTM AI</b><p>Get answers about your account and plans, any time.</p><span class="dx-btn">Start chat</span></button>
+    </div>
     <div class="app-grid">
       <div class="app-tile"><span>Balance</span><b id="mBalance">&mdash;</b></div>
       <div class="app-tile live"><span>Equity <i class="live-dot"></i></span><b id="mEquity">&mdash;</b><small id="mFloat">&mdash;</small></div>
@@ -7019,6 +7099,34 @@ tick();setInterval(tick,5000);})();
     m.querySelectorAll('.mm-sec').forEach(function(d){ d.addEventListener('toggle',function(){ if(d.open) m.querySelectorAll('.mm-sec[open]').forEach(function(o){ if(o!==d) o.open=false; }); }); });
     m.querySelectorAll('.js-ask-ai').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); m.classList.remove('open'); var t=document.getElementById('fsToggle'), p=document.getElementById('fsPanel'); setTimeout(function(){ if(t&&p&&p.hidden) t.click(); var ai=document.getElementById('fsAi'); if(ai) ai.click(); },30); }); });
   })();
+</script>
+<script>
+/* Dashboard home: mirrors the header values into the hero and account cards. */
+(function(){
+  var app=document.getElementById('appView'); if(!app) return;
+  function $(i){return document.getElementById(i);}
+  function tx(i){var e=$(i);return e?e.textContent.trim():'';}
+  function free(){return app.classList.contains('free');}
+  function sync(){
+    var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
+    var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
+    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
+    $('dxGoT').textContent=free()?'Upgrade':'Accounts';
+  }
+  ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true});});
+  new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
+  sync();
+  var t0=Date.now();
+  setInterval(function(){var m=Math.floor((Date.now()-t0)/60000); $('dxUpd').textContent=m<1?'Updated just now':'Updated {} min ago'.replace('{}',m);},30000);
+  $('dxRef').addEventListener('click',function(){var b=this;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');sync();t0=Date.now();$('dxUpd').textContent='Updated just now';});
+  function go(v){var n=app.querySelector('.app-nav-item[data-view="'+v+'"]'); if(n) n.click();}
+  $('dxGo').addEventListener('click',function(){ if(free()){var u=document.querySelector('.js-free-plans'); if(u) u.click();} else go('accounts'); });
+  app.querySelectorAll('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.getAttribute('data-go'));});});
+  app.querySelectorAll('.js-app-ai').forEach(function(b){b.addEventListener('click',function(){
+    var f=$('floatSupport'), t=$('fsToggle'), p=$('fsPanel'); if(f) f.classList.add('over-app');
+    setTimeout(function(){ if(t&&p&&p.hidden) t.click(); setTimeout(function(){var ai=$('fsAi'); if(ai) ai.click();},30); },0);
+  });});
+})();
 </script>
 </body>
 </html>
