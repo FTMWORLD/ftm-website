@@ -1265,7 +1265,7 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
 <script>
 /* All in one: trade count per market for the chosen profile */
 (function(){function f(){var p=PA[CUR.all]||PA.g2,m=p.markets||{},el=document.getElementById('aio-mix');if(!el)return;
-el.innerHTML='One account trading <b>'+Object.keys(m).length+' markets</b> at once: '+Object.keys(m).map(function(k){return k+' '+Number(m[k]).toLocaleString('en-US')}).join(' · ')+' trades.'}
+el.innerHTML='One account trading <b>'+Object.keys(m).length+' markets</b> at once: '+Object.keys(m).map(function(k){return k==='USDJPY'?'USD/JPY':k}).join(' · ')+'.'}
 f();document.querySelectorAll('.mblock[data-mk="all"] .switch button[data-p]').forEach(function(b){b.addEventListener('click',function(){setTimeout(f,0)})});})();
 </script>
 </body>
