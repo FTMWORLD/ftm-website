@@ -234,6 +234,10 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .mk-menu a i{width:34px;height:34px;flex:none;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#fff}
 .mk-menu a span{display:grid}.mk-menu a b{font-size:14px}.mk-menu a small{font-size:12px;color:#6B7188}
 @media (max-width:760px){.mk-tabs{display:none}.mkbar-in{justify-content:space-between}}
+/* gold and Bitcoin headers: reel on top, live price box below it, both in the right column */
+.mhead-gold>.mh-left{grid-row:span 2}
+.mhead-gold>.promo+.gold-live{grid-column:2}
+@media (max-width:860px){.mhead-gold>.mh-left{grid-row:auto}.mhead-gold>.promo+.gold-live{grid-column:auto}}
 /* ---- promo loop: animated best-results reel on the right of USD/JPY and US Tech 100 headers ---- */
 .promo{position:relative;min-height:250px;border-radius:20px;overflow:hidden;background:radial-gradient(120% 120% at 100% 0,rgba(227,182,47,.35),transparent 55%),linear-gradient(140deg,#121d5c,#0a1238);border:1px solid rgba(227,182,47,.35);box-shadow:0 0 0 1px rgba(255,255,255,.04),0 20px 50px -20px rgba(227,182,47,.45)}
 .promo::after{content:'';position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 45%,rgba(255,255,255,.14) 50%,transparent 55%);animation:prShine 4.5s ease-in-out infinite;pointer-events:none}
@@ -291,6 +295,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative" data-p="conservative">Conservative</button><button id="p-balanced" data-p="balanced">Balanced</button><button id="p-g2" data-p="g2">Growth 2×</button></div>
     <p class="size-note" id="n-size" hidden>Small accounts trade the 0.01 minimum lot more often, so risk per trade, and drawdown, is higher than the profile setting. Even so, in the backtest since 2020, FTM MACHINE stayed profitable on these accounts in every risk profile.</p>
 </div>
+  <div class="promo" data-promo="gold" aria-hidden="true"></div>
   <div class="gold-live"><div class="gl-top"><svg class="gold-bars" viewBox="0 0 220 150" aria-hidden="true"><defs><linearGradient id="gbT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E8B93A"/></linearGradient><linearGradient id="gbF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3A82B"/><stop offset="1" stop-color="#A9761A"/></linearGradient><linearGradient id="gbS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8E6113"/><stop offset="1" stop-color="#C38A22"/></linearGradient></defs>
 <g transform="translate(10,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><path d="M98 30l0 26" stroke="#7a5310"/><text x="49" y="47" text-anchor="middle" style="font:800 9px Inter,sans-serif;fill:#6b470c">Balanced</text></g>
 <g transform="translate(112,78)"><path d="M14 0h70l14 30H0z" fill="url(#gbT)"/><path d="M0 30h98v26H0z" fill="url(#gbF)"/><text x="49" y="47" text-anchor="middle" style="font:800 9px Inter,sans-serif;fill:#6b470c">Conservative</text></g>
@@ -365,6 +370,7 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
   <div class="mhead mhead-gold" id="mk-btc"><div class="mh-left"><div class="eyebrow">BTCUSD · 1 Jan 2020 to 8 Oct 2026</div><h2>Bitcoin</h2>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-b" data-p="conservative">Conservative</button><button id="p-balanced-b" data-p="balanced">Balanced</button><button id="p-g12-b" data-p="g12">Growth 1.2×</button><button id="p-g15-b" data-p="g15">Growth 1.5×</button></div>
 </div>
+  <div class="promo" data-promo="btc" aria-hidden="true"></div>
   <div class="gold-live"><div class="gl-top"><svg class="gold-bars" viewBox="0 0 220 150" aria-hidden="true"><defs><linearGradient id="bcF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB547"/><stop offset="1" stop-color="#E07B00"/></linearGradient><linearGradient id="bcE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C46A00"/><stop offset="1" stop-color="#8A4A00"/></linearGradient>
 <g id="bcoin"><ellipse cx="0" cy="8" rx="34" ry="10" fill="url(#bcE)"/><rect x="-34" y="0" width="68" height="8" fill="url(#bcE)"/><ellipse cx="0" cy="0" rx="34" ry="10" fill="url(#bcF)"/><ellipse cx="0" cy="0" rx="26" ry="7" fill="none" stroke="#fff" stroke-opacity=".35"/></g></defs>
 <use href="#bcoin" x="62" y="128"/><use href="#bcoin" x="62" y="114"/><use href="#bcoin" x="62" y="100"/><use href="#bcoin" x="62" y="86"/>
@@ -983,14 +989,14 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   var red=matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fmt=function(v){return '$'+Math.round(v).toLocaleString('en-US')};
   document.querySelectorAll('[data-promo]').forEach(function(box){
-    var mk=box.dataset.promo,P=mk==='jpy'?PJ:PU,p=P.g2,st=p.start||100000,wb=p.weekly_bal.map(function(w){return w[1]});
+    var mk=box.dataset.promo,p=mk==='gold'?GS['100000'].g2:mk==='btc'?PB.g12:mk==='jpy'?PJ.g2:PU.g2,lbl=mk==='btc'?'Growth 1.2×':'Growth 2×',st=p.start||100000,wb=p.weekly_bal.map(function(w){return w[1]});
     var ys=p.yearly,best=ys.reduce(function(a,b){return b[1]>a[1]?b:a}),upY=ys.filter(function(y){return y[1]>0}).length;
     var upM=p.monthly.filter(function(m){return m[1]>0}).length;
     var W=400,H=160,mn=Math.min.apply(null,wb),mx=Math.max.apply(null,wb);
     var pts=wb.map(function(v,i){return [(i/(wb.length-1)*W).toFixed(1),(H-8-(v-mn)/(mx-mn)*(H-24)).toFixed(1)]});
     var d='M'+pts.map(function(q){return q.join(' ')}).join(' L');
     var slides=[[ '+'+Math.round((p.final/st-1)*100)+'%','total return'],['+'+best[1].toFixed(1)+'%','best year, '+best[0]],[upY+' of '+ys.length,'years profitable'],[upM+' of '+p.monthly.length,'months profitable']];
-    box.innerHTML='<div class="pr-top"><span>Growth 2× · best results</span><i>▶ Results</i></div><b class="pr-big">'+fmt(st)+'</b><span class="pr-sub">from '+fmt(st)+' · historical test</span>'+
+    box.innerHTML='<div class="pr-top"><span>'+lbl+' · best results</span><i>▶ Results</i></div><b class="pr-big">'+fmt(st)+'</b><span class="pr-sub">from '+fmt(st)+' · historical test</span>'+
       slides.map(function(x){return '<div class="pr-slide"><b>'+x[0]+'</b><small>'+x[1]+'</small></div>'}).join('')+
       '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><defs><linearGradient id="prG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".45"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path class="pr-area" d="'+d+' L'+W+' '+H+' L0 '+H+' Z"/><path class="pr-line" d="'+d+'"/></svg>';
     var line=box.querySelector('.pr-line'),area=box.querySelector('.pr-area'),big=box.querySelector('.pr-big'),sl=box.querySelectorAll('.pr-slide'),L=line.getTotalLength();
