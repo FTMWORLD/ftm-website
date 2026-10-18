@@ -18,3 +18,6 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Emails (owner instruction, 15 October 2026)
 - Every FTM email ends with the full-width dark-blue footer (#0b1640): "Invest today, secure tomorrow." in gold, then the FTM logo (blue square with the gold chart line, https://www.ftmwealthnation.com/email-logo.png, plus the white word FTM), then the risk note and unsubscribe link.
+
+## Advertising figures (owner instruction, 18 October 2026)
+- Lead with the best results: Growth 2× (the most aggressive profile a market has) is the default and headline figure everywhere, on every market and in every design.

@@ -496,7 +496,7 @@ function bindTips(root){root.querySelectorAll('[data-tip]').forEach(el=>{el.addE
 /* ---- Two markets on one page: Gold block first, Bitcoin block below; same renderers, Bitcoin ids end in "-b" ---- */
 const MKT={gold:{name:'Gold',sym:'XAUUSD',word:'gold',long:'one to four days',contracts:'gold contracts',suf:''},btc:{name:'Bitcoin',sym:'BTCUSD',word:'Bitcoin',long:'two to four days',contracts:'Bitcoin contracts',suf:'-b'},jpy:{name:'USD/JPY',sym:'USDJPY',word:'US dollar / Japanese yen',long:'several days',contracts:'currency contracts',suf:'-j'}};
 let mkt='gold';
-const CUR={gold:'g2',btc:'balanced',jpy:'balanced'};
+const CUR={gold:'g2',btc:'g12',jpy:'g2'};
 try{const g=localStorage.getItem('ftm-profile');if(g&&GS['100000'][g])CUR.gold=g;const z=new URLSearchParams(location.search).get('size');if(z&&GS[z])SIZE=z;const b=localStorage.getItem('ftm-profile-btc');if(b&&PB[b])CUR.btc=b;const jj=localStorage.getItem('ftm-profile-jpy');if(jj&&PJ[jj])CUR.jpy=jj}catch(e){}
 function ctx(m){mkt=m;PG=GS[SIZE];P=m==='btc'?PB:m==='jpy'?PJ:PG;NAMES=m==='btc'?NAMES_B:NAMES_G;SUF=MKT[m].suf;cur=CUR[m]}
 function marketTop(){let mx=0,mn=1e15,st=100000;Object.values(P).forEach(p=>{st=S0(p);p.weekly_bal.forEach(w=>{mx=Math.max(mx,w[1]);mn=Math.min(mn,w[1])})});return {hi:Math.max(4*st,mx*1.3),lo:Math.min(.7*st,mn*.9)}}
