@@ -33,17 +33,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15
 h1,h2,h3{text-wrap:balance;margin:0;letter-spacing:-.02em;color:var(--ink)}
 h1{font-size:clamp(30px,5vw,52px);line-height:1.08;font-weight:800;color:#fff}
 .marquee{overflow:hidden;white-space:nowrap;margin-inline:calc(-1 * clamp(20px,4vw,48px));padding-block:4px}
-/* hero headline as a TV news ticker */
-.ticker{display:flex;align-items:stretch;margin:6px calc(-1 * clamp(20px,4vw,48px));background:linear-gradient(90deg,#E3B62F,#f4d36b 50%,#E3B62F);color:#0B1440;box-shadow:0 10px 30px -10px rgba(227,182,47,.6),inset 0 -3px 0 rgba(11,20,64,.25);overflow:hidden;font-size:clamp(22px,3.6vw,40px);line-height:1;letter-spacing:-.02em}
-.tk-tag{flex:none;display:flex;align-items:center;gap:8px;padding:14px clamp(14px,2.5vw,26px);background:#E5323E;color:#fff;font-size:.55em;font-weight:900;letter-spacing:.06em;position:relative;z-index:1;box-shadow:8px 0 18px -6px rgba(0,0,0,.4)}
-.tk-tag b{background:#fff;color:#E5323E;padding:3px 7px;border-radius:5px;animation:tkBlink 1.4s ease-in-out infinite}
-@keyframes tkBlink{50%{opacity:.55}}
-.tk-chan{flex:1;overflow:hidden;white-space:nowrap;display:flex;align-items:center;padding-block:12px}
-.tk-chan .track{display:inline-flex;align-items:center;animation:ftm-marquee 26s linear infinite}
-.tk-chan span{padding-inline:28px;font-weight:900}
-.tk-chan i{font-style:normal;color:#E5323E;font-size:.6em}
-.ticker:hover .track{animation-play-state:paused}
-@media (prefers-reduced-motion:reduce){.tk-chan .track,.tk-tag b{animation:none}}
+/* hero: calm static headline + slim results ticker (Binance-style price strip) */
+header{grid-template-columns:minmax(0,1fr)}
+header>.eyebrow{white-space:normal;overflow-wrap:anywhere}
+.hero-h{font-size:clamp(34px,5.4vw,64px);line-height:1.05;letter-spacing:-.035em;color:#fff;margin:4px 0 0;max-width:16ch}
+.hero-h span{background:linear-gradient(90deg,#E3B62F,#ffe08a 45%,#E3B62F);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:hhShine 6s ease-in-out infinite}
+@keyframes hhShine{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.tk{min-width:0;max-width:calc(100% + 2 * clamp(20px,4vw,48px));display:flex;align-items:center;gap:14px;margin-inline:calc(-1 * clamp(20px,4vw,48px));padding:10px clamp(20px,4vw,48px);border-block:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.18)}
+.tk-live{flex:none;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7)}
+.tk-live i{width:7px;height:7px;border-radius:50%;background:#3CC98A;box-shadow:0 0 0 0 rgba(60,201,138,.6);animation:tkPulse 1.8s infinite}
+@keyframes tkPulse{70%{box-shadow:0 0 0 8px rgba(60,201,138,0)}100%{box-shadow:0 0 0 0 rgba(60,201,138,0)}}
+.tk-chan{flex:1;min-width:0;overflow:hidden;white-space:nowrap;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.tk-chan .track{display:inline-flex;animation:ftm-marquee 40s linear infinite}
+.tk-i{display:inline-flex;align-items:baseline;gap:8px;padding-inline:22px;border-right:1px solid rgba(255,255,255,.1);font-size:13.5px}
+.tk-i em{font-style:normal;color:rgba(255,255,255,.65)}
+.tk-i b{color:#3CC98A;font-variant-numeric:tabular-nums}
+.tk:hover .track{animation-play-state:paused}
+@media (max-width:600px){.tk-live{display:none}}
+@media (prefers-reduced-motion:reduce){.tk-chan .track,.hero-h span,.tk-live i{animation:none}}
 .marquee .track{display:inline-flex;animation:ftm-marquee 22s linear infinite}
 .marquee .track span{padding-inline:clamp(20px,4vw,48px) 64px}
 @keyframes ftm-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
@@ -354,7 +361,8 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <header>
     <div class="topbar"><a class="logo" href="/" aria-label="FTM home"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a><a class="back" href="/#performance">&larr; Back to website</a></div>
     <div class="eyebrow" id="hero-eyebrow">FTM MACHINE · Gold, Bitcoin, USD/JPY, US Tech 100 and Boom 1000 · 2020 to October 2026</div>
-    <h1 id="hero" class="ticker" aria-label="Five years with FTM, growth is certain."><span class="tk-tag">FTM <b>NEWS</b></span><span class="tk-chan"><span class="track" aria-hidden="true"><span>Five years with FTM, growth is certain.</span><i>◆</i><span>Five years with FTM, definitely pays off.</span><i>◆</i><span>Five years with FTM, growth is certain.</span><i>◆</i><span>Five years with FTM, definitely pays off.</span><i>◆</i></span></span></h1>
+    <h1 id="hero" class="hero-h">Five years with FTM, <span>growth is certain.</span></h1>
+    <div class="tk" aria-label="FTM MACHINE results, Growth 2×"><span class="tk-live"><i></i>Growth 2× results</span><div class="tk-chan"><div class="track"><span class="tk-i"><em>All in one</em><b>+58,736%</b></span><span class="tk-i"><em>Gold</em><b>+3,658%</b></span><span class="tk-i"><em>Bitcoin</em><b>+570%</b></span><span class="tk-i"><em>US Tech 100</em><b>+232%</b></span><span class="tk-i"><em>Boom 1000</em><b>+153%</b></span><span class="tk-i"><em>USD/JPY</em><b>+124%</b></span><span class="tk-i"><em>Profitable years, All in one</em><b>7 of 7</b></span><span class="tk-i"><em>Best year, All in one</em><b>+328.7%</b></span><span class="tk-i"><em>All in one</em><b>+58,736%</b></span><span class="tk-i"><em>Gold</em><b>+3,658%</b></span><span class="tk-i"><em>Bitcoin</em><b>+570%</b></span><span class="tk-i"><em>US Tech 100</em><b>+232%</b></span><span class="tk-i"><em>Boom 1000</em><b>+153%</b></span><span class="tk-i"><em>USD/JPY</em><b>+124%</b></span><span class="tk-i"><em>Profitable years, All in one</em><b>7 of 7</b></span><span class="tk-i"><em>Best year, All in one</em><b>+328.7%</b></span></div></div></div>
     <div class="hbox">
       <div class="hb hb-pick">
     <nav class="jump" aria-label="Markets"><div class="jrow"><span class="lbl">Markets</span><a href="#mk-gold">Gold</a><a href="#mk-btc">Bitcoin</a><a href="#mk-jpy">USD/JPY</a><a href="#mk-ndx">US Tech 100</a><a href="#mk-boom">Boom 1000</a><a href="#mk-all">All in one</a></div><div class="jrow"><span class="lbl">Account size</span><span class="sz" aria-label="Gold account size"><a href="#mk-gold" data-jz="1000000">$1M</a><a href="#mk-gold" data-jz="100000">$100k</a><a href="#mk-gold" data-jz="10000">$10k</a><a href="#mk-gold" data-jz="1000">$1k</a><a href="#mk-gold" data-jz="500">$500</a></span></div></nav>
