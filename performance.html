@@ -1114,5 +1114,13 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
   addEventListener('scroll',function(){dock.classList.toggle('on',calc.getBoundingClientRect().bottom<0&&innerHeight+scrollY<document.body.scrollHeight-200)},{passive:true});
 })();
 </script>
+<script>
+/* A refresh always opens the trust engine at the top, not at the last market viewed or linked. */
+(function(){
+  try{history.scrollRestoration='manual'}catch(e){}
+  var nav=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0];
+  if(nav&&nav.type==='reload'){if(location.hash)history.replaceState(null,'',location.pathname+location.search);scrollTo(0,0);addEventListener('load',function(){scrollTo(0,0)})}
+})();
+</script>
 </body>
 </html>
