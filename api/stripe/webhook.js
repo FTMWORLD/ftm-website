@@ -33,6 +33,7 @@ module.exports.config = { api: { bodyParser: false } };
      check against the Stripe Dashboard if a real payment ever grants
      the wrong plan. */
 const PAYMENT_LINK_PRODUCT = {
+  'plink_1USfiuAZWClTb7yxfgCmBpC4': 'auto', // 5 Years sale, 1,999€ — added 2026-10-20
   'plink_1USfSYAZWClTb7yxYnZ9wlM1': 'auto', // Annual sale, 499€ — added 2026-10-20
   'plink_1UG5XeAZWClTb7yx1a8w5228': 'auto', // Annual, 999€ — confirmed 2026-09-30
   'plink_1UG6CUAZWClTb7yxRTis1wzS': 'auto', // 5 Years, 3,999€ — confirmed 2026-09-30
