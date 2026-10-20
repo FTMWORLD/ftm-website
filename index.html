@@ -1463,10 +1463,13 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .brand-bar .foot-top{border-bottom:0;padding-bottom:0}
 
   /* ---------- CTA ---------- */
-  .cta{background:var(--red);color:#fff;text-align:center;position:relative;overflow:hidden;padding-block:112px}
+  .cta{background:radial-gradient(900px 400px at 50% 0,rgba(212,175,55,.22),transparent 60%),linear-gradient(180deg,#152a7a,#0B1440);color:#fff;text-align:center;position:relative;overflow:hidden;padding-block:112px}
   @media (max-width:760px){.cta{padding-block:72px}}
-  .cta-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.14) 1px,transparent 1px);background-size:96px 96px}
-  .cta .tile{position:absolute;width:96px;height:96px;background:rgba(212,175,55,.35);border-radius:6px}
+  .cta-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:96px 96px}
+  .cta .tile{position:absolute;width:96px;height:96px;background:rgba(212,175,55,.10);border:1px solid rgba(212,175,55,.28);border-radius:6px}
+  @media (prefers-reduced-motion:no-preference){.cta .tile{animation:ctaTile 7s ease-in-out infinite}.cta .tile:nth-child(2n){animation-delay:-2.3s}.cta .tile:nth-child(3n){animation-delay:-4.6s}}
+  @keyframes ctaTile{0%,100%{opacity:.35}50%{opacity:1;box-shadow:0 0 30px rgba(212,175,55,.25)}}
+  .cta .btn{background:var(--red)!important;color:#fff!important}
   .cta h2{color:#fff;font-size:clamp(44px,7vw,84px);letter-spacing:-.04em;position:relative;max-width:820px;margin:0 auto 32px}
   .cta .btn{position:relative}
 
@@ -1862,7 +1865,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <div class="perf-tile"><span>Average yearly return</span><b>47–156%</b><small>All in one backtest since 2020, from Conservative to Growth 2×.</small></div>
       <div class="perf-tile"><span>Trades open at a time</span><b>3 to 6</b><small>Six market setups, each with its own rules.</small></div>
       <div class="perf-tile"><span>Risk profiles</span><b>3</b><small>Same strategy, different trade size.</small></div>
-      <div class="perf-tile"><span>Max drawdown, Balanced</span><b>22.3%</b><small>Largest fall from a balance high in the backtest since 2020.</small></div>
+      <div class="perf-tile"><span>Profitable years, All in one</span><b>7 of 7</b><small>Every year since 2020.</small></div>
     </div>
     <div class="perf-cta"><a class="btn btn-gold" href="/performance.html">View performance record</a></div>
     <div class="marquee perf-ticker"><div class="marquee-track pt-track"><a class="pt-item" href="/performance.html"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Conservative</b> · 2020–2026 · <span>+1,293% total return · −12.01% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Balanced</b> · 2020–2026 · <span>+7,478% total return · −22.26% max drawdown</span></a><a class="pt-item" href="/performance.html" aria-hidden="true" tabindex="-1"><b>All in one · Growth 2×</b> · 2020–2026 · <span>+58,736% total return · −39.13% max drawdown</span></a></div></div>
@@ -1906,7 +1909,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <div class="compound-text">
         <h3>The long-term idea</h3>
         <p>FTM is built for steady growth over years, not one lucky month.</p>
-        <p class="compound-fact">In the backtest since 2020, FTM MACHINE averaged between 18% and 70% a year, depending on the risk profile.</p>
+        <p class="compound-fact">All in one since 2020: 47–156% a year.</p>
         <a class="btn btn-gold compound-cta" href="/performance.html">See the performance</a>
         <p class="compound-note">Move the sliders to see how a balance could grow.</p>
       </div>
@@ -2022,7 +2025,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     </div>
     <div class="step red">
       <div class="txt"><h3 data-i18n="step.trade">AutoTrade</h3><p>Activate FTM MACHINE and let it trade for you.</p><a class="btn btn-dark" href="#pricing">Explore FTM MACHINE</a></div>
-      <div class="visual"><div class="form-card"><b style="text-align:center;font-size:14px">Gold</b><div class="ticket"><div><small>Bid</small><b id="gtBid">&mdash;</b></div><div><small>Ask</small><b id="gtAsk">&mdash;</b></div></div><a class="btn btn-red" href="#auto" style="padding:12px;text-align:center">Activate FTM</a></div></div>
+      <div class="visual"><div class="form-card"><b style="text-align:center;font-size:14px">FTM MACHINE · All in one</b><div class="ticket"><div><small>Since 2020</small><b style="color:#1f8a5b">+58,736%</b></div><div><small>Profitable years</small><b>7 of 7</b></div></div><a class="btn btn-red" href="#auto" style="padding:12px;text-align:center">Activate FTM</a></div></div>
     </div>
     <div class="step dark">
       <div class="txt"><h3>Monitor</h3><p>Withdraw, pause, or cancel trading anytime.</p><button class="btn btn-red js-login">Log in</button></div>
@@ -2101,7 +2104,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
     <div class="feature">
       <div><h3>Defined risk on every trade</h3><p>Every trade has a stop-loss, and your risk profile sets the trade size.</p><a class="link" href="#pricing">Explore FTM MACHINE <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="feature-art"><div class="art-lines"></div><div class="art-card"><div class="t">Rise / Fall <span>5 ticks</span></div><svg viewBox="0 0 300 160" preserveAspectRatio="none"><polyline fill="none" stroke="#FF3E4A" stroke-width="3" points="0,120 40,100 80,110 120,70 160,80 200,40 240,55 300,20"/></svg><div class="kv"><span>Stake</span><b>$10.00</b></div><div class="kv"><span>Max payout</span><b>$19.40</b></div><div class="kv"><span>Max loss</span><b>$10.00</b></div></div></div>
+      <div class="feature-art"><div class="art-lines"></div><div class="art-card"><div class="t">XAUUSD · Buy <span>FTM MACHINE</span></div><svg viewBox="0 0 300 160" preserveAspectRatio="none"><polyline fill="none" stroke="#2fa66b" stroke-width="3" points="0,120 40,100 80,110 120,70 160,80 200,40 240,55 300,20"/></svg><div class="kv"><span>Stop loss</span><b>Set</b></div><div class="kv"><span>Take profit</span><b>Set</b></div><div class="kv"><span>Size</span><b>From your risk profile</b></div></div></div>
     </div>
   </div>
 </section>

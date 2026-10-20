@@ -25,3 +25,8 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Risk warnings (owner instruction, 18 October 2026)
 - Risk and past-performance warnings live only in the homepage footer and in terms.html. Never add them to statistics, backtests, the trust engine or designs.
+
+## Design standard (owner instruction, 20 October 2026)
+- Every page, section, slide and line of text must show FTM as the most standard, unique and outstanding financial company in the world. Benchmark against the best finance sites (Binance, Deriv, Revolut, Stripe, eToro, Wealthfront) and do better.
+- Lively but mature: movement and gold accents, never loud or cheap. Calm headlines, numbers that move, clear calls to action.
+- Keep the FTM colours in every redesign: navy (#0B1440 / #152a7a), gold (#D4AF37 / #E3B62F), red (#E5323E) and white. Every section must keep something gently moving.
