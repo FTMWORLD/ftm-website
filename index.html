@@ -6498,5 +6498,8 @@ tick();setInterval(tick,5000);})();
   });
 })();
 </script>
+<script>
+(function(){ if(location.hash!=='#ask') return; history.replaceState(null,'',location.pathname+location.search); window.addEventListener('load',function(){ setTimeout(function(){ var t=document.getElementById('fsToggle'),p=document.getElementById('fsPanel'); if(t&&p&&p.hidden) t.click(); setTimeout(function(){ var a=document.getElementById('fsAi'); if(a) a.click(); },60); },300); }); })();
+</script>
 </body>
 </html>
