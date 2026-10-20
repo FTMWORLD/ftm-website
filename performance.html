@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <title>FTM MACHINE Performance Report</title>
@@ -141,7 +141,7 @@ section{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .sec-head{display:grid;gap:6px}
 .sec-head .eyebrow{color:var(--blue)}
 :root:not([data-theme="light"]) .sec-head .eyebrow{color:var(--gold)}
-@media (prefers-color-scheme:light){.sec-head .eyebrow{color:var(--blue)}}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .sec-head .eyebrow{color:var(--blue)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:22px;min-width:0}
 .chart{width:100%;overflow-x:auto}
 .chart svg{display:block;width:100%;height:auto;min-width:560px}
