@@ -301,6 +301,8 @@ header>.trust{margin-top:16px}
 @keyframes jbShine{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
 @media (prefers-reduced-motion:reduce){.jump a.j-best::after{animation:none}}
 @media (max-width:600px){.jump a.j-best sup{display:none}}
+.pick-hint{margin:0;font-size:13px;color:rgba(255,255,255,.7)}
+.pick-hint::before{content:"\2192";color:#E3B62F;font-weight:800;margin-right:6px}
 /* ---- marketing layer: moving backgrounds, calculator, trust strip, sticky call to action ---- */
 header,.mhead{position:relative;overflow:hidden;isolation:isolate}
 header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1;background:radial-gradient(closest-side,rgba(227,182,47,.30),transparent) 10% 20%/45% 45% no-repeat,radial-gradient(closest-side,rgba(59,130,246,.35),transparent) 85% 30%/50% 50% no-repeat,radial-gradient(closest-side,rgba(229,50,62,.25),transparent) 50% 90%/45% 45% no-repeat;animation:orbs 18s ease-in-out infinite alternate}
@@ -373,7 +375,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <div class="tk" aria-label="FTM MACHINE results, Growth 2×"><span class="tk-live"><i></i>Growth 2× results</span><div class="tk-chan"><div class="track"><span class="tk-i"><em>All in one</em><b>+58,736%</b></span><span class="tk-i"><em>Gold</em><b>+3,658%</b></span><span class="tk-i"><em>Bitcoin</em><b>+570%</b></span><span class="tk-i"><em>US Tech 100</em><b>+232%</b></span><span class="tk-i"><em>Boom 1000</em><b>+153%</b></span><span class="tk-i"><em>USD/JPY</em><b>+124%</b></span><span class="tk-i"><em>Profitable years, All in one</em><b>7 of 7</b></span><span class="tk-i"><em>Best year, All in one</em><b>+328.7%</b></span><span class="tk-i"><em>All in one</em><b>+58,736%</b></span><span class="tk-i"><em>Gold</em><b>+3,658%</b></span><span class="tk-i"><em>Bitcoin</em><b>+570%</b></span><span class="tk-i"><em>US Tech 100</em><b>+232%</b></span><span class="tk-i"><em>Boom 1000</em><b>+153%</b></span><span class="tk-i"><em>USD/JPY</em><b>+124%</b></span><span class="tk-i"><em>Profitable years, All in one</em><b>7 of 7</b></span><span class="tk-i"><em>Best year, All in one</em><b>+328.7%</b></span></div></div></div>
     <div class="hbox">
       <div class="hb hb-pick">
-    <nav class="jump" aria-label="Markets"><div class="jrow"><span class="lbl">Markets</span><a href="#mk-gold">Gold</a><a href="#mk-btc">Bitcoin</a><a href="#mk-jpy">USD/JPY</a><a href="#mk-ndx">US Tech 100</a><a href="#mk-boom">Boom 1000</a><a href="#mk-all" class="j-best">All in one<sup>Best</sup></a></div><div class="jrow"><span class="lbl">Account size</span><span class="sz" aria-label="Gold account size"><a href="#mk-gold" data-jz="1000000">$1M</a><a href="#mk-gold" data-jz="100000">$100k</a><a href="#mk-gold" data-jz="10000">$10k</a><a href="#mk-gold" data-jz="1000">$1k</a><a href="#mk-gold" data-jz="500">$500</a></span></div></nav>
+    <nav class="jump" aria-label="Markets"><p class="pick-hint">Tap a market and an account size to see its results.</p><div class="jrow"><span class="lbl">Markets</span><a href="#mk-gold">Gold</a><a href="#mk-btc">Bitcoin</a><a href="#mk-jpy">USD/JPY</a><a href="#mk-ndx">US Tech 100</a><a href="#mk-boom">Boom 1000</a><a href="#mk-all" class="j-best">All in one<sup>Best</sup></a></div><div class="jrow"><span class="lbl">Account size</span><span class="sz" aria-label="Gold account size"><a href="#mk-gold" data-jz="1000000">$1M</a><a href="#mk-gold" data-jz="100000">$100k</a><a href="#mk-gold" data-jz="10000">$10k</a><a href="#mk-gold" data-jz="1000">$1k</a><a href="#mk-gold" data-jz="500">$500</a></span></div></nav>
       </div>
       <div class="hb hb-info">
     <p class="lead" id="hero-lead">Every year, month and week of FTM MACHINE on five markets since 2020, losing periods included, after broker costs. Same strategy in every risk profile; only the trade size changes.</p>
@@ -407,6 +409,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <div class="mhead mhead-gold" id="mk-gold"><div class="mh-left"><div class="eyebrow">XAUUSD · 1 Jan 2020 to 8 Oct 2026</div><h2>Gold</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-z="1000000">$1M</button><button data-z="100000">$100k</button><button data-z="10000">$10k</button><button data-z="1000">$1k</button><button data-z="500">$500</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative" data-p="conservative">Conservative</button><button id="p-balanced" data-p="balanced">Balanced</button><button id="p-g2" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
     <p class="size-note" id="n-size" hidden>Small accounts trade the 0.01 minimum lot more often, so risk per trade, and drawdown, is higher than the profile setting. Even so, in the backtest since 2020, FTM MACHINE stayed profitable on these accounts in every risk profile.</p>
 </div>
   <div class="promo" data-promo="gold" aria-hidden="true"></div>
@@ -482,6 +485,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <div class="mhead mhead-gold" id="mk-btc"><div class="mh-left"><div class="eyebrow">BTCUSD · 1 Jan 2020 to 16 Oct 2026</div><h2>Bitcoin</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-bz="100000">$100k</button><button data-bz="10000">$10k</button><button data-bz="1000">$1k</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-b" data-p="conservative">Conservative</button><button id="p-balanced-b" data-p="balanced">Balanced</button><button id="p-g2-b" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
 </div>
   <div class="promo" data-promo="btc" aria-hidden="true"></div>
   <div class="gold-live"><div class="gl-top"><svg class="gold-bars" viewBox="0 0 220 150" aria-hidden="true"><defs><linearGradient id="bcF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB547"/><stop offset="1" stop-color="#E07B00"/></linearGradient><linearGradient id="bcE" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C46A00"/><stop offset="1" stop-color="#8A4A00"/></linearGradient>
@@ -557,6 +561,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <div class="mhead mhead-gold" id="mk-jpy"><div class="mh-left"><div class="eyebrow">USDJPY · 1 Jan 2020 to 16 Oct 2026</div><h2>USD/JPY</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-msz="100000">$100k</button><button data-msz="10000">$10k</button><button data-msz="1000">$1k</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-j" data-p="conservative">Conservative</button><button id="p-balanced-j" data-p="balanced">Balanced</button><button id="p-g2-j" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
 </div>
   <div class="promo" data-promo="jpy" aria-hidden="true"></div>
   </div>
@@ -626,6 +631,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <div class="mhead mhead-gold" id="mk-ndx"><div class="mh-left"><div class="eyebrow">NDX100 · 1 Nov 2022 to 16 Oct 2026</div><h2>US Tech 100</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-msz="100000">$100k</button><button data-msz="10000">$10k</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-u" data-p="conservative">Conservative</button><button id="p-balanced-u" data-p="balanced">Balanced</button><button id="p-g2-u" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
 </div>
   <div class="promo" data-promo="ndx" aria-hidden="true"></div>
   </div>
@@ -695,6 +701,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
   <div class="mhead mhead-gold" id="mk-boom"><div class="mh-left"><div class="eyebrow">BOOM 1000 · Deriv · 1 Jan 2020 to 16 Oct 2026</div><h2>Boom 1000</h2>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-msz="100000">$100k</button><button data-msz="10000">$10k</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-x" data-p="conservative">Conservative</button><button id="p-balanced-x" data-p="balanced">Balanced</button><button id="p-g2-x" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
 </div>
   <div class="promo" data-promo="boom" aria-hidden="true"></div>
   </div>
@@ -765,6 +772,7 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
     <p class="aio-sub" id="aio-mix"></p>
     <div class="switch" role="group" aria-label="Account size"><span class="lbl">Account size</span><button data-msz="1000000">$1M</button><button data-msz="100000">$100k</button><button data-msz="10000">$10k</button><button data-msz="1000">$1k</button><button data-msz="500">$500</button></div>
     <div class="switch" role="group" aria-label="Risk profile"><span class="lbl">Risk profile</span><button id="p-conservative-a" data-p="conservative">Conservative</button><button id="p-balanced-a" data-p="balanced">Balanced</button><button id="p-g2-a" data-p="g2">Growth 2×</button></div>
+    <p class="pick-hint">Choose an account size and a risk profile: every figure below updates.</p>
 </div>
   <div class="promo" data-promo="all" aria-hidden="true"></div>
   </div>
