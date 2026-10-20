@@ -44,7 +44,6 @@
 
   .layout{max-width:1240px;margin:0 auto;padding:20px 24px 120px;display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start}
 
-  /* ---------- SIDEBAR ---------- */
   .side{position:sticky;top:76px;display:grid;gap:4px;align-self:start}
   .side-group{margin-bottom:18px}
   .side-label{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:0 14px;margin-bottom:8px}
@@ -52,7 +51,6 @@
   .side a:hover{background:var(--bg-3)}
   .side a.is-active{background:var(--bg-2);color:var(--ink);font-weight:700;border-left-color:var(--red)}
 
-  /* mobile pill nav */
   .side-mobile{display:none}
 
   .wrap{min-width:0}
@@ -71,7 +69,6 @@
 
   footer{border-top:1px solid var(--line);padding:32px 24px;text-align:center;color:var(--muted);font-size:13px}
 
-  /* ---------- FLOATING SUPPORT ---------- */
   .float-support{position:fixed;right:20px;bottom:20px;z-index:90;display:flex;flex-direction:column;align-items:flex-end;gap:12px}
   .fs-btn{width:56px;height:56px;border-radius:50%;border:0;background:var(--red);color:#fff;display:grid;place-items:center;box-shadow:0 14px 34px rgba(229,50,62,.4);cursor:pointer}
   .fs-btn svg{width:26px;height:26px}
@@ -318,7 +315,7 @@
 
 <footer>© 2026 Follow The Market Ltd. All rights reserved. · <a href="/">ftmwealthnation.com</a></footer>
 
-<!-- ===== FLOATING SUPPORT ===== -->
+
 <div class="float-support" id="floatSupport">
   <div class="fs-panel" id="fsPanel" hidden>
     <div class="fs-head"><b>Need a hand?</b><button type="button" class="fs-x" id="fsClose" aria-label="Close">&times;</button></div>
@@ -337,7 +334,7 @@
 </div>
 
 <script>
-  /* ---- floating support widget ---- */
+
   (function(){
     var toggle=document.getElementById('fsToggle'), panel=document.getElementById('fsPanel'), close=document.getElementById('fsClose');
     if(!toggle)return;
@@ -349,8 +346,6 @@
     document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !panel.hidden) shut(); });
   })();
 
-  /* ---- section sidebar: mirror desktop links into a mobile pill bar,
-     then highlight whichever section is currently in view ---- */
   (function(){
     var side=document.getElementById('side'), mobile=document.getElementById('sideMobile');
     if(!side||!mobile)return;
@@ -374,7 +369,7 @@
   })();
 </script>
 <script>
-  /* Click tracking for the main buttons, sent to Vercel Analytics as custom events. */
+
   document.addEventListener('click',function(e){
     var a=e.target.closest&&e.target.closest('a,button'); if(!a||!window.va)return;
     var h=a.getAttribute('href')||'', n=null, d={page:location.pathname};
