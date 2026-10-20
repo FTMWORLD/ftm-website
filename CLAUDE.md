@@ -30,3 +30,6 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Every page, section, slide and line of text must show FTM as the most standard, unique and outstanding financial company in the world. Benchmark against the best finance sites (Binance, Deriv, Revolut, Stripe, eToro, Wealthfront) and do better.
 - Lively but mature: movement and gold accents, never loud or cheap. Calm headlines, numbers that move, clear calls to action.
 - Keep the FTM colours in every redesign: navy (#0B1440 / #152a7a), gold (#D4AF37 / #E3B62F), red (#E5323E) and white. Every section must keep something gently moving.
+
+## Original look (owner instruction, 20 October 2026)
+- The public site must show no trace of how it was built: no developer comments in index.html, performance.html, terms.html or privacy.html (HTML, CSS or JS comments), and no mention of AI tools, sessions or assistants. Keep notes in HANDOFF.md instead.
