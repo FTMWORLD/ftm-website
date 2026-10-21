@@ -33,3 +33,4 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Original look (owner instruction, 20 October 2026)
 - The public site must show no trace of how it was built: no developer comments in index.html, performance.html, terms.html or privacy.html (HTML, CSS or JS comments), and no mention of AI tools, sessions or assistants. Keep notes in HANDOFF.md instead.
+- Never name the broker a test ran on (FundedNext, Deriv etc.) on the trust engine or in results. Deriv stays only where it is FTM's own partner/affiliate product.
