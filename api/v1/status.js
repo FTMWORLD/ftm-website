@@ -13,7 +13,10 @@ async function check(name, fn) {
     const detail = await fn();
     return { name, ok: true, ms: Date.now() - t, detail: detail || null };
   } catch (e) {
-    return { name, ok: false, ms: Date.now() - t, detail: String(e.message || e).slice(0, 200) };
+    let msg = String(e.message || e);
+    if (msg === 'fetch failed' && /Supabase/.test(name)) msg = 'Supabase cannot be reached. The project is most likely paused: open supabase.com/dashboard, select the FTM project and click Restore.';
+    else if (msg === 'fetch failed') msg = 'Not reachable';
+    return { name, ok: false, ms: Date.now() - t, detail: msg.slice(0, 200) };
   }
 }
 
