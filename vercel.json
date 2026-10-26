@@ -40,6 +40,10 @@
     {
       "path": "/api/v1/brevo-ping",
       "schedule": "0 6 * * 1"
+    },
+    {
+      "path": "/api/v1/status?alert=1",
+      "schedule": "0 7 * * *"
     }
   ]
 }
