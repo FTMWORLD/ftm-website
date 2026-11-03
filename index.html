@@ -2348,7 +2348,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <h3>Open positions</h3>
       <p class="hint" id="mOpenHint">&mdash;</p>
       <div class="app-scroll"><table class="app-trades">
-        <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th></tr></thead>
+        <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead>
         <tbody id="mOpenRows"></tbody>
       </table></div>
     </div>
@@ -4172,7 +4172,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
-        return '<tr><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+        return '<tr><td>'+t.symbol+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td><td>'+((t.positionRef&&window.FTM.remote&&window.FTM.remote.ready()&&window.FTM.session)?'<button type="button" class="conn-btn pos-close" data-ref="'+String(t.positionRef).replace(/"/g,'')+'">Close</button>':'')+'</td></tr>';
       }).join('');
       set('mOpenHint', m.open.length+' position'+(m.open.length===1?'':'s')+' currently open.');
     }
@@ -4354,7 +4354,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       }
       function mapExecution(e){
         return {
-          symbol: e.symbol || null,
+          symbol: e.market || e.symbol || null,
           dir: e.side || null,
           lots: num(e.volume),
           openTime: e.opened_at ? Date.parse(e.opened_at) : null,
@@ -4399,11 +4399,13 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           }
           return page(0);
         },
+        fetchMe: function(){ return call('/me'); },
+        closePosition: function(accountId, ref){ return call('/accounts/'+encodeURIComponent(accountId)+'/positions/'+encodeURIComponent(ref)+'/close', { method:'POST' }); },
         fetchPositions: function(accountId){
           return call('/accounts/'+accountId+'/positions').then(function(j){
             return (j.positions||[]).map(function(p){
 
-              return { symbol:p.symbol, dir:p.side, lots:num(p.volume),
+              return { symbol:p.market||p.symbol, dir:p.side, lots:num(p.volume),
                 open:px(p.open_price), current:px(p.current_price),
                 pl:p.floating_profit!=null?num(p.floating_profit):null,
                 swap:p.swap!=null?num(p.swap):null,
@@ -6501,6 +6503,36 @@ tick();setInterval(tick,5000);})();
 </script>
 <script>
 (function(){ if(location.hash!=='#ask') return; history.replaceState(null,'',location.pathname+location.search); window.addEventListener('load',function(){ setTimeout(function(){ var t=document.getElementById('fsToggle'),p=document.getElementById('fsPanel'); if(t&&p&&p.hidden) t.click(); setTimeout(function(){ var a=document.getElementById('fsAi'); if(a) a.click(); },60); },300); }); })();
+</script>
+<script>
+(function(){
+  var tb=document.getElementById('mOpenRows'); if(!tb) return;
+  tb.addEventListener('click',function(e){
+    var b=e.target.closest('.pos-close'); if(!b) return;
+    var F=window.FTM, a=F.viewedAccount&&F.viewedAccount(); if(!a||!a.accountId) return;
+    if(!confirm('Close this trade now at the market price?')) return;
+    b.disabled=true;
+    F.remote.closePosition(a.accountId,b.dataset.ref).then(function(){
+      alert('Close requested. The trade disappears from this list once the broker confirms it.');
+      setTimeout(function(){ if(F.viewAccount) F.viewAccount(F.viewNum||a.number); },4000);
+    }).catch(function(err){
+      b.disabled=false;
+      alert(err.code==='CLOSE_ALREADY_IN_PROGRESS'?'This trade is already closing.':err.code==='POSITION_NOT_OPEN'||err.status===404?'This trade is no longer open.':'The trade could not be closed. Please try again.');
+    });
+  });
+  document.addEventListener('click',function(e){
+    var l=e.target.closest('a[href^="https://buy.stripe.com/"]'); if(!l) return;
+    var F=window.FTM||{}, u=new URL(l.href);
+    if(F.publicId) u.searchParams.set('client_reference_id',F.publicId);
+    if(F.session&&F.session.email) u.searchParams.set('prefilled_email',F.session.email);
+    l.href=u.toString();
+  },true);
+  setInterval(function(){
+    var F=window.FTM; if(!F||F.publicId||F._meTried||!F.session||!F.remote||!F.remote.ready()) return;
+    F._meTried=true;
+    F.remote.fetchMe().then(function(j){ if(j&&j.customer_public_id) F.publicId=j.customer_public_id; }).catch(function(){});
+  },3000);
+})();
 </script>
 </body>
 </html>
