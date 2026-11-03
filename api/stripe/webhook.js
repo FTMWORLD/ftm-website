@@ -18,6 +18,7 @@
    JSON-parsed-and-reserialized copy, which would not match. */
 
 const { createClient } = require('@supabase/supabase-js');
+const { callEngine } = require('../_lib/engineClient');
 const Stripe = require('stripe');
 
 module.exports.config = { api: { bodyParser: false } };
@@ -74,10 +75,15 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // Tell the FTM engine the customer's payment status after every billing
+  // event (spec "connect Stripe payments to the FTM engine"). Never blocks
+  // or fails the Stripe reply.
+  const engineSync = await syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed'; });
+
   // Always 200 once the signature is valid, even on an event we don't
   // act on — a non-200 makes Stripe retry the same event repeatedly.
   if (event.type !== 'checkout.session.completed') {
-    res.status(200).json({ ok: true, ignored: event.type });
+    res.status(200).json({ ok: true, ignored: event.type, engine: engineSync });
     return;
   }
 
@@ -187,6 +193,7 @@ module.exports = async function handler(req, res) {
     // Paying customers go on the Brevo "Customers" list, so marketing
     // automations can skip people who already bought. Never blocks the reply.
     report.brevo = await addToCustomerList(email);
+    report.engine = engineSync;
 
     res.status(200).json(report);
   } catch (e) {
@@ -240,3 +247,83 @@ async function addToCustomerList(email) {
     return 'failed';
   }
 }
+
+/* ---------------------------------------------------------------------
+   Engine billing sync: PUT /api/v1/billing/subscription on the FTM engine.
+   Payment Links are one-time payments, so a paid checkout is ACTIVE until
+   the plan's end: Annual 13 months, 5 Years 64 months, Lifetime no end.
+   Investment payments do not unlock trade copies and are not sent.
+   --------------------------------------------------------------------- */
+const PLAN_MONTHS = {
+  'plink_1USfSYAZWClTb7yxYnZ9wlM1': 13, 'plink_1UG5XeAZWClTb7yx1a8w5228': 13,
+  'plink_1USfiuAZWClTb7yxfgCmBpC4': 64, 'plink_1UG6CUAZWClTb7yxRTis1wzS': 64,
+  'plink_1USfs7AZWClTb7yxxDVMAKmY': null, 'plink_1UHLQXAZWClTb7yxBn9gU95g': null
+};
+
+function subStatus(st) {
+  if (st === 'active' || st === 'trialing') return 'ACTIVE';
+  if (st === 'past_due' || st === 'unpaid') return 'PAST_DUE';
+  if (st === 'canceled' || st === 'incomplete_expired') return 'CANCELED';
+  return null;
+}
+
+function isoFromUnix(t) { return t ? new Date(t * 1000).toISOString() : null; }
+
+async function syncEngine(event) {
+  if (!process.env.FTM_ENGINE_URL || !process.env.FTM_WEBSITE_API_TOKEN) return 'not configured';
+  const o = event.data.object || {};
+  let status = null, email = null, ref = null, cus = null, periodEnd = null;
+
+  switch (event.type) {
+    case 'checkout.session.completed': {
+      if (o.payment_status !== 'paid') return 'skipped (not paid)';
+      if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'skipped (investment)';
+      status = 'ACTIVE';
+      email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
+      ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
+      cus = typeof o.customer === 'string' ? o.customer : null;
+      if (o.payment_link in PLAN_MONTHS) {
+        const m = PLAN_MONTHS[o.payment_link];
+        if (m) { const d = new Date(o.created * 1000); d.setUTCMonth(d.getUTCMonth() + m); periodEnd = d.toISOString(); }
+      }
+      break;
+    }
+    case 'invoice.paid':
+    case 'invoice.payment_failed': {
+      status = event.type === 'invoice.paid' ? 'ACTIVE' : 'PAST_DUE';
+      email = o.customer_email || null;
+      ref = (o.metadata && o.metadata.ftm_customer) || (o.subscription_details && o.subscription_details.metadata && o.subscription_details.metadata.ftm_customer) || null;
+      cus = typeof o.customer === 'string' ? o.customer : null;
+      const line = o.lines && o.lines.data && o.lines.data[0];
+      periodEnd = line && line.period ? isoFromUnix(line.period.end) : null;
+      break;
+    }
+    case 'customer.subscription.created':
+    case 'customer.subscription.updated':
+    case 'customer.subscription.deleted': {
+      status = event.type === 'customer.subscription.deleted' ? 'CANCELED' : subStatus(o.status);
+      if (!status) return 'skipped (status ' + o.status + ')';
+      ref = (o.metadata && o.metadata.ftm_customer) || null;
+      cus = typeof o.customer === 'string' ? o.customer : null;
+      periodEnd = isoFromUnix(o.current_period_end || (o.items && o.items.data && o.items.data[0] && o.items.data[0].current_period_end));
+      break;
+    }
+    default:
+      return 'not a billing event';
+  }
+
+  if (!ref && !email) {
+    console.error('Stripe webhook: engine sync skipped, no customer id or email on', event.type, event.id);
+    return 'skipped (no customer)';
+  }
+
+  const body = { stripe_event_id: event.id, event_type: event.type, status };
+  if (ref) body.customer_public_id = ref; else body.email = String(email).toLowerCase();
+  if (cus) body.stripe_customer_id = cus;
+  if (periodEnd) body.period_end = periodEnd;
+
+  const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body });
+  if (!r.ok) console.error('Stripe webhook: engine billing answered', r.status, JSON.stringify(r.body).slice(0, 300));
+  return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
+}
+module.exports._syncEngine = syncEngine;
