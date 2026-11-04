@@ -3877,7 +3877,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           btn.disabled=false;
           msg.hidden=false; msg.className='hint';
 
-          msg.style.color = (e && e.code==='ACCOUNT_ALREADY_CONNECTED') ? '#1f8a5b' : '#E5323E';
+          msg.style.color = '#E5323E';
           msg.textContent=e.message||'Could not connect that account. Check the details and try again.';
         });
       } else {
