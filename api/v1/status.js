@@ -70,9 +70,8 @@ module.exports = async function handler(req, res) {
       if (!env.FTM_ENGINE_URL) return 'not configured yet';
       const headers = {};
       if (env.CF_ACCESS_CLIENT_ID) { headers['CF-Access-Client-Id'] = env.CF_ACCESS_CLIENT_ID; headers['CF-Access-Client-Secret'] = env.CF_ACCESS_CLIENT_SECRET || ''; }
-      const r = await get(env.FTM_ENGINE_URL.replace(/\/$/, '') + '/health', { headers });
-      if (r.status >= 500) throw new Error('Engine answered ' + r.status);
-      return 'answered ' + r.status;
+      const r = await get(env.FTM_ENGINE_URL.replace(/\/$/, '') + '/api/v1/health', { headers });
+      must(r, 'Engine');
     })
   ]);
 
