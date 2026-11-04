@@ -494,6 +494,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .perf-cell.down{background:#FDECEE;border-color:#F6C9CF}.perf-cell.down b{color:var(--red-dark)}
   .perf-cell.ytd{border-width:2px;border-color:var(--blue)}
 
+  .acct-limit{font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
   .acct-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
   .acct-table td{vertical-align:middle}
   .tag-live{background:#EAF7F0;color:#1f8a5b;font-size:11.5px;font-weight:800;padding:4px 9px;border-radius:99px}
@@ -2609,7 +2610,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       <section class="app-view" data-view="accounts" hidden>
         <div class="app-main">
           <div class="app-card">
-            <div class="acct-head"><div><h3>Connected accounts</h3><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
+            <div class="acct-head"><div><h3>Connected accounts <small class="acct-limit" id="acctLimit" hidden></small></h3><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
             <div class="app-scroll"><table class="app-trades acct-table">
               <thead><tr><th>Name</th><th>Number</th><th>Provider</th><th>Currency</th><th>Server</th><th>Balance</th><th>Running P/L</th><th>Last reported</th><th>FTM MACHINE</th></tr></thead>
               <tbody id="acctRows"></tbody>
@@ -3951,7 +3952,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       });
       lotsCovered.forEach(function(t){ lots+=t.lots; });
 
-      var liveAcct = (d.accounts||[]).filter(function(a){return a.active;})[0];
+      var liveAcct = (F.viewedAccount && F.viewedAccount()) || (d.accounts||[]).filter(function(a){return a.active;})[0];
       var balance, floating, equity;
       if(liveAcct && liveAcct.balance!=null){
         balance = liveAcct.balance;
@@ -4327,7 +4328,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           equity: num(a.equity),
           marginFree: num(a.margin_free),
           lastReported: a.last_reported_at ? Date.parse(a.last_reported_at) : null,
-          active: a.display_status === 'ACTIVE',
+          active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
           displayStatus: a.display_status,
           statusReason: a.status_reason,
           accountId: a.account_id,
@@ -4376,7 +4377,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       return {
         ready: ready,
         fetchAccounts: function(){
-          return call('/accounts').then(function(j){ return j.accounts.map(mapAccount); });
+          return call('/accounts').then(function(j){ window.FTM.accountLimit = j.account_limit || null; return j.accounts.map(mapAccount); });
         },
         fetchExecutions: function(accountId, offset){
           var q = '?limit=200&offset=' + (offset||0);
@@ -4400,6 +4401,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           return page(0);
         },
         fetchMe: function(){ return call('/me'); },
+        activateAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/activate', { method:'POST' }); },
         closePosition: function(accountId, ref){ return call('/accounts/'+encodeURIComponent(accountId)+'/positions/'+encodeURIComponent(ref)+'/close', { method:'POST' }); },
         fetchPositions: function(accountId){
           return call('/accounts/'+accountId+'/positions').then(function(j){
@@ -4433,6 +4435,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
               ACCOUNT_ALREADY_CONNECTED:'This trading account is already connected to FTM.',
 
               ACCOUNT_REMOVAL_IN_PROGRESS:'This account is still being removed. Please wait a minute and try again.',
+              ACCOUNT_LIMIT:'You can connect up to 3 accounts. Remove one to add another.',
 
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
@@ -4661,7 +4664,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       if(!F.remote || !F.remote.ready()) return;
       var app=document.getElementById('appView');
       if(!app || app.hidden) return;
-      var liveAcct=(F.data.accounts||[]).filter(function(a){return a.active;})[0];
+      var liveAcct=(F.viewedAccount && F.viewedAccount()) || (F.data.accounts||[]).filter(function(a){return a.active;})[0];
       if(!liveAcct) return;
       F.remote.fetchPositions(liveAcct.accountId).then(function(open){
         F.data.open=open;
@@ -4996,7 +4999,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
       SETUP_FAILED:     {text:'Action required', tone:'bad', support:true},
       OFFLINE:          {text:'Offline', tone:'bad'},
-      PAUSED:           {text:'Paused', tone:'wait'},
+      PAUSED:           {text:'Connected, not trading', tone:'wait'},
       INACTIVE:         {text:'Connected, not trading', tone:'wait'},
       ACTIVE:           {text:'Active — trading', tone:'good'}
     };
@@ -5015,6 +5018,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     var VALIDATION_REASON_FALLBACK = 'This account needs attention. Please contact support.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function renderAccounts(){
+      var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts'.replace('{}',Lm.used).replace('{}',Lm.max); }
       var m=F.metrics(), A=F.data.accounts||[];
       el('acctRows').innerHTML=A.map(function(a,i){
         var status;
@@ -5038,7 +5042,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) items+='<button class="acct-menu-item" data-fix="'+i+'">Update and try again</button>';
 
           if(a.displayStatus==='ACTIVE') items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
-          if(!a.active) items+='<button class="acct-menu-item" data-switch="'+i+'">Activate</button>';
+          if(!a.active && a.displayStatus!=='ACTION_REQUIRED' && a.displayStatus!=='SETUP_INCOMPLETE') items+='<button class="acct-menu-item" data-switch="'+i+'">Trade on this account</button>';
           if(F.viewedAccount && F.viewedAccount()!==a) items+='<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>';
           items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
           status+='<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button>'+
@@ -5121,7 +5125,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     });
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-switch]'); if(!b)return;
-      alert('Switching the active account is not available yet. Contact FTM support and we will switch it for you.');
+      var a=F.data.accounts[+b.dataset.switch]; if(!a||!a.accountId)return;
+      closeAcctMenus();
+      if(!confirm('Trade on this account? FTM MACHINE stops trading on your current account and closes its open trades first.'))return;
+      F.remote.activateAccount(a.accountId).then(function(){
+        F.viewAccount(a.number);
+      }).catch(function(err){
+        alert(err.status===404?'Switching the trading account is not available yet. Contact FTM support and we will switch it for you.':'The trading account could not be switched. Please try again.');
+      });
     });
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-pause]'); if(!b)return;
@@ -5226,6 +5237,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       }
     });
     el('acctAdd').addEventListener('click',function(){
+      var L=F.accountLimit; if(L && L.max && L.used>=L.max){ alert('You can connect up to {} accounts. Remove one to add another.'.replace('{}',L.max)); return; }
       show('metrics');
       var card=document.getElementById('appBroker');
       if(card){ card.closest('.app-card').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){card.focus();},400); }
