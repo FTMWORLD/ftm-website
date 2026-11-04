@@ -5154,7 +5154,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var b=e.target.closest('[data-switch]'); if(!b)return;
       var a=F.data.accounts[+b.dataset.switch]; if(!a||!a.accountId)return;
       closeAcctMenus();
-      if(!confirm('Trade on this account? FTM MACHINE stops trading on your current account and closes its open trades first.'))return;
+      var old=(F.data.accounts||[]).filter(function(x){return x.active;})[0];
+      if(!confirm(old?'Trade on this account? Open trades on {} will be closed.'.replace('{}',(old.name||'')+' '+old.number):'Trade on this account?'))return;
       F.remote.activateAccount(a.accountId).then(function(){
         F.viewAccount(a.number);
       }).catch(function(err){
