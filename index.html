@@ -4328,6 +4328,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           equity: num(a.equity),
           marginFree: num(a.margin_free),
           lastReported: a.last_reported_at ? Date.parse(a.last_reported_at) : null,
+          canControl: a.is_trading!==undefined,
           active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
           displayStatus: a.display_status,
           statusReason: a.status_reason,
@@ -4401,6 +4402,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           return page(0);
         },
         fetchMe: function(){ return call('/me'); },
+        pauseAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST' }); },
+        resumeAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/resume', { method:'POST' }); },
         activateAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/activate', { method:'POST' }); },
         closePosition: function(accountId, ref){ return call('/accounts/'+encodeURIComponent(accountId)+'/positions/'+encodeURIComponent(ref)+'/close', { method:'POST' }); },
         fetchPositions: function(accountId){
@@ -5041,8 +5044,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
           if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) items+='<button class="acct-menu-item" data-fix="'+i+'">Update and try again</button>';
 
-          if(a.displayStatus==='ACTIVE') items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
-          if(!a.active && a.displayStatus!=='ACTION_REQUIRED' && a.displayStatus!=='SETUP_INCOMPLETE') items+='<button class="acct-menu-item" data-switch="'+i+'">Trade on this account</button>';
+          if(a.canControl && a.active) items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
+          if(a.canControl && !a.active && a.displayStatus!=='ACTION_REQUIRED' && a.displayStatus!=='SETUP_INCOMPLETE') items+='<button class="acct-menu-item" data-switch="'+i+'">Trade on this account</button>';
           if(F.viewedAccount && F.viewedAccount()!==a) items+='<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>';
           items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
           status+='<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button>'+
@@ -5131,13 +5134,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       F.remote.activateAccount(a.accountId).then(function(){
         F.viewAccount(a.number);
       }).catch(function(err){
-        alert(err.status===404?'Switching the trading account is not available yet. Contact FTM support and we will switch it for you.':'The trading account could not be switched. Please try again.');
+        alert('The trading account could not be switched. Please try again.');
       });
     });
     el('acctRows').addEventListener('click',function(e){
       var b=e.target.closest('[data-pause]'); if(!b)return;
       closeAcctMenus();
-      alert('Pausing is not available yet. To pause trading on your account right now, contact FTM support and we will handle it manually.');
+      var a=F.data.accounts[+b.dataset.pause]; if(!a||!a.accountId)return;
+      if(!confirm('Pause trading on this account? FTM MACHINE stops opening new trades on it.'))return;
+      F.remote.pauseAccount(a.accountId).then(function(){ F.viewAccount(F.viewNum||a.number); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
     });
 
     el('acctRows').addEventListener('click',function(e){
@@ -5244,8 +5249,22 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     });
     var pauseBtn=document.getElementById('pauseTradingBtn');
     if(pauseBtn){
+      pauseBtn.hidden=true;
+      setInterval(function(){
+        var A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0], ctl=A.some(function(a){return a.canControl;});
+        var paused=A.filter(function(a){return a.canControl && !a.active && a.displayStatus==='PAUSED';})[0];
+        pauseBtn.hidden=!ctl || (!on && !paused);
+        pauseBtn.textContent = on ? 'Pause trading' : 'Resume trading';
+      },1500);
       pauseBtn.addEventListener('click',function(){
-        alert('Pausing is not available yet. To pause trading on your account right now, contact FTM support and we will handle it manually.');
+        var A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0];
+        var paused=(F.viewedAccount&&F.viewedAccount()&&!F.viewedAccount().active)?F.viewedAccount():A.filter(function(a){return a.displayStatus==='PAUSED';})[0];
+        if(on){
+          if(!confirm('Pause trading on this account? FTM MACHINE stops opening new trades on it.'))return;
+          F.remote.pauseAccount(on.accountId).then(function(){ F.viewAccount(F.viewNum||on.number); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
+        } else if(paused){
+          F.remote.resumeAccount(paused.accountId).then(function(){ F.viewAccount(paused.number); }).catch(function(){ alert('Trading could not be resumed. Please try again.'); });
+        }
       });
     }
 
