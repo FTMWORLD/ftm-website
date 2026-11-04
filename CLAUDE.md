@@ -37,3 +37,4 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Replies to the owner (owner instruction, 3 November 2026)
 - Always answer in 5 to 6 short sentences at most. No long notes, no long tables unless asked.
+- Format replies as short bullet points, one point per line, with space between them. Never one dense paragraph.
