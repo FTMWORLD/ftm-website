@@ -494,6 +494,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .perf-cell.down{background:#FDECEE;border-color:#F6C9CF}.perf-cell.down b{color:var(--red-dark)}
   .perf-cell.ytd{border-width:2px;border-color:var(--blue)}
 
+  .rk-back{position:fixed;inset:0;z-index:300;background:rgba(11,20,64,.55);display:grid;place-items:center;padding:16px}.rk-back[hidden]{display:none}
+  .rk-box{background:#fff;border-radius:18px;padding:22px;width:min(380px,100%);display:grid;gap:12px}
+  .rk-box select{padding:11px;border:1px solid var(--line);border-radius:10px;font:inherit}
+  .rk-ack{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text)}
+  .rk-err{color:var(--red-dark);font-size:13px;margin:0}
+  .rk-btns{display:flex;gap:8px;justify-content:flex-end}
   .acct-limit{font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
   .acct-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
   .acct-table td{vertical-align:middle}
@@ -4310,7 +4316,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           });
         }).then(function(r){
           return r.json().then(function(j){
-            if(!r.ok || j.ok===false) throw Object.assign(new Error(j.message||('HTTP '+r.status)), {code:j.error, status:r.status, issues:j.issues});
+            if(!r.ok || j.ok===false) throw Object.assign(new Error(j.message||('HTTP '+r.status)), {code:j.error, status:r.status, issues:j.issues, body:j});
             return j;
           });
         });
@@ -4402,7 +4408,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           return page(0);
         },
         fetchMe: function(){ return call('/me'); },
-        pauseAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST' }); },
+        pauseAccount: function(accountId, closeOpen){ return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST', body: closeOpen?{close_open:true}:{} }); },
+        setRiskTier: function(accountId, tier, ack){ var b={risk_tier:tier}; if(ack) b.growth_acknowledged=true; return call('/accounts/'+encodeURIComponent(accountId)+'/risk_tier', { method:'PUT', body:b }); },
         resumeAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/resume', { method:'POST' }); },
         activateAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/activate', { method:'POST' }); },
         closePosition: function(accountId, ref){ return call('/accounts/'+encodeURIComponent(accountId)+'/positions/'+encodeURIComponent(ref)+'/close', { method:'POST' }); },
@@ -4439,6 +4446,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
               ACCOUNT_REMOVAL_IN_PROGRESS:'This account is still being removed. Please wait a minute and try again.',
               ACCOUNT_LIMIT:'You can connect up to 3 accounts. Remove one to add another.',
+              ACCOUNT_NOT_READY:'This account is not ready yet. Wait until it shows as connected, then try again.',
 
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
@@ -5021,7 +5029,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     var VALIDATION_REASON_FALLBACK = 'This account needs attention. Please contact support.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function renderAccounts(){
-      var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts'.replace('{}',Lm.used).replace('{}',Lm.max); }
+      var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts used'.replace('{}',Lm.used).replace('{}',Lm.max); }
       var m=F.metrics(), A=F.data.accounts||[];
       el('acctRows').innerHTML=A.map(function(a,i){
         var status;
@@ -5044,7 +5052,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
           if(a.displayStatus==='ACTION_REQUIRED' && a.canRetryPassword) items+='<button class="acct-menu-item" data-fix="'+i+'">Update and try again</button>';
 
-          if(a.canControl && a.active) items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button>';
+          if(a.canControl && a.active) items+='<button class="acct-menu-item" data-pause="'+i+'">Pause trading</button><button class="acct-menu-item" data-pauseclose="'+i+'">Pause and close all trades</button>';
+          if(a.canControl) items+='<button class="acct-menu-item" data-risk="'+i+'">Change risk profile</button>';
           if(a.canControl && !a.active && a.displayStatus!=='ACTION_REQUIRED' && a.displayStatus!=='SETUP_INCOMPLETE') items+='<button class="acct-menu-item" data-switch="'+i+'">Trade on this account</button>';
           if(F.viewedAccount && F.viewedAccount()!==a) items+='<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>';
           items+='<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>';
@@ -5134,7 +5143,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       F.remote.activateAccount(a.accountId).then(function(){
         F.viewAccount(a.number);
       }).catch(function(err){
-        alert('The trading account could not be switched. Please try again.');
+        alert(err.code==='ACCOUNT_NOT_READY'?'This account is not ready yet. Wait until it shows as connected, then try again.':'The trading account could not be switched. Please try again.');
       });
     });
     el('acctRows').addEventListener('click',function(e){
@@ -6563,6 +6572,38 @@ tick();setInterval(tick,5000);})();
     F._meTried=true;
     F.remote.fetchMe().then(function(j){ if(j&&j.customer_public_id) F.publicId=j.customer_public_id; }).catch(function(){});
   },3000);
+})();
+</script>
+<script>
+(function(){
+  var rows=document.getElementById('acctRows'); if(!rows) return;
+  var F=window.FTM;
+  function refresh(a){ if(F.viewAccount) F.viewAccount(F.viewNum||(a&&a.number)); }
+  rows.addEventListener('click',function(e){
+    var b=e.target.closest('[data-pauseclose]'); if(!b) return;
+    var a=F.data.accounts[+b.dataset.pauseclose]; if(!a||!a.accountId) return;
+    if(!confirm('Pause trading and close all open trades on this account now?')) return;
+    F.remote.pauseAccount(a.accountId,true).then(function(){ refresh(a); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
+  });
+  var box=document.createElement('div');box.className='rk-back';box.hidden=true;
+  box.innerHTML='<div class="rk-box" role="dialog" aria-modal="true"><h3>Change risk profile</h3><select id="rkTier"><option value="CONSERVATIVE">Conservative</option><option value="BALANCED">Balanced</option><option value="GROWTH">Growth</option></select><label class="rk-ack" id="rkAckW" hidden><input type="checkbox" id="rkAck"> <span id="rkAckT"></span></label><p class="rk-err" id="rkErr" hidden></p><div class="rk-btns"><button type="button" class="btn btn-outline btn-sm" id="rkCancel">Cancel</button><button type="button" class="btn btn-red btn-sm" id="rkSave">Save</button></div></div>';
+  document.body.appendChild(box);
+  var cur=null;
+  function $(i){return document.getElementById(i);}
+  rows.addEventListener('click',function(e){
+    var b=e.target.closest('[data-risk]'); if(!b) return;
+    cur=F.data.accounts[+b.dataset.risk]; if(!cur) return;
+    $('rkTier').value=cur.riskTier||'BALANCED'; $('rkAckW').hidden=true; $('rkAck').checked=false; $('rkErr').hidden=true; box.hidden=false;
+  });
+  $('rkCancel').addEventListener('click',function(){ box.hidden=true; });
+  $('rkSave').addEventListener('click',function(){
+    var t=$('rkTier').value, ack=!$('rkAckW').hidden && $('rkAck').checked;
+    if(!$('rkAckW').hidden && !ack){ $('rkErr').textContent='Tick the box to confirm.'; $('rkErr').hidden=false; return; }
+    F.remote.setRiskTier(cur.accountId,t,ack).then(function(){ box.hidden=true; refresh(cur); }).catch(function(err){
+      if(err.code==='GROWTH_ACKNOWLEDGEMENT_REQUIRED'){ $('rkAckT').textContent=(err.body&&err.body.acknowledgement_text)||'I understand that Growth uses larger trades and larger swings.'; $('rkAckW').hidden=false; $('rkErr').hidden=true; return; }
+      $('rkErr').textContent='The risk profile could not be changed. Please try again.'; $('rkErr').hidden=false;
+    });
+  });
 })();
 </script>
 </body>

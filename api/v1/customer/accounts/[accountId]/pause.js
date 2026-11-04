@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
   const { accountId } = req.query;
   if (!accountId) return res.status(400).json({ ok: false, error: 'VALIDATION_FAILED' });
   try {
-    const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/pause', { method: 'POST', authSubject: user.id, authEmail: user.email });
+    const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/pause', { method: 'POST', body: (req.body && req.body.close_open === true) ? { close_open: true } : {}, authSubject: user.id, authEmail: user.email });
     if (r.ok) return res.status(r.status).json(r.body);
     console.error('FTM pause account: engine answered', r.status, r.body && r.body.error);
     return res.status(r.status || 500).json({ ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR' });
