@@ -3878,7 +3878,22 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
               });
               if(FT.renderAccounts) FT.renderAccounts();
             }
-            setTimeout(function(){ if(FT && FT.loadLive) FT.loadLive(); },4000);
+            var tries=0, accId=r&&r.account_id;
+            (function poll(){
+              tries++;
+              FT.remote.fetchAccounts().then(function(list){
+                var a=list.filter(function(x){return x.accountId===accId;})[0];
+                var st=a&&a.displayStatus;
+                if(st && st!=='SETUP_INCOMPLETE'){
+                  msg.style.color = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? '#1f8a5b' : '#E5323E';
+                  msg.textContent = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? 'Account connected.' : 'Connection needs attention. Open Accounts to see why.';
+                  if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); });
+                  return;
+                }
+                if(tries<24) setTimeout(poll,5000);
+                else { msg.style.color='#B4690E'; msg.textContent='Still connecting. This can take a few minutes; check Accounts later.'; }
+              }).catch(function(){ if(tries<24) setTimeout(poll,5000); });
+            })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){
           btn.disabled=false;
@@ -4632,7 +4647,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         if(!F._own) F._own={closed:F.data.closed, open:F.data.open};
         if(v && on && v!==on){ F.data.closed=[]; F.data.open=[]; } else { F.data.closed=F._own.closed; F.data.open=F._own.open; }
       }
-      var done=function(){ if(F.redrawAllViews)F.redrawAllViews(); else if(F.render)F.render(); if(F.renderAccounts)F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } };
+      var done=function(){ if(F.render)F.render(); if(F.redrawAllViews)F.redrawAllViews(); if(F.renderAccounts)F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } };
       if(F.remote && F.remote.ready()) loadLive().then(done); else done();
     };
     F.viewedAccount = function(){
@@ -5080,7 +5095,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
         var kindLabel = (a.tradeMode && TRADE_MODE_LABEL[a.tradeMode]) || 'Account type not yet confirmed';
         var nameCell = '<b>'+a.name+'</b><div class="acct-kind">'+kindLabel+'</div>';
-        return '<tr class="'+(a.active?'active':'')+'"><td>'+nameCell+'</td><td>'+a.number+'</td><td>'+a.provider+'</td>'+
+        return '<tr class="'+(a.active?'active':'')+'"><td>'+nameCell+'</td><td>'+a.number+'</td><td>'+(a.provider||a.server||'&mdash;')+'</td>'+
           '<td>'+typeCell+'</td>'+
           '<td>'+(a.server||'&mdash;')+'</td><td>'+balCell+'</td>'+
           '<td>'+pl+'</td>'+
