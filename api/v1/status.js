@@ -56,7 +56,14 @@ module.exports = async function handler(req, res) {
     }),
     check('Emails (Brevo)', async () => {
       if (!env.BREVO_API_KEY) throw new Error('BREVO_API_KEY missing in Vercel');
-      must(await get('https://api.brevo.com/v3/account', { headers: { 'api-key': env.BREVO_API_KEY, accept: 'application/json' } }), 'Brevo');
+      const r = await get('https://api.brevo.com/v3/account', { headers: { 'api-key': env.BREVO_API_KEY, accept: 'application/json' } });
+      if (r.status === 401 || r.status === 403) throw new Error('Brevo refused the API key (' + r.status + '): check the key and the authorised IPs in Brevo, Security');
+      must(r, 'Brevo');
+      const j = await r.json().catch(() => ({}));
+      const plans = (j.plan || []).filter(p => p.creditsType === 'sendLimit' || p.type);
+      const left = plans.map(p => p.credits).filter(c => typeof c === 'number');
+      if (left.length && Math.min.apply(null, left) <= 0) throw new Error('Brevo has no email credits left on the current plan');
+      return left.length ? ('credits left: ' + left.join(', ')) : null;
     }),
     check('Ask here chat (Anthropic)', async () => {
       if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY missing in Vercel');
