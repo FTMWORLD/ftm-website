@@ -689,6 +689,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .acct-table .conn-wait{background:#FFF3E0;color:#B4690E}
   .acct-table .conn-wait::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#B4690E;margin-right:6px;vertical-align:middle;animation:blink 1.1s ease-in-out infinite}
   @media (prefers-reduced-motion:reduce){.acct-table .conn-wait::before{animation:none}}
+  .acct-table .conn-neutral{background:#EEF1F8;color:#152a7a}
   .acct-table .conn-bad{background:#FDEAEA;color:#C4302B}
   .acct-table .conn-btn{border:1px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:12.5px;font-weight:700;padding:6px 13px;border-radius:99px;cursor:pointer;white-space:nowrap}
   .acct-table .conn-btn:hover{background:var(--ink);color:#fff}
@@ -4414,7 +4415,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           marginFree: num(a.margin_free),
           lastReported: a.last_reported_at ? Date.parse(a.last_reported_at) : null,
           canControl: a.is_trading!==undefined,
-          isMaster: a.is_master===true || a.account_role==='MASTER',
+          isMaster: a.is_master===true || a.view_only===true || a.account_role==='MASTER' || /^view_?only$/i.test(a.display_status||'') || /^view_?only$/i.test(a.status||'') || /^view_?only$/i.test(a.status_reason||''),
           active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
           displayStatus: a.display_status,
           statusReason: a.status_reason,
@@ -4523,14 +4524,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
             }
             var friendly={
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
-              CUSTOMER_NOT_PERMITTED:'Your account cannot connect a trading account right now. Contact support.',
+              CUSTOMER_NOT_PERMITTED:'Your FTM plan does not include connecting a trading account. Choose a plan to continue.',
               ACCOUNT_ALREADY_CONNECTED:'This trading account is already connected to FTM.',
 
               ACCOUNT_REMOVAL_IN_PROGRESS:'This account is still being removed. Please wait a minute and try again.',
               ACCOUNT_LIMIT:'You can connect up to 3 accounts. Remove one to add another.',
               ACCOUNT_NOT_READY:'This account is not ready yet. Wait until it shows as connected, then try again.',
 
-              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
+              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Check your password, then remove the account and add it again.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
             console.warn('FTM add account refused:', e.status, e.code, e.body);
@@ -4548,8 +4549,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               ACCOUNT_NOT_FOUND:'That account could not be found.',
               ACCOUNT_PROVISIONED:'This account could not be removed right now. Please try again in a minute.',
-              ACCOUNT_DISABLED:'This account is no longer active. Please contact support.',
-              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
+              ACCOUNT_DISABLED:'This account is no longer active on FTM. Remove it and add it again to continue.',
+              PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Check your password, then remove the account and add it again.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
             throw new Error(friendly[e.code] || window.FTM.why(e,'Could not update that password.'));
@@ -5104,7 +5105,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
     var STATUS_LABEL = {
       MAINTENANCE:      {text:'Platform maintenance', tone:'wait'},
-      BLOCKED:          {text:'Blocked — contact support', tone:'bad'},
+      BLOCKED:          {text:'Not available for trading', tone:'wait'},
       SETUP_INCOMPLETE: {text:'Connecting', tone:'wait'},
       ACTION_REQUIRED:  {text:'Action required', tone:'bad'},
 
@@ -5123,10 +5124,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
     var VALIDATION_REASON_TEXT = {
       NOT_HEDGING:    'FTM requires a hedging account; please open one with your broker and connect that.',
-      NOT_CONNECTED:  'We could not log in with the details provided. Please contact FTM support to update your login details.',
-      LOGIN_MISMATCH: 'The details you entered logged into a different account than the account number you gave. Please contact FTM support.'
+      NOT_CONNECTED:  'We could not log in with these details. Check your password, account number and server, then try again.',
+      LOGIN_MISMATCH: 'The details you entered logged into a different account than the account number you gave. Check the account number and try again.'
     };
-    var VALIDATION_REASON_FALLBACK = 'This account needs attention. Please contact support.';
+    var VALIDATION_REASON_FALLBACK = 'FTM could not set up this account. Check your login details, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function renderAccounts(){
       var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts used'.replace('{}',Lm.used).replace('{}',Lm.max); }
@@ -5136,7 +5137,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         if(F.pendingRemove && F.pendingRemove[a.accountId]){
           status='<span class="conn conn-wait">Removing…</span>';
         } else if(a.isMaster){
-          status='<span class="conn conn-good">Master, view only</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
+          status='<span class="conn conn-neutral">View only — FTM master account</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
         } else if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
                   STATUS_LABEL[a.displayStatus] || STATUS_LABEL.SETUP_FAILED;
@@ -6652,7 +6653,7 @@ tick();setInterval(tick,5000);})();
     var uw=$('umViewW'), us=$('umView'); if(uw){ uw.hidden=A.length<2; }
     if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+' · '+lt(a.active?TRADING:(a.isMaster?MASTER:VIEWONLY))+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h; if(us&&us.innerHTML!==h)us.innerHTML=h;}
   }
-  var TRADING='Trading', VIEWONLY='View only', MASTER='Master, view only';
+  var TRADING='Trading', VIEWONLY='View only', MASTER='View only — FTM master account';
   function lt(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
   $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
   $('umView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); var l=document.getElementById('acctA'); if(l) l.hidden=true; });
