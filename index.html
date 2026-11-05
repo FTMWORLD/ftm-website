@@ -340,6 +340,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-ref{width:26px;height:26px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer}
   .dx-ref svg{width:14px;height:14px}.dx-ref.spin svg{animation:dxSpin .7s linear}
   @keyframes dxSpin{to{transform:rotate(360deg)}}
+  #appView .app-title-ic,#appView .crumb-acct-sep,#appView #crumbAcct{display:none!important}
+  .dx-hero .dx-spark:not([hidden]){display:block!important;flex:none;width:170px;height:76px;align-self:flex-end}
+  .dx-spark[hidden],.dx-go[hidden]{display:none!important}
+  @media (max-width:560px){.dx-hero .dx-spark:not([hidden]){width:100%;height:64px}#appView #pageSub{font-size:13.5px}}
   .dx-cash[hidden]{display:none!important}
   .dx-cash{display:flex;flex-direction:column;gap:8px;flex:none;align-self:center}
   .dx-cbtn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(227,182,47,.55);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;transition:background .15s}
@@ -2193,7 +2197,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       </div>
             <div class="app-crumb">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11 12 4l8 7M6 10v9h12v-9"/></svg>
-        <span>Client area</span><em>/</em><span id="crumbView">Dashboard</span><em>/</em><span class="cur" id="crumbAcct">&mdash;</span>
+        <span>Client area</span><em>/</em><span id="crumbView">Dashboard</span><em class="crumb-acct-sep">/</em><span class="cur" id="crumbAcct">&mdash;</span>
       </div>
       <div class="app-title">
         <span class="app-title-ic" id="pageIcon"></span>
@@ -2214,7 +2218,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           <b class="dx-val" id="dxVal">&mdash;</b>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
         </div>
-        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button>
+        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg>
       </div>
       <div class="dx-acc">
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
@@ -5414,7 +5418,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     }
 
     var VIEW_META={
-      metrics:  {t:'Account metrics',    s:'Everything FTM MACHINE has done on this account.'},
+      metrics:  {t:'Account metrics',    s:'Every trade FTM MACHINE made here.'},
       calendar: {t:'Trading calendar',   s:'Profit and loss for every day, week and month.'},
       perf:     {t:'Performance',        s:'How every month and every market has performed.'},
       board:    {t:'Leaderboard',        s:'Where you stand among other FTM accounts.'},
@@ -6522,12 +6526,21 @@ tick();setInterval(tick,5000);})();
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); var ndb=$('noDataBar'); if(ndb&&!ndb.hidden) bal='\u2014'; $('dxVal').textContent=bal; $('dxBal').textContent=bal;
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
+    var sp=$('dxSpark'), C=((window.FTM&&FTM.data&&FTM.data.closed)||[]).filter(function(t){return t.closeTime&&t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
+    var showSp=!free() && C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
+    if(showSp){ var acc=0, pts=C.map(function(t){acc+=t.pl;return acc;}); var step=Math.max(1,Math.floor(pts.length/60)); pts=pts.filter(function(v,i){return i%step===0||i===pts.length-1;});
+      var mn=Math.min.apply(null,pts), mx=Math.max.apply(null,pts), r=(mx-mn)||1;
+      var d=pts.map(function(v,i){return (i?'L':'M')+(i/(pts.length-1)*160).toFixed(1)+' '+(64-(v-mn)/r*58).toFixed(1);}).join(' ');
+      var up=pts[pts.length-1]>=pts[0], c=up?'#3CC98A':'#E5323E';
+      var h='<path d="'+d+' L160 70 L0 70 Z" fill="'+c+'" opacity=".15"/><path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/>';
+      if(sp.innerHTML!==h) sp.innerHTML=h; }
     var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
     $('dxViewW').hidden=A.length<2;
     if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+(a.active?' · {}'.replace('{}',TRADING):'')+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h;}
   }
   var TRADING='Trading';
   $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
+  setInterval(function(){ if(!app.hidden) sync(); },2000);
   ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus','noDataBar'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});});
   new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
 
