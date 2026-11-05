@@ -344,6 +344,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-hero .dx-spark:not([hidden]){display:block!important;flex:none;width:170px;height:76px;align-self:flex-end}
   .dx-spark[hidden],.dx-go[hidden]{display:none!important}
   @media (max-width:560px){.dx-hero .dx-spark:not([hidden]){width:100%;height:64px}#appView #pageSub{font-size:13.5px}}
+  .dx-float{position:absolute;right:28px;top:24px;font-size:14px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08)}
+  .dx-float.up{color:#3CC98A}.dx-float.down{color:#ff6b74}.dx-float[hidden]{display:none}
+  @media (min-width:561px){.dx-hero{align-items:center}.dx-hero .dx-spark:not([hidden]){margin-top:34px}}
+  @media (max-width:560px){.dx-float{position:static;align-self:flex-start}}
   .dx-cash[hidden]{display:none!important}
   .dx-cash{display:flex;flex-direction:column;gap:8px;flex:none;align-self:center}
   .dx-cbtn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(227,182,47,.55);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;transition:background .15s}
@@ -2222,7 +2226,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           <b class="dx-val" id="dxVal">&mdash;</b>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
         </div>
-        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg>
+        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><span class="dx-float" id="dxFloat" hidden></span><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg>
       </div>
       <div class="dx-acc">
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
@@ -2230,12 +2234,6 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <div class="dx-acc-st" id="dxSt">&mdash;</div>
         <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
-    </div>
-    <h3 class="dx-sec">Featured</h3>
-    <div class="dx-feat">
-      <a class="dx-card" href="performance.html"><span class="gs-reel dx-reel r1" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+98,644%</b><small>Portfolio, 2020 to 2026</small></span><span class="gr-s" style="animation-delay:2.5s"><b>$98.7M</b><small>from $100k, Portfolio</small></span><span class="gr-s" style="animation-delay:5.0s"><b>5 markets</b><small>on one account</small></span><span class="gr-s" style="animation-delay:7.5s"><b>24/7</b><small>trades while you sleep</small></span><i class="gr-live">FTM</i></span><b>Performance report</b><p>Every month of FTM MACHINE results, market by market.</p><span class="dx-btn">Open report</span></a>
-      <button type="button" class="dx-card" data-go="calendar"><span class="gs-reel dx-reel r4" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>53 of 82</b><small>months profitable</small></span><span class="gr-s" style="animation-delay:2.5s"><b>7 of 7</b><small>years profitable</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+317.9%</b><small>best year, 2025</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+176.1%</b><small>average a year</small></span><i class="gr-live">FTM</i></span><b>Trading calendar</b><p>See each day's profit and loss on your account.</p><span class="dx-btn">View calendar</span></button>
-      <a class="dx-card" href="performance.html#mk-gold"><span class="gs-reel dx-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+3,658%</b><small>Gold, Growth 2×</small></span><span class="gr-s" style="animation-delay:2.5s"><b>+570%</b><small>Bitcoin, Growth 2×</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+232%</b><small>US Tech 100, Growth 2×</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+1,638%</b><small>HK50, Growth 2×</small></span><i class="gr-live">FTM</i></span><b>Every market, Growth 2×</b><p>Gold, Bitcoin, USD/JPY, US Tech 100, HK50 and Boom 1000, every trade in the trust engine.</p><span class="dx-btn">Explore markets</span></a>
     </div>
     <div class="app-grid">
       <div class="app-tile"><span>Balance</span><b id="mBalance">&mdash;</b></div>
@@ -2372,7 +2370,13 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead>
         <tbody id="mOpenRows"></tbody>
       </table></div>
+        <h3 class="dx-sec">Featured</h3>
+    <div class="dx-feat">
+      <a class="dx-card" href="performance.html"><span class="gs-reel dx-reel r1" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+98,644%</b><small>Portfolio, 2020 to 2026</small></span><span class="gr-s" style="animation-delay:2.5s"><b>$98.7M</b><small>from $100k, Portfolio</small></span><span class="gr-s" style="animation-delay:5.0s"><b>5 markets</b><small>on one account</small></span><span class="gr-s" style="animation-delay:7.5s"><b>24/7</b><small>trades while you sleep</small></span><i class="gr-live">FTM</i></span><b>Performance report</b><p>Every month of FTM MACHINE results, market by market.</p><span class="dx-btn">Open report</span></a>
+      <button type="button" class="dx-card" data-go="calendar"><span class="gs-reel dx-reel r4" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>53 of 82</b><small>months profitable</small></span><span class="gr-s" style="animation-delay:2.5s"><b>7 of 7</b><small>years profitable</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+317.9%</b><small>best year, 2025</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+176.1%</b><small>average a year</small></span><i class="gr-live">FTM</i></span><b>Trading calendar</b><p>See each day's profit and loss on your account.</p><span class="dx-btn">View calendar</span></button>
+      <a class="dx-card" href="performance.html#mk-gold"><span class="gs-reel dx-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+3,658%</b><small>Gold, Growth 2×</small></span><span class="gr-s" style="animation-delay:2.5s"><b>+570%</b><small>Bitcoin, Growth 2×</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+232%</b><small>US Tech 100, Growth 2×</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+1,638%</b><small>HK50, Growth 2×</small></span><i class="gr-live">FTM</i></span><b>Every market, Growth 2×</b><p>Gold, Bitcoin, USD/JPY, US Tech 100, HK50 and Boom 1000, every trade in the trust engine.</p><span class="dx-btn">Explore markets</span></a>
     </div>
+</div>
       </section>
 
       <section class="app-view" data-view="calendar" hidden>
@@ -5424,7 +5428,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     }
 
     var VIEW_META={
-      metrics:  {t:'Account metrics',    s:'Every trade FTM MACHINE made here.'},
+      metrics:  {t:'Account metrics',    s:'Every result from FTM MACHINE here.'},
       calendar: {t:'Trading calendar',   s:'Profit and loss for every day, week and month.'},
       perf:     {t:'Performance',        s:'How every month and every market has performed.'},
       board:    {t:'Leaderboard',        s:'Where you stand among other FTM accounts.'},
@@ -6542,6 +6546,8 @@ tick();setInterval(tick,5000);})();
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); var ndb=$('noDataBar'); if(ndb&&!ndb.hidden) bal='\u2014'; $('dxVal').textContent=bal; $('dxBal').textContent=bal;
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
+    var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
+    if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
     var sp=$('dxSpark'), C=((window.FTM&&FTM.data&&FTM.data.closed)||[]).filter(function(t){return t.closeTime&&t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
     var showSp=!free() && C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
     if(showSp){ var acc=0, pts=C.map(function(t){acc+=t.pl;return acc;}); var step=Math.max(1,Math.floor(pts.length/60)); pts=pts.filter(function(v,i){return i%step===0||i===pts.length-1;});
