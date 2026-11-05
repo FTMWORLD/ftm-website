@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
   try {
     const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/risk_tier', { method: 'PUT', body, authSubject: user.id, authEmail: user.email });
     if (r.ok) return res.status(r.status).json(r.body);
-    const out = { ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR' };
+    const out = { ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR', message: (r.body && typeof r.body.message === 'string') ? r.body.message.slice(0, 300) : undefined };
     if (r.body && r.body.acknowledgement_text) out.acknowledgement_text = r.body.acknowledgement_text;
     return res.status(r.status || 500).json(out);
   } catch (e) {

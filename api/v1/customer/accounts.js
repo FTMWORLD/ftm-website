@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
     var code = result.body && result.body.error;
     console.error('FTM connect-account: engine refused', result.status, code, 'for user', user.id, 'account', body && body.account_number, 'on', body && body.broker_server);
     var status = STATUS_FOR_CODE[code] || result.status || 500;
-    var payload = { ok: false, error: code || 'INTERNAL_SERVER_ERROR' };
+    var payload = { ok: false, error: code || 'INTERNAL_SERVER_ERROR', message: (result.body && typeof result.body.message === 'string') ? result.body.message.slice(0, 300) : undefined };
     if (result.body && result.body.issues) payload.issues = result.body.issues;
     // Deliberately no message field here — the browser maps codes to its
     // own wording (see FTM.remote.connectAccount), including the

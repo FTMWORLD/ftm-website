@@ -58,7 +58,7 @@ module.exports = async function handler(req, res) {
     }
     var code = result.body && result.body.error;
     var status = STATUS_FOR_CODE[code] || result.status || 500;
-    res.status(status).json({ ok: false, error: code || 'INTERNAL_SERVER_ERROR' });
+    res.status(status).json({ ok: false, error: code || 'INTERNAL_SERVER_ERROR', message: (result.body && typeof result.body.message === 'string') ? result.body.message.slice(0, 300) : undefined });
   } catch (e) {
     console.error('FTM history: engine unreachable:', e.message);
     res.status(502).json({ ok: false, error: 'ENGINE_UNREACHABLE', message: 'Could not reach the FTM engine. Try again shortly.' });

@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
     const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/resume', { method: 'POST', authSubject: user.id, authEmail: user.email });
     if (r.ok) return res.status(r.status).json(r.body);
     console.error('FTM resume account: engine answered', r.status, r.body && r.body.error);
-    return res.status(r.status || 500).json({ ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR' });
+    return res.status(r.status || 500).json({ ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR', message: (r.body && typeof r.body.message === 'string') ? r.body.message.slice(0, 300) : undefined });
   } catch (e) {
     console.error('FTM resume account: engine unreachable:', e.message);
     return res.status(502).json({ ok: false, error: 'ENGINE_UNREACHABLE' });

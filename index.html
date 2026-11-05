@@ -4356,6 +4356,13 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
     window.FTM.remote = (function(){
 
+      window.FTM.why=function(e,fb){
+        var t=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
+        var m=e&&e.message;
+        if(m && m!==fb && !/^HTTP \d+$/.test(m) && !/^[A-Z][A-Z0-9_]{2,}$/.test(String(m).trim()) && !/Failed to fetch|NetworkError|Load failed|JSON|Unexpected token/i.test(m)) return t(m);
+        var c=e&&(e.code||(e.status?'HTTP '+e.status:(m?'network':'')));
+        return t(fb)+(c?' ('+c+')':'');
+      };
       function safeMsg(m, fallback){
         return (m && !/^[A-Z][A-Z0-9_]{2,}$/.test(String(m).trim())) ? m : fallback;
       }
@@ -4522,7 +4529,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            var out=new Error(friendly[e.code] || safeMsg(e.message,'Could not connect that account.'));
+            console.warn('FTM add account refused:', e.status, e.code, e.body);
+            var out=new Error(friendly[e.code] || window.FTM.why(e,'Could not connect that account.'));
             out.code=e.code;
             throw out;
           });
@@ -4540,7 +4548,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            throw new Error(friendly[e.code] || safeMsg(e.message,'Could not update that password.'));
+            throw new Error(friendly[e.code] || window.FTM.why(e,'Could not update that password.'));
           });
         },
 
@@ -4551,16 +4559,17 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
             return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST', body:{close_open:true} }).catch(function(){})
               .then(function(){ return new Promise(function(r){ setTimeout(r,4000); }); }).then(del);
           }).then(function(j){
+            if(j && j.removed===false) throw Object.assign(new Error('Could not remove that account.'),{code:'NOT_REMOVED'});
             return j;
           }).catch(function(e){
             var friendly={
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               ACCOUNT_NOT_FOUND:'That account could not be found.',
               OPEN_POSITIONS:'This account still has open copied positions. You can remove it once they have closed.',
-              ACCOUNT_PROVISIONED:'This account could not be removed right now. Please try again in a minute.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
-            throw new Error(friendly[e.code] || safeMsg(e.message,'Could not remove that account.'));
+            console.warn('FTM remove account failed:', e.status, e.code, e.body);
+            var out=new Error(friendly[e.code] || safeMsg(e.message,'Could not remove that account.')); out.code=friendly[e.code]?null:(e.code||(e.status?'HTTP '+e.status:null)); throw out;
           });
         }
       };
@@ -5112,7 +5121,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var m=F.metrics(), A=F.data.accounts||[];
       el('acctRows').innerHTML=A.map(function(a,i){
         var status;
-        if(a.displayStatus){
+        if(F.pendingRemove && F.pendingRemove[a.accountId]){
+          status='<span class="conn conn-wait">Removing…</span>';
+        } else if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
                   STATUS_LABEL[a.displayStatus] || STATUS_LABEL.SETUP_FAILED;
           var detail = '';
@@ -5223,7 +5234,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       F.remote.activateAccount(a.accountId).then(function(){
         F.viewAccount(a.number);
       }).catch(function(err){
-        alert(err.code==='ACCOUNT_NOT_READY'?'This account is not ready yet. Wait until it shows as connected, then try again.':'The trading account could not be switched. Please try again.');
+        alert(err.code==='ACCOUNT_NOT_READY'?'This account is not ready yet. Wait until it shows as connected, then try again.':F.why(err,'The trading account could not be switched. Please try again.'));
       });
     });
     el('acctRows').addEventListener('click',function(e){
@@ -5231,7 +5242,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       closeAcctMenus();
       var a=F.data.accounts[+b.dataset.pause]; if(!a||!a.accountId)return;
       if(!confirm('Pause trading on this account? FTM MACHINE stops opening new trades on it.'))return;
-      F.remote.pauseAccount(a.accountId).then(function(){ F.viewAccount(F.viewNum||a.number); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
+      F.remote.pauseAccount(a.accountId).then(function(){ F.viewAccount(F.viewNum||a.number); }).catch(function(err){ alert(F.why(err,'Trading could not be paused. Please try again.')); });
     });
 
     el('acctRows').addEventListener('click',function(e){
@@ -5292,13 +5303,28 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var b=e.target.closest('[data-remove]'); if(!b)return;
       var a=F.data.accounts[+b.dataset.remove]; if(!a)return;
       if(!confirm('Remove this account? FTM will stop copying trades to it and delete the saved password. Its trade history will no longer appear here.'))return;
-      F.remote.removeAccount(a.accountId).then(function(){
-
-        F.data.accounts=(F.data.accounts||[]).filter(function(x){return x.accountId!==a.accountId;});
-        if(F.render)F.render();
-        if(F.loadLive)F.loadLive();
+      var id=a.accountId; F.pendingRemove=F.pendingRemove||{}; if(F.pendingRemove[id])return;
+      F.pendingRemove[id]=Date.now();
+      function rr(){ if(F.render)F.render(); renderAccounts(); } rr();
+      function say(err){ alert(F.why(err,'Could not remove that account.')); }
+      F.remote.removeAccount(id).then(function(){
+        var tries=0;
+        (function check(){
+          F.remote.fetchAccounts().then(function(list){
+            var still=list.some(function(x){return x.accountId===id;});
+            if(!still || ++tries>=24){
+              delete F.pendingRemove[id];
+              if(!still) F.data.accounts=(F.data.accounts||[]).filter(function(x){return x.accountId!==id;});
+              rr(); if(F.loadLive)F.loadLive();
+              if(still) say({message:'This account could not be removed right now. Please try again in a minute.', code:'STILL_LISTED'});
+              return;
+            }
+            setTimeout(check,5000);
+          }).catch(function(){ if(++tries<24) setTimeout(check,5000); else { delete F.pendingRemove[id]; rr(); } });
+        })();
       }).catch(function(err){
-        alert(err.message||'Could not remove that account.');
+        delete F.pendingRemove[id]; rr();
+        say(err);
       });
     });
     document.getElementById('acctFixClose').addEventListener('click',function(){
@@ -5350,9 +5376,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         var paused=(F.viewedAccount&&F.viewedAccount()&&!F.viewedAccount().active)?F.viewedAccount():A.filter(function(a){return a.displayStatus==='PAUSED';})[0];
         if(on){
           if(!confirm('Pause trading on this account? FTM MACHINE stops opening new trades on it.'))return;
-          F.remote.pauseAccount(on.accountId).then(function(){ F.viewAccount(F.viewNum||on.number); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
+          F.remote.pauseAccount(on.accountId).then(function(){ F.viewAccount(F.viewNum||on.number); }).catch(function(err){ alert(F.why(err,'Trading could not be paused. Please try again.')); });
         } else if(paused){
-          F.remote.resumeAccount(paused.accountId).then(function(){ F.viewAccount(paused.number); }).catch(function(){ alert('Trading could not be resumed. Please try again.'); });
+          F.remote.resumeAccount(paused.accountId).then(function(){ F.viewAccount(paused.number); }).catch(function(err){ alert(F.why(err,'Trading could not be resumed. Please try again.')); });
         }
       });
     }
@@ -6662,7 +6688,7 @@ tick();setInterval(tick,5000);})();
       setTimeout(function(){ if(F.viewAccount) F.viewAccount(F.viewNum||a.number); },4000);
     }).catch(function(err){
       b.disabled=false;
-      alert(err.code==='CLOSE_ALREADY_IN_PROGRESS'?'This trade is already closing.':err.code==='POSITION_NOT_OPEN'||err.status===404?'This trade is no longer open.':'The trade could not be closed. Please try again.');
+      alert(err.code==='CLOSE_ALREADY_IN_PROGRESS'?'This trade is already closing.':err.code==='POSITION_NOT_OPEN'||err.status===404?'This trade is no longer open.':F.why(err,'The trade could not be closed. Please try again.'));
     });
   });
   document.addEventListener('click',function(e){
@@ -6688,7 +6714,7 @@ tick();setInterval(tick,5000);})();
     var b=e.target.closest('[data-pauseclose]'); if(!b) return;
     var a=F.data.accounts[+b.dataset.pauseclose]; if(!a||!a.accountId) return;
     if(!confirm('Pause trading and close all open trades on this account now?')) return;
-    F.remote.pauseAccount(a.accountId,true).then(function(){ refresh(a); }).catch(function(){ alert('Trading could not be paused. Please try again.'); });
+    F.remote.pauseAccount(a.accountId,true).then(function(){ refresh(a); }).catch(function(err){ alert(F.why(err,'Trading could not be paused. Please try again.')); });
   });
   var box=document.createElement('div');box.className='rk-back';box.hidden=true;
   box.innerHTML='<div class="rk-box" role="dialog" aria-modal="true"><h3>Change risk profile</h3><select id="rkTier"><option value="CONSERVATIVE">Conservative</option><option value="BALANCED">Balanced</option><option value="GROWTH">Growth</option></select><label class="rk-ack" id="rkAckW" hidden><input type="checkbox" id="rkAck"> <span id="rkAckT"></span></label><p class="rk-err" id="rkErr" hidden></p><div class="rk-btns"><button type="button" class="btn btn-outline btn-sm" id="rkCancel">Cancel</button><button type="button" class="btn btn-red btn-sm" id="rkSave">Save</button></div></div>';
@@ -6706,7 +6732,7 @@ tick();setInterval(tick,5000);})();
     if(!$('rkAckW').hidden && !ack){ $('rkErr').textContent='Tick the box to confirm.'; $('rkErr').hidden=false; return; }
     F.remote.setRiskTier(cur.accountId,t,ack).then(function(){ box.hidden=true; refresh(cur); }).catch(function(err){
       if(err.code==='GROWTH_ACKNOWLEDGEMENT_REQUIRED'){ $('rkAckT').textContent=(err.body&&err.body.acknowledgement_text)||'I understand that Growth uses larger trades and larger swings.'; $('rkAckW').hidden=false; $('rkErr').hidden=true; return; }
-      $('rkErr').textContent='The risk profile could not be changed. Please try again.'; $('rkErr').hidden=false;
+      $('rkErr').textContent=F.why(err,'The risk profile could not be changed. Please try again.'); $('rkErr').hidden=false;
     });
   });
 })();
@@ -6765,7 +6791,7 @@ tick();setInterval(tick,5000);})();
       var end=j.period_end?new Date(j.period_end).toLocaleDateString():'';
       if(window.I18NE&&I18NE.t) st=I18NE.t(st);
       alert((end?'Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.':'Plan status: {}. Your payment receipts are emailed to you by Stripe.').replace('{}',st).replace('{}',end));
-    }).catch(function(){ alert('Your billing status could not be loaded. Please try again.'); });
+    }).catch(function(err){ alert(F.why(err,'Your billing status could not be loaded. Please try again.')); });
   });
 })();
 </script>
