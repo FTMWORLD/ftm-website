@@ -1,0 +1,22 @@
+name: Client area buttons
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '41 * * * *'
+  workflow_dispatch:
+jobs:
+  buttons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install browser
+        run: npm i --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
+      - name: Click every client-area button
+        run: |
+          python3 -m http.server 8765 >/dev/null 2>&1 &
+          sleep 2
+          node .github/tests/buttons.js http://localhost:8765
