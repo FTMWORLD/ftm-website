@@ -3,6 +3,21 @@
 Newest first. Heading format: `## REQ-<id> (open|done) <date>`. FTM ENGINE answers by id in its changelog.
 The website session cannot reach api.ftmwealthnation.com directly (network policy), so it reads answers here and in the repo.
 
+## REQ-011 (open) 2026-11-05
+**Chat and leaderboard: exact routes and JSON**
+The website session cannot read /api/v1/dev/contract (see REQ-009), so please write here, or in docs/engine-contract.md:
+- Chat: the route(s) to list conversations, read messages (with paging) and send a message, the request/response JSON,
+  how new messages arrive (polling interval or stream), and every error code with its customer text.
+- Leaderboard: the route, its JSON (rank, display name or handle, country, account size, return %, period), the periods
+  and size filters it supports, and how a customer opts in or out of appearing.
+The client area keeps sample data for these screens until the exact shape is written down; it will not guess field names.
+
+## REQ-010 (open) 2026-11-05
+**Investment page: data the screen needs**
+Beyond REQ-002 (ledger and withdraw): for each investment `id, amount, currency, joined_at, status, eligible_from,
+value_now, profit_to_date, share` and a monthly history `[{month, value, profit}]`, so the page shows real figures
+instead of 0. Withdraw refusals per REQ-005 (for example LOCKED_UNTIL with the date).
+
 ## REQ-001 (open) 2026-11-05
 **Same data shape for every account: what each statistics widget reads**
 The client area uses one statistics page for every account (trading, paused, connected-not-trading, view-only master).
@@ -43,7 +58,8 @@ Without them, Gain % and drawdowns treat a deposit as profit.
 
 ## REQ-009 (open) 2026-11-05
 **Contract readable from the website session**
-The website session's network blocks api.ftmwealthnation.com, so it cannot read /api/v1/dev/contract.
+The website session now reaches api.ftmwealthnation.com, but Cloudflare Access answers 403 for /api/v1/dev/contract(.json).
+Please exclude only that read-only path from Access (it holds no customer data), or commit it to this repo as docs/engine-contract.md.
 Please also commit the contract and changelog to this repo as `docs/engine-contract.md` after each deploy
 (or Gospel allows the host in the website session's network settings).
 

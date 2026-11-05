@@ -278,13 +278,14 @@ async function syncEngine(event) {
     case 'checkout.session.completed': {
       if (o.payment_status !== 'paid') return 'skipped (not paid)';
       if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'skipped (investment)';
+      if (!PAYMENT_LINK_PRODUCT[o.payment_link]) return 'skipped (unknown payment link)';
       status = 'ACTIVE';
       email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
       ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
       cus = typeof o.customer === 'string' ? o.customer : null;
       if (o.payment_link in PLAN_MONTHS) {
         const m = PLAN_MONTHS[o.payment_link];
-        if (m) { const d = new Date(o.created * 1000); d.setUTCMonth(d.getUTCMonth() + m); periodEnd = d.toISOString(); }
+        if (m) { const d = new Date((o.created || event.created || Math.floor(Date.now() / 1000)) * 1000); d.setUTCMonth(d.getUTCMonth() + m); periodEnd = d.toISOString(); }
       }
       break;
     }
