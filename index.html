@@ -346,7 +346,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   @media (max-width:560px){.dx-hero .dx-spark:not([hidden]){width:100%;height:64px}#appView #pageSub{font-size:13.5px}}
   .dx-float{position:absolute;right:28px;top:24px;font-size:14px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08)}
   .dx-float.up{color:#3CC98A}.dx-float.down{color:#ff6b74}.dx-float[hidden]{display:none}
-  @media (min-width:561px){.dx-hero{align-items:center}.dx-hero .dx-spark:not([hidden]){margin-top:34px}}
+  @media (min-width:561px){.dx-hero{align-items:center}.dx-hero .dx-spark:not([hidden]){margin-top:34px}.dx-float{top:auto;bottom:108px}}
+  .dx-spark .sp-line{stroke-dasharray:600;stroke-dashoffset:600;animation:spDraw 6s ease-in-out infinite}
+  .dx-spark .sp-dot{animation:spPulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes spDraw{0%{stroke-dashoffset:600}50%,100%{stroke-dashoffset:0}}
+  @keyframes spPulse{50%{transform:scale(1.8);opacity:.5}}
+  @media (prefers-reduced-motion:reduce){.dx-spark .sp-line,.dx-spark .sp-dot{animation:none;stroke-dashoffset:0}}
   @media (max-width:560px){.dx-float{position:static;align-self:flex-start}}
   .dx-cash[hidden]{display:none!important}
   .dx-cash{display:flex;flex-direction:column;gap:8px;flex:none;align-self:center}
@@ -488,7 +493,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
   .px-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.px-two>*{min-width:0}
   @media(max-width:860px){.px-two{grid-template-columns:1fr}}
-  .px-heat{display:grid;grid-template-columns:52px repeat(12,minmax(44px,1fr)) 64px;gap:4px;min-width:640px;font-variant-numeric:tabular-nums}
+  .px-heat{display:grid;grid-template-columns:44px repeat(12,minmax(0,1fr)) 56px;gap:3px;font-variant-numeric:tabular-nums}
+  .px-heat>div{font-size:11px!important}
+  @media (max-width:760px){.px-heat{grid-template-columns:repeat(6,minmax(0,1fr))}.px-heat>.h{display:none}.px-heat>.y,.px-heat>.ytot{grid-column:1/-1}.px-heat>div[data-m]::before{content:attr(data-m);display:block;font-size:9.5px;opacity:.75}}
   .px-heat>div{border-radius:8px;padding:9px 2px;text-align:center;font-size:12.5px;font-weight:700;background:var(--bg-3);color:var(--muted)}
   .px-heat>.h{background:none;font-size:12px;padding:2px}.px-heat>.y{background:none;color:var(--ink);font-weight:800;text-align:left}
   .px-bars{display:flex;align-items:flex-end;gap:6px;height:170px;padding-top:18px}
@@ -498,7 +505,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .px-bars b{font-size:11.5px;color:var(--ink)}.px-bars small{font-size:10.5px;color:var(--muted);white-space:nowrap}
   .px-sk i{background:var(--line)!important;opacity:.6}
   .px-empty{font-size:13.5px;color:var(--muted);margin-top:10px}
-  .perf-row{display:grid;grid-template-columns:70px repeat(13,minmax(76px,1fr));gap:7px;margin-top:14px}
+  .perf-row{display:grid;grid-template-columns:52px repeat(13,minmax(0,1fr));gap:5px;margin-top:12px}
+  .perf-row .perf-cell{padding:8px 2px;min-height:54px}.perf-row .perf-cell b{font-size:12px}.perf-row .perf-cell small{font-size:10px}
+  @media (max-width:760px){.perf-row{grid-template-columns:repeat(4,minmax(0,1fr))}.perf-row:first-child{display:none}.perf-row .yr{grid-column:1/-1}.perf-row .perf-cell::before{content:attr(data-m);font-size:10.5px;color:var(--muted);font-weight:700}.perf-row .perf-cell.ytd{grid-column:span 4}}
   .perf-row .yr{display:flex;align-items:center;font-weight:800;color:var(--ink);font-size:15px}
   .perf-head{color:var(--muted);font-size:12px;font-weight:700;text-align:center;padding-bottom:2px}
   .perf-cell{border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center;background:var(--bg-3);min-height:62px;display:grid;align-content:center;gap:3px}
@@ -518,6 +527,25 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .iv-empty[hidden]{display:none}
   .iv-empty b{font-size:20px;display:block}.iv-empty p{color:rgba(255,255,255,.8);font-size:14px;margin:6px 0 14px}
   @media (max-width:760px){.iv-empty{grid-template-columns:1fr;margin:12px 16px 0}}
+  #appView .dx-feat-wrap{display:none}
+  #appView .app-content:has(.app-view[data-view="metrics"]:not([hidden])) .dx-feat-wrap{display:grid}
+  @media (max-width:560px){.app-pl .right{text-align:left}.app-pl .pl-head{display:grid;gap:14px}}
+  .um-view{display:grid;gap:6px;padding:4px 12px 12px;border-bottom:1px solid var(--line);margin-bottom:4px;font-size:12px;color:var(--muted);font-weight:600}
+  .um-view[hidden]{display:none}
+  .um-view select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:13.5px;color:var(--ink);background:var(--bg-3)}
+  @media (max-width:560px){#appView .dx-acc{display:none}}
+  @media (max-width:700px){
+    #appView .app-scroll,#invView .app-scroll{overflow:visible}
+    .app-scroll table.app-trades,.app-scroll table.app-trades tbody,.app-scroll table.app-trades tr,.app-scroll table.app-trades td{display:block;width:100%}
+    .app-scroll table.app-trades thead,.app-scroll table.app-trades tr.th-row{display:none}
+    .app-scroll table.app-trades tr{border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:8px;background:#fff}
+    .app-scroll table.app-trades td{display:flex;justify-content:space-between;gap:12px;border:0!important;padding:6px 0!important;text-align:right;white-space:normal}
+    .app-scroll table.app-trades td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:600;text-align:left}
+    .app-scroll table.app-trades td:empty{display:none}
+  }
+  .unit-sw{display:inline-flex;margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+  .unit-sw button{border:0;background:none;font:inherit;font-weight:800;font-size:13px;padding:6px 14px;border-radius:999px;color:var(--muted);cursor:pointer}
+  .unit-sw button[aria-pressed="true"]{background:#0B1440;color:#fff}
   .acct-limit{font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
   .acct-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
   .acct-table td{vertical-align:middle}
@@ -2176,7 +2204,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2209,7 +2237,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       </div>
       <div class="app-title">
         <span class="app-title-ic" id="pageIcon"></span>
-        <div class="app-title-txt"><h2 id="pageTitle">&mdash;</h2><p id="pageSub">&mdash;</p></div>
+        <div class="app-title-txt"><h2 id="pageTitle">&mdash;</h2><p id="pageSub">&mdash;</p></div><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div>
         <div class="app-title-meta">
           <div><span>Plan</span><b id="hdrPlan">&mdash;</b></div>
           <div><span>Balance</span><b id="hdrBal">&mdash;</b></div>
@@ -2370,12 +2398,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead>
         <tbody id="mOpenRows"></tbody>
       </table></div>
-        <h3 class="dx-sec">Featured</h3>
-    <div class="dx-feat">
-      <a class="dx-card" href="performance.html"><span class="gs-reel dx-reel r1" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+98,644%</b><small>Portfolio, 2020 to 2026</small></span><span class="gr-s" style="animation-delay:2.5s"><b>$98.7M</b><small>from $100k, Portfolio</small></span><span class="gr-s" style="animation-delay:5.0s"><b>5 markets</b><small>on one account</small></span><span class="gr-s" style="animation-delay:7.5s"><b>24/7</b><small>trades while you sleep</small></span><i class="gr-live">FTM</i></span><b>Performance report</b><p>Every month of FTM MACHINE results, market by market.</p><span class="dx-btn">Open report</span></a>
-      <button type="button" class="dx-card" data-go="calendar"><span class="gs-reel dx-reel r4" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>53 of 82</b><small>months profitable</small></span><span class="gr-s" style="animation-delay:2.5s"><b>7 of 7</b><small>years profitable</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+317.9%</b><small>best year, 2025</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+176.1%</b><small>average a year</small></span><i class="gr-live">FTM</i></span><b>Trading calendar</b><p>See each day's profit and loss on your account.</p><span class="dx-btn">View calendar</span></button>
-      <a class="dx-card" href="performance.html#mk-gold"><span class="gs-reel dx-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+3,658%</b><small>Gold, Growth 2×</small></span><span class="gr-s" style="animation-delay:2.5s"><b>+570%</b><small>Bitcoin, Growth 2×</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+232%</b><small>US Tech 100, Growth 2×</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+1,638%</b><small>HK50, Growth 2×</small></span><i class="gr-live">FTM</i></span><b>Every market, Growth 2×</b><p>Gold, Bitcoin, USD/JPY, US Tech 100, HK50 and Boom 1000, every trade in the trust engine.</p><span class="dx-btn">Explore markets</span></a>
-    </div>
+
 </div>
       </section>
 
@@ -2667,6 +2690,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           </div>
         </div>
       </section>
+      <div class="app-main dx-feat-wrap">        <h3 class="dx-sec">Featured</h3>
+    <div class="dx-feat">
+      <a class="dx-card" href="performance.html"><span class="gs-reel dx-reel r1" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+98,644%</b><small>Portfolio, 2020 to 2026</small></span><span class="gr-s" style="animation-delay:2.5s"><b>$98.7M</b><small>from $100k, Portfolio</small></span><span class="gr-s" style="animation-delay:5.0s"><b>5 markets</b><small>on one account</small></span><span class="gr-s" style="animation-delay:7.5s"><b>24/7</b><small>trades while you sleep</small></span><i class="gr-live">FTM</i></span><b>Performance report</b><p>Every month of FTM MACHINE results, market by market.</p><span class="dx-btn">Open report</span></a>
+      <button type="button" class="dx-card" data-go="calendar"><span class="gs-reel dx-reel r4" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 L12 40 L24 42 L36 33 L48 35 L60 26 L72 28 L84 18 L96 20 L108 10 L120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>53 of 82</b><small>months profitable</small></span><span class="gr-s" style="animation-delay:2.5s"><b>7 of 7</b><small>years profitable</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+317.9%</b><small>best year, 2025</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+176.1%</b><small>average a year</small></span><i class="gr-live">FTM</i></span><b>Trading calendar</b><p>See each day's profit and loss on your account.</p><span class="dx-btn">View calendar</span></button>
+      <a class="dx-card" href="performance.html#mk-gold"><span class="gs-reel dx-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+3,658%</b><small>Gold, Growth 2×</small></span><span class="gr-s" style="animation-delay:2.5s"><b>+570%</b><small>Bitcoin, Growth 2×</small></span><span class="gr-s" style="animation-delay:5.0s"><b>+232%</b><small>US Tech 100, Growth 2×</small></span><span class="gr-s" style="animation-delay:7.5s"><b>+1,638%</b><small>HK50, Growth 2×</small></span><i class="gr-live">FTM</i></span><b>Every market, Growth 2×</b><p>Gold, Bitcoin, USD/JPY, US Tech 100, HK50 and Boom 1000, every trade in the trust engine.</p><span class="dx-btn">Explore markets</span></a>
+    </div></div>
 
       <section class="app-view" data-view="charts" hidden>
         <div class="app-main">
@@ -4284,7 +4313,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var m=F.metrics();
       set('mBalance', cur0(m.balance));
       set('mEquity', cur0(m.equity));
-      set('mFloat', (m.floating>=0?'+':'')+cur0(m.floating)+' floating', tone(m.floating));
+      set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
       set('mYear', pct(m.yearPct,1), tone(m.yearPL));
       set('mDDtile', '-'+m.ddBal.pct.toFixed(1)+'%', 'down');
 
@@ -4698,7 +4727,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         F.data.open.forEach(function(t){ t.pl = Math.round((t.pl + (Math.random()-0.47)*14)*100)/100; });
         var m=F.metrics(), el=document.getElementById('mEquity');
         set('mEquity', cur0(m.equity));
-        set('mFloat', (m.floating>=0?'+':'')+cur0(m.floating)+' floating', tone(m.floating));
+        set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
         el.classList.remove('up','down'); void el.offsetWidth;
         el.classList.add(m.floating>=0?'up':'down');
         setTimeout(function(){ el.classList.remove('up','down'); },600);
@@ -4726,6 +4755,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       return F.moneyIn(n,dp,currency===undefined ? F.data.account.currency : currency);
     }
     function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
+    function balAt(t){ var m=F.metrics(), b=m.balance; (F.data.closed||[]).forEach(function(x){ if(x.closeTime>t && x.pl!=null) b-=x.pl; }); return b; }
+    function sgnU(pl,t,dp){ if(F.unit==='percent'){ var base=balAt(t); return base>0 ? ((pl>=0?'+':'')+(pl/base*100).toFixed(2)+'%') : '—'; } return signed(pl,dp); }
     function el(id){ return document.getElementById(id); }
     function key(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
@@ -4942,13 +4973,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var head='<div class="perf-row"><span></span>'+names.map(function(n){return '<div class="perf-head">'+n+'</div>';}).join('')+'<div class="perf-head">Total</div></div>';
       var rows=Object.keys(byYear).sort().reverse().map(function(y){
         var tot=0,tn=0;
-        var cells=byYear[y].m.map(function(e){
-          if(!e)return '<div class="perf-cell"><b>-</b></div>';
+        var cells=byYear[y].m.map(function(e,mi0){
+          if(!e)return '<div class="perf-cell" data-m="'+names[mi0]+'"><b>-</b></div>';
           tot+=e.pl; tn+=e.n;
-          return '<div class="perf-cell '+(e.pl>=0?'up':'down')+'"><b>'+signed(e.pl,0)+'</b><small>'+e.n+' trades</small></div>';
+          var mi=byYear[y].m.indexOf(e);
+          return '<div class="perf-cell '+(e.pl>=0?'up':'down')+'" data-m="'+names[mi]+'"><b>'+sgnU(e.pl,new Date(+y,mi,1).getTime(),0)+'</b><small>'+e.n+' trades</small></div>';
         }).join('');
         return '<div class="perf-row"><span class="yr">'+y+'</span>'+cells+
-          '<div class="perf-cell ytd '+(tot>=0?'up':'down')+'"><b>'+signed(tot,0)+'</b><small>'+tn+' trades</small></div></div>';
+          '<div class="perf-cell ytd '+(tot>=0?'up':'down')+'" data-m="Total"><b>'+sgnU(tot,new Date(+y,0,1).getTime(),0)+'</b><small>'+tn+' trades</small></div></div>';
       }).join('');
       el('perfYears').innerHTML=head+rows;
 
@@ -4996,10 +5028,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       el('pxHeat').innerHTML='<div class="px-heat"><div class="h"></div>'+mn.map(function(n){return '<div class="h">'+n+'</div>';}).join('')+'<div class="h">Total</div>'+
         yrs.map(function(y){ var row='<div class="y">'+y+'</div>';
           for(var i=1;i<=12;i++){ var x=M.filter(function(q){return q.k===y+'-'+String(i).padStart(2,'0');})[0];
-            if(!x){row+='<div></div>';continue;} var a=Math.min(Math.abs(x.r)/15,1)*.75+.15, c=x.r>=0?'47,174,116':'226,71,90';
-            row+='<div style="background:rgba('+c+','+a.toFixed(2)+');color:'+(a>.55?'#fff':'var(--ink)')+'" title="'+mS(x.k)+': '+pc(x.r)+'">'+(x.r>0?'+':'')+x.r.toFixed(1)+'</div>'; }
+            if(!x){row+='<div data-m="'+mn[i-1]+'"></div>';continue;} var a=Math.min(Math.abs(x.r)/15,1)*.75+.15, c=x.r>=0?'47,174,116':'226,71,90';
+            row+='<div data-m="'+mn[i-1]+'" style="background:rgba('+c+','+a.toFixed(2)+');color:'+(a>.55?'#fff':'var(--ink)')+'" title="'+mS(x.k)+': '+pc(x.r)+'">'+(x.r>0?'+':'')+x.r.toFixed(1)+'</div>'; }
           var yy=Y.filter(function(q){return q.k===y;})[0];
-          return row+'<div class="'+(yy&&yy.r<0?'pl-down':'pl-up')+'" style="background:none;color:'+(yy?(yy.r<0?'var(--red-dark)':'#1f8a5b'):'')+'">'+(yy?pc(yy.r):'')+'</div>'; }).join('')+'</div>'+(has?'':empty);
+          return row+'<div class="ytot '+(yy&&yy.r<0?'pl-down':'pl-up')+'" style="background:none;color:'+(yy?(yy.r<0?'var(--red-dark)':'#1f8a5b'):'')+'">'+(yy?pc(yy.r):'')+'</div>'; }).join('')+'</div>'+(has?'':empty);
 
       var wb=[[-1e9,-5,'< −5%'],[-5,-2,'−5 – −2%'],[-2,0,'−2 – 0%'],[0,2,'0 – 2%'],[2,5,'2 – 5%'],[5,1e9,'> 5%']];
       el('pxWhist').innerHTML=bars(wb.map(function(b){return {l:b[2],lo:b[0],n:W.filter(function(x){return x.r>=b[0]&&x.r<b[1];}).length};}),function(x){return x.lo<0?'down':'up';});
@@ -6554,15 +6586,19 @@ tick();setInterval(tick,5000);})();
       var mn=Math.min.apply(null,pts), mx=Math.max.apply(null,pts), r=(mx-mn)||1;
       var d=pts.map(function(v,i){return (i?'L':'M')+(i/(pts.length-1)*160).toFixed(1)+' '+(64-(v-mn)/r*58).toFixed(1);}).join(' ');
       var up=pts[pts.length-1]>=pts[0], c=up?'#3CC98A':'#E5323E';
-      var h='<path d="'+d+' L160 70 L0 70 Z" fill="'+c+'" opacity=".15"/><path d="'+d+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/>';
+      var ly=(64-(pts[pts.length-1]-mn)/r*58).toFixed(1);
+      var h='<path d="'+d+' L160 70 L0 70 Z" fill="'+c+'" opacity=".15"/><path class="sp-line" d="'+d+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/><circle class="sp-dot" cx="158" cy="'+ly+'" r="3.5" fill="'+c+'"/>';
       if(sp.innerHTML!==h) sp.innerHTML=h; }
     var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
     $('dxViewW').hidden=A.length<2;
-    if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+(a.active?' · {}'.replace('{}',TRADING):'')+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h;}
+    var uw=$('umViewW'), us=$('umView'); if(uw){ uw.hidden=A.length<2; }
+    if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+(a.active?' · {}'.replace('{}',TRADING):'')+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h; if(us&&us.innerHTML!==h)us.innerHTML=h;}
   }
   var TRADING='Trading';
   $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
-  setInterval(function(){ if(!app.hidden) sync(); },2000);
+  $('umView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); var l=document.getElementById('acctA'); if(l) l.hidden=true; });
+  $('umView').addEventListener('click',function(e){ e.stopPropagation(); });
+  setInterval(function(){ if(!app.hidden) sync(); var fw=app.querySelector('.dx-feat-wrap'), ac=fw&&fw.parentNode; if(fw&&ac.lastElementChild!==fw) ac.appendChild(fw); },2000);
   ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus','noDataBar'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});});
   new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
 
@@ -6679,6 +6715,31 @@ tick();setInterval(tick,5000);})();
     var show=!!(a&&srv); d.parentNode.hidden=!show;
   }
   setInterval(links,1500); links();
+})();
+</script>
+<script>
+(function(){
+  function label(t){
+    var hr=t.tHead&&t.tHead.rows[0]; var rows=[].slice.call(t.rows);
+    if(!hr){ hr=rows.filter(function(r){return r.cells.length&&[].every.call(r.cells,function(c){return c.tagName==='TH';});})[0]; if(hr) hr.classList.add('th-row'); }
+    if(!hr) return;
+    var H=[].map.call(hr.cells,function(c){return c.textContent.trim();});
+    rows.forEach(function(r){ if(r===hr||r.parentNode.tagName==='THEAD') return; [].forEach.call(r.cells,function(c,i){ if(c.tagName==='TD'&&c.getAttribute('data-label')!==H[i]) c.setAttribute('data-label',H[i]||''); }); });
+  }
+  function all(){ document.querySelectorAll('.app-scroll table.app-trades').forEach(label); }
+  new MutationObserver(function(){ clearTimeout(all.t); all.t=setTimeout(all,120); }).observe(document.body,{childList:true,subtree:true});
+  all();
+})();
+</script>
+<script>
+(function(){
+  var F=window.FTM; try{ F.unit=localStorage.getItem('ftm_unit')||'amount'; }catch(e){ F.unit='amount'; }
+  var sw=document.getElementById('unitSw'); if(!sw) return;
+  function mark(){ sw.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', b.dataset.unit===F.unit?'true':'false'); }); }
+  sw.addEventListener('click',function(e){ var b=e.target.closest('[data-unit]'); if(!b) return; F.unit=b.dataset.unit; try{localStorage.setItem('ftm_unit',F.unit);}catch(x){}
+    mark(); if(F.render)F.render(); if(F.redrawAllViews)F.redrawAllViews();
+    var cu=document.querySelector('#curveUnit [data-u="'+F.unit+'"]'); if(cu) cu.click(); });
+  mark();
 })();
 </script>
 </body>
