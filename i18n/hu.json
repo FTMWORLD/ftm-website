@@ -754,6 +754,7 @@
 "Partner login": "Partner belépés",
 "Partner with FTM": "Legyen az FTM partnere",
 "Partners": "Partnerek",
+"Password": "Jelszó",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Jelszó <span class=\"pw-optional\">(hagyja üresen, ha e-mailben kér belépőkódot)</span>",
 "Password changed. Use it the next time you log in.": "A jelszó megváltozott. Használja a következő bejelentkezéskor.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "A jelszó beállítva. Használja a következő belépéskor. Bármikor módosíthatja a Jelszó módosítása menüpontban.",

@@ -754,6 +754,7 @@
 "Partner login": "Ortak girişi",
 "Partner with FTM": "FTM ile ortak olun",
 "Partners": "Ortaklar",
+"Password": "Şifre",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Şifre <span class=\"pw-optional\">(bunun yerine e-postayla giriş kodu almak için boş bırakın)</span>",
 "Password changed. Use it the next time you log in.": "Şifre değiştirildi. Bir sonraki girişinizde kullanın.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Şifre belirlendi. Bir sonraki girişte kullanın. İstediğiniz zaman Şifreyi değiştir ile değiştirebilirsiniz.",

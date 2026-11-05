@@ -1488,6 +1488,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto}}
   .fomo{font-weight:700;color:var(--gold);margin-top:8px}.fomo-c{text-align:center;margin:-4px auto 22px;font-size:17px}.bt-note{font-size:11.5px;opacity:.65;margin-top:6px}
+  .auth-sub:empty{display:none}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -2172,7 +2173,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="off" required>
       </div>
       <div id="authPassRow">
-        <label for="authPass">Password <span class="pw-optional">(leave blank to get a login code by email instead)</span></label>
+        <label for="authPass">Password</label>
         <input type="password" id="authPass" autocomplete="off">
       </div>
       <div id="authOtpRow" hidden>
@@ -3621,7 +3622,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       document.getElementById('authOtpRow').hidden=true;
       document.getElementById('authOtpBackRow').hidden=true;
       document.getElementById('authPwToggleRow').hidden=false;
-      document.getElementById('authSub').textContent='Enter your password to log in, or leave it blank and we’ll email you a 6-digit code.';
+      document.getElementById('authSub').textContent='';
       submitBtn.textContent='Continue';
       submitBtn.hidden=false;
       err.hidden=true;

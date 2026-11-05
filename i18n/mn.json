@@ -752,6 +752,7 @@
 "Partner login": "Түншийн нэвтрэлт",
 "Partner with FTM": "FTM-тэй түншил",
 "Partners": "Түншүүд",
+"Password": "Нууц үг",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Нууц үг <span class=\"pw-optional\">(хоосон орхивол имэйлээр нэвтрэх код авна)</span>",
 "Password changed. Use it the next time you log in.": "Нууц үг солигдлоо. Дараагийн нэвтрэхдээ ашиглана уу.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Нууц үг тохируулагдлаа. Дараагийн нэвтрэхдээ ашиглана уу. Нууц үг солих хэсгээр хүссэн үедээ өөрчилж болно.",

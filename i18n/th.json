@@ -754,6 +754,7 @@
 "Partner login": "เข้าสู่ระบบพาร์ทเนอร์",
 "Partner with FTM": "เป็นพันธมิตรกับ FTM",
 "Partners": "พาร์ทเนอร์",
+"Password": "รหัสผ่าน",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "รหัสผ่าน <span class=\"pw-optional\">(เว้นว่างไว้เพื่อรับรหัสเข้าสู่ระบบทางอีเมลแทน)</span>",
 "Password changed. Use it the next time you log in.": "เปลี่ยนรหัสผ่านแล้ว ใช้ในครั้งถัดไปที่คุณเข้าสู่ระบบ",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "ตั้งรหัสผ่านแล้ว ใช้ในครั้งถัดไปที่คุณเข้าสู่ระบบ คุณเปลี่ยนได้ทุกเมื่อด้วยเปลี่ยนรหัสผ่าน",

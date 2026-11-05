@@ -754,6 +754,7 @@
 "Partner login": "Вхід для партнерів",
 "Partner with FTM": "Станьте партнером FTM",
 "Partners": "Партнери",
+"Password": "Пароль",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Пароль <span class=\"pw-optional\">(залиште порожнім, щоб отримати код для входу електронною поштою)</span>",
 "Password changed. Use it the next time you log in.": "Пароль змінено. Використайте його під час наступного входу.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Пароль встановлено. Використайте його під час наступного входу. Змінити його можна будь-коли через «Змінити пароль».",

@@ -754,6 +754,7 @@
 "Partner login": "パートナーログイン",
 "Partner with FTM": "FTMと提携",
 "Partners": "パートナー",
+"Password": "パスワード",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "パスワード <span class=\"pw-optional\">(空欄のままにすると、代わりにメールでログインコードが届きます)</span>",
 "Password changed. Use it the next time you log in.": "パスワードを変更しました。次回のログインでお使いください。",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "パスワードを設定しました。次回のログインでお使いください。パスワードの変更からいつでも変更できます。",

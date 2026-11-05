@@ -752,6 +752,7 @@
 "Partner login": "Вход для партнёров",
 "Partner with FTM": "Станьте партнёром FTM",
 "Partners": "Партнёры",
+"Password": "Пароль",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Пароль <span class=\"pw-optional\">(оставьте пустым, чтобы получить код входа по электронной почте)</span>",
 "Password changed. Use it the next time you log in.": "Пароль изменён. Используйте его при следующем входе.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Пароль задан. Используйте его при следующем входе. Его можно изменить в любое время через «Изменить пароль».",

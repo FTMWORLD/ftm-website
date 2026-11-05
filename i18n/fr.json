@@ -752,6 +752,7 @@
 "Partner login": "Connexion partenaire",
 "Partner with FTM": "Devenez partenaire de FTM",
 "Partners": "Partenaires",
+"Password": "Mot de passe",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Mot de passe <span class=\"pw-optional\">(laissez vide pour recevoir un code de connexion par e-mail)</span>",
 "Password changed. Use it the next time you log in.": "Mot de passe modifié. Utilisez-le à votre prochaine connexion.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Mot de passe défini. Utilisez-le à votre prochaine connexion. Vous pouvez le modifier à tout moment avec Changer le mot de passe.",

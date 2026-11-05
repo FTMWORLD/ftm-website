@@ -754,6 +754,7 @@
 "Partner login": "Partnerinloggning",
 "Partner with FTM": "Samarbeta med FTM",
 "Partners": "Partners",
+"Password": "Lösenord",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "Lösenord <span class=\"pw-optional\">(lämna tomt för att få en inloggningskod via e-post istället)</span>",
 "Password changed. Use it the next time you log in.": "Lösenordet ändrat. Använd det nästa gång du loggar in.",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "Lösenord inställt. Använd det nästa gång du loggar in. Du kan ändra det när som helst med Ändra lösenord.",

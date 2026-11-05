@@ -752,6 +752,7 @@
 "Partner login": "合作伙伴登入",
 "Partner with FTM": "與 FTM 合作",
 "Partners": "合作伙伴",
+"Password": "密碼",
 "Password <span class=\"pw-optional\">(leave blank to get a login code by email instead)</span>": "密碼 <span class=\"pw-optional\">（留空則改為透過電子郵件獲取登入驗證碼）</span>",
 "Password changed. Use it the next time you log in.": "密碼已更改。下次登入時請使用新密碼。",
 "Password set. Use it next time you log in. You can change it any time with Change password.": "密碼已設定。下次登入時使用它。您可以隨時透過“更改密碼”修改。",
