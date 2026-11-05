@@ -4410,18 +4410,19 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           number: a.account_number,
           provider: a.broker && (a.broker.name || a.broker.code),
           server: a.server || null,
-          balance: num(a.balance),
-          equity: num(a.equity),
+          balance: num(a.balance!=null?a.balance:(a.performance&&a.performance.balance)),
+          equity: num(a.equity!=null?a.equity:(a.performance&&a.performance.equity)),
           marginFree: num(a.margin_free),
-          lastReported: a.last_reported_at ? Date.parse(a.last_reported_at) : null,
+          lastReported: (function(){ var t=a.last_reported_at||(a.performance&&(a.performance.as_of||a.performance.updated_at||a.performance.last_reported_at))||a.updated_at; return t?Date.parse(t):null; })(),
+          viewOnlyLabel: typeof a.view_only_label==='string' ? a.view_only_label : null,
           canControl: a.is_trading!==undefined,
-          isMaster: a.is_master===true || a.view_only===true || a.account_role==='MASTER' || /^view_?only$/i.test(a.display_status||'') || /^view_?only$/i.test(a.status||'') || /^view_?only$/i.test(a.status_reason||''),
+          isMaster: a.is_master===true || a.view_only===true || a.view_only==='true' || /^VIEW_ONLY/i.test(a.status_reason||'') || a.account_role==='MASTER' || /^view_?only$/i.test(a.display_status||'') || /^view_?only$/i.test(a.status||'') || /^view_?only$/i.test(a.status_reason||''),
           active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
           displayStatus: a.display_status,
           statusReason: a.status_reason,
           accountId: a.account_id,
 
-          floating: num(a.floating_profit),
+          floating: num(a.floating_profit!=null?a.floating_profit:(a.performance&&a.performance.floating_profit)),
           currency: a.currency || null,
           openPositions: a.open_positions || 0,
           riskTier: a.risk_tier || null,
@@ -5129,6 +5130,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     };
     var VALIDATION_REASON_FALLBACK = 'FTM could not set up this account. Check your login details, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
+    function plainCode(c){ c=String(c||'').replace(/_/g,' ').toLowerCase(); return c ? c.charAt(0).toUpperCase()+c.slice(1) : 'Connecting'; }
     function renderAccounts(){
       var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts used'.replace('{}',Lm.used).replace('{}',Lm.max); }
       var m=F.metrics(), A=F.data.accounts||[];
@@ -5137,10 +5139,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         if(F.pendingRemove && F.pendingRemove[a.accountId]){
           status='<span class="conn conn-wait">Removing…</span>';
         } else if(a.isMaster){
-          status='<span class="conn conn-neutral">View only — FTM master account</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
+          status='<span class="conn conn-neutral">'+(a.viewOnlyLabel||'View only — FTM master account').replace(/</g,'&lt;')+'</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
         } else if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
-                  STATUS_LABEL[a.displayStatus] || STATUS_LABEL.SETUP_FAILED;
+                  STATUS_LABEL[a.displayStatus] || {text:plainCode(a.statusReason||a.displayStatus), tone:'wait'};
           var detail = '';
           var showNote = (a.displayStatus==='ACTION_REQUIRED') || !!s.support;
           if(a.displayStatus==='ACTION_REQUIRED'){
@@ -5548,7 +5550,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       var st=document.getElementById('hdrStatus');
 
       if(lead && lead.displayStatus){
-        var s=STATUS_LABEL[lead.displayStatus]||{text:lead.displayStatus,tone:'wait'};
+        var s=lead.isMaster?{text:(lead.viewOnlyLabel||'View only — FTM master account'),tone:'good'}:(STATUS_LABEL[lead.displayStatus]||{text:String(lead.statusReason||lead.displayStatus).replace(/_/g,' ').toLowerCase().replace(/^./,function(x){return x.toUpperCase();}),tone:'wait'});
         st.textContent=s.text;
         st.className = s.tone==='good' ? 'ok' : (s.tone==='bad' ? 'val-down' : 'val-wait');
       } else {
