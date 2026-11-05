@@ -341,18 +341,24 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-ref svg{width:14px;height:14px}.dx-ref.spin svg{animation:dxSpin .7s linear}
   @keyframes dxSpin{to{transform:rotate(360deg)}}
   #appView .app-title-ic,#appView .crumb-acct-sep,#appView #crumbAcct,#invView .app-title-ic,#invView .app-title-meta{display:none!important}
-  .dx-hero .dx-spark:not([hidden]){display:block!important;flex:none;width:170px;height:76px;align-self:flex-end}
+  .dx-hero .dx-spark:not([hidden]){display:block!important;flex:none;width:170px;height:76px}
   .dx-spark[hidden],.dx-go[hidden]{display:none!important}
   @media (max-width:560px){.dx-hero .dx-spark:not([hidden]){width:100%;height:64px}#appView #pageSub{font-size:13.5px}}
-  .dx-float{position:absolute;right:28px;top:24px;font-size:14px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08)}
+  .dx-right{display:flex;flex-direction:column;align-items:flex-end;gap:14px;flex:none;align-self:center}
+  .dx-tagrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.dx-tagrow .dx-tag{margin-bottom:0}
+  .dx-tagrow .unit-sw{margin-left:0;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}
+  .dx-tagrow .unit-sw button{color:rgba(255,255,255,.75);padding:5px 12px;white-space:nowrap}
+  .dx-tagrow .dx-tag{white-space:nowrap}.dx-tagrow{justify-content:flex-start}
+  .dx-tagrow .unit-sw button[aria-pressed="true"]{background:#E3B62F;color:#0B1440}
+  .dx-float{position:static;font-size:14px;font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.08)}
   .dx-float.up{color:#3CC98A}.dx-float.down{color:#ff6b74}.dx-float[hidden]{display:none}
-  @media (min-width:561px){.dx-hero{align-items:center}.dx-hero .dx-spark:not([hidden]){margin-top:34px}.dx-float{top:auto;bottom:108px}}
+  @media (min-width:561px){.dx-hero{align-items:center}}
   .dx-spark .sp-line{stroke-dasharray:600;stroke-dashoffset:600;animation:spDraw 6s ease-in-out infinite}
   .dx-spark .sp-dot{animation:spPulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
   @keyframes spDraw{0%{stroke-dashoffset:600}50%,100%{stroke-dashoffset:0}}
   @keyframes spPulse{50%{transform:scale(1.8);opacity:.5}}
   @media (prefers-reduced-motion:reduce){.dx-spark .sp-line,.dx-spark .sp-dot{animation:none;stroke-dashoffset:0}}
-  @media (max-width:560px){.dx-float{position:static;align-self:flex-start}}
+  @media (max-width:560px){.dx-right{width:100%;align-items:flex-start}}
   .dx-cash[hidden]{display:none!important}
   .dx-cash{display:flex;flex-direction:column;gap:8px;flex:none;align-self:center}
   .dx-cbtn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(227,182,47,.55);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;transition:background .15s}
@@ -2237,7 +2243,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       </div>
       <div class="app-title">
         <span class="app-title-ic" id="pageIcon"></span>
-        <div class="app-title-txt"><h2 id="pageTitle">&mdash;</h2><p id="pageSub">&mdash;</p></div><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div>
+        <div class="app-title-txt"><h2 id="pageTitle">&mdash;</h2><p id="pageSub">&mdash;</p></div>
         <div class="app-title-meta">
           <div><span>Plan</span><b id="hdrPlan">&mdash;</b></div>
           <div><span>Balance</span><b id="hdrBal">&mdash;</b></div>
@@ -2249,12 +2255,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     <div class="dx-top">
       <div class="dx-hero">
         <div class="dx-hero-l">
-          <span class="dx-tag" id="dxTag">Auto Trading</span>
+          <div class="dx-tagrow"><span class="dx-tag" id="dxTag">Auto Trading</span><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div></div>
           <span class="dx-lbl">Total account value</span>
           <b class="dx-val" id="dxVal">&mdash;</b>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
         </div>
-        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><span class="dx-float" id="dxFloat" hidden></span><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg>
+        <div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><div class="dx-right"><span class="dx-float" id="dxFloat" hidden></span><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg></div>
       </div>
       <div class="dx-acc">
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
@@ -4528,7 +4534,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
             var friendly={
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               ACCOUNT_NOT_FOUND:'That account could not be found.',
-              ACCOUNT_PROVISIONED:'This account is already set up with FTM. Please contact support to change or remove it.',
+              ACCOUNT_PROVISIONED:'This account could not be removed right now. Please try again in a minute.',
               ACCOUNT_DISABLED:'This account is no longer active. Please contact support.',
               PASSWORD_TRIES_EXHAUSTED:'Too many attempts with these login details. Please contact FTM support.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
@@ -4538,14 +4544,19 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         },
 
         removeAccount: function(accountId){
-          return call('/accounts/'+accountId, { method:'DELETE' }).then(function(j){
+          var del=function(){ return call('/accounts/'+accountId, { method:'DELETE' }); };
+          return del().catch(function(e){
+            if(e.code!=='ACCOUNT_PROVISIONED') throw e;
+            return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST', body:{close_open:true} }).catch(function(){})
+              .then(function(){ return new Promise(function(r){ setTimeout(r,4000); }); }).then(del);
+          }).then(function(j){
             return j;
           }).catch(function(e){
             var friendly={
               UNAUTHENTICATED:'Your session has expired. Log in again and retry.',
               ACCOUNT_NOT_FOUND:'That account could not be found.',
               OPEN_POSITIONS:'This account still has open copied positions. You can remove it once they have closed.',
-              ACCOUNT_PROVISIONED:'This account is already set up with FTM. Please contact support to change or remove it.',
+              ACCOUNT_PROVISIONED:'This account could not be removed right now. Please try again in a minute.',
               CUSTOMER_API_NOT_CONFIGURED:'FTM is briefly in maintenance. Try again in a few minutes.'
             };
             throw new Error(friendly[e.code] || safeMsg(e.message,'Could not remove that account.'));
