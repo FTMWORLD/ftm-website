@@ -364,8 +364,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-cbtn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.1);border:1px solid rgba(227,182,47,.55);color:#fff;font-weight:700;font-size:13.5px;text-decoration:none;transition:background .15s}
   .dx-cbtn:hover{background:rgba(227,182,47,.2)}
   .dx-cbtn svg{width:16px;height:16px;color:#E3B62F}
-  .dx-unitrow{display:none}
-  @media (max-width:560px){.dx-unitrow{display:flex;justify-content:flex-end;width:100%;order:4;margin-bottom:-4px}.dx-hero{flex-wrap:wrap}.dx-cash{flex-direction:row;width:100%;order:5}.dx-cbtn{flex:1;justify-content:center}}
+  .dx-unitrow{display:flex;justify-content:center;margin-bottom:4px}
+  @media (max-width:560px){.dx-unitrow{display:none}.dx-hero-l{width:100%;flex:1 1 100%}.dx-tagrow .unit-sw{margin-left:auto!important}.dx-tagrow{width:100%}.dx-hero{flex-wrap:wrap}.dx-cash{flex-direction:row;width:100%;order:5}.dx-cbtn{flex:1;justify-content:center}}
   .dx-go{flex:none;display:grid;justify-items:center;gap:6px;border:0;background:none;color:#fff;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
   .dx-go svg{width:58px;height:58px;padding:16px;border-radius:50%;background:var(--red);box-shadow:0 12px 26px rgba(229,50,62,.45);transition:transform .15s}
   .dx-go:hover svg{transform:scale(1.06)}
@@ -2270,7 +2270,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           <b class="dx-val" id="dxVal">&mdash;</b>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
         </div>
-        <div class="dx-unitrow" id="dxUnitRow"></div><div class="dx-cash"><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><div class="dx-right"><span class="dx-float" id="dxFloat" hidden></span><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg></div>
+        <div class="dx-cash"><div class="dx-unitrow" id="dxUnitRow"></div><a class="dx-cbtn" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a></div><button type="button" class="dx-go" id="dxGo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg><span id="dxGoT">Accounts</span></button><div class="dx-right"><span class="dx-float" id="dxFloat" hidden></span><svg class="dx-spark" id="dxSpark" viewBox="0 0 160 70" preserveAspectRatio="none" aria-hidden="true" hidden></svg></div>
       </div>
       <div class="dx-acc">
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
@@ -6858,7 +6858,7 @@ tick();setInterval(tick,5000);})();
 (function(){
   var sw=document.getElementById('unitSw'), row=document.getElementById('dxUnitRow'), home=sw&&sw.parentElement; if(!sw||!row||!home) return;
   var mq=matchMedia('(max-width:560px)');
-  function place(){ if(mq.matches){ if(sw.parentElement!==row) row.appendChild(sw); } else if(sw.parentElement!==home) home.appendChild(sw); }
+  function place(){ if(!mq.matches){ if(sw.parentElement!==row) row.appendChild(sw); } else if(sw.parentElement!==home) home.appendChild(sw); }
   place(); if(mq.addEventListener) mq.addEventListener('change',place); else mq.addListener(place);
 })();
 </script>
