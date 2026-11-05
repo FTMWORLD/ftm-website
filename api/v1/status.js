@@ -91,7 +91,7 @@ module.exports = async function handler(req, res) {
       + '<p style="font-size:22px;font-weight:bold;color:#0b1640;margin:0 0 12px;">FTM watchdog: ' + down.length + ' problem' + (down.length > 1 ? 's' : '') + ' found</p>'
       + '<table cellpadding="0" cellspacing="0">' + rows + '</table>'
       + '<p style="color:#444;">Live status: <a href="' + site + '/api/v1/status">' + site + '/api/v1/status</a></p></td></tr>'
-      + '<tr><td align="center" style="background:#0b1640;padding:28px 20px;"><p style="margin:0 0 14px;color:#D4AF37;font-size:18px;font-weight:bold;">Invest today, secure tomorrow.</p>'
+      + '<tr><td align="center" bgcolor="#0b1640" style="background-color:#0b1640;background-image:linear-gradient(#0b1640,#0b1640);padding:28px 20px;"><p style="margin:0 0 14px;color:#D4AF37;font-size:18px;font-weight:bold;">Invest today, secure tomorrow.</p>'
       + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="40" height="40" alt="" style="display:block;border-radius:10px;"></td><td style="color:#fff;font-size:26px;font-weight:bold;">FTM</td></tr></table>'
       + '<p style="margin:14px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
     try {
