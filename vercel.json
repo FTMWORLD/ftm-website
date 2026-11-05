@@ -29,6 +29,11 @@
       "source": "/.github/:path*",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/docs/:path*",
+      "destination": "/",
+      "permanent": false
     }
   ],
   "git": {

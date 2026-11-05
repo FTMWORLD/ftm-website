@@ -4414,7 +4414,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           equity: num(a.equity!=null?a.equity:(a.performance&&a.performance.equity)),
           marginFree: num(a.margin_free),
           lastReported: (function(){ var t=a.last_reported_at||(a.performance&&(a.performance.as_of||a.performance.updated_at||a.performance.last_reported_at))||a.updated_at; return t?Date.parse(t):null; })(),
-          viewOnlyLabel: typeof a.view_only_label==='string' ? a.view_only_label : null,
+          viewOnlyLabel: typeof a.view_only_label==='string' ? a.view_only_label.replace(/ - /g,' — ') : null,
+          statusText: typeof a.status_text==='string' ? a.status_text : null,
           canControl: a.is_trading!==undefined,
           isMaster: a.is_master===true || a.view_only===true || a.view_only==='true' || /^VIEW_ONLY/i.test(a.status_reason||'') || a.account_role==='MASTER' || /^view_?only$/i.test(a.display_status||'') || /^view_?only$/i.test(a.status||'') || /^view_?only$/i.test(a.status_reason||''),
           active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
@@ -5142,7 +5143,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           status='<span class="conn conn-neutral">'+(a.viewOnlyLabel||'View only — FTM master account').replace(/</g,'&lt;')+'</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
         } else if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
-                  STATUS_LABEL[a.displayStatus] || {text:plainCode(a.statusReason||a.displayStatus), tone:'wait'};
+                  STATUS_LABEL[a.displayStatus] || {text:(a.statusText||plainCode(a.statusReason||a.displayStatus)), tone:'wait'};
           var detail = '';
           var showNote = (a.displayStatus==='ACTION_REQUIRED') || !!s.support;
           if(a.displayStatus==='ACTION_REQUIRED'){
