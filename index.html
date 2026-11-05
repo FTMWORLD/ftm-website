@@ -340,7 +340,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-ref{width:26px;height:26px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer}
   .dx-ref svg{width:14px;height:14px}.dx-ref.spin svg{animation:dxSpin .7s linear}
   @keyframes dxSpin{to{transform:rotate(360deg)}}
-  #appView .app-title-ic,#appView .crumb-acct-sep,#appView #crumbAcct{display:none!important}
+  #appView .app-title-ic,#appView .crumb-acct-sep,#appView #crumbAcct,#invView .app-title-ic,#invView .app-title-meta{display:none!important}
   .dx-hero .dx-spark:not([hidden]){display:block!important;flex:none;width:170px;height:76px;align-self:flex-end}
   .dx-spark[hidden],.dx-go[hidden]{display:none!important}
   @media (max-width:560px){.dx-hero .dx-spark:not([hidden]){width:100%;height:64px}#appView #pageSub{font-size:13.5px}}
@@ -510,6 +510,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .rk-ack{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text)}
   .rk-err{color:var(--red-dark);font-size:13px;margin:0}
   .rk-btns{display:flex;gap:8px;justify-content:flex-end}
+  .iv-empty{margin:16px 24px 0;padding:22px;border-radius:20px;background:linear-gradient(135deg,#0B1440,#152a7a);color:#fff;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,260px);gap:20px;align-items:center}
+  .iv-empty[hidden]{display:none}
+  .iv-empty b{font-size:20px;display:block}.iv-empty p{color:rgba(255,255,255,.8);font-size:14px;margin:6px 0 14px}
+  @media (max-width:760px){.iv-empty{grid-template-columns:1fr;margin:12px 16px 0}}
   .acct-limit{font-size:13px;font-weight:600;color:var(--muted);margin-left:6px}
   .acct-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
   .acct-table td{vertical-align:middle}
@@ -2699,6 +2703,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <a class="btn btn-red js-invest" href="#invest" id="npInvBtn">Invest now</a>
         <p class="np-small">Paid with a different email? Log out and log in with that one.</p>
       </div>
+      <div class="iv-empty" id="ivEmpty" hidden><div class="iv-empty-txt"><b>You have not invested yet</b><p>This is your investment area. Everything below fills in automatically once you invest.</p><a class="btn btn-red js-invest" href="#invest">Invest now</a></div><span class="gs-reel dx-reel r2 iv-reel" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>54–176%</b><small>a year, Portfolio since 2020</small></span><span class="gr-s" style="animation-delay:5s"><b>20% a year</b><small>withdraw from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span></div>
             <div class="app-crumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11 12 4l8 7M6 10v9h12v-9"/></svg><span>Client area</span><em>/</em><span>Investment</span><em>/</em><span class="cur" id="ivCrumb">Overview</span></div>
       <div class="app-title">
         <span class="app-title-ic" id="ivIcon"></span>
@@ -2706,7 +2711,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
         <div class="app-title-meta">
           <div><span>You invested</span><b id="ivHdrInv">&mdash;</b></div>
           <div><span>Next eligible</span><b id="ivHdrNext">&mdash;</b></div>
-          <div><span>Data</span><b class="pv">Sample</b></div>
+          <div class="iv-sample"><span>Data</span><b class="pv">Sample</b></div>
         </div>
       </div>
 
@@ -4433,6 +4438,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
           return page(0);
         },
         fetchMe: function(){ return call('/me'); },
+        fetchInvestments: function(){ return call('/investments').then(function(j){ return (j.investments||[]).map(function(v){ return {id:v.id||v.investment_id, amount:num(v.amount), joined:String(v.joined_at||v.created_at||'').slice(0,10)}; }).filter(function(v){ return v.amount>0 && v.joined; }); }); },
         pauseAccount: function(accountId, closeOpen){ return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST', body: closeOpen?{close_open:true}:{} }); },
         setRiskTier: function(accountId, tier, ack){ var b={risk_tier:tier}; if(ack) b.growth_acknowledged=true; return call('/accounts/'+encodeURIComponent(accountId)+'/risk_tier', { method:'PUT', body:b }); },
         resumeAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/resume', { method:'POST' }); },
@@ -6201,9 +6207,19 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
       $('freeBar').hidden=!(p==='auto' && !has);
       has=has||(p==='auto');
       A.classList.toggle('noprod', p==='auto' && !has);
-      I.classList.toggle('noprod', p==='invest' && !has);
+      I.classList.remove('noprod');
       $('noprodA').hidden=!(p==='auto' && !has);
-      $('noprodB').hidden=!(p==='invest' && !has);
+      $('noprodB').hidden=true;
+      if(p==='invest'){
+        var live=!!(window.FTM.auth&&window.FTM.auth.ready()&&F.session);
+        if(!F._ivSample) F._ivSample=F.invest.investments;
+        F.invest.investments = (!has||live) ? (F.invest.live||[]) : F._ivSample;
+        $('ivEmpty').hidden = F.invest.investments.length>0;
+        document.querySelectorAll('#invView .iv-sample').forEach(function(e){ e.hidden=live; });
+        if(live && has && F.remote && F.remote.fetchInvestments && !F.invest._loaded){ F.invest._loaded=true;
+          F.remote.fetchInvestments().then(function(list){ F.invest.live=list; F.invest.investments=list; $('ivEmpty').hidden=list.length>0; if(F.renderInvest)F.renderInvest(); }).catch(function(){}); }
+        has=true;
+      }
       document.body.style.overflow='hidden';
       if(p==='invest'){ if(has){ current='overview'; show('overview'); } }
       else if(has && F.render){ F.render();
