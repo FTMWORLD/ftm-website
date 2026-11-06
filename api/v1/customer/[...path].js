@@ -30,8 +30,9 @@ const ALLOW = [
 const QUERY_KEYS = ['after', 'before', 'limit', 'board'];
 
 module.exports = async function handler(req, res) {
-  const parts = [].concat(req.query.path || []);
-  const sub = parts.join('/');
+  const fromUrl = String(req.url || '').split('?')[0].replace(/^.*?\/api\/v1\/customer\//, '');
+  const parts = [].concat(req.query.path || req.query['...path'] || []);
+  const sub = ((fromUrl && fromUrl.indexOf('[') === -1) ? fromUrl : parts.join('/')).replace(/\/+$/, '');
   const method = req.method;
   if (!ALLOW.some(([m, re]) => m === method && re.test(sub))) {
     return res.status(404).json({ ok: false, error: 'NOT_FOUND', message: 'This page does not exist.' });
