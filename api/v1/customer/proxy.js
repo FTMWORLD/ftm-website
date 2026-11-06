@@ -1,7 +1,7 @@
-/* /api/v1/customer/<chat|investment|investments|leaderboard>/... — pass-through to the FTM engine for the
+/* /api/v1/customer/proxy (reached through the vercel.json rewrite of /api/v1/customer/<chat|investment|investments|leaderboard>/...) — pass-through to the FTM engine for the
    support chat, the investment page and the leaderboard (engine contract 2026-11-06.2, docs/engine-contract.json).
    Only the routes listed in ALLOW are forwarded; everything else is 404. The customer is always the verified
-   Supabase user, never anything the request claims. More specific files in this folder take precedence. */
+   Supabase user, never anything the request claims. Files that exist (investments.js) are served before the rewrite. */
 
 const { verifyCustomer, callEngine } = require('../../_lib/engineClient');
 
@@ -30,9 +30,8 @@ const ALLOW = [
 const QUERY_KEYS = ['after', 'before', 'limit', 'board'];
 
 module.exports = async function handler(req, res) {
-  const fromUrl = String(req.url || '').split('?')[0].replace(/^.*?\/api\/v1\/customer\//, '');
-  const parts = [].concat(req.query.path || req.query['...path'] || []);
-  const sub = ((fromUrl && fromUrl.indexOf('[') === -1) ? fromUrl : parts.join('/')).replace(/\/+$/, '');
+  // vercel.json rewrites /api/v1/customer/<chat|investment|investments|leaderboard>/... here with ?__p=<sub-path>
+  const sub = String(req.query.__p || '').replace(/\/+$/, '');
   const method = req.method;
   if (!ALLOW.some(([m, re]) => m === method && re.test(sub))) {
     return res.status(404).json({ ok: false, error: 'NOT_FOUND', message: 'This page does not exist.' });
