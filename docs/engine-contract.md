@@ -4,6 +4,24 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-06 (afternoon) — INVESTMENT CARRY-OVER (migration 038; contract 2026-11-06.4)
+
+Gospel decided: unused yearly allowances CARRY OVER. This replaces "once per contract year" from the entry below.
+- On `first_withdrawal_on` (1st of the month after 13 full months) and on each anniversary before the end (about months
+  13, 25, 37, 49) an allowance of 20% of the profit share not yet withdrawn ON THAT DAY unlocks. Every unlocked allowance
+  not yet taken stays available until the end: take it at any time, in one or several requests (one waiting at a time).
+- `withdrawable_now` = `unlocked_total` - `profit_withdrawn` - `pending`, never above the profit share now. Nothing before
+  `first_withdrawal_on`; nothing from `ends_on` (capital + remaining profit share are paid out together).
+- `terms.withdrawal_rule` is now "YEARLY_ALLOWANCE_CARRY_OVER", `terms.withdrawal_carry_over` true, new `withdrawal_rule_text`.
+- `contract.withdrawals` carries `allowances` [{ unlocked_on, amount }], `unlocked_total`, `next_unlock_on`; the fields
+  `used_this_window` and the error INVESTMENT_WITHDRAWAL_YEAR_USED are gone (never used by a customer: no contract existed).
+  Older names stay: `next_window_on` = `next_unlock_on`, `remaining_this_year` = `withdrawable_now`.
+- INVESTMENT_WITHDRAWAL_LIMIT has a new text and carries `unlocked_total` and `next_unlock_on`. When nothing is left,
+  its `message` names the next unlock day ("Your next allowance unlocks on 2029-01-01.").
+- `GET /customer/investments` rows: `next_withdrawal_on` = today when something can be withdrawn now, else the next unlock.
+- Statements: `withdrawable_close` follows the same rule on the closing day. `terms_version` stays "2026-11-06".
+  Payments stay OFF.
+
 ## 2026-11-06 (later) — INVESTMENT TERMS 2026-11-06 (migration 037; contract 2026-11-06.3; answer after the next API restart)
 
 Gospel decided the investment terms; they replace the withdrawal and refund rules of the entry below.
