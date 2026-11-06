@@ -3134,10 +3134,12 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </div>
       <div>
         <h4>Platforms</h4><ul><li><a href="#auto">FTM MT5</a></li><li><a href="#auto">FTM MACHINE</a></li></ul>
+        <h4>Trust engine</h4><ul><li><a href="/performance.html#years">Results by year</a></li><li><a href="/performance.html#growth">Growth curve</a></li><li><a href="/performance.html#months">Monthly returns</a></li><li><a href="/performance.html#trades">Trade history</a></li><li><a href="/performance.html#risk">Risk and drawdown</a></li></ul>
         </div>
       <div>
         <h4>About</h4><ul><li><a href="#company">Who we are</a></li><li><a href="#company">Why choose us</a></li></ul>
-        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#support">FTM Academy</a></li><li><a href="#support">Contact us</a></li></ul>
+        <h4>Investment</h4><ul><li><a href="#invest">How it works</a></li><li><a href="#ivCalc">Profit share calculator</a></li><li><a href="#invest" class="js-login">Investor log in</a></li></ul>
+        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#ask" class="js-foot-ask">Ask here</a></li><li><a href="#support" class="um-live">Chat with FTM support</a></li><li><a href="mailto:ftmwebnation@gmail.com">Contact us</a></li></ul>
       </div>
       <div>
         <h4>Partner</h4><ul><li><a href="#partner">Deriv affiliate via FTM</a></li><li><a href="#partner">Introducing broker</a></li><li><a href="#partner">Payment agent</a></li><li><a href="#partner">Partner login</a></li></ul>
@@ -7190,6 +7192,15 @@ tick();setInterval(tick,5000);})();
   });
   document.querySelectorAll('.foot-cols h4').forEach(function(h){ h.setAttribute('role','button'); h.setAttribute('tabindex','0'); h.setAttribute('aria-expanded','false');
     h.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); h.click(); } }); });
+})();
+</script>
+<script>
+(function(){
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('.js-foot-ask'); if(!a) return; e.preventDefault();
+    setTimeout(function(){ var p=document.getElementById('fsPanel'), t=document.getElementById('fsToggle'); if(p) p.hidden=false; if(t) t.setAttribute('aria-expanded','true'); var b=document.getElementById('fsAi'); if(b) b.click(); },0);
+  });
+  document.addEventListener('click',function(e){ var a=e.target.closest('footer .um-live,footer .js-login'); if(a) e.preventDefault(); },true);
 })();
 </script>
 </body>
