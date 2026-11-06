@@ -1397,7 +1397,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .pay-grid .dual i+i{margin-left:-12px}
 
   .support .feature{align-items:center}
-  .support .feature-art{aspect-ratio:4/3}
+  .support .feature-art{aspect-ratio:16/9}
+  .support .bubble.them{top:56%}
   .bubble{position:absolute;background:#fff;border-radius:18px;padding:14px 18px;font-size:14px;box-shadow:0 14px 40px rgba(0,0,0,.1);max-width:60%;color:var(--ink)}
   .bubble.me{background:var(--red);color:#fff;right:10%;top:18%;border-bottom-right-radius:4px}
   .bubble.them{left:10%;top:44%;border-bottom-left-radius:4px}
@@ -1578,6 +1579,70 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .mk-card .market-text h3{font-size:30px;margin-bottom:8px}
     .mk-card .market-text p{margin-bottom:12px}
     .mk-card .phone{position:relative!important;inset:auto!important;transform:none!important;opacity:1!important;transition:none!important;width:min(100%,300px)!important;height:auto!important;aspect-ratio:1/1!important;margin:0 auto!important;border-radius:24px}
+  }
+  h1,h2,h3,h4,.section-title,.inv-title{text-wrap:balance}
+  p,li,dd,small,.perf-sub{text-wrap:pretty}
+  .calc-toggle{display:none}
+  @media (max-width:760px){
+    section{padding-block:52px}
+    .how-steps{display:none!important}
+    .how .how-security{margin-top:22px}
+    #platforms .feature-art{display:none}
+    #platforms .feature{padding-block:18px;gap:0}
+    #platforms .feature p{margin-bottom:12px}
+    .partner-card ul{display:none}
+    .partner-card{gap:10px;padding:24px}
+    .facts{gap:14px 16px;padding:22px;grid-template-columns:1fr 1fr!important}
+    .mk-card .phone{width:min(100%,230px)!important}
+    .mk-card .phone .chip{display:none}
+    .support .feature-art{padding:18px 16px}
+    .calc-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:6px}
+    .calc-toggle::after{content:"";width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+    .calc-open .calc-toggle::after{transform:rotate(-135deg) translateY(-2px)}
+    .longterm .compound:not(.calc-open) .compound-calc{display:none}
+    .invest .inv-calc:not(.calc-open) .ivc-in,.invest .inv-calc:not(.calc-open) .ivc-res{display:none}
+    .invest .inv-calc{padding:22px}
+    .foot-cols{grid-template-columns:1fr!important;gap:0!important;padding-block:18px!important}
+    .foot-cols h4{display:flex;justify-content:space-between;align-items:center;margin:0;padding:14px 2px;border-bottom:1px solid var(--ink-3);cursor:pointer}
+    .foot-cols h4::after{content:"";width:8px;height:8px;border-right:2px solid #9aa3c7;border-bottom:2px solid #9aa3c7;transform:rotate(45deg);transition:transform .2s}
+    .foot-cols h4.open::after{transform:rotate(-135deg)}
+    .foot-cols ul{display:none!important;margin:10px 0 14px!important}
+    .foot-cols h4.open+ul{display:grid!important}
+    .legal{font-size:12px;gap:12px}
+  }
+  @media (max-width:760px){
+    .trust-head .marquee{height:auto!important;mask-image:none!important;-webkit-mask-image:none!important;overflow:visible}
+    .trust-head .marquee-track{animation:none!important;transform:none!important;padding-block:0!important}
+    .trust-head .marquee-track h2[aria-hidden="true"]{display:none}
+    .trust-head .marquee-track h2{background:linear-gradient(90deg,var(--ink) 0 40%,#B08B12 50%,var(--ink) 60% 100%) 0 0/250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:thshine 6s ease-in-out infinite}
+    @keyframes thshine{0%,55%{background-position:120% 0}100%{background-position:-120% 0}}
+    .trust-head{margin-bottom:32px}
+    #reviewMarquee{height:420px!important}
+    .review{min-height:0!important;gap:14px}
+    .step .txt{padding:26px 24px}
+    .step{min-height:0}
+    .step .visual{min-height:200px}
+    .step h3{font-size:30px}
+  }
+  @media (max-width:760px) and (prefers-reduced-motion:reduce){.trust-head .marquee-track h2{animation:none;color:var(--ink);background:none}}
+  @media (max-width:760px){
+    .allday,#platforms{display:none}
+    .auto-list li:nth-child(n+3){display:none}
+    .perf-tile{padding:20px 22px!important}
+    .perf-tile b{font-size:34px}
+    .plan{padding:24px 22px;gap:12px}
+    .plan ul{gap:6px;font-size:14.5px}
+    .mk-card{padding:18px 18px 16px}
+    .mk-card .market-text h3{font-size:26px;margin-bottom:4px}
+    .mk-card .market-text p{margin-bottom:6px;font-size:15px}
+    .mk-card .phone{width:min(100%,180px)!important}
+    .inv-keys{margin-bottom:32px}
+    .inv-key{padding:18px 14px}
+    .inv-key .ik{width:38px;height:38px;margin-bottom:10px}
+    .inv-tl{margin-bottom:30px}
+    .inv-faq{margin:14px 0 30px}
+    .partner-card p{margin:0}
+    .company .feature{gap:18px}
   }
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -1979,6 +2044,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         <a class="btn btn-gold compound-cta" href="/performance.html">See the performance</a>
         <p class="compound-note">Move the sliders to see how a balance could grow.</p>
       </div>
+      <button type="button" class="btn btn-outline calc-toggle" style="color:var(--ink);border-color:rgba(11,20,64,.35)">Open the calculator</button>
       <div class="compound-calc">
         <label for="cStart">Starting balance <output id="cStartOut">10,000€</output></label>
         <input type="range" id="cStart" min="0" max="1000" step="1" value="167" data-lo="1000" data-hi="1000000000" aria-label="Starting balance">
@@ -2020,7 +2086,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     <p class="inv-faq"><a class="js-faq" href="#faq">Questions? Read the FAQ <span aria-hidden="true">&rarr;</span></a></p>
 
     <div class="inv-calc" id="ivCalc">
-      <div class="ivc-head"><h3>Work out your share</h3><p class="inv-calc-note">An example of how your profit share is worked out.</p></div>
+      <div class="ivc-head"><h3>Work out your share</h3><p class="inv-calc-note">An example of how your profit share is worked out.</p><button type="button" class="btn btn-outline calc-toggle" style="color:var(--ink);border-color:rgba(11,20,64,.35)">Open the calculator</button></div>
       <div class="ivc-in">
         <label for="ivcAmt">Amount you invest <output id="ivcAmtO">10.000&euro;</output></label>
         <p class="ivc-min">Minimum investment 1.000&euro;</p>
@@ -2145,7 +2211,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
     <div class="feature">
       <div class="feature-art"><div class="art-lines"></div><div class="art-card"><div class="t">FTM MT5 <span style="color:#5ad48b">Live</span></div><svg viewBox="0 0 300 160" preserveAspectRatio="none"><g fill="#5ad48b"><rect x="20" y="80" width="14" height="50"/><rect x="60" y="60" width="14" height="40"/><rect x="140" y="40" width="14" height="60"/><rect x="220" y="30" width="14" height="40"/></g><g fill="#FF3E4A"><rect x="100" y="70" width="14" height="45"/><rect x="180" y="50" width="14" height="50"/><rect x="260" y="20" width="14" height="60"/></g></svg><div class="kv"><span>Balance</span><b>$10,000.00</b></div><div class="kv"><span>Equity</span><b>$10,214.50</b></div></div></div>
-      <div><h3>Power of MT5 with 24/7 trading</h3><p>The world's favourite trading platform, with forex, stocks, commodities, crypto and derived indices. Zero commissions.</p><a class="link" href="#">Explore FTM MT5 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div><h3>Power of MT5 with 24/7 trading</h3><p>The world's favourite trading platform, with forex, stocks, commodities, crypto and derived indices. Zero commissions.</p><a class="link" href="#how">Explore FTM MT5 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
     </div>
 
     <div class="feature">
@@ -2159,7 +2225,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 <section class="company" id="company">
   <div class="container">
     <div class="feature">
-      <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Company</p><h3 data-i18n="company.title">Registered and Trading since 2021</h3><p>Follow The Market Ltd started in 2021 as a trading and investment business. Today it runs FTM MACHINE on secure cloud infrastructure for clients worldwide.</p><a class="link" href="#">Meet the team <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Company</p><h3 data-i18n="company.title">Registered and Trading since 2021</h3><p>Follow The Market Ltd started in 2021 as a trading and investment business. Today it runs FTM MACHINE on secure cloud infrastructure for clients worldwide.</p></div>
       <dl class="facts">
         <div><dt>Company</dt><dd>Follow The Market Ltd.</dd></div>
         <div><dt>Developer</dt><dd>FTM Team</dd></div>
@@ -2176,24 +2242,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 <section class="support" id="support">
   <div class="container">
     <div class="feature">
-      <div><h3 data-i18n="support.title">Get answers when you need</h3><p>Our support team is available around the clock, wherever you are.</p><a class="link" href="mailto:ftmwebnation@gmail.com">Contact us <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="feature-art"><div class="online"><i></i>FTM Support is online</div><div class="bubble me">Hi, how do I withdraw to my bank?</div><div class="bubble them">Hi Sam! Go to Cashier, choose Withdraw, and pick Bank transfer.</div><div class="bubble them2">Most withdrawals are processed within one business day.</div></div>
-    </div>
-  </div>
-</section>
-
-
-<section class="brand-bar">
-  <div class="container">
-    <div class="foot-top">
-      <a class="logo" href="#top"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-      <div class="socials">
-        <a href="https://www.facebook.com/profile.php?id=61595064296217" target="_blank" rel="noopener" aria-label="FTM on Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3c-2.8 0-5 2.2-5 5v2H6v4h3v9h4v-9h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg></a>
-        <a href="https://www.instagram.com/ftm_wealth_nation" target="_blank" rel="noopener" aria-label="FTM on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
-        <a href="https://www.tiktok.com/@ftm_wealth_nation" target="_blank" rel="noopener" aria-label="FTM on TikTok"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3h-3v12.1a2.6 2.6 0 1 1-2.2-2.6v-3a5.6 5.6 0 1 0 5.2 5.6V9.3a6.7 6.7 0 0 0 3.9 1.2V7.6a3.9 3.9 0 0 1-3.9-3.9V3z"/></svg></a>
-        <a href="http://www.youtube.com/@ftmwealthnation" target="_blank" rel="noopener" aria-label="FTM on YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 8s-.2-1.6-.9-2.3c-.8-.9-1.8-.9-2.2-1C15.8 4.5 12 4.5 12 4.5s-3.8 0-6.9.2c-.4.1-1.4.1-2.2 1C2.2 6.4 2 8 2 8s-.2 1.9-.2 3.8v1.7c0 1.9.2 3.8.2 3.8s.2 1.6.9 2.3c.8.9 1.9.9 2.4 1 1.8.2 6.7.2 6.7.2s3.8 0 6.9-.2c.4-.1 1.4-.1 2.2-1 .7-.7.9-2.3.9-2.3s.2-1.9.2-3.8v-1.7C22.2 9.9 22 8 22 8zM10 15V9l5.5 3z"/></svg></a>
-        <a href="https://x.com/ftmwealthnation?s=11" target="_blank" rel="noopener" aria-label="FTM on X"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 3h3.1l-6.8 7.8L23.3 21h-6.3l-4.9-6.4L6.4 21H3.3l7.3-8.3L2.7 3h6.4l4.5 5.9L18.9 3zm-1.1 16.2h1.7L7.3 4.7H5.5l12.3 14.5z"/></svg></a>
-      </div>
+      <div><h3 data-i18n="support.title">Get answers when you need them</h3><p>Our support team is available around the clock, wherever you are.</p><a class="link" href="mailto:ftmwebnation@gmail.com">Contact us <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      <div class="feature-art"><div class="online"><i></i>FTM Support is online</div><div class="bubble me">Hi, how do I withdraw to my bank?</div><div class="bubble them">Hi Sam! Go to Cashier, choose Withdraw, and pick Bank transfer.</div></div>
     </div>
   </div>
 </section>
@@ -3080,17 +3130,14 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     <div class="foot-cols">
       <div>
         <h4>Auto Trading</h4><ul><li><a href="#auto">FTM MACHINE</a></li><li><a href="#performance">Performance</a></li><li><a href="#how">How it works</a></li><li><a href="#pricing">Subscription plans</a></li><li><a href="#invest">Investment</a></li></ul>
-        <h4>Trade</h4><ul><li><a href="#">CFDs</a></li><li><a href="#">Multipliers</a></li><li><a href="#">Trading specifications</a></li></ul>
         <h4>Markets</h4><ul><li><a href="#markets">Forex</a></li><li><a href="#markets">Derived Indices</a></li><li><a href="#markets">Stocks</a></li><li><a href="#markets">Stock Indices</a></li><li><a href="#markets">Commodities</a></li><li><a href="#markets">Cryptocurrencies</a></li><li><a href="#markets">ETFs</a></li></ul>
       </div>
       <div>
-        <h4>Platforms</h4><ul><li><a href="#platforms">FTM MT5</a></li><li><a href="#auto">FTM MACHINE</a></li></ul>
-        <h4>Tools</h4><ul><li><a href="#">MT5 signals</a></li><li><a href="#">Trading calculator</a></li></ul>
-        
-      </div>
+        <h4>Platforms</h4><ul><li><a href="#auto">FTM MT5</a></li><li><a href="#auto">FTM MACHINE</a></li></ul>
+        </div>
       <div>
-        <h4>About</h4><ul><li><a href="#company">Who we are</a></li><li><a href="#company">Why choose us</a></li><li><a href="#">Our principles</a></li><li><a href="#">Careers</a></li></ul>
-        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#support">FTM Academy</a></li><li><a href="#">Community</a></li><li><a href="#support">Contact us</a></li></ul>
+        <h4>About</h4><ul><li><a href="#company">Who we are</a></li><li><a href="#company">Why choose us</a></li></ul>
+        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#support">FTM Academy</a></li><li><a href="#support">Contact us</a></li></ul>
       </div>
       <div>
         <h4>Partner</h4><ul><li><a href="#partner">Deriv affiliate via FTM</a></li><li><a href="#partner">Introducing broker</a></li><li><a href="#partner">Payment agent</a></li><li><a href="#partner">Partner login</a></li></ul>
@@ -7132,6 +7179,17 @@ tick();setInterval(tick,5000);})();
     st.appendChild(c);
   }
   wrap.parentNode.insertBefore(st, wrap.nextSibling);
+})();
+</script>
+<script>
+(function(){
+  function t(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('.calc-toggle'); if(b){ var box=b.closest('.compound,.inv-calc'); if(!box) return; var on=box.classList.toggle('calc-open'); b.textContent=t(on?'Close the calculator':'Open the calculator'); return; }
+    var h=e.target.closest('.foot-cols h4'); if(h && matchMedia('(max-width:760px)').matches){ h.classList.toggle('open'); h.setAttribute('aria-expanded',h.classList.contains('open')?'true':'false'); }
+  });
+  document.querySelectorAll('.foot-cols h4').forEach(function(h){ h.setAttribute('role','button'); h.setAttribute('tabindex','0'); h.setAttribute('aria-expanded','false');
+    h.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); h.click(); } }); });
 })();
 </script>
 </body>
