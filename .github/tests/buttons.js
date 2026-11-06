@@ -9,7 +9,16 @@ const accts=()=>({ok:true,account_limit:{max:3,used:2},accounts:[
  {account_id:'acc-A',account_number:'5739503',name:'DERIV',server:'Deriv-Demo',currency:'USD',balance:'11158.46',equity:'11160.00',display_status:'ACTIVE',status_reason:'OK',is_trading:true,risk_tier:'BALANCED',open_positions:1,floating_profit:'23.40',trade_mode:'DEMO'}].filter(a=>!gone.has(a.account_id))});
 await p.route('**/api/v1/**',async r=>{const u=new URL(r.request().url()),m=r.request().method(),path=u.pathname;const pd=r.request().postData();
  const j=(st,o)=>{calls.push(m+' '+path.replace('/api/v1/customer','')+(pd&&!/password/.test(pd)?' '+pd:'')+' -> '+st+' '+JSON.stringify(o).slice(0,90));return r.fulfill({status:st,contentType:'application/json',body:JSON.stringify(o)});};
- if(path.endsWith('/chat'))return j(200,{ok:true,reply:'Hello, how can I help?'});
+ if(path==='/api/v1/customer/chat')return j(200,{ok:true,conversation:{unread:0,support_online:true}});
+ if(path==='/api/v1/customer/chat/messages'&&m==='GET')return j(200,{ok:true,messages:[],cursor:null});
+ if(path==='/api/v1/customer/chat/messages'&&m==='POST')return j(201,{ok:true,message:{message_id:'m1',sender:'CUSTOMER',body:JSON.parse(pd).body,attachments:[],created_at:new Date().toISOString()}});
+ if(path==='/api/v1/customer/chat/read')return j(200,{ok:true,unread:0});
+ if(path==='/api/v1/customer/leaderboard')return j(200,{ok:true,board:'MONTH',computed_at:new Date().toISOString(),rows:[{rank:1,nickname:'gold_hands',return_pct:'12.40',closed_copies:5,wins:5,risk_tier:'GROWTH',months_on_ftm:2,is_you:false}],you:{has_account:true,opted_in:false,qualified:true,would_rank:2},rules:{min_closed_copies:3}});
+ if(path==='/api/v1/customer/leaderboard/profile'&&m==='GET')return j(200,{ok:true,profile:{opted_in:false,nickname:null}});
+ if(path==='/api/v1/customer/leaderboard/profile'&&m==='PUT')return j(200,{ok:true,profile:Object.assign({opted_in:true},JSON.parse(pd))});
+ if(path==='/api/v1/customer/investments')return j(200,{ok:true,investments:[{id:'c1',amount:'10000.00',currency:'EUR',joined_at:'2025-09-20',status:'ACTIVE',eligible_from:'2026-11-01',ends_on:'2030-09-20',value_now:'11500.00',profit_to_date:'1500.00',return_pct:'30.00',withdrawable_now:'300.00',pending:[],history:[]}]});
+ if(/\/investments\/c1\/withdraw$/.test(path))return j(202,{ok:true,requested:true});
+ if(path==='/api/v1/chat')return j(200,{ok:true,reply:'Hello, how can I help?'});
  if(failNext&&m!=='GET'){const f=failNext;failNext=null;return j(f[0],f[1]);}
  if(path.endsWith('/customer/accounts')&&m==='GET')return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(accts())});
  if(path.endsWith('/customer/accounts')&&m==='POST'){const n=JSON.parse(pd).account_number;return n==='53131445'?j(409,{ok:false,error:'MASTER_ACCOUNT',message:'This is the FTM master account. It cannot be added as a copy account.'}):j(202,{ok:true,account_id:'acc-N',status:'SETUP_INCOMPLETE'});}
@@ -27,7 +36,7 @@ await p.goto(BASE+'/');await p.waitForTimeout(800);
 await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>{window.__out=1;return Promise.resolve();}});F.session={email:'test@ftm.com',products:['auto'],name:'Test'};});
 await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(1500);
 const T=[];
-async function step(name,fn,screen,expect){calls=[];dialogs=[];try{await fn();}catch(e){T.push([name,'TEST ERROR '+e.message.split('\n')[0]]);return;}await p.waitForTimeout(1800);const req=calls.filter(c=>!/^GET \/(accounts|.*history|.*positions|me)\b/.test(c)).join(' ; ')||'(no request)';const scr=screen?await screen():'';const all=req+' '+dialogs.join(' | ')+' '+scr;
+async function step(name,fn,screen,expect){calls=[];dialogs=[];try{await fn();}catch(e){T.push(['BROKEN '+name,'TEST ERROR '+e.message.split('\n')[0]]);fails++;return;}await p.waitForTimeout(1800);const req=calls.filter(c=>!/^GET \/(accounts|.*history|.*positions|me)\b/.test(c)).join(' ; ')||'(no request)';const scr=screen?await screen():'';const all=req+' '+dialogs.join(' | ')+' '+scr;
  const bad=(expect||[]).filter(x=>!all.includes(x));T.push([(bad.length?'BROKEN ':'OK ')+name,req,'dialogs: '+(dialogs.join(' | ')||'-'),'screen: '+scr].concat(bad.length?['MISSING: '+bad.join(' / ')]:[]));if(bad.length)fails++;}
 let fails=0;
 const nav=v=>p.evaluate(v=>document.querySelector('.app-nav-item[data-view="'+v+'"]').click(),v);
@@ -49,7 +58,10 @@ await step('Pause with engine refusal',()=>menu(1,'data-pause'),null,['This acco
 failNext=[500,{ok:false,error:'INTERNAL_SERVER_ERROR'}];
 await step('Remove with engine 500',()=>menu(0,'data-remove'),rows,['(INTERNAL_SERVER_ERROR)']);
 await step('Remove account',async()=>{await menu(0,'data-remove');await p.waitForTimeout(5500);},rows,['DELETE /accounts/acc-B -> 200']);
-await step('Log out',()=>p.evaluate(()=>document.getElementById('appLogout').click()),()=>p.evaluate(()=>'area hidden '+document.getElementById('appView').closest('.app').hidden),['area hidden true']);
+await step('Leaderboard opt in',async()=>{await nav('board');await p.waitForTimeout(1200);await p.fill('#lblNick','calm_trader');await p.evaluate(()=>{document.getElementById('lblOpt').checked=true;});await p.click('#lblSave');},()=>p.evaluate(()=>(document.getElementById('lblMsg')||{}).textContent+' | '+document.getElementById('lbLive').innerText.slice(0,80)),['GET /leaderboard -> 200','PUT /leaderboard/profile {"opted_in":true,"nickname":"calm_trader"} -> 200']);
+await step('Support chat send',async()=>{await p.evaluate(()=>{document.getElementById('appView').closest('.app').hidden=false;document.querySelector('#acctA .um-live').click();});await p.waitForTimeout(1000);await p.fill('#lcText','Hello support');await p.press('#lcText','Enter');},()=>p.evaluate(()=>document.getElementById('lcLog').innerText.replace(/\s+/g,' ')),['POST /chat/messages','Hello support']);
+await step('Investment withdraw',async()=>{await p.evaluate(()=>{FTM.session.products=['auto','invest'];FTM.invest._loaded=false;FTM.openArea('invest');});await p.waitForTimeout(1500);await p.evaluate(()=>document.querySelector('.iv-item[data-iv="withdraw"]').click());await p.fill('#ivWAmt','300');await p.click('#ivWBtn');},()=>p.evaluate(()=>document.getElementById('ivWMsg').textContent),['POST /investments/c1/withdraw','Request received']);
 await step('Ask here chat send',async()=>{await p.evaluate(()=>{document.getElementById('appView').closest('.app').hidden=false;document.querySelector('#acctA .um-ai').click();});await p.waitForTimeout(800);await p.fill('#fcText','hi');await p.keyboard.press('Enter');},()=>p.evaluate(()=>[...document.querySelectorAll('.fc-m')].map(m=>m.textContent.slice(0,30)).join(' | ')),['POST /api/v1/chat','Hello, how can I help?']);
+await step('Log out',()=>p.evaluate(()=>document.getElementById('appLogout').click()),()=>p.evaluate(()=>'area hidden '+document.getElementById('appView').closest('.app').hidden),['area hidden true']);
 for(const r of T)console.log('\n# '+r.join('\n   '));console.log('\nPAGE ERRORS',errs.join('|')||'none');if(errs.length)fails++;
 console.log(fails?'\nFAILED: '+fails+' problem(s)':'\nALL BUTTONS OK');await b.close();process.exit(fails?1:0);})();

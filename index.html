@@ -620,6 +620,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .lb-table tr.you td{background:#EEF2FF}
   .lb-table td:first-child{font-weight:800;color:var(--muted);width:46px}
   .lb-you-tag{background:var(--blue);color:#fff;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:middle}
+  .lbl-you{display:grid;gap:10px;border:1px solid var(--line);border-radius:16px;padding:16px;margin:4px 0 20px;background:linear-gradient(135deg,#F4F6FC,#fff)}
+  .lbl-you b.big{font-size:20px;color:var(--ink)}
+  .lbl-you .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .lbl-you input[type=text]{flex:1 1 180px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit}
+  .lbl-you label.sw{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink);cursor:pointer}
+  .lbl-msg{font-size:13px;font-weight:600}
+  .lbl-msg.bad{color:var(--red-dark)}.lbl-msg.ok{color:#1f8a5b}
+  .lbl-empty{padding:18px;border-radius:14px;background:var(--bg-2);color:var(--muted);font-weight:600;font-size:14px;line-height:1.5}
   @media (max-width:860px){.lb-podium{grid-template-columns:1fr}}
 
   .ctabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:18px;overflow-x:auto}
@@ -886,6 +894,11 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .tl-bar{height:10px;background:var(--bg-2);border-radius:99px;margin-top:10px;overflow:hidden}
   .tl-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--gold))}
   .tl-bar.done i{background:#2fa66b}
+  .tl-bar{position:relative}.tl-mk{position:absolute;top:-3px;width:3px;height:16px;border-radius:2px;background:#D4AF37;transform:translateX(-50%)}.tl-mk.past{background:#1f8a5b}
+  .tl-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;font-size:12px;color:var(--muted);line-height:1.4}
+  .tl-steps b{display:block;color:var(--ink);font-size:12.5px}
+  .tl-steps span:nth-child(2){text-align:center}.tl-steps span:last-child{text-align:right}
+  @media (max-width:560px){.tl-steps{grid-template-columns:1fr}.tl-steps span:nth-child(2),.tl-steps span:last-child{text-align:left}}
   .tl-dates{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
   .pill-ok{background:#EAF7F0;color:#1f8a5b;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;white-space:nowrap}
   .pill-lock{background:#EEF2FF;color:var(--blue);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;white-space:nowrap}
@@ -1135,6 +1148,16 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .fs-ic svg{width:19px;height:19px}
   .fs-ai{border:0;background:linear-gradient(90deg,#fff7e0,#fff);width:100%;text-align:left;font:inherit;cursor:pointer}
   .fs-panel.chat{width:360px;padding:0;overflow:hidden}.fs-panel.chat .fs-head{display:none}
+  .fs-live{border:0;background:none;width:100%;text-align:left;font:inherit;cursor:pointer;position:relative}
+  .fs-unread,.fs-badge{min-width:20px;height:20px;padding:0 6px;border-radius:99px;background:var(--red);color:#fff;font-size:11.5px;font-weight:800;font-style:normal;display:inline-grid;place-items:center}
+  .fs-unread{margin-left:auto}
+  .fs-btn{position:relative}.fs-badge{position:absolute;top:-4px;right:-4px;background:var(--gold);color:var(--ink);box-shadow:0 0 0 2px #fff}
+  .fs-unread[hidden],.fs-badge[hidden]{display:none}
+  .lc-on{font-size:11.5px;font-weight:700;color:#BFF3D5;display:flex;align-items:center;gap:6px}.lc-on::before{content:"";width:7px;height:7px;border-radius:50%;background:#3CC98A}
+  .lc-on[hidden]{display:none}
+  .fc-m .lc-t{display:block;margin-top:3px;font-size:10.5px;opacity:.65}
+  .fc-m.sys{align-self:center;background:none;border:0;color:var(--muted);font-size:12.5px;text-align:center}
+  .fc-m.fail{background:#FDEAEA;color:#8a1520;align-self:flex-end}
   .fs-chat{display:flex;flex-direction:column;height:min(520px,70vh)}.fs-chat[hidden]{display:none}
   .fc-bar{display:flex;align-items:center;gap:8px;padding:12px 14px;background:var(--blue);color:#fff}.fc-bar b{flex:1;font-size:15px}
   .fc-back,.fc-voice{border:0;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:18px;display:grid;place-items:center}
@@ -1491,6 +1514,18 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .fomo{font-weight:700;color:var(--gold);margin-top:8px}.fomo-c{text-align:center;margin:-4px auto 22px;font-size:17px}.bt-note{font-size:11.5px;opacity:.65;margin-top:6px}
   .auth-sub:empty{display:none}
 html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{overflow-x:clip}}
+  .inv-tl{list-style:none;margin:28px 0 8px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative;counter-reset:t}
+  .inv-tl::before{content:"";position:absolute;left:6%;right:6%;top:9px;height:3px;border-radius:3px;background:linear-gradient(90deg,#D4AF37 0 var(--p,0%),rgba(212,175,55,.25) var(--p,0%));animation:invtl 6s ease-in-out infinite alternate}
+  @property --p{syntax:'<percentage>';inherits:false;initial-value:0%}
+  @keyframes invtl{from{--p:8%}to{--p:100%}}
+  .inv-tl li{position:relative;padding-top:30px}
+  .inv-tl li::before{content:"";position:absolute;top:0;left:0;width:21px;height:21px;border-radius:50%;background:#0B1440;border:3px solid #D4AF37;box-sizing:border-box}
+  .inv-tl li:last-child::before{background:#D4AF37}
+  .inv-tl .d{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#D4AF37}
+  .inv-tl b{display:block;margin-top:4px;font-size:16px}
+  .inv-tl p{margin:4px 0 0;font-size:13.5px;opacity:.8;line-height:1.45}
+  @media (max-width:760px){.inv-tl{grid-template-columns:1fr;gap:14px;padding-left:34px}.inv-tl::before{left:9px;right:auto;top:6px;bottom:6px;width:3px;height:auto;background:linear-gradient(180deg,#D4AF37 0 var(--p,0%),rgba(212,175,55,.25) var(--p,0%))}.inv-tl li{padding-top:0}.inv-tl li::before{left:-34px}}
+  @media (prefers-reduced-motion:reduce){.inv-tl::before{animation:none;--p:100%}}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -1535,15 +1570,15 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
             <div class="dd-head">FTM Investment</div>
             <a href="#invest">Deposit securely<small>Pay through our secure checkout.</small></a>
             <a href="#invest">Follow the account<small>Follow the FTM account in your client area.</small></a>
-            <a href="#invest">First withdrawal after 13 months<small>Up to 20% of your investment each year. The rest of your share at the end of 5 years.</small></a>
+            <a href="#invest">Yearly withdrawals<small>20% of your profit share in months 13, 25, 37 and 49. Your capital and the rest at the end of year 5.</small></a>
           </div>
           <div class="dd-col">
             <div class="dd-head">How your profit share works</div>
-            <a href="#invest">Contract<small>5 years. First withdrawal on the 1st of the month after 13 full months.</small></a>
+            <a href="#invest">Contract<small>5 years. Your capital stays invested for the whole term.</small></a>
             <a href="#invest">Minimum<small>The smallest investment FTM accepts is 1.000&euro;.</small></a>
             <a href="#invest">Work out your share<small>An example of how your profit share is worked out.</small></a>
           </div>
-          <div class="dd-cta"><span class="gs-reel dx-reel dd-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>No broker</b><small>nothing to set up</small></span><span class="gr-s" style="animation-delay:5.0s"><b>20% a year</b><small>withdraw from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span>
+          <div class="dd-cta"><span class="gs-reel dx-reel dd-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>No broker</b><small>nothing to set up</small></span><span class="gr-s" style="animation-delay:5.0s"><b>20% a year</b><small>of your profit share, from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span>
             <b>Invest without opening a broker account</b>
             <p>No broker and nothing to install. Deposit into the FTM account, follow it in your client area and share in the profit over a 5-year contract.</p>
             <a class="btn btn-red btn-sm js-invest" href="#invest">Invest now</a>
@@ -1730,10 +1765,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>
       <span><b>Email us</b><small>ftmwebnation@gmail.com</small></span>
     </a>
-    <a class="fs-opt" href="#support">
+    <button type="button" class="fs-opt fs-live" id="fsLive">
       <span class="fs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
-      <span><b>Live chat</b><small>See our support desk</small></span>
-    </a>
+      <span><b>Chat with FTM support</b><small>A person from FTM replies here</small></span><em class="fs-unread" id="fsLiveUnread" hidden></em>
+    </button>
     </div>
     <div class="fs-chat" id="fsChat" hidden>
       <div class="fc-bar"><button type="button" class="fc-back" id="fcBack" aria-label="Back">&larr;</button><b>Ask here</b><button type="button" class="fc-voice" id="fcVoice" aria-pressed="false" aria-label="Read answers aloud" title="Read answers aloud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>
@@ -1746,8 +1781,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </form>
       <p class="fc-note">AI answers can be wrong. Not financial advice.</p>
     </div>
+    <div class="fs-chat" id="fsLiveChat" hidden>
+      <div class="fc-bar"><button type="button" class="fc-back" id="lcBack" aria-label="Back">&larr;</button><b>FTM support</b><span class="lc-on" id="lcOn" hidden>Online</span></div>
+      <div class="fc-log" id="lcLog" aria-live="polite"></div>
+      <div class="fc-gate" id="lcGate" hidden><b>Log in to chat with FTM support</b><p>Your conversation is kept in your client area, so FTM can reply even when you are away.</p><button type="button" class="btn btn-red js-login">Log in</button></div>
+      <form class="fc-in" id="lcForm" hidden>
+        <input type="text" id="lcText" placeholder="Write a message" maxlength="4000" autocomplete="off" aria-label="Your message">
+        <button type="submit" class="fc-send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12 20 4l-6 16-3-7z"/></svg></button>
+      </form>
+      <p class="fc-note" id="lcNote">Replies appear here. You can close this window and come back later.</p>
+    </div>
   </div>
-  <button type="button" class="fs-btn" id="fsToggle" aria-label="Get help" aria-expanded="false">
+  <button type="button" class="fs-btn" id="fsToggle" aria-label="Get help" aria-expanded="false"><em class="fs-badge" id="fsBadge" hidden></em>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
   </button>
 </div>
@@ -1901,29 +1946,35 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <div class="marquee-track inv-track">
         <div class="inv-step"><span class="n">1</span><b>Deposit securely</b><p>Pay through our secure checkout.</p></div>
         <div class="inv-step"><span class="n">2</span><b>Follow the account</b><p>Follow the FTM account in your client area.</p></div>
-        <div class="inv-step"><span class="n">3</span><b>First withdrawal after 13 months</b><p>From month 13, withdraw up to 20% of your investment a year.</p></div>
+        <div class="inv-step"><span class="n">3</span><b>Withdraw once a year</b><p>In months 13, 25, 37 and 49, withdraw 20% of the profit share you have built up.</p></div>
         <div class="inv-step"><span class="n">1</span><b>Deposit securely</b><p>Pay through our secure checkout.</p></div>
         <div class="inv-step"><span class="n">2</span><b>Follow the account</b><p>Follow the FTM account in your client area.</p></div>
-        <div class="inv-step"><span class="n">3</span><b>First withdrawal after 13 months</b><p>From month 13, withdraw up to 20% of your investment a year.</p></div>
+        <div class="inv-step"><span class="n">3</span><b>Withdraw once a year</b><p>In months 13, 25, 37 and 49, withdraw 20% of the profit share you have built up.</p></div>
         <div class="inv-step" aria-hidden="true"><span class="n">1</span><b>Deposit securely</b><p>Pay through our secure checkout.</p></div>
         <div class="inv-step" aria-hidden="true"><span class="n">2</span><b>Follow the account</b><p>Follow the FTM account in your client area.</p></div>
-        <div class="inv-step" aria-hidden="true"><span class="n">3</span><b>First withdrawal after 13 months</b><p>From month 13, withdraw up to 20% of your investment a year.</p></div>
+        <div class="inv-step" aria-hidden="true"><span class="n">3</span><b>Withdraw once a year</b><p>In months 13, 25, 37 and 49, withdraw 20% of the profit share you have built up.</p></div>
         <div class="inv-step" aria-hidden="true"><span class="n">1</span><b>Deposit securely</b><p>Pay through our secure checkout.</p></div>
         <div class="inv-step" aria-hidden="true"><span class="n">2</span><b>Follow the account</b><p>Follow the FTM account in your client area.</p></div>
-        <div class="inv-step" aria-hidden="true"><span class="n">3</span><b>First withdrawal after 13 months</b><p>From month 13, withdraw up to 20% of your investment a year.</p></div>
+        <div class="inv-step" aria-hidden="true"><span class="n">3</span><b>Withdraw once a year</b><p>In months 13, 25, 37 and 49, withdraw 20% of the profit share you have built up.</p></div>
       </div>
     </div>
 
+    <ol class="inv-tl" aria-label="How your investment runs">
+      <li><span class="d">Day 1</span><b>Your capital is invested</b><p>It stays invested for the full 5 years.</p></li>
+      <li><span class="d">Every month</span><b>50% of the profit is yours</b><p>Your share of what the FTM master account makes on your capital.</p></li>
+      <li><span class="d">Months 13 · 25 · 37 · 49</span><b>Withdraw 20% once a year</b><p>Of the profit share you have built up.</p></li>
+      <li><span class="d">End of year 5</span><b>Everything is paid out</b><p>Your capital plus all remaining profit share.</p></li>
+    </ol>
     <div class="inv-grid">
       <div class="inv-left">
       <div class="inv-rule">
         <h3>How your profit share works</h3>
         <ul>
-          <li><b>Contract.</b> Five years. First withdrawal on the 1st of the month after 13 full months.</li>
-          <li><b>Yearly withdrawals.</b> Up to 20% of your investment a year from month 13. The rest of your share and your deposit are paid after five years.</li>
-          <li><b>Your share.</b> Half of what the account makes, applied to your investment.</li>
+          <li><b>Contract.</b> Five years. Your capital stays invested for the whole term.</li>
+          <li><b>Withdrawals.</b> Once a year, in months 13, 25, 37 and 49, you can withdraw 20% of the profit share you have built up. At the end of year 5 you receive your capital and all remaining profit share.</li>
+          <li><b>Your share.</b> 50% of the profit the FTM master account makes on your capital.</li>
           <li><b>Minimum.</b> The smallest investment FTM accepts is 1.000&euro;.</li>
-          <li><b>Example.</b> Invest 10.000&euro; and withdraw up to 2.000&euro; a year from month 13.</li>
+          <li><b>Example.</b> Invest 10.000&euro;. If your profit share has reached 3.000&euro; by month 13, you can withdraw 600&euro; then.</li>
         </ul>
         <div class="inv-cta">
           <a class="btn btn-red js-invest" href="#invest">Invest now</a>
@@ -2220,7 +2271,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2522,6 +2573,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
             <p class="lb-date"><i></i><span id="lbDate">&mdash;</span></p>
             <div class="lb-podium" id="lbPodium"></div>
             <div class="app-scroll"><table class="app-trades lb-table" id="lbTable"></table></div>
+            <div id="lbLive" hidden></div>
           </div>
         </div>
       </section>
@@ -2736,7 +2788,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 <div class="app" id="invView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="invHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctB" hidden><div class="um-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="invLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctB" hidden><div class="um-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="invLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Investor area">
@@ -2752,7 +2804,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         <a class="btn btn-red js-invest" href="#invest" id="npInvBtn">Invest now</a>
         <p class="np-small">Paid with a different email? Log out and log in with that one.</p>
       </div>
-      <div class="iv-empty" id="ivEmpty" hidden><div class="iv-empty-txt"><b>You have not invested yet</b><p>This is your investment area. Everything below fills in automatically once you invest.</p><a class="btn btn-red js-invest" href="#invest">Invest now</a></div><span class="gs-reel dx-reel r2 iv-reel" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>54–176%</b><small>a year, Portfolio since 2020</small></span><span class="gr-s" style="animation-delay:5s"><b>20% a year</b><small>withdraw from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span></div>
+      <div class="iv-empty" id="ivEmpty" hidden><div class="iv-empty-txt"><b>You have not invested yet</b><p>This is your investment area. Everything below fills in automatically once you invest.</p><a class="btn btn-red js-invest" href="#invest">Invest now</a></div><span class="gs-reel dx-reel r2 iv-reel" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>54–176%</b><small>a year, Portfolio since 2020</small></span><span class="gr-s" style="animation-delay:5s"><b>20% a year</b><small>of your profit share, from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span></div>
             <div class="app-crumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11 12 4l8 7M6 10v9h12v-9"/></svg><span>Client area</span><em>/</em><span>Investment</span><em>/</em><span class="cur" id="ivCrumb">Overview</span></div>
       <div class="app-title">
         <span class="app-title-ic" id="ivIcon"></span>
@@ -2774,7 +2826,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           </div>
           <div class="app-card">
             <h3>Your investments</h3>
-            <p class="hint">Each deposit becomes eligible on the 1st of the month after 13 full months.</p>
+            <p class="hint">Once a year, in months 13, 25, 37 and 49, you can withdraw 20% of your profit share. Your capital comes back at the end of year 5.</p>
             <div id="ivTimeline"></div>
           </div>
           <div class="app-card">
@@ -2833,7 +2885,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
                 <li>Once a deposit is eligible you can withdraw your profit share, your deposit, or both.</li>
                 <li>Withdrawals are paid to the bank account you gave when you invested.</li>
                 <li>Processing times and any fees are set out in your investor agreement.</li>
-                <li>If an investment is still inside its 13 months, the profit share shown is accrued and cannot yet be withdrawn.</li>
+                <li>Before month 13 the profit share shown is building up and cannot be withdrawn yet.</li>
               </ul>
             </div>
           </div>
@@ -2864,7 +2916,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         <span class="gs-go">See Auto Trading <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
       </a>
       <a class="gs-card" href="#invest" data-go="invest">
-        <span class="gs-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>No broker</b><small>nothing to set up</small></span><span class="gr-s" style="animation-delay:5.0s"><b>20% a year</b><small>withdraw from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span>
+        <span class="gs-reel r2" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6 L120 50 L0 50 Z"/><path class="gr-l" d="M0 44 C18 42 26 36 40 35 S60 28 72 25 S92 16 104 12 S116 8 120 6"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>50%</b><small>of the profit is yours</small></span><span class="gr-s" style="animation-delay:2.5s"><b>No broker</b><small>nothing to set up</small></span><span class="gr-s" style="animation-delay:5.0s"><b>20% a year</b><small>of your profit share, from month 13</small></span><span class="gr-s" style="animation-delay:7.5s"><b>5 years</b><small>one simple contract</small></span><i class="gr-live">FTM</i></span>
         <span class="gs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg></span>
         <b>Investment</b>
         <p>No broker account needed. Deposit into the FTM account and follow it in your client area.</p>
@@ -4498,7 +4550,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         },
         fetchMe: function(){ return call('/me'); },
         fetchBilling: function(){ return call('/billing'); },
-        fetchInvestments: function(){ return call('/investments').then(function(j){ return (j.investments||[]).map(function(v){ return {id:v.id||v.investment_id, amount:num(v.amount), joined:String(v.joined_at||v.created_at||'').slice(0,10)}; }).filter(function(v){ return v.amount>0 && v.joined; }); }); },
+        api: function(path, opts){ return call(path, opts); },
+        fetchInvestments: function(){ return call('/investments').then(function(j){ return (j.investments||[]).map(function(v){ return {id:v.id||v.investment_id, amount:num(v.amount), joined:String(v.joined_at||v.created_at||'').slice(0,10),
+          server:true, status:v.status||null, valueNow:num(v.value_now), profit:num(v.profit_to_date), withdrawable:num(v.withdrawable_now), returnPct:num(v.return_pct),
+          eligibleFrom:v.eligible_from||null, endsOn:v.ends_on||null, nextOn:v.next_withdrawal_on||null, pending:v.pending||[], history:v.history||[]}; }).filter(function(v){ return v.amount>0 && v.joined; }); }); },
+        requestInvestmentWithdrawal: function(id, amount, reqId){ return call('/investments/'+encodeURIComponent(id)+'/withdraw', { method:'POST', body:{ amount: amount.toFixed(2), client_request_id: reqId } }); },
         pauseAccount: function(accountId, closeOpen){ return call('/accounts/'+encodeURIComponent(accountId)+'/pause', { method:'POST', body: closeOpen?{close_open:true}:{} }); },
         setRiskTier: function(accountId, tier, ack){ var b={risk_tier:tier}; if(ack) b.growth_acknowledged=true; return call('/accounts/'+encodeURIComponent(accountId)+'/risk_tier', { method:'PUT', body:b }); },
         resumeAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/resume', { method:'POST' }); },
@@ -6048,9 +6104,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     var INVEST_URL='https://buy.stripe.com/5kA7uka0Y4t27zWbIN';
     document.querySelectorAll('.js-invest').forEach(function(a){ if(INVEST_URL){ a.href=INVEST_URL; } });
 
-    var RULE={lockMonths:13, share:0.5, currency:'EUR'};
+    var RULE={lockMonths:13, share:0.5, withdrawPct:0.2, years:5, currency:'EUR'};
     F.rule=RULE;
 
+    function t(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
+    function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     function eur(n,dp){ var v=Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0}); return (n<0?'-':'')+v+'€'; }
     function pct(n,d){ return (n>0?'+':'')+n.toFixed(d===undefined?1:d)+'%'; }
     function fmt(d){ return d.toLocaleDateString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'long',year:'numeric'}); }
@@ -6100,13 +6158,22 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     F.investMetrics=function(){
       var now=Date.now(), rows=F.invest.investments.map(function(inv){
-        var j=new Date(inv.joined+'T00:00:00'), el=eligibleOn(j), end=Math.min(now,el.getTime());
+        var j=new Date(inv.joined+'T00:00:00'), el=eligibleOn(j), end=now;
         var start=valueAt(j.getTime(),'after'), stop=valueAt(end,'before');
         var ret=(stop/start-1)*100;
         var share=Math.max(0,ret)/100*RULE.share*inv.amount;
+        var endOn=new Date(j.getFullYear()+RULE.years, j.getMonth(), j.getDate());
+        if(inv.server){ if(inv.eligibleFrom) el=new Date(inv.eligibleFrom+'T00:00:00'); if(inv.endsOn) endOn=new Date(inv.endsOn+'T00:00:00');
+          if(inv.returnPct!=null) ret=inv.returnPct; if(inv.profit!=null) share=inv.profit; }
+        var windows=[0,12,24,36].map(function(k){ return new Date(el.getFullYear(), el.getMonth()+k, el.getDate()); });
+        var openW=windows.filter(function(w){ var e=new Date(w.getFullYear()+1, w.getMonth(), w.getDate()); return now>=w.getTime() && now<e.getTime(); })[0]||null;
+        var nextWindow=windows.filter(function(w){ return w.getTime()>now; })[0]||null;
+        if(inv.server && inv.nextOn){ var nd=new Date(inv.nextOn+'T00:00:00'); nextWindow = nd.getTime()>now ? nd : null; }
+        else if(inv.server && !inv.withdrawable && openW) nextWindow=windows.filter(function(w){ return w.getTime()>now; })[0]||null;
         var eligible=now>=el.getTime();
-        var payable = ret>=0 ? inv.amount+share : inv.amount*(1+ret/100);
-        return {id:inv.id, amount:inv.amount, joined:j, eligibleOn:el, ret:ret, share:share, payable:payable, eligible:eligible,
+        var payable = inv.server&&inv.valueNow!=null ? inv.valueNow : (ret>=0 ? inv.amount+share : inv.amount*(1+ret/100));
+        var withdrawable = inv.server ? (inv.withdrawable||0) : (openW ? Math.max(0,share)*RULE.withdrawPct : 0);
+        return {id:inv.id, amount:inv.amount, joined:j, eligibleOn:el, endOn:endOn, ret:ret, share:share, payable:payable, eligible:eligible, withdrawable:withdrawable, windows:windows, nextWindow:nextWindow, openWindow:openW, server:!!inv.server, status:inv.status||null, pending:inv.pending||[],
                 daysLeft:Math.max(0,Math.ceil((el.getTime()-now)/864e5)),
                 progress:Math.min(1,(now-j.getTime())/(el.getTime()-j.getTime()))};
       });
@@ -6118,8 +6185,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var first=rows.length?rows.reduce(function(a,r){return r.joined<a.joined?r:a;}):null;
       var poolNow=F.invest.pool[F.invest.pool.length-1].v;
       var sinceFirst=first?(poolNow/valueAt(first.joined.getTime(),'after')-1)*100:0;
-      var next=rows.filter(function(r){return !r.eligible;}).sort(function(a,b){return a.eligibleOn-b.eligibleOn;})[0];
-      return {rows:rows,total:total,accrued:accrued,available:Math.max(0,eligibleTotal-withdrawn),withdrawn:withdrawn,
+      var next=rows.filter(function(r){return r.nextWindow;}).sort(function(a,b){return a.nextWindow-b.nextWindow;})[0];
+      if(next) next={eligibleOn:next.nextWindow, row:next};
+      var live=rows.some(function(r){return r.server;});
+      var avail=rows.reduce(function(a,r){return a+r.withdrawable;},0); if(!live) avail=Math.max(0,avail-withdrawn);
+      return {rows:rows,total:total,accrued:accrued,available:avail,withdrawn:withdrawn,live:live,
               eligibleTotal:eligibleTotal,sinceFirst:sinceFirst,next:next,first:first};
     };
 
@@ -6200,30 +6270,26 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       $('ivRet').textContent=pct(m.sinceFirst,1);
       $('ivRet').className=m.sinceFirst>=0?'val-up':'val-down';
       $('ivAccr').textContent=eur(m.accrued);
-      $('ivAccrSub').textContent='Half of the return, on your deposits';
+      $('ivAccrSub').textContent='50% of the profit the FTM account makes on your capital';
       $('ivAvail').textContent=eur(m.available);
       var elig=m.rows.filter(function(r){return r.eligible;});
       var eligDep=elig.reduce(function(a,r){return a+r.amount;},0), eligShare=elig.reduce(function(a,r){return a+r.share;},0);
       $('ivAvailSub').textContent = m.available>0
-        ? eur(eligDep)+' deposit + '+eur(eligShare)+' profit share'
-        : 'Nothing eligible yet';
+        ? '20% of your profit share'
+        : (m.next ? t('Next withdrawal window: {}').replace('{}',fmtS(m.next.eligibleOn)) : t('Nothing to withdraw yet'));
 
       $('ivTimeline').innerHTML=m.rows.map(function(r){
-        var status=r.eligible?'<span class="st ok">Eligible now</span>':'<span class="st lock">'+r.daysLeft+' days to go</span>';
-        return '<div class="tl-row"><div class="tl-top"><span><b>'+r.id+'</b> · '+eur(r.amount)+' · joined '+fmtS(r.joined)+'</span>'+status+'</div>'+
-          '<div class="tl-bar'+(r.eligible?' done':'')+'"><i style="width:'+(r.progress*100).toFixed(1)+'%"></i></div>'+
-          '<div class="tl-dates"><span>'+fmtS(r.joined)+'</span><span>Eligible '+fmtS(r.eligibleOn)+'</span></div></div>';
+        var now=Date.now(), span=r.endOn-r.joined, prog=Math.max(0,Math.min(1,(now-r.joined)/span));
+        var mks=r.windows.map(function(w){ return '<em class="tl-mk'+(w<=now?' past':'')+'" style="left:'+Math.max(0,Math.min(100,(w-r.joined)/span*100)).toFixed(1)+'%"></em>'; }).join('');
+        var status=r.status==='PENDING_FUNDING'?'<span class="st lock">'+t('Waiting for your deposit')+'</span>':(r.withdrawable>0?'<span class="st ok">'+t('Withdrawal window open')+'</span>':(r.nextWindow?'<span class="st lock">'+t('Next withdrawal window: {}').replace('{}',fmtS(r.nextWindow))+'</span>':'<span class="st ok">'+t('Paid out at the end of year 5')+'</span>'));
+        return '<div class="tl-row"><div class="tl-top"><span><b>'+esc(r.id)+'</b> · '+eur(r.amount)+'</span>'+status+'</div>'+
+          '<div class="tl-bar'+(r.eligible?' done':'')+'"><i style="width:'+(prog*100).toFixed(1)+'%"></i>'+mks+'</div>'+
+          '<div class="tl-steps"><span><b>'+t('Start')+'</b>'+fmtS(r.joined)+'</span><span><b>'+t('Withdrawal windows')+'</b>'+r.windows.map(function(w){return fmtS(w);}).join(' · ')+'</span><span><b>'+t('End of year 5')+'</b>'+t('Capital + all remaining profit share')+' · '+fmtS(r.endOn)+'</span></div></div>';
       }).join('');
 
       var r=m.rows[0];
       if(r){
-        var endWord=r.eligible?'the day you became eligible':'today';
-        var lastFull=new Date(r.eligibleOn.getFullYear(), r.eligibleOn.getMonth(), 0);
-        $('ivExplain').innerHTML='You joined on <b>'+fmt(r.joined)+'</b>. Your 13 full months end on '+fmt(lastFull)+', so you become eligible on <b>'+fmt(r.eligibleOn)+'</b>. '+
-          'From the day you joined to '+endWord+', the FTM account returned <b>'+pct(r.ret,1)+'</b>. '+
-          (r.ret>0 ? 'Your share is half of that, <b>'+(r.ret*RULE.share).toFixed(1)+'%</b>, on the '+eur(r.amount)+' you invested, which is <b>'+eur(r.share)+'</b>. With your deposit that is <b>'+eur(r.payable)+'</b> you can withdraw'+(r.eligible?'.':' once you are eligible.')
-                   : 'That is not a profit, so no profit share is payable for this period, and your deposit is affected by the loss.')+
-          ' This is worked out for '+r.id+'; each deposit has its own dates.';
+        $('ivExplain').textContent=t('Your capital stays invested for 5 years. You receive 50% of the profit the FTM account makes on it. Once a year, in months 13, 25, 37 and 49, you can withdraw 20% of the profit share you have built up. At the end of year 5 you receive your capital and all remaining profit share.');
       }
     }
     function renderPerformance(){
@@ -6238,19 +6304,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         rows.map(function(r){ return '<tr><td><b>'+names[r.m]+' '+r.y+'</b></td><td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,2)+'</td><td>'+pct(r.cum,1)+'</td></tr>'; }).join('')+'</tbody>';
     }
     function renderTable(m){
-      $('ivTable').innerHTML='<thead><tr><th>Deposit</th><th>Joined</th><th>Amount</th><th>Eligible on</th><th>Account return in period</th><th>Your profit share</th><th>Deposit + share</th><th>Status</th></tr></thead><tbody>'+
+      $('ivTable').innerHTML='<thead><tr><th>'+t('Investment')+'</th><th>'+t('Started')+'</th><th>'+t('Capital')+'</th><th>'+t('Account return')+'</th><th>'+t('Your profit share')+'</th><th>'+t('Withdrawable now')+'</th><th>'+t('Next withdrawal window')+'</th><th>'+t('Capital back')+'</th></tr></thead><tbody>'+
         m.rows.map(function(r){
-          return '<tr><td><b>'+r.id+'</b></td><td>'+fmtS(r.joined)+'</td><td>'+eur(r.amount)+'</td><td>'+fmtS(r.eligibleOn)+'</td>'+
-            '<td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,1)+(r.eligible?'':' so far')+'</td>'+
-            '<td>'+eur(r.share)+(r.eligible?'':' accrued')+'</td>'+
-            '<td><b>'+eur(r.payable)+'</b></td>'+
-            '<td>'+(r.eligible?'<span class="pill-ok">Eligible</span>':'<span class="pill-lock">Locked, '+r.daysLeft+' days</span>')+'</td></tr>';
+          return '<tr><td><b>'+esc(r.id)+'</b></td><td>'+fmtS(r.joined)+'</td><td>'+eur(r.amount)+'</td>'+
+            '<td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,1)+'</td><td>'+eur(r.share,2)+'</td><td><b>'+eur(r.withdrawable,2)+'</b></td>'+
+            '<td>'+(r.withdrawable>0?'<span class="pill-ok">'+t('Open now')+'</span>':(r.nextWindow?fmtS(r.nextWindow):'—'))+'</td><td>'+fmtS(r.endOn)+'</td></tr>';
         }).join('')+
-        '<tr><td><b>Total</b></td><td></td><td><b>'+eur(m.total)+'</b></td><td></td><td></td><td><b>'+eur(m.accrued)+'</b></td><td><b>'+eur(m.rows.reduce(function(a,r){return a+r.payable;},0))+'</b></td><td></td></tr></tbody>';
+        '<tr><td><b>'+t('Total')+'</b></td><td></td><td><b>'+eur(m.total)+'</b></td><td></td><td><b>'+eur(m.accrued,2)+'</b></td><td><b>'+eur(m.available,2)+'</b></td><td></td><td></td></tr></tbody>';
     }
     function renderWithdraw(m){
       $('ivWAvail').textContent=eur(m.available,2);
-      var h=F.invest.withdrawals;
+      var h=F.invest.withdrawals.slice();
+      if(m.live){ h=[]; m.rows.forEach(function(r){ (r.pending||[]).forEach(function(p){ if(p.kind==='WITHDRAWAL') h.push({t:Date.parse(p.requested_at)||Date.now(),amount:parseFloat(p.amount)||0,status:t('Waiting for FTM')}); }); }); h.sort(function(a,b){return a.t-b.t;}); }
       $('ivWHist').innerHTML= h.length
         ? '<thead><tr><th>Requested</th><th>Amount</th><th>Status</th></tr></thead><tbody>'+h.slice().reverse().map(function(w){
             return '<tr><td>'+fmtS(new Date(w.t))+'</td><td>'+eur(w.amount,2)+'</td><td><span class="pill-pend">'+w.status+'</span></td></tr>'; }).join('')+'</tbody>'
@@ -6262,7 +6327,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       function I(k){ var b=document.querySelector('.iv-item[data-iv="'+{ov:'overview',pf:'performance','in':'investments',wd:'withdraw'}[k]+'"] svg'); return b?b.outerHTML:''; }
       var x=META[view]; $('ivCrumb').textContent=x[0]; $('ivTitle').textContent=x[0]; $('ivSub').textContent=x[1]; $('ivIcon').innerHTML=x[2];
       $('ivHdrInv').textContent=eur(m.total);
-      $('ivHdrNext').textContent=m.next?fmtS(m.next.eligibleOn):(m.rows.length?'Eligible now':'—');
+      $('ivHdrNext').textContent=m.available>0?t('Open now'):(m.next?fmtS(m.next.eligibleOn):(m.rows.length?t('End of year 5'):'—'));
     }
 
     var current='overview';
@@ -6281,13 +6346,24 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     document.querySelectorAll('.iv-item').forEach(function(b){ b.addEventListener('click',function(){ show(b.dataset.iv); }); });
 
     $('ivWBtn').addEventListener('click',function(){
-      var m=F.investMetrics(), msg=$('ivWMsg'), amt=parseFloat($('ivWAmt').value);
+      var m=F.investMetrics(), msg=$('ivWMsg'), amt=parseFloat($('ivWAmt').value), btn=this;
       msg.hidden=false;
-      if(!(amt>0)){ msg.textContent='Enter the amount you want to withdraw.'; return; }
-      if(amt>m.available+0.001){ msg.textContent='You can withdraw up to '+eur(m.available,2)+' right now.'; return; }
-      F.invest.withdrawals.push({t:Date.now(),amount:Math.round(amt*100)/100,status:'Pending'});
+      if(!(amt>0)){ msg.textContent=t('Enter the amount you want to withdraw.'); return; }
+      if(!m.live && amt>m.available+0.001){ msg.textContent=m.available>0?t('You can withdraw up to {} right now.').replace('{}',eur(m.available,2)):(m.next?t('Your next withdrawal window opens on {}.').replace('{}',fmt(m.next.eligibleOn)):t('Nothing can be withdrawn yet.')); return; }
+      if(m.live){
+        var row=m.rows.filter(function(r){return r.withdrawable+0.001>=amt;})[0] || m.rows.filter(function(r){return r.withdrawable>0;})[0] || m.rows.filter(function(r){return r.status==='ACTIVE';})[0] || m.rows[0];
+        if(!row){ msg.textContent=t('Nothing can be withdrawn yet.'); return; }
+        btn.disabled=true; msg.textContent=t('Sending your request…');
+        var rid; try{ rid=crypto.randomUUID(); }catch(e){ rid='w'+Date.now(); }
+        F.remote.requestInvestmentWithdrawal(row.id, amt, rid).then(function(){
+          btn.disabled=false; $('ivWAmt').value=''; msg.textContent=t('Request received. FTM confirms it and pays it to you.');
+          F.remote.fetchInvestments().then(function(list){ F.invest.live=list; F.invest.investments=list; F.renderInvest(); }).catch(function(){});
+        }).catch(function(e){ btn.disabled=false; msg.textContent=F.why?F.why(e,'Your request could not be sent. Please try again.'):t('Your request could not be sent. Please try again.'); });
+        return;
+      }
+      F.invest.withdrawals.push({t:Date.now(),amount:Math.round(amt*100)/100,status:t('Pending')});
       $('ivWAmt').value='';
-      msg.textContent='Request received. In the live client area this goes to the FTM team for approval and payment.';
+      msg.textContent=t('Preview only. In your live client area this request goes to FTM.');
       F.renderInvest();
     });
 
@@ -6364,19 +6440,19 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         var a=(function(el){if(el.dataset.exact)return +el.dataset.exact;var lo=+el.dataset.lo,hi=+el.dataset.hi,v=lo*Math.pow(hi/lo,+el.value/1000),q=Math.pow(10,Math.max(2,Math.floor(Math.log10(v))-1));return Math.min(hi,Math.max(lo,Math.round(v/q)*q))})(amt), ry=+ret.value, Y=+yrs.value, r=Math.round((Math.pow(1+ry/100,Y)-1)*1000)/10, parts=(join.value||join.defaultValue||'').split('-');
         var y=+parts[0]||n.getFullYear(), mo=(+parts[1]||n.getMonth()+1)-1;
         var el=new Date(y, mo+RULE.lockMonths+1, 1), endD=new Date(y, mo+12*Y, 1);
-        var r13=Math.max(0,(Math.pow(1+ry/100,13/12)-1)*100), first=Math.min(a*0.2, a*r13*RULE.share/100);
+        var r13=Math.max(0,(Math.pow(1+ry/100,13/12)-1)*100), first=a*r13/100*RULE.share*RULE.withdrawPct;
         var sharePct=Math.max(0,r)*RULE.share, profit=a*sharePct/100;
 
         var payable = r>=0 ? a+profit : a*(1+r/100);
         $('ivcAmtO').textContent=eur(a); $('ivcRetO').textContent=pct(ry,0).replace('+',''); $('ivcYearsO').textContent=Y;
         $('ivcElig').textContent=fmt(el); $('ivcEnd').textContent=fmt(endD); $('ivcFirst').textContent=eur(first);
         $('ivcPct').textContent=sharePct.toFixed(1)+'%';
-        $('ivcEur').textContent=eur(payable); $('ivcYear').textContent='Available each year: '+eur(Math.min(a*0.2, Math.max(0,profit)/Y));
+        $('ivcEur').textContent=eur(payable); $('ivcYear').textContent=(window.I18NE&&I18NE.t?I18NE.t('Paid at the end of year {}: capital + profit share'):'Paid at the end of year {}: capital + profit share').replace('{}',Y);
         $('ivcBreak').textContent = r>=0
-          ? eur(a)+' deposit + '+eur(profit)+' profit share'
+          ? eur(a)+' capital + '+eur(profit)+' profit share'
           : 'Your deposit after a '+Math.abs(r)+'% loss';
         $('ivcNote').textContent = r>0
-          ? 'From 13 months you can withdraw up to 20% of the amount you invested each year, from your profit share. At the end of the contract you receive your profit share minus what you withdrew, plus your deposit. If you withdraw nothing, you receive it all.'
+          ? 'Once a year, in months 13, 25, 37 and 49, you can withdraw 20% of the profit share you have built up. At the end of year 5 you receive your capital and all remaining profit share. If you withdraw nothing, you receive it all then.'
           : 'Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.';
       }
       [amt,ret,join,yrs].forEach(function(i){ i.addEventListener('input',calc); });
@@ -6860,6 +6936,153 @@ tick();setInterval(tick,5000);})();
   var mq=matchMedia('(max-width:560px)');
   function place(){ if(!mq.matches){ if(sw.parentElement!==row) row.appendChild(sw); } else if(sw.parentElement!==home) home.appendChild(sw); }
   place(); if(mq.addEventListener) mq.addEventListener('change',place); else mq.addListener(place);
+})();
+</script>
+<script>
+(function(){
+  var host=document.getElementById('lbLive'); if(!host) return;
+  var board='MONTH', busy=false, last=null, profile=null;
+  function F(){ return window.FTM||{}; }
+  function live(){ var f=F(); return !!(f.remote&&f.remote.ready()&&f.session); }
+  function t(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function pct(v){ if(v==null||v==='') return '—'; var n=parseFloat(v); return (n>0?'+':'')+n.toFixed(2)+'%'; }
+  var TIER={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'};
+  var BOARDS=[['MONTH','This month'],['PREVIOUS_MONTH','Last month'],['SINCE_CONNECT','Since joining']];
+  function setSample(on){ ['lbTabs','lbPodium'].forEach(function(id){ var e=document.getElementById(id); if(e) e.hidden=!on; });
+    var tb=document.getElementById('lbTable'); if(tb) tb.closest('.app-scroll').hidden=!on;
+    var d=document.querySelector('.lb-date'); if(d) d.hidden=!on; host.hidden=on;
+    var h=host.closest('.app-card').querySelector('.lb-head .hint'); if(h) h.textContent=on?'The most profitable accounts currently connected to FTM MACHINE.':t('Customers who chose to appear, ranked by their return.'); }
+  function why(e,fb){ var f=F(); return f.why?f.why(e,fb):t(fb); }
+  function youCard(j){
+    var y=j.you||{}, p=profile||{}, rules=(p.rules)||{};
+    var h='<div class="lbl-you">';
+    if(!y.has_account){ h+='<b>'+esc(t('Connect a trading account to take part in the leaderboard.'))+'</b>'; return h+'</div>'; }
+    if(y.opted_in && y.rank){ h+='<span>'+esc(t('Your place'))+'</span><b class="big">#'+esc(y.rank)+' · '+esc(pct(y.return_pct))+'</b>'; }
+    else if(y.opted_in){ h+='<b>'+esc(t('You are in the community. You appear here after 3 closed trades in this period.'))+'</b>'; }
+    else if(y.qualified && y.would_rank){ h+='<b>'+esc(t('You would be number {} on this board.').replace('{}',y.would_rank))+'</b>'; }
+    else { h+='<b>'+esc(t('You are not shown on the leaderboard.'))+'</b>'; }
+    h+='<div class="row"><label class="sw"><input type="checkbox" id="lblOpt"'+(p.opted_in?' checked':'')+'> '+esc(t('Show me in the community'))+'</label></div>';
+    h+='<div class="row"><input type="text" id="lblNick" maxlength="24" autocomplete="off" placeholder="'+esc(t('Nickname'))+'" value="'+esc(p.nickname||'')+'"><button type="button" class="btn btn-dark btn-sm" id="lblSave">'+esc(t('Save'))+'</button></div>';
+    h+='<p class="hint">'+esc(t('3 to 24 letters, digits, _ or -. Only your nickname and your return in % are shown, never your name, balance or account number.'))+'</p>';
+    h+='<p class="lbl-msg" id="lblMsg" hidden></p></div>';
+    return h;
+  }
+  function render(j){
+    var rows=j.rows||[], medals=['🥇','🥈','🥉'];
+    var h='<div class="tf" id="lblTabs">'+BOARDS.map(function(b){return '<button type="button" data-b="'+b[0]+'" class="'+(b[0]===board?'is-on':'')+'">'+esc(t(b[1]))+'</button>';}).join('')+'</div>';
+    h+='<p class="lb-date"><i></i><span>'+esc(j.computed_at?t('Updated {}').replace('{}',new Date(j.computed_at).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):t('Being calculated. Boards update every 5 minutes.'))+'</span></p>';
+    h+=youCard(j);
+    if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
+    h+='<div class="lb-podium">'+rows.slice(0,3).map(function(e,i){
+      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name">'+esc(e.nickname)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
+        '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
+    }).join('')+'</div>';
+    h+='<div class="app-scroll"><table class="app-trades lb-table"><thead><tr><th>#</th><th>'+esc(t('Nickname'))+'</th><th>'+esc(t('Return'))+'</th><th>'+esc(t('Trades'))+'</th><th>'+esc(t('Wins'))+'</th><th>'+esc(t('Risk profile'))+'</th><th>'+esc(t('Months on FTM'))+'</th></tr></thead><tbody>'+
+      rows.map(function(e){ var r=parseFloat(e.return_pct);
+        return '<tr class="'+(e.is_you?'you':'')+'"><td>'+esc(e.rank)+'.</td><td><b>'+esc(e.nickname)+'</b>'+(e.is_you?'<span class="lb-you-tag">'+esc(t('YOU'))+'</span>':'')+'</td><td class="'+(r>=0?'pl-up':'pl-down')+'">'+esc(pct(e.return_pct))+'</td><td>'+esc(e.closed_copies)+'</td><td>'+esc(e.wins)+'</td><td>'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'—')+'</td><td>'+esc(e.months_on_ftm)+'</td></tr>';
+      }).join('')+'</tbody></table></div>';
+    host.innerHTML=h;
+  }
+  function load(){
+    if(!live()){ setSample(true); return; }
+    setSample(false); if(busy) return; busy=true; window.__lblT=Date.now();
+    if(!last) host.innerHTML='<div class="lbl-empty">'+esc(t('Loading the leaderboard…'))+'</div>';
+    var api=F().remote.api;
+    Promise.all([api('/leaderboard?board='+board), api('/leaderboard/profile').catch(function(){return null;})]).then(function(r){
+      busy=false; last=r[0]; profile=r[1]&&r[1].profile||profile; render(last);
+    }).catch(function(e){
+      busy=false; last=null;
+      host.innerHTML='<div class="lbl-empty">'+esc((e.status===404)?t('The leaderboard opens soon. Your results already count.'):why(e,'The leaderboard could not be loaded. Please try again.'))+'</div>';
+    });
+  }
+  host.addEventListener('click',function(e){
+    var b=e.target.closest('#lblTabs button'); if(b){ board=b.dataset.b; last=null; load(); return; }
+    if(e.target.id==='lblSave'||e.target.id==='lblOpt') save();
+  });
+  function save(){
+    var opt=document.getElementById('lblOpt'), nick=document.getElementById('lblNick'), msg=document.getElementById('lblMsg');
+    var body={opted_in:!!opt.checked}; var n=nick.value.trim();
+    if(opt.checked){ if(!/^[A-Za-z0-9_-]{3,24}$/.test(n)){ msg.hidden=false; msg.className='lbl-msg bad'; msg.textContent=t('Choose a nickname of 3 to 24 letters, digits, _ or -.'); opt.checked=!!(profile&&profile.opted_in); return; } body.nickname=n; }
+    msg.hidden=false; msg.className='lbl-msg'; msg.textContent=t('Saving…');
+    F().remote.api('/leaderboard/profile',{method:'PUT',body:body}).then(function(j){
+      profile=j.profile||profile; msg.className='lbl-msg ok'; msg.textContent=t(body.opted_in?'Saved. You appear on the board at its next update.':'Saved. You are no longer shown on the board.');
+      setTimeout(function(){ last=null; load(); },1500);
+    }).catch(function(e){ opt.checked=!!(profile&&profile.opted_in); msg.className='lbl-msg bad'; msg.textContent=why(e,'Your choice could not be saved. Please try again.'); });
+  }
+  document.addEventListener('click',function(e){ if(e.target.closest('.app-nav-item[data-view="board"]')) setTimeout(load,30); });
+  setInterval(function(){
+    var v=document.querySelector('.app-view[data-view="board"]'); if(!v||v.hidden||!live()||busy) return;
+    var a=document.activeElement; if(a&&(a.id==='lblNick')) return;
+    if(Date.now()-(window.__lblT||0)>(last?300000:30000)) load();
+  },5000);
+  window.FTM=window.FTM||{}; window.FTM.loadBoard=load;
+})();
+</script>
+<script>
+(function(){
+  var btn=document.getElementById('fsLive'), box=document.getElementById('fsLiveChat'); if(!btn||!box) return;
+  var panel=document.getElementById('fsPanel'), menu=document.getElementById('fsMenu'), ai=document.getElementById('fsChat');
+  var log=document.getElementById('lcLog'), form=document.getElementById('lcForm'), text=document.getElementById('lcText'), gate=document.getElementById('lcGate');
+  var badge=document.getElementById('fsBadge'), unr=document.getElementById('fsLiveUnread'), on=document.getElementById('lcOn');
+  var cursor=null, seen={}, timer=null, loading=false, sending=false;
+  function F(){ return window.FTM||{}; }
+  function live(){ var f=F(); return !!(f.remote&&f.remote.ready()&&f.session); }
+  function api(p,o){ return F().remote.api(p,o); }
+  function t(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
+  function why(e,fb){ var f=F(); return f.why?f.why(e,fb):t(fb); }
+  function visible(){ return !panel.hidden && !box.hidden; }
+  function uuid(){ try{ return crypto.randomUUID(); }catch(e){ return 'm'+Date.now()+Math.random().toString(16).slice(2); } }
+  function setUnread(n){ n=+n||0; [badge,unr].forEach(function(e){ if(!e) return; e.hidden=!n; e.textContent=n>9?'9+':String(n); }); }
+  function when(iso){ var d=new Date(iso); if(isNaN(d)) return ''; var same=new Date().toDateString()===d.toDateString(); return same?d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}):d.toLocaleString([], {dateStyle:'medium',timeStyle:'short'}); }
+  function bubble(m){
+    if(seen[m.message_id]) return; seen[m.message_id]=1;
+    var d=document.createElement('div');
+    d.className='fc-m '+(m.sender==='CUSTOMER'?'me':(m.sender==='SYSTEM'?'sys':'bot'));
+    var body=m.deleted?t('Message deleted'):(m.body||'');
+    if(m.attachments&&m.attachments.length) body+=(body?'\n':'')+m.attachments.map(function(a){return '📎 '+a.file_name;}).join('\n');
+    d.textContent=body;
+    var tm=document.createElement('span'); tm.className='lc-t'; tm.textContent=(m.sender==='ADMIN'?(t('FTM Support')+' · '):'')+when(m.created_at)+(m.sender==='CUSTOMER'&&m.read_by_other?' · '+t('Read'):'');
+    d.appendChild(tm); log.appendChild(d); log.scrollTop=log.scrollHeight;
+  }
+  function note(cls,txt){ var d=document.createElement('div'); d.className='fc-m '+cls; d.textContent=txt; log.appendChild(d); log.scrollTop=log.scrollHeight; return d; }
+  function markRead(){ if(visible()&&live()) api('/chat/read',{method:'POST',body:{}}).then(function(j){ setUnread(j.unread); }).catch(function(){}); }
+  function pull(){
+    if(loading||!live()) return; loading=true;
+    api('/chat/messages'+(cursor?('?after='+encodeURIComponent(cursor)+'&limit=50'):'?limit=50')).then(function(j){
+      loading=false; var w=log.querySelector('.lc-wait'); if(w) w.remove();
+      (j.messages||[]).forEach(bubble); if(j.cursor) cursor=j.cursor;
+      if(!log.children.length) note('sys',t('Write your question below. FTM support answers here.'));
+      if((j.messages||[]).length) markRead();
+    }).catch(function(e){ loading=false; var w=log.querySelector('.lc-wait'); if(w) w.textContent=why(e,'The chat could not be loaded. Please try again.'); });
+  }
+  function openLive(){
+    menu.hidden=true; ai.hidden=true; box.hidden=false; panel.classList.add('chat');
+    if(!live()){ gate.hidden=false; form.hidden=true; log.innerHTML=''; log.dataset.out='1'; return; }
+    gate.hidden=true; form.hidden=false;
+    if(log.dataset.out){ log.innerHTML=''; delete log.dataset.out; }
+    if(!log.children.length) note('sys lc-wait',t('Loading your conversation…'));
+    api('/chat').then(function(j){ var c=j.conversation||{}; if(on) on.hidden=!c.support_online; setUnread(c.unread); }).catch(function(){});
+    pull(); clearInterval(timer); timer=setInterval(function(){ if(visible()) pull(); else { clearInterval(timer); timer=null; } },4000);
+    setTimeout(function(){ text.focus(); },60);
+  }
+  btn.addEventListener('click',openLive);
+  document.getElementById('lcBack').addEventListener('click',function(){ box.hidden=true; menu.hidden=false; panel.classList.remove('chat'); });
+  form.addEventListener('submit',function(e){
+    e.preventDefault(); var q=text.value.trim(); if(!q||sending) return;
+    if(!live()){ openLive(); return; }
+    sending=true; var tmp=note('me',q); tmp.style.opacity='.6'; text.value='';
+    api('/chat/messages',{method:'POST',body:{body:q,client_message_id:uuid()}}).then(function(j){
+      sending=false; tmp.remove(); if(j.message) bubble(j.message);
+    }).catch(function(err){
+      sending=false; tmp.className='fc-m fail'; tmp.style.opacity='';
+      tmp.textContent=q+'\n'+why(err,'Your message was not sent. Please try again.'); text.value=q;
+    });
+  });
+  setInterval(function(){ if(live()&&!visible()) api('/chat').then(function(j){ setUnread(j.conversation&&j.conversation.unread); }).catch(function(){}); },30000);
+  setTimeout(function(){ if(live()) api('/chat').then(function(j){ setUnread(j.conversation&&j.conversation.unread); }).catch(function(){}); },4000);
+  window.FTM=window.FTM||{}; window.FTM.openSupportChat=function(){ panel.hidden=false; openLive(); };
+  document.addEventListener('click',function(e){ var b=e.target.closest('.um-live'); if(!b) return; var l=b.closest('.um-list'); if(l) l.hidden=true; var fs=document.getElementById('floatSupport'); if(fs) fs.classList.add('over-app'); setTimeout(function(){ panel.hidden=false; var tg=document.getElementById('fsToggle'); if(tg) tg.setAttribute('aria-expanded','true'); openLive(); },0); });
 })();
 </script>
 </body>

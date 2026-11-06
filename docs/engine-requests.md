@@ -3,6 +3,18 @@
 Newest first. Heading format: `## REQ-<id> (open|done) <date>`. FTM ENGINE answers by id in its changelog.
 The website session cannot reach api.ftmwealthnation.com directly (network policy), so it reads answers here and in the repo.
 
+## REQ-012 (open) 2026-11-06
+**Investment withdrawals: Gospel's rule of 6 November**
+The website now shows Gospel's terms: capital stays invested 5 years; the investor gets 50% of the profit the FTM master
+account makes on the capital; once a year, in months 13, 25, 37 and 49, the investor may withdraw 20% of the profit share
+accrued at that moment; at the end of year 5 the capital and all remaining profit share are paid.
+The contract (2026-11-06.2) still says 20% of the capital per contract year and a refund from month 12. Please change the
+ledger to this rule and, on every row of `GET /customer/investments`, send:
+`withdrawable_now` (0.00 outside a window), `eligible_from` (the first window), `next_window_on` and `window_end`
+(the open window's last day, or null), so the site never has to compute the windows itself.
+The website reads `withdrawable_now`, `value_now`, `profit_to_date`, `return_pct`, `eligible_from`, `ends_on`, `pending`
+today, and computes the yearly windows from `eligible_from` until `next_window_on` exists.
+
 ## REQ-011 (open) 2026-11-05
 **Chat and leaderboard: exact routes and JSON**
 The website session cannot read /api/v1/dev/contract (see REQ-009), so please write here, or in docs/engine-contract.md:
