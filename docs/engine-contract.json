@@ -1,6 +1,6 @@
 {
   "title": "FTM engine - customer-facing API contract for FTM-WEB.COM",
-  "contract_version": "2026-11-06.3",
+  "contract_version": "2026-11-06.4",
   "base_url": "https://api.ftmwealthnation.com/api/v1",
   "served_at": {
     "html": "/api/v1/dev/contract",
@@ -322,13 +322,8 @@
     },
     "INVESTMENT_WITHDRAWAL_LIMIT": {
       "http": 422,
-      "text": "This amount is above what you can withdraw now: once per contract year, up to 20% of your profit share not yet withdrawn. Your capital stays invested until the end of your contract.",
-      "details": "carries withdrawable_now (also as remaining_this_year), window_end, next_window_on"
-    },
-    "INVESTMENT_WITHDRAWAL_YEAR_USED": {
-      "http": 409,
-      "text": "You have already made this contract year's withdrawal. The date of your next possible withdrawal is shown with this message.",
-      "details": "this contract year's one withdrawal is made (paid or waiting); carries next_window_on (null in the last contract year: the rest is paid at the end), window_end, ends_on; its message names the date, e.g. \"Your next withdrawal is possible from 2029-01-01.\""
+      "text": "This amount is above what you can withdraw now: the yearly 20% allowances of your profit share unlocked so far, minus what you already withdrew. Your capital stays invested until the end of your contract.",
+      "details": "carries withdrawable_now (also as remaining_this_year), unlocked_total, next_unlock_on (also as next_window_on); with nothing left its message names the next unlock day (or the end date)"
     },
     "INVESTMENT_EXCEEDS_VALUE": {
       "http": 422,
@@ -1297,7 +1292,7 @@
       "path": "/customer/investment",
       "auth": "customer",
       "status": "coming",
-      "summary": "The whole investment picture for the client area: the terms (payments_enabled false = deposits are confirmed by FTM by hand), the FTM account's unit index, and the customer's contract (the open one, else the latest ended one; null for a customer who never invested). Money strings in EUR; the index tracks the FTM account's percentage return, no currency conversion. Valuation: gross_value = units x index; gross_profit = gross_value - capital; customer_share = 50% of a profit, a loss in full; customer_value = capital + customer_share. Terms 2026-11-06: once per contract year, from first_withdrawal_on (the 1st of the month after 13 full months) and then on each anniversary (about months 13, 25, 37, 49), the customer may withdraw up to 20% of the profit share not yet withdrawn; an unused year does not carry over; the capital is never withdrawn and stays locked until ends_on (5 years), when the capital and the remaining profit share are paid out.",
+      "summary": "The whole investment picture for the client area: the terms (payments_enabled false = deposits are confirmed by FTM by hand), the FTM account's unit index, and the customer's contract (the open one, else the latest ended one; null for a customer who never invested). Money strings in EUR; the index tracks the FTM account's percentage return, no currency conversion. Valuation: gross_value = units x index; gross_profit = gross_value - capital; customer_share = 50% of a profit, a loss in full; customer_value = capital + customer_share. Terms 2026-11-06 with carry-over: on first_withdrawal_on (the 1st of the month after 13 full months) and on each anniversary before the end (about months 13, 25, 37, 49) an allowance of 20% of the profit share not yet withdrawn on that day unlocks; every unlocked allowance not yet taken stays available until the end and can be withdrawn at any time, in one or several requests (one waiting at a time); withdrawable_now = unlocked_total - profit_withdrawn - pending, never above the profit share now; the capital is never withdrawn and stays locked until ends_on (5 years), when the capital and the remaining profit share are paid out.",
       "response": {
         "200": {
           "ok": true,
@@ -1308,12 +1303,12 @@
             "profit_share_pct": "50.00",
             "profit_withdrawal_pct": "20.00",
             "yearly_withdrawal_pct": "20.00 (same value, the older name)",
-            "withdrawal_rule": "ONCE_PER_CONTRACT_YEAR",
-            "withdrawal_carry_over": false,
+            "withdrawal_rule": "YEARLY_ALLOWANCE_CARRY_OVER",
+            "withdrawal_carry_over": true,
             "contract_years": 5,
             "lock_full_months": 13,
             "first_withdrawal_rule": "1st of the month after 13 full months",
-            "withdrawal_rule_text": "once per contract year, from the 1st of the month after 13 full months and then on each anniversary: up to 20.00% of your profit share not yet withdrawn; an unused year does not carry over",
+            "withdrawal_rule_text": "from the 1st of the month after 13 full months, and again every 12 months until the end, 20.00% of your profit share not yet withdrawn becomes available; what you do not take stays available and can be withdrawn at any time later, in one or several requests",
             "capital_locked_rule": "your capital stays invested until the end of the 5-year term; then the capital and the remaining profit share are paid out",
             "refund_after_months": 60,
             "terms_version": "2026-11-06",
@@ -1337,7 +1332,7 @@
               "profit_share_pct": "50.00",
               "profit_withdrawal_pct": "20.00",
               "yearly_withdrawal_pct": "20.00",
-              "withdrawal_rule": "ONCE_PER_CONTRACT_YEAR",
+              "withdrawal_rule": "YEARLY_ALLOWANCE_CARRY_OVER",
               "contract_years": 5,
               "lock_full_months": 13,
               "refund_after_months": 60,
@@ -1360,23 +1355,34 @@
             "index_value": "1037.2100",
             "index_day": "2026-11-05",
             "withdrawals": {
-              "allowed_now": false,
+              "allowed_now": true,
               "allowed_from": "2028-01-01",
-              "rule": "ONCE_PER_CONTRACT_YEAR",
+              "rule": "YEARLY_ALLOWANCE_CARRY_OVER",
               "profit_withdrawal_pct": "20.00",
-              "carry_over": false,
-              "profit_share_now": "186.05 (the profit share not yet withdrawn; null without an index)",
-              "profit_withdrawn": "0.00",
+              "carry_over": true,
+              "allowances": [
+                {
+                  "unlocked_on": "2028-01-01",
+                  "amount": "200.00 (20% of the profit share not yet withdrawn that day)"
+                },
+                {
+                  "unlocked_on": "2029-01-01",
+                  "amount": "400.00"
+                }
+              ],
+              "unlocked_total": "600.00",
+              "profit_share_now": "2000.00 (null without an index)",
+              "profit_withdrawn": "250.00",
               "pending": "0.00",
-              "window_start": "2028-01-01 | null (the contract year that holds today)",
-              "window_end": "2028-12-31 | null (the last one ends the day before ends_on)",
-              "used_this_window": false,
-              "next_window_on": "2028-01-01 | null (today when a withdrawal is possible now; the next anniversary once this year is used; null in the last year once used)",
-              "withdrawable_now": "0.00 (20% of profit_share_now while this contract year is unused, else 0.00)",
+              "withdrawable_now": "350.00 (unlocked_total - profit_withdrawn - pending, never above profit_share_now; 0.00 before first_withdrawal_on and from ends_on)",
+              "next_unlock_on": "2030-01-01 | null (the next allowance; null after the last one)",
               "capital_locked_until": "2031-11-20",
-              "yearly_allowance": "37.21 | null (older name: 20% of the profit share now)",
-              "used_this_year": "0.00 (older name: amount used in this contract year)",
-              "remaining_this_year": "0.00 (older name, = withdrawable_now)"
+              "next_window_on": "(older name of next_unlock_on)",
+              "window_start": "2029-01-01 | null (older name: the last unlock day)",
+              "window_end": null,
+              "yearly_allowance": "600.00 | null (older name: unlocked_total)",
+              "used_this_year": "250.00 (older name: withdrawn + pending)",
+              "remaining_this_year": "350.00 (older name: withdrawable_now)"
             },
             "refund": {
               "allowed_now": false,
@@ -1433,8 +1439,8 @@
               "profit_to_date": "300.00 (the customer's share; negative = the loss, which is not split)",
               "share": "50.00",
               "return_pct": "40.00 (the account's return on the capital)",
-              "withdrawable_now": "60.00 (20 % of the profit share not yet withdrawn, once per contract year; \"0.00\" while locked or when this year is used)",
-              "next_withdrawal_on": "2028-01-01 | null (the day a withdrawal is next possible; today when possible now)",
+              "withdrawable_now": "350.00 (the unlocked yearly allowances not yet taken; \"0.00\" while locked)",
+              "next_withdrawal_on": "2026-11-06 | 2028-01-01 | null (today when something can be withdrawn now, else the next unlock day)",
               "pending": [
                 "<ledger entries PENDING, as in GET /customer/investment>"
               ],
@@ -1469,9 +1475,9 @@
       "path": "/customer/investments/:contract_id/withdraw",
       "auth": "customer",
       "status": "coming",
-      "summary": "REQ-003: the Withdraw button. Without a body it requests the whole amount allowed right now (withdrawable_now = 20% of the profit share not yet withdrawn, once per contract year); with { amount } that amount. 202 requested:true; a repeat of the same client_request_id answers 200 repeated:true. Refused with the INVESTMENT_* codes (each with message): INVESTMENT_LOCKED carries allowed_from and locked_until (the first withdrawal date), INVESTMENT_WITHDRAWAL_YEAR_USED next_window_on (its message names the date), INVESTMENT_WITHDRAWAL_LIMIT withdrawable_now, INVESTMENT_EXCEEDS_VALUE customer_value, INVESTMENT_CONTRACT_NOT_OPEN from the end day (everything is paid out together).",
+      "summary": "REQ-003: the Withdraw button. Without a body it requests everything withdrawable right now (withdrawable_now: the unlocked yearly allowances not yet taken); with { amount } that amount; several requests are fine, one waiting at a time. 202 requested:true; a repeat of the same client_request_id answers 200 repeated:true. Refused with the INVESTMENT_* codes (each with message): INVESTMENT_LOCKED carries allowed_from and locked_until (the first unlock day), INVESTMENT_WITHDRAWAL_LIMIT withdrawable_now and next_unlock_on (with nothing left its message names that day), INVESTMENT_EXCEEDS_VALUE customer_value, INVESTMENT_CONTRACT_NOT_OPEN from the end day (everything is paid out together).",
       "request": {
-        "amount": "60.00 (optional)",
+        "amount": "350.00 (optional)",
         "client_request_id": "<uuid> (optional)"
       },
       "response": {
@@ -1483,7 +1489,7 @@
             "entry_id": "<uuid>",
             "kind": "WITHDRAWAL",
             "status": "PENDING",
-            "amount": "60.00",
+            "amount": "350.00",
             "requested_at": "<iso>"
           }
         }
@@ -1497,7 +1503,6 @@
         "INVESTMENT_CONTRACT_NOT_OPEN",
         "INVESTMENT_LOCKED",
         "INVESTMENT_WITHDRAWAL_LIMIT",
-        "INVESTMENT_WITHDRAWAL_YEAR_USED",
         "INVESTMENT_EXCEEDS_VALUE",
         "INVESTMENT_REQUEST_PENDING"
       ]
@@ -1588,7 +1593,7 @@
       "path": "/customer/investment/withdrawals",
       "auth": "customer",
       "status": "coming",
-      "summary": "Request a withdrawal (terms 2026-11-06): once per contract year, from first_withdrawal_on and then each anniversary, at most 20% of the profit share not yet withdrawn (a paid or waiting request uses its contract year; a cancelled or rejected one does not), one open request at a time, never capital. Paid by FTM by hand out of the profit only: the capital stays; amount / 50% of gross profit leaves the contract (the customer gets the amount, FTM realizes its equal half). From ends_on: refused, the term is paid out together.",
+      "summary": "Request a withdrawal (terms 2026-11-06, carry-over): at most withdrawable_now = the yearly 20% allowances unlocked so far (first_withdrawal_on and each anniversary) minus profit withdrawn and pending; any time, in one or several requests, one waiting at a time, never capital. Paid by FTM by hand out of the profit only: the capital stays; amount / 50% of gross profit leaves the contract (the customer gets the amount, FTM realizes its equal half). From ends_on: refused, the term is paid out together.",
       "request": {
         "amount": "2000.00",
         "client_request_id": "<uuid>"
@@ -1621,7 +1626,6 @@
         "INVESTMENT_LOCKED",
         "INVESTMENT_CONTRACT_NOT_OPEN",
         "INVESTMENT_EXCEEDS_VALUE",
-        "INVESTMENT_WITHDRAWAL_YEAR_USED",
         "INVESTMENT_WITHDRAWAL_LIMIT",
         "INVESTMENT_REQUEST_PENDING"
       ]
