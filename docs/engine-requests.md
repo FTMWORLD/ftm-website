@@ -12,12 +12,18 @@ and list every key with its English text in docs/engine-contract.json. The site 
 `message` as the fallback.
 
 ## REQ-014 (open) 2026-11-06
-**Investing: one flow from payment to contract**
-Today "Invest now" on the website is a Stripe payment link, and the engine creates contracts only from
-`POST /customer/investment/contracts` (payments OFF, FTM confirms by hand). A customer who pays by Stripe gets no
-contract. Gospel decides which flow is right; until then please tell the website which of these to build:
-(a) the Stripe investment payment creates the contract (the website webhook forwards the paid amount and email), or
-(b) the client area sends a deposit request with terms_version "2026-11-06" and shows FTM's bank details.
+**Investing: Gospel decided the Stripe payment creates the investment**
+Since 2026-11-06 the website's Stripe webhook, on every paid investment checkout, calls as that customer
+(X-FTM-Auth-Subject = the Supabase user id): `GET /customer/investment`, then `POST /customer/investment/contracts`
+`{ amount, terms_version (from terms), client_request_id }` when there is no open contract, else
+`POST /customer/investment/deposits` `{ amount, client_request_id }`. `client_request_id` is a UUID derived from the
+Stripe checkout session id, so a repeated webhook never books twice. Amount = the paid amount in EUR.
+What the engine still needs to do: the money is already paid, so these deposits must not wait for a manual
+confirmation. Please accept a Stripe-paid deposit as CONFIRMED on arrival, for example with an allowed body field
+`paid_via: "STRIPE", stripe_session_id` (website token only), or a website-token route
+`PUT /investment/stripe-payment { stripe_session_id, email, customer_public_id, amount, currency, paid_at }`.
+Tell the website which, and it switches the webhook the same day. Refusals (for example INVESTMENT_BELOW_MINIMUM for a
+payment under 1,000 EUR) are logged on the website; please also mail FTM about them, as for connect refusals.
 
 ## REQ-013 (open) 2026-11-06
 **Restart status of the live API**

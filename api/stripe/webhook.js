@@ -190,6 +190,12 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // Investment paid by Stripe (Gospel, 2026-11-06): record it with the engine as the first deposit of a
+    // contract, or a further deposit into the open one. Idempotent: the request id is derived from the session.
+    if (product === 'invest' && userId) {
+      report.investment = await recordInvestment(userId, email, session).catch(e => { console.error('Stripe webhook: investment record failed:', e.message); return 'failed: ' + e.message; });
+    }
+
     // Paying customers go on the Brevo "Customers" list, so marketing
     // automations can skip people who already bought. Never blocks the reply.
     report.brevo = await addToCustomerList(email);
@@ -259,6 +265,33 @@ const PLAN_MONTHS = {
   'plink_1USfiuAZWClTb7yxfgCmBpC4': 64, 'plink_1UG6CUAZWClTb7yxRTis1wzS': 64,
   'plink_1USfs7AZWClTb7yxxDVMAKmY': null, 'plink_1UHLQXAZWClTb7yxBn9gU95g': null
 };
+
+function requestIdFor(sessionId) {
+  const h = require('crypto').createHash('sha256').update('ftm-invest:' + sessionId).digest('hex');
+  return h.slice(0, 8) + '-' + h.slice(8, 12) + '-4' + h.slice(13, 16) + '-a' + h.slice(17, 20) + '-' + h.slice(20, 32);
+}
+
+async function recordInvestment(userId, email, session) {
+  if (!process.env.FTM_ENGINE_URL || !process.env.FTM_WEBSITE_API_TOKEN) return 'engine not configured';
+  if (session.payment_status && session.payment_status !== 'paid') return 'skipped (not paid)';
+  const cents = Number(session.amount_total);
+  if (!(cents > 0)) return 'skipped (no amount)';
+  if (String(session.currency || 'eur').toLowerCase() !== 'eur') console.error('Stripe webhook: investment paid in', session.currency, 'for', email);
+  const amount = (cents / 100).toFixed(2);
+  const client_request_id = requestIdFor(session.id);
+  const who = { authSubject: userId, authEmail: email };
+  const cur = await callEngine('/api/v1/customer/investment', Object.assign({ method: 'GET' }, who));
+  const c = cur.ok && cur.body && cur.body.contract;
+  const open = c && (c.status === 'PENDING_FUNDING' || c.status === 'ACTIVE');
+  const r = open
+    ? await callEngine('/api/v1/customer/investment/deposits', Object.assign({ method: 'POST', body: { amount, client_request_id } }, who))
+    : await callEngine('/api/v1/customer/investment/contracts', Object.assign({ method: 'POST', body: { amount, terms_version: (cur.body && cur.body.terms && cur.body.terms.terms_version) || '2026-11-06', client_request_id } }, who));
+  if (!r.ok) {
+    console.error('Stripe webhook: engine refused the investment of', amount, 'for', email, r.status, JSON.stringify(r.body).slice(0, 300));
+    return 'engine refused ' + r.status + ' ' + ((r.body && r.body.error) || '');
+  }
+  return (open ? 'deposit ' : 'contract ') + (r.body.repeated ? 'repeated ' : 'recorded ') + amount;
+}
 
 function subStatus(st) {
   if (st === 'active' || st === 'trialing') return 'ACTIVE';
