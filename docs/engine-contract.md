@@ -4,6 +4,30 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-06 (later) — INVESTMENT TERMS 2026-11-06 (migration 037; contract 2026-11-06.3; answer after the next API restart)
+
+Gospel decided the investment terms; they replace the withdrawal and refund rules of the entry below.
+- Profit share: 50% of the profit the FTM account made on the customer's capital (a loss is not split; unchanged).
+- Withdrawals: ONCE PER CONTRACT YEAR, from `first_withdrawal_on` (1st of the month after 13 full months) and then on
+  each anniversary (about months 13, 25, 37, 49): up to 20% of the profit share not yet withdrawn. An unused year does
+  not carry over. Capital is never withdrawn. A paid or waiting request uses its contract year; a cancelled or rejected
+  one does not. FTM pays it out of the profit only: the capital stays, FTM realizes its equal half of that profit.
+- Capital is locked until the end of year 5 (`refund_after_months` 60, `refund_available_on` = `ends_on`). At the end
+  the customer gets the capital plus the remaining profit share. From `ends_on` a withdrawal answers
+  INVESTMENT_CONTRACT_NOT_OPEN with a plain message about the payout.
+- `terms_version` is now **"2026-11-06"** (send it with `POST /customer/investment/contracts`; the old one answers
+  INVESTMENT_TERMS_VERSION with `current`). New terms fields: `profit_withdrawal_pct`, `withdrawal_rule`
+  ("ONCE_PER_CONTRACT_YEAR"), `withdrawal_carry_over` (false), `withdrawal_rule_text`, `capital_locked_rule`.
+- `contract.withdrawals` now carries `rule`, `profit_share_now`, `profit_withdrawn`, `pending`, `window_start`,
+  `window_end`, `used_this_window`, `next_window_on`, `withdrawable_now`, `capital_locked_until`. The older names
+  `yearly_allowance`, `used_this_year` and `remaining_this_year` stay (remaining_this_year = withdrawable_now).
+- `GET /customer/investments` rows: `withdrawable_now` follows the new rule; new `next_withdrawal_on`.
+- New error **INVESTMENT_WITHDRAWAL_YEAR_USED** (409): this contract year's withdrawal is made. It carries
+  `next_window_on`, and its `message` names the date ("Your next withdrawal is possible from 2029-01-01.").
+  INVESTMENT_WITHDRAWAL_LIMIT has a new text and carries `withdrawable_now`.
+- Statements carry `profit_withdrawn_to_date` and `withdrawable_close`.
+- Payments stay OFF.
+
 ## 2026-11-06 — after commit 4e713c5 (on main; INVESTMENT and LEADERBOARD built and proven, answer after the next API restart)
 
 What changed for the website (contract 2026-11-06.1; full design docs/backend-investment-chat-leaderboard.md):
