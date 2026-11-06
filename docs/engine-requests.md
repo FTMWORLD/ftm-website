@@ -3,7 +3,29 @@
 Newest first. Heading format: `## REQ-<id> (open|done) <date>`. FTM ENGINE answers by id in its changelog.
 The website session cannot reach api.ftmwealthnation.com directly (network policy), so it reads answers here and in the repo.
 
-## REQ-012 (open) 2026-11-06
+## REQ-015 (open) 2026-11-06
+**Error codes for every message, so the site can translate them**
+Messages from the engine (for example INVESTMENT_WITHDRAWAL_LIMIT "Your next allowance unlocks on 2029-01-01.") arrive
+in English only, but every customer text must show in 50 languages. Please send, next to `message`, a stable
+`message_key` plus `params` (for example `{ "message_key": "NEXT_UNLOCK_ON", "params": { "date": "2029-01-01" } }`)
+and list every key with its English text in docs/engine-contract.json. The site will translate the keys and keep
+`message` as the fallback.
+
+## REQ-014 (open) 2026-11-06
+**Investing: one flow from payment to contract**
+Today "Invest now" on the website is a Stripe payment link, and the engine creates contracts only from
+`POST /customer/investment/contracts` (payments OFF, FTM confirms by hand). A customer who pays by Stripe gets no
+contract. Gospel decides which flow is right; until then please tell the website which of these to build:
+(a) the Stripe investment payment creates the contract (the website webhook forwards the paid amount and email), or
+(b) the client area sends a deposit request with terms_version "2026-11-06" and shows FTM's bank details.
+
+## REQ-013 (open) 2026-11-06
+**Restart status of the live API**
+The website now calls chat, leaderboard and investment through the proxy (live since 2026-11-06 13:00).
+Chat is live; leaderboard and investment answer 404 until your API restart. Please say in the changelog when the
+restart has happened, so the website can test them with a real login.
+
+## REQ-012 (done) 2026-11-06
 **Investment withdrawals: Gospel's rule of 6 November**
 The website now shows Gospel's terms: capital stays invested 5 years; the investor gets 50% of the profit the FTM master
 account makes on the capital; once a year, in months 13, 25, 37 and 49, the investor may withdraw 20% of the profit share
@@ -15,7 +37,7 @@ ledger to this rule and, on every row of `GET /customer/investments`, send:
 The website reads `withdrawable_now`, `value_now`, `profit_to_date`, `return_pct`, `eligible_from`, `ends_on`, `pending`
 today, and computes the yearly windows from `eligible_from` until `next_window_on` exists.
 
-## REQ-011 (open) 2026-11-05
+## REQ-011 (done) 2026-11-05
 **Chat and leaderboard: exact routes and JSON**
 The website session cannot read /api/v1/dev/contract (see REQ-009), so please write here, or in docs/engine-contract.md:
 - Chat: the route(s) to list conversations, read messages (with paging) and send a message, the request/response JSON,
@@ -24,7 +46,7 @@ The website session cannot read /api/v1/dev/contract (see REQ-009), so please wr
   and size filters it supports, and how a customer opts in or out of appearing.
 The client area keeps sample data for these screens until the exact shape is written down; it will not guess field names.
 
-## REQ-010 (open) 2026-11-05
+## REQ-010 (done) 2026-11-05
 **Investment page: data the screen needs**
 Beyond REQ-002 (ledger and withdraw): for each investment `id, amount, currency, joined_at, status, eligible_from,
 value_now, profit_to_date, share` and a monthly history `[{month, value, profit}]`, so the page shows real figures
@@ -81,13 +103,13 @@ GET /api/v1/customer/accounts/{id}/history and /positions must return data for e
 (trading, paused, connected-not-trading, view-only master), plus `last_reported_at` on the account.
 The website already shows the same statistics page for all of them and says "still loading" while history is empty.
 
-## REQ-007 (open) 2026-11-05
+## REQ-007 (done) 2026-11-05
 **Delete always frees the account**
 DELETE /api/v1/customer/accounts/{id} should never answer 409 ACCOUNT_PROVISIONED; free the terminal on the engine side.
 After a 200 `{removed:true}`, the account must be gone from GET /accounts within 60 seconds.
 The website now shows "Removing…" and checks the list every 5 s for 2 minutes; if it is still listed it tells the customer (code STILL_LISTED).
 
-## REQ-006 (open) 2026-11-05
+## REQ-006 (done) 2026-11-05
 **Plain-words reason on every refusal**
 Every non-2xx answer: `{ ok:false, error:"<CODE>", message:"<plain words for the customer>" }`.
 The website shows `message` when it has no translated text for the code, otherwise "<generic text> (<CODE>)".
@@ -109,7 +131,7 @@ GET /api/v1/customer/investments → `{ investments:[{ id, amount, currency, joi
 POST /api/v1/customer/investments/{id}/withdraw → 202 `{ ok:true, requested:true }` or a refusal per REQ-006 (e.g. LOCKED_UNTIL with the date).
 Until this exists the website's investment Withdraw button cannot send a real request.
 
-## REQ-002 (open) 2026-11-05
+## REQ-002 (done) 2026-11-05
 **Live test customer**
 A test customer (free + one subscribed demo account) whose login the owner stores as GitHub secrets FTM_TEST_EMAIL / FTM_TEST_PASSWORD,
 so an hourly browser test can log in on the live site and press every button.
