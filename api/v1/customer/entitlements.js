@@ -11,7 +11,7 @@ function linkMap() {
 }
 
 async function paidProductsFromStripe(email) {
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY || process.env.STRIPE_RESTRICTED_KEY;
   if (!key) return { checked: false, products: [] };
   const url = 'https://api.stripe.com/v1/checkout/sessions?limit=20&customer_details[email]=' + encodeURIComponent(email);
   const r = await fetch(url, { headers: { Authorization: 'Bearer ' + key } });

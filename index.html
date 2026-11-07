@@ -5127,9 +5127,24 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     };
     loadLive().then(function(){ F.render(); });
 
+    function showPlan(){
+      var s=F.session, line=document.getElementById('ivPlanLine');
+      if(!(s && s.products && s.products.indexOf('auto')>-1) || !F.remote || !F.remote.ready()) return Promise.resolve();
+      var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+      var put=function(status,end){
+        var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:'Active'}[status]||'Active');
+        F.planLabel=st; var h=document.getElementById('hdrPlan'); if(h) h.textContent=st;
+        var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
+        if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',st).replace('{}',d);
+      };
+      return F.remote.fetchBilling().then(function(j){ put(j&&j.status, j&&j.period_end); }).catch(function(){ put('ACTIVE',null); });
+    }
+    F.showPlan = showPlan;
+
     F.loadLive = function(){
       return loadLive().then(function(){
         F.render();
+        showPlan();
 
         var onItem = document.querySelector('.app-nav-item.is-on');
         F.header(onItem ? onItem.dataset.view : 'metrics');
@@ -5932,7 +5947,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
       ic.innerHTML = src ? src.outerHTML : '';
-      document.getElementById('hdrPlan').textContent=(F.data.plan||'—');
+      document.getElementById('hdrPlan').textContent=(F.data.plan||F.planLabel||'—');
       document.getElementById('hdrBal').textContent=money(m.balance,0);
       var st=document.getElementById('hdrStatus');
 
