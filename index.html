@@ -3453,11 +3453,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       });
     }
 
+    function repairEntitlements(){
+      return client.auth.getSession().then(function(r){
+        var tok=r&&r.data&&r.data.session&&r.data.session.access_token; if(!tok) return [];
+        return fetch('/api/v1/customer/entitlements',{headers:{Authorization:'Bearer '+tok}}).then(function(x){ return x.json(); }).then(function(j){ return (j&&j.products)||[]; });
+      }).catch(function(){ return []; });
+    }
     function fetchEntitlements(userId){
       return client.from('profiles').select('products').eq('id', userId).maybeSingle()
         .then(function(r){
-          if(r.error){ console.warn('FTM.auth: entitlements lookup failed, treating as none:', r.error.message); return []; }
-          return (r.data && r.data.products) || [];
+          if(r.error){ console.warn('FTM.auth: entitlements lookup failed, checking payment:', r.error.message); return repairEntitlements(); }
+          var p=(r.data && r.data.products) || [];
+          return p.length ? p : repairEntitlements();
         })
         .catch(function(e){ console.warn('FTM.auth: entitlements lookup threw, treating as none:', e); return []; });
     }
@@ -7091,7 +7098,7 @@ tick();setInterval(tick,5000);})();
     document.addEventListener('keydown',function(e){if(e.key==='Escape')shut()});
     var ai=m.querySelector('.um-ai');if(ai)ai.addEventListener('click',function(){var t=document.querySelector('#appView:not([hidden]) .js-app-ai');if(t){t.click();return}
       var f=document.getElementById('floatSupport'),tg=document.getElementById('fsToggle'),p=document.getElementById('fsPanel');if(f)f.classList.add('over-app');setTimeout(function(){if(tg&&p&&p.hidden)tg.click();setTimeout(function(){var a=document.getElementById('fsAi');if(a)a.click()},30)},0)});
-    var act=m.querySelector('.um-act');if(act)act.addEventListener('click',function(){var n=document.querySelector('#appView .app-nav-item[data-view="accounts"]');if(n)n.click();setTimeout(function(){var a=document.getElementById('acctAdd');if(a){a.scrollIntoView({block:'center'});a.click();}},120)});
+    var act=m.querySelector('.um-act');if(act)act.addEventListener('click',function(){var n=document.querySelector('#appView .app-nav-item[data-view="metrics"]');if(n)n.click();setTimeout(function(){var app=document.getElementById('appView');var free=app&&app.classList.contains('free');var t=free?document.getElementById('freeBar'):document.getElementById('appBroker');if(t){var card=t.closest('.app-card')||t;card.scrollIntoView({behavior:'smooth',block:'center'});if(!free)setTimeout(function(){t.focus({preventScroll:true});},450);}},80)});
     var h=m.querySelector('.um-home');if(h)h.addEventListener('click',function(){var o=document.getElementById('appHome')||document.getElementById('invHome');if(o)o.click()});
   });
 })();

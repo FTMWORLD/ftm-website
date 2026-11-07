@@ -5,7 +5,7 @@ let pw; try { pw = require('playwright'); } catch (e) { pw = require('/opt/node-
 const { chromium, devices } = pw;
 const BASE = (process.argv[2] || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
 const STRIPE = ['fZubJ00Dx6Fm8Nsfw87wA0j', '5kQ4gy1HB2p6aVA97K7wA0k', 'dRmdR81HBfbS3t8es47wA0l', '5kA7uka0Y4t27zWbIN'];
-const ROUTES = [['GET', 'me'], ['GET', 'accounts'], ['GET', 'billing'], ['GET', 'investments'], ['GET', 'investment'],
+const ROUTES = [['GET', 'me'], ['GET', 'entitlements'], ['GET', 'accounts'], ['GET', 'billing'], ['GET', 'investments'], ['GET', 'investment'],
   ['GET', 'chat'], ['GET', 'chat/messages'], ['POST', 'chat/messages'], ['POST', 'chat/read'],
   ['GET', 'leaderboard'], ['GET', 'leaderboard/profile'], ['POST', 'investments/x1/withdraw'],
   ['DELETE', 'accounts/x1'], ['POST', 'accounts/x1/pause'], ['POST', 'accounts/x1/activate'], ['PUT', 'accounts/x1/risk_tier']];

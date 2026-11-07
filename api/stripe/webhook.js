@@ -88,8 +88,10 @@ module.exports = async function handler(req, res) {
   }
 
   const session = event.data.object;
-  if (session.payment_status !== 'paid') {
-    res.status(200).json({ ok: true, ignored: 'not paid' });
+  // 'no_payment_required' = a plan with a free first period (trial); the customer has subscribed and
+  // must get access exactly like a paid checkout.
+  if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
+    res.status(200).json({ ok: true, ignored: 'not paid (' + session.payment_status + ')' });
     return;
   }
 
@@ -101,13 +103,11 @@ module.exports = async function handler(req, res) {
   }
 
   const linkId = session.payment_link;
-  const product = PAYMENT_LINK_PRODUCT[linkId] || null;
-  if (!product) {
-    // Deliberately do NOT grant access when the plan can't be
-    // identified — better to leave a customer needing a manual follow-
-    // up than to silently give the wrong product or none at all.
-    console.error('Stripe webhook: unrecognised payment_link', linkId, 'for', email, '— needs a manual follow-up.');
-  }
+  // Every checkout that is not the investment link is an Auto Trading plan: a paying customer must never
+  // be left without access because a payment link id changed in Stripe. FTM is alerted to update the map.
+  const product = PAYMENT_LINK_PRODUCT[linkId] || 'auto';
+  const unknownLink = !PAYMENT_LINK_PRODUCT[linkId];
+  if (unknownLink) console.error('Stripe webhook: unrecognised payment_link', linkId, 'for', email, '— granted Auto Trading, map needs updating.');
 
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     console.error('Stripe webhook: Supabase not configured, cannot create the account.');
@@ -156,6 +156,7 @@ module.exports = async function handler(req, res) {
         userId = await findUserIdByEmail(email);
       } else {
         console.error('Stripe webhook: inviteUserByEmail failed:', invite.error.message);
+        await alertFtm('Payment received but account not created', [['Customer', email], ['Error', invite.error.message], ['Checkout', String(session.id)]]).catch(() => {});
         res.status(200).json({ ok: true, error: 'INVITE_FAILED', detail: invite.error.message });
         return;
       }
@@ -199,6 +200,13 @@ module.exports = async function handler(req, res) {
     // Paying customers go on the Brevo "Customers" list, so marketing
     // automations can skip people who already bought. Never blocks the reply.
     report.brevo = await addToCustomerList(email);
+    if (report.error || unknownLink || !report.granted) {
+      await alertFtm('Payment needs attention', [
+        ['Customer', email], ['Payment link', String(linkId || 'none')], ['Product', String(product)],
+        ['Granted', String(report.granted)], ['Error', String(report.error || (unknownLink ? 'unknown payment link (granted Auto Trading)' : '-'))],
+        ['Detail', String(report.detail || '-')], ['Checkout', String(session.id)]
+      ]).catch(() => {});
+    }
     report.engine = engineSync;
 
     res.status(200).json(report);
@@ -233,6 +241,19 @@ module.exports = async function handler(req, res) {
       This endpoint's reply body reports what happened (error / detail
       / granted), readable in the Stripe Dashboard's event delivery log.
    --------------------------------------------------------------------- */
+
+async function alertFtm(title, rows) {
+  const key = process.env.BREVO_API_KEY; if (!key) return;
+  const esc = v => String(v).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+  const html = '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:28px 20px;">'
+    + '<p style="font-size:20px;font-weight:bold;color:#0b1640;margin:0 0 12px;">' + esc(title) + '</p><table cellpadding="4">'
+    + rows.map(r => '<tr><td style="color:#555;">' + esc(r[0]) + '</td><td style="color:#0b1640;font-weight:bold;">' + esc(r[1]) + '</td></tr>').join('')
+    + '</table></td></tr><tr><td align="center" bgcolor="#0b1640" style="background-color:#0b1640;padding:24px 20px;"><p style="margin:0 0 12px;color:#D4AF37;font-size:18px;font-weight:bold;">Invest today, secure tomorrow.</p>'
+    + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="36" height="36" alt="" style="display:block;border-radius:9px;"></td><td style="color:#fff;font-size:24px;font-weight:bold;">FTM</td></tr></table>'
+    + '<p style="margin:12px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
+  await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
+    body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM payments' }, to: [{ email: 'ftmwebnation@gmail.com' }], subject: 'FTM: ' + title, htmlContent: html }) });
+}
 
 async function addToCustomerList(email) {
   const key = process.env.BREVO_API_KEY;
@@ -309,9 +330,8 @@ async function syncEngine(event) {
 
   switch (event.type) {
     case 'checkout.session.completed': {
-      if (o.payment_status !== 'paid') return 'skipped (not paid)';
+      if (o.payment_status !== 'paid' && o.payment_status !== 'no_payment_required') return 'skipped (not paid)';
       if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'skipped (investment)';
-      if (!PAYMENT_LINK_PRODUCT[o.payment_link]) return 'skipped (unknown payment link)';
       status = 'ACTIVE';
       email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
       ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
@@ -361,3 +381,5 @@ async function syncEngine(event) {
   return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
 }
 module.exports._syncEngine = syncEngine;
+module.exports.PAYMENT_LINK_PRODUCT = PAYMENT_LINK_PRODUCT;
+module.exports.alertFtm = alertFtm;
