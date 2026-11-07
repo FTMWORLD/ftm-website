@@ -40,7 +40,9 @@ async function step(name,fn,screen,expect){calls=[];dialogs=[];try{await fn();}c
  const bad=(expect||[]).filter(x=>!all.includes(x));T.push([(bad.length?'BROKEN ':'OK ')+name,req,'dialogs: '+(dialogs.join(' | ')||'-'),'screen: '+scr].concat(bad.length?['MISSING: '+bad.join(' / ')]:[]));if(bad.length)fails++;}
 let fails=0;
 const nav=v=>p.evaluate(v=>document.querySelector('.app-nav-item[data-view="'+v+'"]').click(),v);
-const menu=async(i,sel)=>{await nav('accounts');await p.waitForTimeout(400);await p.click('#acctRows [data-menu-toggle="'+i+'"]');await p.waitForTimeout(200);await p.click('#acctRows ['+sel+'="'+i+'"]');};
+const menu=async(i,sel)=>{await nav('accounts');await p.waitForTimeout(400);
+  for(let k=0;k<3;k++){ await p.click('#acctRows [data-menu-toggle="'+i+'"]'); await p.waitForTimeout(250);
+    try{ await p.click('#acctRows ['+sel+'="'+i+'"]',{timeout:4000}); return; }catch(e){ if(k===2) throw e; await p.keyboard.press('Escape'); await p.waitForTimeout(500); } } };
 const rows=()=>p.evaluate(()=>[...document.querySelectorAll('#acctRows tr')].map(r=>(r.querySelector('.conn')||{}).textContent).join(' / '));
 const cmsg=()=>p.evaluate(()=>document.getElementById('appConnectMsg').textContent);
 async function addAcct(n){await nav('metrics');await p.waitForTimeout(300);await p.click('#appBroker');await p.fill('#appBroker','Deriv-Demo');await p.keyboard.press('Enter');await p.fill('#appAcct',n);await p.fill('#appPass','secret');await p.click('#appConnect');}
