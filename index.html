@@ -1645,7 +1645,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .company .feature{gap:18px}
   }
   @media (max-width:760px){
-    .longterm .compound{display:flex;flex-direction:column;gap:0}
+    .longterm .compound{display:flex;flex-direction:column;gap:0;align-items:stretch}
     .longterm .compound-text{display:contents}
     .longterm .compound-cta{align-self:flex-start;margin-bottom:18px}
     .longterm .calc-toggle{order:1;margin-top:0}
@@ -1668,6 +1668,13 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     @keyframes tldraw{0%{stroke-dashoffset:var(--len)}55%,85%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:.35}}
   }
   @media (max-width:760px) and (prefers-reduced-motion:reduce){.tl-graph .ln{animation:none;stroke-dashoffset:0}.inv-tl li:last-child::before{animation:none}}
+  .compound-fact .cf-l{display:block;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9A7414}
+  .compound-fact .cf-v{display:block;margin-top:4px;font-size:clamp(26px,3vw,34px);font-weight:800;color:var(--ink);letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+  @media (max-width:760px){
+    .longterm .compound,.longterm .compound h3,.longterm .compound p{text-align:left}
+    .longterm .compound-note{text-align:left!important}
+    .longterm .calc-toggle{justify-content:center}
+  }
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -2064,7 +2071,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <div class="compound-text">
         <h3>The long-term idea</h3>
         <p>FTM is built for steady growth over years, not one lucky month.</p>
-        <p class="compound-fact">Portfolio since 2020: 54–176% a year.</p>
+        <p class="compound-fact"><span class="cf-l">Portfolio since 2020</span><span class="cf-v">54–176% a year</span></p>
         <a class="btn btn-gold compound-cta" href="/performance.html">See the performance</a>
         <p class="compound-note">Move the sliders to see how a balance could grow.</p>
       </div>
