@@ -165,15 +165,15 @@ module.exports = async function handler(req, res) {
         report.detail = 'password email: ' + e.message;
         if (!userId) { const again = await findUserByEmail(email).catch(() => null); userId = again && again.id; }
         if (!userId) {
-          // The account itself could not be created: try Supabase's own invite as a last resort.
-          const inv = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: (process.env.SITE_URL || 'https://www.ftmwealthnation.com') + '/?setpw=1&e=' + encodeURIComponent(email) });
-          userId = inv.data && inv.data.user && inv.data.user.id;
-          if (inv.error && !userId) {
-            await alertFtm('Payment received but account not created', [['Customer', email], ['Error', e.message + ' / ' + inv.error.message], ['Checkout', String(session.id)]]).catch(() => {});
-            res.status(200).json({ ok: true, error: 'INVITE_FAILED', detail: e.message + ' / ' + inv.error.message });
+          // The account itself could not be created: create it without any Supabase email (the customer
+          // can then use "Forgot password?" or a 6-digit code), and FTM is alerted below.
+          const cu = await admin.auth.admin.createUser({ email, email_confirm: true });
+          userId = cu.data && cu.data.user && cu.data.user.id;
+          if (!userId) {
+            await alertFtm('Payment received but account not created', [['Customer', email], ['Error', e.message + ' / ' + ((cu.error && cu.error.message) || '-')], ['Checkout', String(session.id)]]).catch(() => {});
+            res.status(200).json({ ok: true, error: 'ACCOUNT_CREATE_FAILED', detail: e.message });
             return;
           }
-          report.invited = !inv.error;
         }
         await alertFtm('Payment received but the password email failed', [['Customer', email], ['Error', e.message], ['Checkout', String(session.id)]]).catch(() => {});
       }
