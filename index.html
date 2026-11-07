@@ -1867,6 +1867,74 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-banner-txt .inv-eyebrow{display:none}
   }
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
+.kp-grid{align-items:stretch}
+.kp{grid-template-rows:auto auto 1fr auto;align-content:start;position:relative;padding:22px 22px 20px}
+.kp-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#eef1fb;color:#152a7a;margin-bottom:6px}
+.kp-ic svg{width:19px;height:19px}
+.kp-ic-dd{background:#fdecee;color:#E5323E}
+.kp.live .kp-ic{background:#e8f7ee;color:#16a34a}
+.kp>b{font-size:28px;line-height:1.15}
+.kp-sub{display:flex!important;gap:6px;align-items:baseline;flex-wrap:wrap;font-size:12.5px!important;color:#5b6378;font-weight:600;border-top:1px solid #eef0f5;padding-top:10px;margin-top:6px;min-height:20px}
+.kp-sub em{font-style:normal;color:#5b6378}
+.kp-sub b{font-size:12.5px!important;font-weight:800;color:#0b1440}
+.rg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:stretch}
+.rg{display:flex;flex-direction:column;gap:12px;min-height:236px}
+.rg-body{position:relative;width:132px;height:132px;margin:2px auto 0}
+.rg-donut{width:100%;height:100%;transform:rotate(-90deg)}
+.rg-donut circle{fill:none;stroke-width:14;transition:stroke-dasharray 1s cubic-bezier(.2,.8,.2,1),stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+.rg-mid{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:800;color:#0b1440;font-variant-numeric:tabular-nums}
+.rg-mid-sm{font-size:15px;text-align:center;line-height:1.15;padding:0 26px}
+.rg-leg{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#5b6378;font-weight:600;margin-top:auto}
+.rg-leg span{display:inline-flex;align-items:center;gap:6px}
+.rg-leg em{font-style:normal}
+.rg-leg .dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rg-leg .dot.up{background:#16a34a}.rg-leg .dot.dn{background:#E5323E}
+.rg-leg-mkt{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;justify-content:stretch}
+.rg-leg-mkt span{justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rg-big{font-size:40px!important;margin:4px 0 0}
+.rg-spark{margin-top:auto}
+.rg-foot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid #eef0f5;padding-top:10px;font-size:12.5px;color:#5b6378;font-weight:600}
+.rg-foot b{font-size:14px;color:#0b1440}
+.rg-circles{display:flex;justify-content:center;gap:18px;margin:auto 0}
+.rg-circ{width:104px;height:104px;border-radius:50%;display:grid;place-content:center;text-align:center;background:radial-gradient(circle at 30% 25%,#1d3590,#0b1440);color:#fff;box-shadow:0 14px 30px -14px rgba(11,20,64,.55);position:relative}
+.rg-circ::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:2px solid rgba(212,175,55,.45);animation:rgSpin 9s linear infinite;border-right-color:transparent;border-bottom-color:transparent}
+.rg-circ-gold{background:radial-gradient(circle at 30% 25%,#f0cf62,#c99a1e);color:#0b1440}
+.rg-circ-gold::after{border-color:rgba(21,42,122,.35);border-right-color:transparent;border-bottom-color:transparent;animation-direction:reverse}
+.rg-circ b{font-size:30px;line-height:1;font-weight:800}
+.rg-circ small{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8;margin-top:4px}
+@keyframes rgSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rg-circ::after{animation:none}}
+.metrics{align-items:stretch}
+.metrics>.app-card{height:100%}
+.cx-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.cx-head h3{margin:0}
+.cx-open-btn{display:none}
+#appView.has-acct .cx-card:not(.cx-open) .app-form,#appView.has-acct .cx-card:not(.cx-open)>.hint{display:none}
+#appView.has-acct .cx-card:not(.cx-open) .cx-open-btn{display:inline-flex}
+@media (min-width:901px){
+#appView .app-view[data-view="metrics"] .app-cols{align-items:stretch}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child{display:flex;flex-direction:column}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child>.app-card{flex:1;display:flex;flex-direction:column}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child .cv-wrap{flex:1;min-height:190px;display:flex}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child .cv-wrap .app-chart{height:auto;min-height:190px;flex:1}
+}
+.op-list thead{display:none}
+.op-list,.op-list tbody{display:block;width:100%}
+.op-list tr{display:grid;grid-template-columns:1fr auto auto;column-gap:14px;row-gap:2px;align-items:center;padding:12px 0;border-bottom:1px solid #eef0f5}
+.op-list tr:last-child{border-bottom:0}
+.op-list td{padding:0!important;border:0!important;background:none!important}
+.op-list td:nth-child(1){grid-column:1;grid-row:1;font-weight:800;color:#0b1440}
+.op-list td:nth-child(2){grid-column:1;grid-row:2;font-size:12px;font-weight:700;color:#5b6378;letter-spacing:.04em}
+.op-list td:nth-child(3),.op-list td:nth-child(4),.op-list td:nth-child(5){display:none}
+.op-list td:nth-child(6){grid-column:2;grid-row:1/3;font-weight:800;font-size:15px}
+.op-list td:nth-child(7){grid-column:3;grid-row:1/3}
+.op-list td[colspan]{grid-column:1/-1;grid-row:1;font-weight:500;color:#5b6378}
+.pos-close{appearance:none;border:1px solid rgba(229,50,62,.35);background:#fff;color:#E5323E;font-weight:700;font-size:12.5px;border-radius:999px;padding:6px 14px;cursor:pointer;transition:background .2s,color .2s}
+.pos-close:hover{background:#E5323E;color:#fff}
+@media (max-width:1100px){.rg-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){#appView .kp-grid{grid-template-columns:1fr 1fr!important;gap:12px}#appView .kp{padding:16px 14px 14px;gap:4px}#appView .kp-ic{width:30px;height:30px;margin-bottom:2px}#appView .kp-ic svg{width:15px;height:15px}#appView .kp>span{font-size:10.5px;letter-spacing:.06em}#appView .kp>b{font-size:20px!important}#appView .kp-sub{font-size:11px!important;padding-top:8px;margin-top:4px}#appView .kp-sub b{font-size:11px!important}}
+@media (max-width:560px){.rg-grid{gap:12px}.rg{min-height:0;padding:18px 14px}.rg-body{width:112px;height:112px}.rg-circles{gap:10px}.rg-circ{width:66px;height:66px}.rg-circ b{font-size:20px}.rg-circ small{font-size:8.5px;letter-spacing:.03em}.rg-circ::after{inset:-3px}.rg-big{font-size:32px!important}.rg-leg-mkt{grid-template-columns:1fr}.kp>b{font-size:24px}}
+
 .acct-top{margin-bottom:24px;grid-template-columns:1.2fr 1fr}
 @media (max-width:900px){.acct-top{grid-template-columns:1fr;gap:16px}.act-head{flex-wrap:wrap}}
 .act-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
@@ -2681,25 +2749,33 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
     </div>
-    <div class="app-grid">
-      <div class="app-tile"><span>Balance</span><b id="mBalance">&mdash;</b></div>
-      <div class="app-tile live"><span>Equity <i class="live-dot"></i></span><b id="mEquity">&mdash;</b><small id="mFloat">&mdash;</small></div>
-      <div class="app-tile"><span>Profit this year</span><b id="mYear">&mdash;</b></div>
-      <div class="app-tile"><span>Max drawdown</span><b id="mDDtile">&mdash;</b></div>
+    <div class="app-grid kp-grid">
+      <div class="app-tile kp"><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg></i><span>Balance</span><b id="mBalance">&mdash;</b><small class="kp-sub"><em>Highest balance</em> <b id="kpHigh">&mdash;</b></small></div>
+      <div class="app-tile kp live"><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg></i><span>Equity <i class="live-dot"></i></span><b id="mEquity">&mdash;</b><small class="kp-sub" id="mFloat">&mdash;</small></div>
+      <div class="app-tile kp"><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><span>Profit this year</span><b id="mYear">&mdash;</b><small class="kp-sub"><em>Net P&amp;L</em> <b id="mNet">&mdash;</b></small></div>
+      <div class="app-tile kp"><i class="kp-ic kp-ic-dd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l6 6 4-3 8 8"/><path d="M15 18h6v-6"/></svg></i><span>Max drawdown</span><b id="mDDtile">&mdash;</b><small class="kp-sub"><em>Gain</em> <b id="mGain">&mdash;</b></small></div>
     </div>
 
-    <div class="app-cols3">
-      <div class="app-card app-pl">
-        <div class="pl-head"><div><span>Gain</span><b id="mGain">&mdash;</b><small id="mGainAbs">&mdash;</small></div><div class="right"><span>Net P&amp;L</span><b id="mNet">&mdash;</b></div></div>
+    <div class="rg-grid">
+      <div class="app-card rg">
+        <span class="app-label">Win rate</span>
+        <div class="rg-body"><svg class="rg-donut" id="rgWin" viewBox="0 0 120 120" aria-hidden="true"></svg><b class="rg-mid" id="rgWinV">&mdash;</b></div>
+        <div class="rg-leg"><span><i class="dot up"></i><em id="rgWinW">&mdash;</em></span><span><i class="dot dn"></i><em id="rgWinL">&mdash;</em></span></div>
       </div>
-      <div class="app-card">
+      <div class="app-card rg">
+        <span class="app-label">By market</span>
+        <div class="rg-body"><svg class="rg-donut" id="rgMkt" viewBox="0 0 120 120" aria-hidden="true"></svg><b class="rg-mid rg-mid-sm" id="rgMktV">&mdash;</b></div>
+        <div class="rg-leg rg-leg-mkt" id="rgMktLeg"></div>
+      </div>
+      <div class="app-card rg">
         <span class="app-label">Trade count</span>
-        <b class="app-big" id="mCount">&mdash;</b>
-        <svg class="app-spark" id="mSpark" viewBox="0 0 300 54" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <b class="app-big rg-big" id="mCount">&mdash;</b>
+        <svg class="app-spark rg-spark" id="mSpark" viewBox="0 0 300 54" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="rg-foot"><span>Profit factor</span><b id="rgPF">&mdash;</b></div>
       </div>
-      <div class="app-card">
+      <div class="app-card rg">
         <span class="app-label">Win streak</span>
-        <div class="streaks"><div><b id="mStreakDays">&mdash;</b><small>Days</small></div><div><b id="mStreakTrades">&mdash;</b><small>Trades</small></div></div>
+        <div class="rg-circles"><div class="rg-circ"><b id="mStreakDays">&mdash;</b><small>Days</small></div><div class="rg-circ rg-circ-gold"><b id="mStreakTrades">&mdash;</b><small>Trades</small></div></div>
       </div>
     </div>
 
@@ -2721,19 +2797,24 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         <div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
       </div>
 
-      <div class="app-card">
-        <h3>Recently closed trades</h3>
-        <p class="hint" id="mClosedHint">&mdash;</p>
-        <div class="app-scroll"><table class="app-trades">
-          <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
-          <tbody id="mClosedRows"></tbody>
-        </table></div>
-      </div>
       </div>
 
       <div class="app-side">
-        <div class="app-card">
-          <h3>Connect your trading account</h3>
+        <div class="app-card sub-card">
+          <h3>Your subscription</h3>
+          <p class="hint" id="ivPlanLine">&mdash;</p>
+          <div class="app-actions"><button class="btn btn-outline btn-sm" type="button" id="pauseTradingBtn">Pause trading</button><button class="btn btn-outline btn-sm" type="button" id="billingBtn">Billing status</button></div>
+        </div>
+        <div class="app-card op-card">
+          <h3>Open positions</h3>
+          <p class="hint" id="mOpenHint">&mdash;</p>
+          <table class="app-trades op-list">
+            <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead>
+            <tbody id="mOpenRows"></tbody>
+          </table>
+        </div>
+        <div class="app-card cx-card" id="cxCard">
+          <div class="cx-head"><h3>Connect your trading account</h3><button type="button" class="btn btn-outline btn-sm cx-open-btn" id="cxOpen">Add account</button></div>
           <p class="hint">FTM only needs trading access. We never ask for your broker portal login or anything that can move money out of your account.</p>
           <div class="app-form">
             <label for="appBroker">Server</label>
@@ -2763,12 +2844,16 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
             <p class="hint" id="appConnectMsg" style="margin-top:10px" hidden></p>
           </div>
         </div>
-        <div class="app-card">
-          <h3>Your subscription</h3>
-          <p class="hint" id="ivPlanLine">&mdash;</p>
-          <div class="app-actions"><button class="btn btn-outline btn-sm" type="button" id="pauseTradingBtn">Pause trading</button><button class="btn btn-outline btn-sm" type="button" id="billingBtn">Billing status</button></div>
-        </div>
       </div>
+    </div>
+
+    <div class="app-card">
+      <h3>Recently closed trades</h3>
+      <p class="hint" id="mClosedHint">&mdash;</p>
+      <div class="app-scroll"><table class="app-trades">
+        <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
+        <tbody id="mClosedRows"></tbody>
+      </table></div>
     </div>
 
     <div class="metrics">
@@ -2809,13 +2894,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </div>
     </div>
 
-    <div class="app-card">
-      <h3>Open positions</h3>
-      <p class="hint" id="mOpenHint">&mdash;</p>
-      <div class="app-scroll"><table class="app-trades">
-        <thead><tr><th>Market</th><th>Direction</th><th>Size</th><th>Entry</th><th>Current</th><th>P/L</th><th></th></tr></thead>
-        <tbody id="mOpenRows"></tbody>
-      </table></div>
+    <div>
 
 </div>
       </section>
@@ -7642,6 +7721,49 @@ tick();setInterval(tick,5000);})();
   var rows=$('acctRows'); if(rows) new MutationObserver(render).observe(rows,{childList:true});
   document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.app-nav-item[data-view="accounts"]')) setTimeout(render,0); });
   render();
+})();
+</script>
+<script>
+(function(){
+  var F=window.FTM; if(!F||!F.render) return;
+  function $(i){ return document.getElementById(i); }
+  function tr(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }
+  var NS='http://www.w3.org/2000/svg', C=2*Math.PI*48;
+  function donut(svg, parts){
+    if(!svg) return;
+    var tot=parts.reduce(function(a,p){return a+p.v;},0), off=0, h='<circle cx="60" cy="60" r="48" stroke="#eef0f5"></circle>';
+    if(tot>0) parts.forEach(function(p){ var len=p.v/tot*C; h+='<circle cx="60" cy="60" r="48" stroke="'+p.c+'" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"></circle>'; off+=len; });
+    svg.innerHTML=h;
+  }
+  var PAL=['#152a7a','#D4AF37','#3b5bdb','#16a34a','#9aa3c7'];
+  function draw(){
+    var d=F.data||{}, closed=(d.closed||[]).filter(function(t){return t.pl!=null;});
+    var w=closed.filter(function(t){return t.pl>0;}).length, l=closed.filter(function(t){return t.pl<0;}).length;
+    donut($('rgWin'), [{v:w,c:'#16a34a'},{v:l,c:'#E5323E'}]);
+    if($('rgWinV')) $('rgWinV').textContent=(w+l)?Math.round(w/(w+l)*100)+'%':'—';
+    if($('rgWinW')) $('rgWinW').textContent=tr('{} winning').replace('{}',w);
+    if($('rgWinL')) $('rgWinL').textContent=tr('{} losing').replace('{}',l);
+    var by={}; closed.forEach(function(t){ var k=t.symbol||'—'; by[k]=(by[k]||0)+1; });
+    var arr=Object.keys(by).map(function(k){return {k:k,v:by[k]};}).sort(function(a,b){return b.v-a.v;});
+    var top=arr.slice(0,4), rest=arr.slice(4).reduce(function(a,p){return a+p.v;},0);
+    var parts=top.map(function(p,i){return {v:p.v,c:PAL[i]};}); if(rest) parts.push({v:rest,c:PAL[4]});
+    donut($('rgMkt'), parts);
+    var n=closed.length;
+    if($('rgMktV')) $('rgMktV').textContent=top.length?top[0].k:'—';
+    if($('rgMktLeg')) $('rgMktLeg').innerHTML=top.map(function(p,i){ return '<span title="'+p.k+'"><i class="dot" style="background:'+PAL[i]+'"></i><em>'+String(p.k).replace(/</g,'&lt;')+' '+Math.round(p.v/n*100)+'%</em></span>'; }).join('');
+    var m=F.metrics?F.metrics():null;
+    if(m){ if($('rgPF')) $('rgPF').textContent=m.profitFactor?m.profitFactor.toFixed(2):'—'; if($('kpHigh')) $('kpHigh').textContent=$('mHigh')?$('mHigh').textContent:'—'; }
+    var app=$('appView'); if(app){ var A=(d.accounts||[]).filter(function(a){return !a.isMaster;}); app.classList.toggle('has-acct', A.length>0); }
+  }
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ draw(); }catch(e){} return r; };
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('#cxOpen,#acctAdd,.um-act,#actGo');
+    if(!t) return; var c=$('cxCard'); if(!c) return;
+    if(t.id==='actGo' && t.dataset.act==='Choose a plan') return;
+    c.classList.add('cx-open');
+    if(t.id==='cxOpen'){ setTimeout(function(){ var f=$('appBroker'); if(f) f.focus(); },60); }
+  },true);
+  try{ draw(); }catch(e){}
 })();
 </script>
 <script>
