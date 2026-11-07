@@ -401,4 +401,5 @@ async function syncEngine(event) {
 }
 module.exports._syncEngine = syncEngine;
 module.exports.PAYMENT_LINK_PRODUCT = PAYMENT_LINK_PRODUCT;
+module.exports.PLAN_MONTHS = PLAN_MONTHS;
 module.exports.alertFtm = alertFtm;
