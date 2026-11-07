@@ -4,6 +4,16 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-07 (late night) — PAID-UNTIL FOR EVERY CUSTOMER, WELCOME TRADE FOR EVERY PAYING CUSTOMER (commit 99ef8af, migration 040, API restarted 22:00 Berlin)
+
+- `PUT /billing/subscription`: an end date is never shortened (the later of the stored and the new `period_end` is
+  kept). New optional `lifetime: true` for a Lifetime plan: no end date, and it stays Lifetime for good.
+- `GET /billing/status`: new `lifetime` (true/false); `period_end` is null for Lifetime.
+- A payment that arrived before its customer existed keeps its `period_end` / `lifetime` for the later match.
+- Customer 13222: period_end 2027-12-07 (Annual 12 + 1 months from 2026-11-07).
+- No tick box any more: `first_trade_opt_in` is true when not sent (send false only to switch the welcome trade off).
+  Show on the connect page: "When you connect, FTM opens a small first trade (about $10 risk) so you can see copying working."
+
 ## 2026-11-07 (night) — FIRST TRADE FOR EVERY NEW PAYING ACCOUNT (commit 6e6297d, migration 039, API restarted 21:16 Berlin)
 
 Gospel: when a paying customer connects an account, a trade must appear on it at once.
