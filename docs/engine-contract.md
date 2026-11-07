@@ -4,6 +4,22 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-07 (night) — FIRST TRADE FOR EVERY NEW PAYING ACCOUNT (commit 6e6297d, migration 039, API restarted 21:16 Berlin)
+
+Gospel: when a paying customer connects an account, a trade must appear on it at once.
+- `POST /customer/accounts` accepts an optional `first_trade_opt_in` (boolean). Show a tick box, ticked by default:
+  "Open a small first trade so I can see it working (risk about $10)". Not sent = false.
+- When the account first becomes ACTIVE (terminal built, broker allows trading, customer ACTIVE/EXEMPT):
+  - the master's open trades are copied at once (normal sizing, the master's SL/TP);
+  - if the master has none and the box was ticked: one small welcome trade (gold, or Bitcoin while gold is closed;
+    minimum lot; about $10 risk and $5 target, set right after the fill);
+  - market closed: queued and tried again every 15 minutes. Once per account.
+- `GET /customer/accounts`: every account carries `first_trade: { opted_in, state, text }`; `status_text` carries the
+  same `text`. Texts: "First trade is being opened", "First trade opens when the market opens", "First trade opened";
+  null when there is nothing to say (state null, DONE or FAILED).
+- Proven live 7 Nov 21:22 Berlin on a demo account: gold closed -> Bitcoin SELL 0.01 at 75736.79, SL 76736.79, TP
+  75236.79, in 20 s.
+
 ## 2026-11-07 (evening) — ONBOARDING FULLY AUTOMATIC (commit ab0bd9e, API restarted 18:44 Berlin; contract unchanged)
 
 Answers the website's note on the first real customer (paid 15:32 UTC, row created 15:38 UTC):
