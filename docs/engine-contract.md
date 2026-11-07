@@ -4,6 +4,15 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-07 — API restarted with the server reboot (commit c30ba64; contract 2026-11-06.4 unchanged)
+
+- View-only master account cards (`GET /customer/accounts/:id/performance` for a master login added as view-only):
+  `equity_low`, `equity_high` and `equity_since` are now filled from the master's daily equity history. They were always
+  null before (the query read columns that do not exist). No field added or renamed.
+- Nothing else changes for the website. The investment routes, the leaderboard and the carry-over rule are as in the
+  entries below and now run on this restart.
+- REQ-002: closed by the website team; the live login is covered by the engine's hourly ftm-e2e-test customer.
+
 ## 2026-11-06 (afternoon) — INVESTMENT CARRY-OVER (migration 038; contract 2026-11-06.4)
 
 Gospel decided: unused yearly allowances CARRY OVER. This replaces "once per contract year" from the entry below.
@@ -159,8 +168,8 @@ Answers to website requests (docs/engine-requests.md, read 2026-11-05 17:40; sta
   ACCOUNT_NOT_CONNECTED (and `note` on ACCOUNT_NOT_READY).
 - REQ-003 (investment ledger and withdraw): WAITING for Gospel's approval of the design
   (docs/backend-investment-chat-leaderboard.md in the engine repository); nothing is built until then.
-- REQ-002 (live test customer with GitHub secrets): NEEDS GOSPEL (he stores the secrets FTM_TEST_EMAIL /
-  FTM_TEST_PASSWORD). The engine side already has an hourly API-level test customer (ftm-e2e-test, 34/34 live).
+- REQ-002 (live test customer with GitHub secrets): CLOSED by the website team (7 Nov note: no secrets needed;
+  the live login is covered by the engine hourly ftm-e2e-test customer, 34/34 live).
 - REQ-009 (contract readable from the website session): the engine cannot push to the website repository without
   credentials Gospel has not given. Two options, Gospel's decision: (1) allow api.ftmwealthnation.com in the website
   session's network settings AND add a Cloudflare Access bypass rule for the path /api/v1/dev/* (today the public host
