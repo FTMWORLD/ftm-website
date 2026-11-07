@@ -3957,7 +3957,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       e.preventDefault();
 
       if(LIVE && window.FTM && FTM.session && FTM.session.email){
-        if(!ftmIdleExpired()){ enter(FTM.session.email, FTM.session.products, false); return; }
+        if(!ftmIdleExpired()){ window.FTM.auth.restoreSession().then(function(r){ if(r){ FTM.session={email:r.email,products:r.products,name:r.name||''}; enter(r.email,r.products,false); } else { FTM.session=null; open(); } }).catch(function(){ enter(FTM.session.email, FTM.session.products, false); }); return; }
         FTM.session=null; try{ window.FTM.auth.signOut(); }catch(e3){}
       }
       open();
@@ -4271,6 +4271,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
+      if(window.FTM) FTM.session=null;
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
 
