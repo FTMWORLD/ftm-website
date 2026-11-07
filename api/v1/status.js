@@ -73,6 +73,15 @@ module.exports = async function handler(req, res) {
       if (!env.STRIPE_WEBHOOK_SECRET) throw new Error('STRIPE_WEBHOOK_SECRET missing in Vercel');
       return 'configured';
     }),
+    check('Payment backup check (Stripe key)', async () => {
+      const key = env.STRIPE_SECRET_KEY || env.STRIPE_API_KEY || env.STRIPE_RESTRICTED_KEY;
+      if (!key) throw new Error('STRIPE_SECRET_KEY missing in Vercel');
+      const r = await get('https://api.stripe.com/v1/checkout/sessions?limit=1', { headers: { Authorization: 'Bearer ' + key } });
+      if (r.status === 401) throw new Error('Stripe rejected the key');
+      if (r.status === 403) throw new Error('key needs Checkout Sessions: Read');
+      if (!r.ok) throw new Error('Stripe answered ' + r.status);
+      return 'key works';
+    }),
     check('FTM MACHINE engine', async () => {
       if (!env.FTM_ENGINE_URL) return 'not configured yet';
       const headers = {};
