@@ -1644,6 +1644,14 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .partner-card p{margin:0}
     .company .feature{gap:18px}
   }
+  @media (max-width:760px){
+    .longterm .compound{display:flex;flex-direction:column;gap:0}
+    .longterm .compound-text{display:contents}
+    .longterm .compound-cta{align-self:flex-start;margin-bottom:18px}
+    .longterm .calc-toggle{order:1;margin-top:0}
+    .longterm .compound-note{order:2;margin:10px 0 0;text-align:center}
+    .longterm .compound-calc{order:3;margin-top:16px}
+  }
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -3399,7 +3407,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     var ATTRS=['placeholder','aria-label','title','alt'];
     var SKIP={SCRIPT:1,STYLE:1,NOSCRIPT:1,TEXTAREA:1,CODE:1,PRE:1};
     var INLINE={A:1,B:1,I:1,EM:1,STRONG:1,SPAN:1,BR:1,SMALL:1,U:1};
-    function norm(t){ return String(t).replace(/\s+/g,' ').trim(); }
+    function norm(t){ return String(t).replace(/\u2060/g,'').replace(/\u2011/g,'-').replace(/\s+/g,' ').trim(); }
+    function keepRange(v){ return String(v).replace(/(\d)\s?([\u2013-])\s?(\d)/g,function(m,a,d,b){ return a+'\u2060'+(d==='-'?'\u2011':d)+'\u2060'+b; }); }
 
     var patterns=[];
     function buildPatterns(d){
@@ -3430,7 +3439,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     function setText(node,en){
       var t=lookup(norm(en)); if(!t) return;
-      var lead=en.match(/^\s*/)[0], trail=en.match(/\s*$/)[0], v=lead+t+trail;
+      var lead=en.match(/^\s*/)[0], trail=en.match(/\s*$/)[0], v=keepRange(lead+t+trail);
       if(node.nodeValue!==v){ node.nodeValue=v; }
       textLast.set(node,v); touched.add(node);
     }
@@ -7201,6 +7210,19 @@ tick();setInterval(tick,5000);})();
     setTimeout(function(){ var p=document.getElementById('fsPanel'), t=document.getElementById('fsToggle'); if(p) p.hidden=false; if(t) t.setAttribute('aria-expanded','true'); var b=document.getElementById('fsAi'); if(b) b.click(); },0);
   });
   document.addEventListener('click',function(e){ var a=e.target.closest('footer .um-live,footer .js-login'); if(a) e.preventDefault(); },true);
+})();
+</script>
+<script>
+(function(){
+  var RX=/(\d)\s?([\u2013\u2011-])\s?(\d)/g, WJ='\u2060';
+  function fix(root){
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){ var p=n.parentNode; if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.nodeName)) return 2; return /\d\s?[\u2013-]\s?\d/.test(n.nodeValue)?1:2; }});
+    var n, list=[]; while((n=w.nextNode())) list.push(n);
+    list.forEach(function(t){ var v=t.nodeValue.replace(RX,function(m,a,d,b){ return a+WJ+(d==='-'?'\u2011':d)+WJ+b; }); if(v!==t.nodeValue) t.nodeValue=v; });
+  }
+  var busy=false;
+  function run(){ if(busy) return; busy=true; requestAnimationFrame(function(){ fix(document.body); busy=false; }); }
+  run(); new MutationObserver(run).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
 </script>
 </body>
