@@ -1800,10 +1800,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   @media (max-width:820px){.hero-fx i:nth-child(6){left:70%!important}.hero-fx i:nth-child(7){left:78%!important}}
   .hero-grid{display:none!important}
   @media (max-width:820px){.hero-photo img{object-position:50% 50%!important}.hero-photo{height:min(52vh,420px)!important;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 86%,transparent 100%)!important;mask-image:linear-gradient(180deg,transparent 0,#000 6%,#000 86%,transparent 100%)!important}}
-  .hero-bg{background:
-      linear-gradient(90deg,rgba(11,20,64,.95) 0%,rgba(11,20,64,.86) 34%,rgba(11,20,64,.5) 62%,rgba(11,20,64,.22) 100%),
-      linear-gradient(180deg,rgba(11,20,64,.35) 0%,transparent 30%,transparent 70%,rgba(11,20,64,.7) 100%),
-      url(/hero-bg.webp) center/cover no-repeat,#0B1440!important}
   .hero-code{position:absolute;inset:0 45% 0 0;overflow:hidden;pointer-events:none;
     -webkit-mask-image:linear-gradient(90deg,#000 0,#000 60%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 80%,transparent 100%);-webkit-mask-composite:source-in;
     mask-image:linear-gradient(90deg,#000 0,#000 60%,transparent 100%),linear-gradient(180deg,transparent 0,#000 18%,#000 80%,transparent 100%);mask-composite:intersect}
@@ -1811,32 +1807,19 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   .hero-code pre b{color:rgba(227,182,47,.14);font-weight:600}
   @keyframes codeScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
   @media (prefers-reduced-motion:reduce){.hero-code pre{animation:none}}
-  @media (min-width:821px){
-    .hero-photo{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 92%,transparent 100%),linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)!important;-webkit-mask-composite:source-in;
-      mask-image:linear-gradient(90deg,transparent 0,#000 34%,#000 92%,transparent 100%),linear-gradient(180deg,transparent 0,#000 16%,#000 84%,transparent 100%)!important;mask-composite:intersect;width:min(46%,680px)!important}
-  }
   @media (max-width:820px){
-    .hero-bg{background:linear-gradient(180deg,rgba(11,20,64,.92) 0%,rgba(11,20,64,.6) 30%,rgba(11,20,64,.45) 60%,rgba(11,20,64,.92) 100%),url(/hero-bg.webp) center/cover no-repeat,#0B1440!important}
     .hero-code{inset:0}
     .hero-code pre{font-size:11px;padding-left:5%}
     .hero-fx{z-index:2!important}
     .hero h1,.hero .sub,.hero-cta{z-index:3!important}
   }
-  .hero-bg{background:
-      linear-gradient(90deg,#132778 0%,rgba(19,39,120,.97) 30%,rgba(21,42,122,.82) 48%,rgba(21,42,122,.45) 66%,rgba(21,42,122,.18) 100%),
-      linear-gradient(180deg,rgba(11,20,64,.25) 0%,transparent 28%,transparent 72%,rgba(11,20,64,.55) 100%),
-      url(/hero-bg.webp) center/cover no-repeat,#152a7a!important}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:url(/hero-bg.webp) center/cover no-repeat;opacity:.38;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 38%,#000 72%,#000 100%),linear-gradient(180deg,transparent 0,#000 25%,#000 70%,transparent 100%);-webkit-mask-composite:source-in;
+    mask-image:linear-gradient(90deg,transparent 0,transparent 38%,#000 72%,#000 100%),linear-gradient(180deg,transparent 0,#000 25%,#000 70%,transparent 100%);mask-composite:intersect}
+  @media (max-width:820px){.hero-bg::after{opacity:.3;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%);mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 60%,transparent 100%)}}
   @media (min-width:821px){
-    .hero-photo{top:96px!important;bottom:0!important;width:min(38%,560px)!important;right:max(0px,calc((100vw - 1320px)/2))!important;
-      -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 0,#000 10%,#000 92%,transparent 100%)!important;
-      mask-image:linear-gradient(90deg,transparent 0,#000 28%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 0,#000 10%,#000 92%,transparent 100%)!important}
-    .hero-photo img{object-fit:cover!important;object-position:50% 100%!important;
-      -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 82%,transparent 100%),linear-gradient(180deg,transparent 0,#000 14%,#000 90%,transparent 100%);-webkit-mask-composite:source-in;
-      mask-image:linear-gradient(90deg,transparent 0,#000 22%,#000 82%,transparent 100%),linear-gradient(180deg,transparent 0,#000 14%,#000 90%,transparent 100%);mask-composite:intersect}
-    .hero-photo{aspect-ratio:772/1288;height:auto!important;top:auto!important;max-height:calc(100% - 96px);width:auto!important}
-  }
-  @media (max-width:820px){
-    .hero-bg{background:linear-gradient(180deg,#132778 0%,rgba(21,42,122,.6) 30%,rgba(21,42,122,.4) 60%,#132778 100%),url(/hero-bg.webp) center/cover no-repeat,#152a7a!important}
+    .hero-photo{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 26%,#000 80%,transparent 100%),linear-gradient(180deg,transparent 0,#000 12%,#000 82%,transparent 100%);
+      mask-image:linear-gradient(90deg,transparent 0,#000 26%,#000 80%,transparent 100%),linear-gradient(180deg,transparent 0,#000 12%,#000 82%,transparent 100%)}
   }
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
