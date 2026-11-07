@@ -1866,6 +1866,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-eyebrow-m{display:block;margin-bottom:12px}
     .inv-banner-txt .inv-eyebrow{display:none}
   }
+#hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -4812,6 +4813,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           riskTier: a.risk_tier || null,
 
           validationReason: a.validation_reason || null,
+          brokerTradeDisabled: a.broker_trade_disabled===true || a.trade_allowed===false,
           lastValidatedAt: a.last_validated_at ? Date.parse(a.last_validated_at) : null,
 
           tradeMode: a.trade_mode || null,
@@ -5134,7 +5136,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
         var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:'Active'}[status]||'Active');
-        F.planLabel=st; var h=document.getElementById('hdrPlan'); if(h) h.textContent=st;
+        F.planLabel=st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=st; h.classList.toggle('plan-on',F.planOn); }
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',st).replace('{}',d);
       };
@@ -5532,6 +5534,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       LOGIN_MISMATCH: 'The details you entered logged into a different account than the account number you gave. Check the account number and try again.'
     };
     var VALIDATION_REASON_FALLBACK = 'FTM could not set up this account. Check your login details, then remove the account and add it again.';
+    var CANNOT_TRADE_TEXT = 'Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.';
+    var BELOW_MINIMUM_TEXT = 'The balance is below the FTM minimum. Deposit more with your broker, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function plainCode(c){ c=String(c||'').replace(/_/g,' ').toLowerCase(); return c ? c.charAt(0).toUpperCase()+c.slice(1) : 'Connecting'; }
     function renderAccounts(){
@@ -5555,6 +5559,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           } else if(s.support){
             detail = VALIDATION_REASON_FALLBACK;
           }
+          if(showNote && (a.statusReason==='CANNOT_TRADE' || a.brokerTradeDisabled)) detail = CANNOT_TRADE_TEXT;
+          else if(showNote && a.statusReason==='BELOW_MINIMUM') detail = BELOW_MINIMUM_TEXT;
           status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
           if(showNote) status+='<div class="acct-action-note">'+detail+'</div>';
 
@@ -5948,7 +5954,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
       ic.innerHTML = src ? src.outerHTML : '';
-      document.getElementById('hdrPlan').textContent=(F.data.plan||F.planLabel||'—');
+      var hp=document.getElementById('hdrPlan'); hp.textContent=(F.data.plan||F.planLabel||'—'); hp.classList.toggle('plan-on',!!(F.planLabel&&F.planOn)); if(!F.planLabel&&F.showPlan&&!F._planAsked){ F._planAsked=1; F.showPlan().then(function(){ F._planAsked=0; }); }
       document.getElementById('hdrBal').textContent=money(m.balance,0);
       var st=document.getElementById('hdrStatus');
 
@@ -6725,6 +6731,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       if(free && F.emptyLiveData){ if(!F._sample)F._sample=F.data; F.data=F.emptyLiveData(); }
       else if(F._sample && !(window.FTM.auth&&window.FTM.auth.ready())){ F.data=F._sample; F._sample=null; }
       A.classList.toggle('free', p==='auto' && !has);
+      if(has && F.showPlan) F.showPlan();
       $('freeBar').hidden=!(p==='auto' && !has);
       has=has||(p==='auto');
       A.classList.toggle('noprod', p==='auto' && !has);
@@ -7061,7 +7068,7 @@ tick();setInterval(tick,5000);})();
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
-    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxSt').textContent=tx('hdrStatus');
+    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxSt').textContent=tx('hdrStatus');
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
     if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
@@ -7505,6 +7512,26 @@ tick();setInterval(tick,5000);})();
   var box=document.querySelector('.hero-code'); if(!box) return;
   var L=['<b>def</b> ftm_machine(market, profile):','    trend  = ema(close, 21) - ema(close, 55)','    vol    = atr(14)','    size   = balance * profile.risk / (vol * 1.5)','    <b>if</b> trend > 0 <b>and</b> spread < max_spread:','        open(BUY, size, sl=close - vol*1.5)','    <b>elif</b> trend < 0:','        open(SELL, size, sl=close + vol*1.5)','    trail_stop(positions, vol * 0.8)','','<b>for</b> m <b>in</b> [XAUUSD, BTCUSD, NDX100, USDJPY, HK50]:','    result = backtest(m, 2020, 2026)','    equity.compound(result)','','risk.check(drawdown_limit=0.30)','signal = model.predict(features[-120:])','copy_to(subscribers, signal)',''];
   var t=L.join('\n'); var pre=document.createElement('pre'); pre.innerHTML=t+'\n'+t+'\n'+t+'\n'+t; box.appendChild(pre);
+})();
+</script>
+<script>
+(function(){
+  var tag=null, last=0;
+  function head(){ return fetch('/',{method:'HEAD',cache:'no-store'}).then(function(r){ return r.headers.get('etag'); }).catch(function(){ return null; }); }
+  head().then(function(t){ tag=t; last=Date.now(); });
+  function check(){
+    if(document.visibilityState!=='visible' || !tag || Date.now()-last<120000) return;
+    last=Date.now();
+    head().then(function(t){
+      if(!t || t===tag) return;
+      var a=document.activeElement, typing=a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.value;
+      if(typing) return;
+      location.reload();
+    });
+  }
+  document.addEventListener('visibilitychange',check);
+  window.addEventListener('focus',check);
+  setInterval(check,600000);
 })();
 </script>
 </body>
