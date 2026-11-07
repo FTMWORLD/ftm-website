@@ -80,7 +80,10 @@ module.exports = async function handler(req, res) {
   // or fails the Stripe reply.
   // Runs alongside the account grant, never before it: a slow or unreachable engine must not stop a paying
   // customer getting their plan (callEngine gives up after 8 seconds).
-  const enginePromise = syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed: ' + e.message; });
+  // A checkout is passed to the engine only after the customer's account exists (below), so the engine can
+  // match the payment to them; every other billing event is passed on straight away.
+  const syncSafe = () => syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed: ' + e.message; });
+  const enginePromise = event.type === 'checkout.session.completed' ? null : syncSafe();
 
   // Always 200 once the signature is valid, even on an event we don't
   // act on — a non-200 makes Stripe retry the same event repeatedly.
@@ -210,8 +213,14 @@ module.exports = async function handler(req, res) {
         ['Detail', String(report.detail || '-')], ['Checkout', String(session.id)]
       ]).catch(() => {});
     }
-    report.engine = await enginePromise;
-    if (/^(failed|engine error)/.test(String(report.engine))) await alertFtm('Payment not passed to the FTM engine', [['Customer', email], ['Engine', String(report.engine)], ['Checkout', String(session.id)], ['Website plan', report.granted ? 'granted' : 'NOT granted']]).catch(() => {});
+    // The engine only matches a payment to a customer it already knows; asking for the customer's
+    // profile creates their engine record if this is their first visit.
+    if (userId && process.env.FTM_ENGINE_URL) {
+      await callEngine('/api/v1/customer/me', { method: 'GET', authSubject: userId, authEmail: email, timeoutMs: 6000 })
+        .catch(e => console.error('Stripe webhook: engine customer create failed:', e.message));
+    }
+    report.engine = await syncSafe();
+    if (/^(failed|engine error|engine unmatched)/.test(String(report.engine))) await alertFtm('Payment not passed to the FTM engine', [['Customer', email], ['Engine', String(report.engine)], ['Checkout', String(session.id)], ['Website plan', report.granted ? 'granted' : 'NOT granted']]).catch(() => {});
 
     res.status(200).json(report);
   } catch (e) {
@@ -382,6 +391,7 @@ async function syncEngine(event) {
 
   const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body, timeoutMs: 8000 });
   if (!r.ok) console.error('Stripe webhook: engine billing answered', r.status, JSON.stringify(r.body).slice(0, 300));
+  if (r.ok && (r.body.unmatched || r.body.applied === false) && !r.body.duplicate) return 'engine unmatched ' + status;
   return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
 }
 module.exports._syncEngine = syncEngine;
