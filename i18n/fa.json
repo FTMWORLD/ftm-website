@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "این رمز اصلی MT5 است که بروکر هنگام باز کردن حساب برایتان فرستاده است. به FTM MACHINE اجازه ثبت معاملات می‌دهد. با آن نمی‌شود پول برداشت کرد و می‌توانید هر زمان با تغییر آن در MT5 دسترسی را لغو کنید. از رمز سرمایه‌گذار یا ورود به پرتال بروکر استفاده نکنید.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "این همان چیزی است که دیگر اعضای FTM می‌بینند. هیچ‌یک از این‌ها با کسی بیرون از FTM به اشتراک گذاشته نمی‌شود.",
 "This is your investment area. Everything below fills in automatically once you invest.": "این بخش سرمایه‌گذاری شماست. به محض سرمایه‌گذاری، همه موارد زیر به‌طور خودکار پر می‌شوند.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "این پیوند منقضی شده یا قبلاً استفاده شده است. یک پیوند جدید برای شما ایمیل کرده‌ایم: جدیدترین ایمیل FTM را باز کنید و روی «Create my password» بزنید. یا همین حالا وارد شوید: رمز عبور را خالی بگذارید و برای دریافت کد ۶ رقمی روی «ادامه» بزنید.",
 "This month": "این ماه",
 "This trade is already closing.": "این معامله در حال بسته شدن است.",
 "This trade is no longer open.": "این معامله دیگر باز نیست.",

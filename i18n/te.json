@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "ఇది మీరు ఖాతా తెరిచినప్పుడు మీ బ్రోకర్ పంపిన MT5 మాస్టర్ పాస్‌వర్డ్. దీనితో FTM MACHINE ట్రేడ్‌లు పెట్టగలదు. డబ్బు విత్‌డ్రా చేయడానికి దీన్ని ఉపయోగించలేరు, MT5లో మార్చడం ద్వారా మీరు ఎప్పుడైనా యాక్సెస్ రద్దు చేయవచ్చు. మీ ఇన్వెస్టర్ పాస్‌వర్డ్ లేదా బ్రోకర్ పోర్టల్ లాగిన్ ఉపయోగించవద్దు.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "ఇతర FTM సభ్యులు చూసేది ఇదే. ఇందులో ఏదీ FTM వెలుపల ఎవరితోనూ పంచుకోబడదు.",
 "This is your investment area. Everything below fills in automatically once you invest.": "ఇది మీ పెట్టుబడి విభాగం. మీరు పెట్టుబడి పెట్టిన వెంటనే క్రింద ఉన్నవన్నీ స్వయంచాలకంగా నిండుతాయి.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "ఈ లింక్ గడువు ముగిసింది లేదా ఇప్పటికే ఉపయోగించబడింది. మేము మీకు కొత్త లింక్‌ను ఇమెయిల్ చేశాము: FTM నుండి వచ్చిన తాజా ఇమెయిల్‌ను తెరిచి \"Create my password\" నొక్కండి. లేదా ఇప్పుడే లాగిన్ అవ్వండి: పాస్‌వర్డ్‌ను ఖాళీగా ఉంచి, 6 అంకెల కోడ్ పొందడానికి \"కొనసాగించండి\" నొక్కండి.",
 "This month": "ఈ నెల",
 "This trade is already closing.": "ఈ ట్రేడ్ ఇప్పటికే మూసివేయబడుతోంది.",
 "This trade is no longer open.": "ఈ ట్రేడ్ ఇకపై తెరిచి లేదు.",

@@ -1113,6 +1113,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "这是您的经纪商在开户时发给您的 MT5 主密码。它允许 FTM MACHINE 下单，但不能用于提现，您可随时在 MT5 中更改密码以撤销权限。请勿使用您的投资者密码或经纪商门户登录信息。",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "这是其他 FTM 成员看到的内容。这些内容不会与 FTM 以外的任何人共享。",
 "This is your investment area. Everything below fills in automatically once you invest.": "这是您的投资专区。您一开始投资，以下所有内容都会自动显示。",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "此链接已过期或已被使用。我们已向您发送一封包含新链接的邮件：请打开 FTM 最新的邮件，点击“Create my password”。或者立即登录：将密码留空，点击“继续”即可获取 6 位验证码。",
 "This month": "本月",
 "This trade is already closing.": "该交易正在平仓中。",
 "This trade is no longer open.": "该交易已不再持仓。",

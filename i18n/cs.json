@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "Toto je hlavní heslo MT5, které vám broker poslal při otevření účtu. Umožňuje FTM MACHINE zadávat obchody. Nelze s ním vybírat peníze a přístup můžete kdykoli odvolat změnou hesla v MT5. Nepoužívejte investorské heslo ani přihlášení do portálu brokera.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "Toto vidí ostatní členové FTM. Nic z toho se nesdílí s nikým mimo FTM.",
 "This is your investment area. Everything below fills in automatically once you invest.": "Toto je vaše investiční oblast. Vše níže se automaticky vyplní, jakmile začnete investovat.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "Platnost tohoto odkazu vypršela nebo již byl použit. Poslali jsme Vám e-mailem nový: otevřete nejnovější e-mail od FTM a klepněte na „Create my password“. Nebo se přihlaste hned: nechte heslo prázdné a klepněte na „Pokračovat“, abyste získali 6místný kód.",
 "This month": "Tento měsíc",
 "This trade is already closing.": "Tento obchod se již uzavírá.",
 "This trade is no longer open.": "Tento obchod již není otevřený.",

@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "口座開設時にブローカーから送られたMT5マスターパスワードです。FTM MACHINEが取引を行うために使用します。出金には使えず、MT5で変更すればいつでもアクセスを取り消せます。投資家パスワードやブローカーのポータルログインは使わないでください。",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "他のFTMメンバーに表示される内容です。ここにある情報がFTM外の誰かと共有されることはありません。",
 "This is your investment area. Everything below fills in automatically once you invest.": "こちらはお客様の投資エリアです。投資を開始すると、以下の内容はすべて自動で表示されます。",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "このリンクは有効期限が切れているか、すでに使用されています。新しいリンクをメールでお送りしました。FTMからの最新のメールを開き、「Create my password」をタップしてください。または今すぐログイン：パスワードを空欄のまま「続ける」をタップすると、6桁のコードが届きます。",
 "This month": "今月",
 "This trade is already closing.": "この取引はすでに決済中です。",
 "This trade is no longer open.": "この取引はもう保有されていません。",

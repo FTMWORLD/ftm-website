@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "זוהי סיסמת המאסטר של MT5 שהברוקר שלח כשפתחתם את החשבון. היא מאפשרת ל-FTM MACHINE לבצע עסקאות. אי אפשר למשוך בה כסף, ואפשר לבטל את הגישה בכל עת על ידי שינויה ב-MT5. אל תשתמשו בסיסמת המשקיע או בכניסה לפורטל הברוקר.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "זה מה שחברי FTM אחרים רואים. שום דבר מכאן לא משותף עם מי שמחוץ ל-FTM.",
 "This is your investment area. Everything below fills in automatically once you invest.": "זהו אזור ההשקעות שלך. כל מה שלמטה יתמלא אוטומטית ברגע שתשקיע.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "הקישור הזה פג תוקף או שכבר נעשה בו שימוש. שלחנו אליך קישור חדש במייל: יש לפתוח את המייל האחרון מ-FTM ולהקיש על \"Create my password\". או להתחבר עכשיו: יש להשאיר את הסיסמה ריקה ולהקיש על \"המשך\" כדי לקבל קוד בן 6 ספרות.",
 "This month": "החודש",
 "This trade is already closing.": "העסקה הזו כבר בתהליך סגירה.",
 "This trade is no longer open.": "העסקה הזו כבר אינה פתוחה.",

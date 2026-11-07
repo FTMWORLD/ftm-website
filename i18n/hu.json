@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "Ez az MT5 mesterjelszó, amelyet a bróker küldött a számla megnyitásakor. Ezzel az FTM MACHINE ügyleteket tud nyitni. Pénzkivételre nem használható, és a hozzáférést bármikor visszavonhatja a jelszó MT5-ben való módosításával. Ne használja a befektetői jelszót vagy a brókerportál belépési adatait.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "Ezt látják az FTM többi tagjai. Ebből semmit nem osztunk meg senkivel az FTM-en kívül.",
 "This is your investment area. Everything below fills in automatically once you invest.": "Ez az Ön befektetési területe. Az alábbiak automatikusan kitöltődnek, amint befektet.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "Ez a link lejárt, vagy már felhasználták. E-mailben küldtünk Önnek egy újat: nyissa meg a legújabb FTM e-mailt, és koppintson a „Create my password” gombra. Vagy jelentkezzen be most: hagyja üresen a jelszót, és koppintson a „Tovább” gombra egy 6 jegyű kódért.",
 "This month": "Ez a hónap",
 "This trade is already closing.": "Ez az ügylet már zárás alatt van.",
 "This trade is no longer open.": "Ez az ügylet már nincs nyitva.",

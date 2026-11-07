@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "นี่คือรหัสผ่านหลัก MT5 ที่โบรกเกอร์ส่งให้เมื่อคุณเปิดบัญชี ช่วยให้ FTM MACHINE วางออเดอร์ได้ ใช้ถอนเงินไม่ได้ และคุณเพิกถอนการเข้าถึงได้ทุกเมื่อโดยเปลี่ยนรหัสใน MT5 อย่าใช้รหัสผ่านนักลงทุนหรือการเข้าสู่ระบบพอร์ทัลโบรกเกอร์ของคุณ",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "นี่คือสิ่งที่สมาชิก FTM คนอื่นเห็น ไม่มีสิ่งใดที่นี่ถูกแชร์กับบุคคลภายนอก FTM",
 "This is your investment area. Everything below fills in automatically once you invest.": "นี่คือพื้นที่การลงทุนของคุณ ข้อมูลทั้งหมดด้านล่างจะแสดงโดยอัตโนมัติเมื่อคุณเริ่มลงทุน",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "ลิงก์นี้หมดอายุหรือถูกใช้ไปแล้ว เราได้ส่งลิงก์ใหม่ไปยังอีเมลของคุณแล้ว: เปิดอีเมลล่าสุดจาก FTM แล้วแตะ \"Create my password\" หรือเข้าสู่ระบบตอนนี้: เว้นรหัสผ่านว่างไว้แล้วแตะ \"ดำเนินการต่อ\" เพื่อรับรหัส 6 หลัก",
 "This month": "เดือนนี้",
 "This trade is already closing.": "เทรดนี้กำลังปิดอยู่แล้ว",
 "This trade is no longer open.": "เทรดนี้ไม่ได้เปิดอยู่แล้ว",

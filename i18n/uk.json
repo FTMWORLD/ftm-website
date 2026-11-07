@@ -1115,6 +1115,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "Це майстер-пароль MT5, який надіслав ваш брокер при відкритті рахунку. Він дозволяє FTM MACHINE відкривати угоди. Ним не можна вивести кошти, а доступ можна скасувати будь-коли, змінивши його в MT5. Не використовуйте інвесторський пароль чи вхід до порталу брокера.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "Це бачать інші учасники FTM. Нічого з цього не передається нікому за межами FTM.",
 "This is your investment area. Everything below fills in automatically once you invest.": "Це ваш інвестиційний розділ. Усе нижче заповниться автоматично, щойно ви інвестуєте.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "Термін дії цього посилання минув, або його вже використано. Ми надіслали Вам нове електронною поштою: відкрийте найновіший лист від FTM і натисніть «Create my password». Або увійдіть зараз: залиште пароль порожнім і натисніть «Продовжити», щоб отримати 6-значний код.",
 "This month": "Цей місяць",
 "This trade is already closing.": "Ця угода вже закривається.",
 "This trade is no longer open.": "Ця угода більше не відкрита.",

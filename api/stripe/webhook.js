@@ -19,6 +19,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const { callEngine } = require('../_lib/engineClient');
+const { sendPasswordEmail } = require('../_lib/passwordEmail');
 const Stripe = require('stripe');
 
 module.exports.config = { api: { bodyParser: false } };
@@ -124,13 +125,13 @@ module.exports = async function handler(req, res) {
 
   // Finds an existing Supabase user's id by email. supabase-js v2 has no
   // lookup-by-email, so page through the user list (fine at this scale).
-  async function findUserIdByEmail(addr) {
+  async function findUserByEmail(addr) {
     const want = String(addr).toLowerCase();
     for (let page = 1; page <= 20; page++) {
       const r = await admin.auth.admin.listUsers({ page, perPage: 1000 });
       if (r.error) throw new Error('listUsers: ' + r.error.message);
       const hit = (r.data.users || []).find(u => String(u.email || '').toLowerCase() === want);
-      if (hit) return hit.id;
+      if (hit) return hit;
       if ((r.data.users || []).length < 1000) break;
     }
     return null;
@@ -146,28 +147,36 @@ module.exports = async function handler(req, res) {
   const report = { ok: true, error: null, detail: null, granted: false, product: product, invited: false, existingUser: false };
 
   try {
-    const invite = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: (process.env.SITE_URL || 'https://www.ftmwealthnation.com') + '/'
-    });
-
-    let userId = invite.data && invite.data.user && invite.data.user.id;
-
-    if (invite.error) {
-      // Most likely an existing customer buying a second plan (e.g.
-      // Auto Trading then Investment) — they already have an account
-      // and password, so no new invite email; just grant the product.
-      if (String(invite.error.message || '').toLowerCase().indexOf('already') > -1) {
-        console.log('Stripe webhook:', email, 'already has an account — adding product only, not resending an invite.');
-        report.existingUser = true;
-        userId = await findUserIdByEmail(email);
-      } else {
-        console.error('Stripe webhook: inviteUserByEmail failed:', invite.error.message);
-        await alertFtm('Payment received but account not created', [['Customer', email], ['Error', invite.error.message], ['Checkout', String(session.id)]]).catch(() => {});
-        res.status(200).json({ ok: true, error: 'INVITE_FAILED', detail: invite.error.message });
-        return;
+    // One branded FTM email whose button opens "create your password" on the site (no Supabase default
+    // invite). A customer who already has an account and has logged in before gets no email.
+    let userId = null;
+    const known = await findUserByEmail(email);
+    if (known) {
+      report.existingUser = true;
+      userId = known.id;
+    }
+    if (!known || !known.last_sign_in_at) {
+      try {
+        const sent = await sendPasswordEmail(admin, email, { name: payerName, product });
+        userId = userId || sent.userId;
+        report.invited = true;
+      } catch (e) {
+        console.error('Stripe webhook: password email failed:', e.message);
+        report.detail = 'password email: ' + e.message;
+        if (!userId) { const again = await findUserByEmail(email).catch(() => null); userId = again && again.id; }
+        if (!userId) {
+          // The account itself could not be created: try Supabase's own invite as a last resort.
+          const inv = await admin.auth.admin.inviteUserByEmail(email, { redirectTo: (process.env.SITE_URL || 'https://www.ftmwealthnation.com') + '/?setpw=1&e=' + encodeURIComponent(email) });
+          userId = inv.data && inv.data.user && inv.data.user.id;
+          if (inv.error && !userId) {
+            await alertFtm('Payment received but account not created', [['Customer', email], ['Error', e.message + ' / ' + inv.error.message], ['Checkout', String(session.id)]]).catch(() => {});
+            res.status(200).json({ ok: true, error: 'INVITE_FAILED', detail: e.message + ' / ' + inv.error.message });
+            return;
+          }
+          report.invited = !inv.error;
+        }
+        await alertFtm('Payment received but the password email failed', [['Customer', email], ['Error', e.message], ['Checkout', String(session.id)]]).catch(() => {});
       }
-    } else {
-      report.invited = true;
     }
 
     if (userId && payerName) {
@@ -205,7 +214,9 @@ module.exports = async function handler(req, res) {
 
     // Paying customers go on the Brevo "Customers" list, so marketing
     // automations can skip people who already bought. Never blocks the reply.
-    report.brevo = await addToCustomerList(email);
+    // The Brevo "Customers" list starts the "Welcome aboard" email, so customers join it only after they
+    // have created their password and logged in (api/v1/customer/welcome.js), not here at payment.
+    report.brevo = 'after first login';
     if (report.error || unknownLink || !report.granted) {
       await alertFtm('Payment needs attention', [
         ['Customer', email], ['Payment link', String(linkId || 'none')], ['Product', String(product)],
@@ -402,4 +413,5 @@ async function syncEngine(event) {
 module.exports._syncEngine = syncEngine;
 module.exports.PAYMENT_LINK_PRODUCT = PAYMENT_LINK_PRODUCT;
 module.exports.PLAN_MONTHS = PLAN_MONTHS;
+module.exports.addToCustomerList = addToCustomerList;
 module.exports.alertFtm = alertFtm;

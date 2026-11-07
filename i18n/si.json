@@ -1113,6 +1113,7 @@
 "This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.": "මෙය ඔබ ගිණුම විවෘත කළ විට ඔබේ තැරැව්කරු එවූ MT5 ප්‍රධාන මුරපදයයි. එය FTM MACHINE ට වෙළඳාම් තැබීමට ඉඩ දෙයි. එය මුදල් ආපසු ගැනීමට භාවිත කළ නොහැකි අතර, MT5 හි වෙනස් කිරීමෙන් ඔබට ඕනෑම වේලාවක ප්‍රවේශය අවලංගු කළ හැක. ඔබේ ආයෝජක මුරපදය හෝ තැරැව්කරු ද්වාර පිවිසුම භාවිත නොකරන්න.",
 "This is what other FTM members see. Nothing here is shared with anyone outside FTM.": "මෙය අනෙකුත් FTM සාමාජිකයන්ට පෙනෙන දෙයයි. මෙයින් කිසිවක් FTM ට පිටත කිසිවෙකු සමඟ බෙදා නොගනී.",
 "This is your investment area. Everything below fills in automatically once you invest.": "මෙය ඔබගේ ආයෝජන ප්‍රදේශයයි. ඔබ ආයෝජනය කළ විගස පහත සියල්ල ස්වයංක්‍රීයව පිරවේ.",
+"This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.": "මෙම සබැඳිය කල් ඉකුත් වී ඇත හෝ දැනටමත් භාවිත කර ඇත. අපි ඔබට නව සබැඳියක් ඊමේල් කළෙමු: FTM හි නවතම ඊමේල් එක විවෘත කර \"Create my password\" තට්ටු කරන්න. නැතහොත් දැන්ම පිවිසෙන්න: මුරපදය හිස්ව තබා ඉලක්කම් 6ක කේතයක් ලබා ගැනීමට \"ඉදිරියට\" තට්ටු කරන්න.",
 "This month": "මෙම මාසය",
 "This trade is already closing.": "මෙම ගනුදෙනුව දැනටමත් වැසෙමින් පවතී.",
 "This trade is no longer open.": "මෙම ගනුදෙනුව තවදුරටත් විවෘත නැත.",

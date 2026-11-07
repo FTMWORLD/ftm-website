@@ -3487,6 +3487,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     var client = null;
     var recoveryHandler = null;
     var inviteLink = false;
+    var setpwLink = false, setpwFired = false;
     var pendingKind = null;
 
     function ready(){ return !!client; }
@@ -3496,11 +3497,13 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     function wireRecovery(){
       if(!client || !client.auth.onAuthStateChange) return;
       client.auth.onAuthStateChange(function(event){
-        if(event==='PASSWORD_RECOVERY') fireRecovery('recovery');
-
+        if(event==='PASSWORD_RECOVERY'){
+          if(setpwLink){ inviteLink=false; if(!setpwFired){ setpwFired=true; fireRecovery('invite'); } }
+          else fireRecovery('recovery');
+        }
         else if(inviteLink && (event==='SIGNED_IN' || event==='INITIAL_SESSION')){
           inviteLink = false;
-          fireRecovery('invite');
+          if(!setpwFired){ setpwFired=true; fireRecovery('invite'); }
         }
       });
     }
@@ -3526,7 +3529,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       configure: function(url, anonKey){
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
 
-        inviteLink = /[#&?]type=(invite|signup)(&|$)/.test((location.hash||'')+'&'+(location.search||''));
+        setpwLink = /[?&]setpw=1(&|$)/.test(location.search||'');
+        inviteLink = /[#&?]type=(invite|signup)(&|$)/.test((location.hash||'')+'&'+(location.search||'')) || (setpwLink && /[#&]access_token=/.test(location.hash||''));
         client = window.supabase.createClient(url, anonKey);
         wireRecovery();
       },
@@ -4119,6 +4123,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       if(products && products.length) FTM.openArea(products[0]);
       else FTM.openArea('auto');
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
+      if(LIVE && products && products.length && !window.__ftmWelcomed && window.FTM.auth && window.FTM.auth.getAccessToken){
+        window.__ftmWelcomed=1;
+        window.FTM.auth.getAccessToken().then(function(t){ if(t) fetch('/api/v1/customer/welcome',{method:'POST',headers:{Authorization:'Bearer '+t}}).catch(function(){}); }).catch(function(){});
+      }
       return (LIVE && window.FTM.loadLive) ? window.FTM.loadLive() : Promise.resolve();
     }
 
@@ -4219,7 +4227,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       window.FTM.auth.onPasswordRecovery(function(kind){
         if(kind==='invite'){
-          if(history.replaceState) history.replaceState(null,'',location.pathname+location.search);
+          if(history.replaceState) history.replaceState(null,'',location.pathname);
           window.FTM.auth.restoreSession().then(function(r){
             lift();
             if(r) promptSetPassword(r, true);
@@ -4239,6 +4247,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(history.replaceState) history.replaceState(null,'',location.pathname+location.search);
         setTimeout(function(){document.getElementById('pwNew').focus();},40);
       });
+
+      (function(){
+        var q=location.search||'', h=location.hash||'';
+        if(!/[?&]setpw=1(&|$)/.test(q) || !/(^#|&)error/.test(h)) return;
+        var m=q.match(/[?&]e=([^&#]+)/), mail=m?decodeURIComponent(m[1]):'';
+        if(history.replaceState) history.replaceState(null,'',location.pathname);
+        if(mail) fetch('/api/v1/password-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail})}).catch(function(){});
+        lift(); open();
+        if(mail) emailEl.value=mail;
+        var msg='This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.';
+        document.getElementById('authSub').textContent=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(msg):msg;
+      })();
     } else {
       form.addEventListener('submit',function(e){
         e.preventDefault();
