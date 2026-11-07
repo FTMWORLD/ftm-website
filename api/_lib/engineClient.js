@@ -77,7 +77,7 @@ async function verifyCustomer(req) {
    to populate a first-seen customer row, never to update an existing
    one — sending it on every request would let this header edit customer
    data, which it must never be able to do. */
-async function callEngine(path, { method = 'GET', body = null, authSubject = null, authEmail = null } = {}) {
+async function callEngine(path, { method = 'GET', body = null, authSubject = null, authEmail = null, timeoutMs = 25000 } = {}) {
   const headers = {
     'Authorization': `Bearer ${process.env.FTM_WEBSITE_API_TOKEN}`,
     'Content-Type': 'application/json',
@@ -90,7 +90,8 @@ async function callEngine(path, { method = 'GET', body = null, authSubject = nul
   const r = await fetch(`${process.env.FTM_ENGINE_URL}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(timeoutMs)
   });
 
   const j = await r.json().catch(() => ({}));

@@ -78,11 +78,14 @@ module.exports = async function handler(req, res) {
   // Tell the FTM engine the customer's payment status after every billing
   // event (spec "connect Stripe payments to the FTM engine"). Never blocks
   // or fails the Stripe reply.
-  const engineSync = await syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed'; });
+  // Runs alongside the account grant, never before it: a slow or unreachable engine must not stop a paying
+  // customer getting their plan (callEngine gives up after 8 seconds).
+  const enginePromise = syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed: ' + e.message; });
 
   // Always 200 once the signature is valid, even on an event we don't
   // act on — a non-200 makes Stripe retry the same event repeatedly.
   if (event.type !== 'checkout.session.completed') {
+    const engineSync = await enginePromise;
     res.status(200).json({ ok: true, ignored: event.type, engine: engineSync });
     return;
   }
@@ -207,7 +210,8 @@ module.exports = async function handler(req, res) {
         ['Detail', String(report.detail || '-')], ['Checkout', String(session.id)]
       ]).catch(() => {});
     }
-    report.engine = engineSync;
+    report.engine = await enginePromise;
+    if (/^(failed|engine error)/.test(String(report.engine))) await alertFtm('Payment not passed to the FTM engine', [['Customer', email], ['Engine', String(report.engine)], ['Checkout', String(session.id)], ['Website plan', report.granted ? 'granted' : 'NOT granted']]).catch(() => {});
 
     res.status(200).json(report);
   } catch (e) {
@@ -376,7 +380,7 @@ async function syncEngine(event) {
   if (cus) body.stripe_customer_id = cus;
   if (periodEnd) body.period_end = periodEnd;
 
-  const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body });
+  const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body, timeoutMs: 8000 });
   if (!r.ok) console.error('Stripe webhook: engine billing answered', r.status, JSON.stringify(r.body).slice(0, 300));
   return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
 }
