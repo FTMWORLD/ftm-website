@@ -1867,10 +1867,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-banner-txt .inv-eyebrow{display:none}
   }
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
-.ft-opt{display:flex;gap:10px;align-items:flex-start;margin:14px 0 4px;font-size:14px;color:#0b1440;line-height:1.45;cursor:pointer}
-.ft-opt input{width:18px;height:18px;margin:1px 0 0;flex:none;accent-color:#D4AF37}
-.acct-ft{margin-top:6px;font-size:12.5px;font-weight:600;color:#9a7a12;display:flex;align-items:center;gap:6px}
-.acct-ft::before{content:"";width:7px;height:7px;border-radius:50%;background:#D4AF37;animation:actPulse 2s ease-in-out infinite}
 .acct-top{margin-bottom:24px;grid-template-columns:1.2fr 1fr}
 @media (max-width:900px){.acct-top{grid-template-columns:1fr;gap:16px}.act-head{flex-wrap:wrap}}
 .act-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
@@ -2763,7 +2759,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
               <button type="button" class="rp-info" id="rpInfoBtn" aria-labelledby="rpInfoTxt" aria-controls="rpInfoTxt" aria-expanded="false"><span aria-hidden="true">i</span></button>
             </div>
             <p class="rp-note" id="rpInfoTxt" hidden>Growth scales at twice my normal size</p>
-            <label class="ft-opt"><input type="checkbox" id="appFirstTrade" checked><span>Open a small first trade so I can see it working (risk about $10)</span></label>
             <button class="btn btn-red" type="button" id="appConnect">Connect account</button>
             <p class="hint" id="appConnectMsg" style="margin-top:10px" hidden></p>
           </div>
@@ -4356,7 +4351,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       if(window.FTM.remote && window.FTM.remote.ready()){
         btn.disabled=true; msg.hidden=true;
-        window.FTM.remote.connectAccount(srv, n, pwVal, tier, !!(document.getElementById('appFirstTrade')||{}).checked).then(function(r){
+        window.FTM.remote.connectAccount(srv, n, pwVal, tier).then(function(r){
           btn.disabled=false;
           msg.hidden=false; msg.className='hint'; msg.style.color='#1f8a5b';
           msg.textContent='Connecting...';
@@ -4855,7 +4850,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           lastReported: (function(){ var t=a.last_reported_at||(a.performance&&(a.performance.as_of||a.performance.updated_at||a.performance.last_reported_at))||a.updated_at; return t?Date.parse(t):null; })(),
           viewOnlyLabel: typeof a.view_only_label==='string' ? a.view_only_label.replace(/ - /g,' — ') : null,
           statusText: typeof a.status_text==='string' ? a.status_text : null,
-          firstTradeText: (a.first_trade && typeof a.first_trade.text==='string' && a.first_trade.text && !/^(DONE|FAILED)$/.test(String(a.first_trade.state||''))) ? a.first_trade.text : null,
           canControl: a.is_trading!==undefined,
           isMaster: a.is_master===true || a.view_only===true || a.view_only==='true' || /^VIEW_ONLY/i.test(a.status_reason||'') || a.account_role==='MASTER' || /^view_?only$/i.test(a.display_status||'') || /^view_?only$/i.test(a.status||'') || /^view_?only$/i.test(a.status_reason||''),
           active: (a.is_trading===true) || (a.is_trading==null && a.display_status === 'ACTIVE' && (!a.status_reason || a.status_reason === 'OK')),
@@ -4957,13 +4951,12 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           });
         },
 
-        connectAccount: function(brokerServer, accountNumber, password, riskTier, firstTrade){
+        connectAccount: function(brokerServer, accountNumber, password, riskTier){
           return call('/accounts', { method:'POST', body: {
             broker_server: brokerServer,
             account_number: String(accountNumber),
             password: password,
-            risk_tier: riskTier,
-            first_trade_opt_in: !!firstTrade
+            risk_tier: riskTier
           }}).then(function(j){
             return j;
           }).catch(function(e){
@@ -5620,7 +5613,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           else if(showNote && a.statusReason==='BELOW_MINIMUM') detail = BELOW_MINIMUM_TEXT;
           status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
           if(showNote) status+='<div class="acct-action-note">'+detail+'</div>';
-          if(a.firstTradeText) status+='<div class="acct-ft">'+String((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(a.firstTradeText):a.firstTradeText).replace(/</g,'&lt;')+'</div>';
 
           var items='';
 
