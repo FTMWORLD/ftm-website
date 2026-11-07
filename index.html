@@ -1867,6 +1867,35 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-banner-txt .inv-eyebrow{display:none}
   }
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
+.acct-top{margin-bottom:24px;grid-template-columns:1.2fr 1fr}
+@media (max-width:900px){.acct-top{grid-template-columns:1fr;gap:16px}.act-head{flex-wrap:wrap}}
+.act-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.act-head h3{margin:0 0 4px}
+.act-count{flex:none;font-size:13px;font-weight:700;color:#0b1440;background:#f4f1e6;border:1px solid rgba(212,175,55,.5);border-radius:99px;padding:5px 12px;white-space:nowrap}
+.act-bar{height:6px;border-radius:99px;background:#eceef4;margin:16px 0 18px;overflow:hidden}
+.act-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#D4AF37,#f3d77a,#D4AF37);background-size:200% 100%;transition:width .8s cubic-bezier(.2,.8,.2,1);animation:actShine 3s linear infinite}
+@keyframes actShine{to{background-position:-200% 0}}
+.act-bar.full i{background:#16a34a;animation:none}
+.act-steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.act-steps li{display:grid;grid-template-columns:30px 1fr;gap:12px;align-items:start}
+.act-steps .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:14px;font-weight:800;background:#eceef4;color:#5b6378}
+.act-steps .done .ic{background:#16a34a;color:#fff}
+.act-steps .now .ic{background:#D4AF37;color:#0b1440;animation:actPulse 2s ease-in-out infinite}
+.act-steps .bad .ic{background:#E5323E;color:#fff}
+.act-steps b{display:block;color:#0b1440;font-size:15px;line-height:30px}
+.act-steps .done b{color:#16a34a}
+.act-steps small{display:block;color:#5b6378;font-size:13px;line-height:1.45;margin-top:-2px}
+@keyframes actPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.45)}50%{box-shadow:0 0 0 7px rgba(212,175,55,0)}}
+@media (prefers-reduced-motion:reduce){.act-bar i,.act-steps .now .ic{animation:none}}
+.act-hint{margin:14px 0 0;font-size:14px;color:#0b1440;background:#f6f7fb;border-left:3px solid #D4AF37;border-radius:8px;padding:10px 12px}
+#actGo{margin-top:16px}
+.bill-card h3{margin:0 0 12px}
+.bill-list{margin:0;display:grid}
+.bill-list>div{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid #eceef4;font-size:14px}
+.bill-list dt{color:#5b6378}
+.bill-list dd{margin:0;font-weight:700;color:#0b1440;text-align:right;overflow-wrap:anywhere}
+.bill-list dd.on{color:#16a34a}.bill-list dd.off{color:#E5323E}
+.bill-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -3046,7 +3075,28 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       <section class="app-view" data-view="accounts" hidden>
         <div class="app-main">
-          <div class="app-card">
+          <div class="app-cols acct-top">
+            <div class="app-card act-card">
+              <div class="act-head"><div><h3>Activate FTM MACHINE</h3><p class="hint">Set up FTM MACHINE in four steps. Each step turns green when it is done.</p></div><span class="act-count" id="actCount"></span></div>
+              <div class="act-bar"><i id="actBar"></i></div>
+              <ol class="act-steps" id="actSteps"></ol>
+              <p class="act-hint" id="actHint" hidden></p>
+              <button class="btn btn-red btn-sm" type="button" id="actGo" hidden></button>
+            </div>
+            <div class="app-card bill-card">
+              <h3>Subscription and billing</h3>
+              <dl class="bill-list">
+                <div><dt>Plan</dt><dd>Auto Trading</dd></div>
+                <div><dt>Status</dt><dd id="billSt">&mdash;</dd></div>
+                <div><dt>Paid until</dt><dd id="billEnd">&mdash;</dd></div>
+                <div><dt>Accounts you can connect</dt><dd id="billSlots">&mdash;</dd></div>
+                <div><dt>Receipts</dt><dd>Emailed to you by Stripe</dd></div>
+                <div><dt>Signed in as</dt><dd id="billWho">&mdash;</dd></div>
+              </dl>
+              <div class="bill-actions"><a class="btn btn-outline btn-sm js-free-plans" href="#pricing">Subscription plans</a><button class="btn btn-outline btn-sm" type="button" id="billChat">Chat with FTM support</button></div>
+            </div>
+          </div>
+          <div class="app-card acct-list-card">
             <div class="acct-head"><div><h3>Connected accounts <small class="acct-limit" id="acctLimit" hidden></small></h3><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
             <div class="app-scroll"><table class="app-trades acct-table">
               <thead><tr><th>Name</th><th>Number</th><th>Provider</th><th>Currency</th><th>Server</th><th>Balance</th><th>Running P/L</th><th>Last reported</th><th>FTM MACHINE</th></tr></thead>
@@ -5136,7 +5186,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
         var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:'Active'}[status]||'Active');
-        F.planLabel=st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=st; h.classList.toggle('plan-on',F.planOn); }
+        F.planStatus=status||'ACTIVE'; F.planEnd=end||null; F.planLabel=st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=st; h.classList.toggle('plan-on',F.planOn); } if(F.renderActivate) F.renderActivate();
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',st).replace('{}',d);
       };
@@ -5605,7 +5655,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var note=document.querySelector('.acct-note');
       if(!note){
         note=document.createElement('div'); note.className='acct-note';
-        document.querySelector('[data-view="accounts"] .app-card').appendChild(note);
+        document.querySelector('[data-view="accounts"] .acct-list-card').appendChild(note);
       }
       var on=A.filter(function(a){return a.active;})[0];
       note.innerHTML='<b>One account at a time.</b> FTM MACHINE is currently trading on <b>'+
@@ -7512,6 +7562,65 @@ tick();setInterval(tick,5000);})();
   var box=document.querySelector('.hero-code'); if(!box) return;
   var L=['<b>def</b> ftm_machine(market, profile):','    trend  = ema(close, 21) - ema(close, 55)','    vol    = atr(14)','    size   = balance * profile.risk / (vol * 1.5)','    <b>if</b> trend > 0 <b>and</b> spread < max_spread:','        open(BUY, size, sl=close - vol*1.5)','    <b>elif</b> trend < 0:','        open(SELL, size, sl=close + vol*1.5)','    trail_stop(positions, vol * 0.8)','','<b>for</b> m <b>in</b> [XAUUSD, BTCUSD, NDX100, USDJPY, HK50]:','    result = backtest(m, 2020, 2026)','    equity.compound(result)','','risk.check(drawdown_limit=0.30)','signal = model.predict(features[-120:])','copy_to(subscribers, signal)',''];
   var t=L.join('\n'); var pre=document.createElement('pre'); pre.innerHTML=t+'\n'+t+'\n'+t+'\n'+t; box.appendChild(pre);
+})();
+</script>
+<script>
+(function(){
+  var F=window.FTM; if(!F) return;
+  function $(i){ return document.getElementById(i); }
+  function tr(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  var BAD={ACTION_REQUIRED:1,SETUP_FAILED:1,BLOCKED:1,OFFLINE:1};
+  function go(view){ var n=document.querySelector('#appView .app-nav-item[data-view="'+view+'"]'); if(n) n.click(); }
+  function render(){
+    var steps=$('actSteps'); if(!steps) return;
+    var s=F.session||{}, paid=!!(s.products&&s.products.indexOf('auto')>-1);
+    var A=((F.data&&F.data.accounts)||[]).filter(function(a){ return !a.isMaster; });
+    var on=A.filter(function(a){ return a.active; })[0];
+    var ok=A.filter(function(a){ return a.displayStatus && !BAD[a.displayStatus] && a.displayStatus!=='SETUP_INCOMPLETE' && !a.brokerTradeDisabled; })[0];
+    var bad=A.filter(function(a){ return BAD[a.displayStatus] || a.brokerTradeDisabled; })[0];
+    var wait=A.filter(function(a){ return a.displayStatus==='SETUP_INCOMPLETE' || a.statusReason==='VALIDATION_PENDING'; })[0];
+    var note=bad ? ((document.querySelector('#acctRows .acct-action-note')||{}).textContent||'') : '';
+    var st=[
+      {t:'Plan active', d:paid},
+      {t:'Trading account connected', d:A.length>0},
+      {t:'Broker allows trading', d:!!(ok||on), x:!ok&&!on&&!!bad, w:!ok&&!on&&!bad&&!!wait, sub:(!ok&&!on&&bad)?note:((!ok&&!on&&wait)?tr('Checking with your broker…'):'')},
+      {t:'FTM MACHINE is trading', d:!!on}
+    ];
+    var first=-1; st.forEach(function(x,i){ if(first<0 && !x.d) first=i; });
+    var done=st.filter(function(x){return x.d;}).length;
+    steps.innerHTML=st.map(function(x,i){
+      var cls=x.d?'done':(x.x?'bad':(i===first?'now':'')), ic=x.d?'&#10003;':(x.x?'!':(i+1));
+      return '<li class="'+cls+'"><span class="ic">'+ic+'</span><div><b>'+esc(tr(x.t))+'</b>'+(x.sub?'<small>'+esc(x.sub)+'</small>':'')+'</div></li>';
+    }).join('');
+    $('actCount').textContent=tr('{} of 4 steps done').replace('{}',done);
+    $('actBar').style.width=(done/4*100)+'%'; $('actBar').parentNode.classList.toggle('full',done===4);
+    var hint=$('actHint'), btn=$('actGo'), h='', b='';
+    if(!paid){ b='Choose a plan'; }
+    else if(!A.length){ b='Connect a trading account'; }
+    else if(!ok && !on){ b=bad?'Add account':''; }
+    else if(!on){ h='Open the menu ⋮ next to your account and choose Trade on this account.'; }
+    else { h=tr('FTM MACHINE is running on {}').replace('{}',on.name+' '+on.number); }
+    hint.hidden=!h; hint.textContent=h?tr(h):'';
+    btn.hidden=!b; btn.textContent=b?tr(b):''; btn.dataset.act=b;
+    var bs=$('billSt'), stt=paid?(F.planStatus||'ACTIVE'):'NONE';
+    bs.textContent=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:paid?'Active':'No active plan'}[stt]||'Active');
+    bs.className=(stt==='ACTIVE'||(paid&&stt==='NONE'))?'on':(paid?'off':'');
+    $('billEnd').textContent=F.planEnd?new Date(F.planEnd).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'—';
+    var L=F.accountLimit; $('billSlots').textContent=(L&&L.max)?tr('{} of {} accounts used').replace('{}',L.used).replace('{}',L.max):(paid?'3':'—');
+    $('billWho').textContent=s.email||'—';
+  }
+  F.renderActivate=render;
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('#actGo,#billChat'); if(!t) return;
+    if(t.id==='billChat'){ var l=document.querySelector('#acctA .um-live'); if(l) l.click(); return; }
+    var a=t.dataset.act;
+    if(a==='Choose a plan'){ var u=document.querySelector('.js-free-plans'); if(u) u.click(); }
+    else { go('metrics'); setTimeout(function(){ var f=$('appBroker'); if(f){ (f.closest('.app-card')||f).scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(function(){ f.focus({preventScroll:true}); },450); } },80); }
+  });
+  var rows=$('acctRows'); if(rows) new MutationObserver(render).observe(rows,{childList:true});
+  document.addEventListener('click',function(e){ if(e.target.closest&&e.target.closest('.app-nav-item[data-view="accounts"]')) setTimeout(render,0); });
+  render();
 })();
 </script>
 <script>
