@@ -48,7 +48,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     --red:#E5323E; --red-dark:#C4262F; --red-soft:#FF6B74;
     --blue:#1F3A93; --blue-dark:#142763; --blue-deep:#0B1440; --gold:#D4AF37; --gold-light:#E3B62F; --cream:#F5F3EE;
     --ink:#0B1440; --ink-2:#142763; --ink-3:#1F2F6B;
-    --text:#2E3448; --muted:#6B7188; --line:#E2E4EC;
+    --text:#2E3448; --muted:#5C6280; --line:#E2E4EC;
     --bg:#FFFFFF; --bg-2:#F1F3F8; --bg-3:#F7F8FB;
     --white:#FFFFFF;
     --radius-card:24px; --radius-pill:96px;
@@ -457,7 +457,10 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .cal-sum b{display:block;font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:2px}
   .cal-wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
   .cal-card{padding:20px}
-  .cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr) 1.15fr;gap:6px}
+  .cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) minmax(0,1.15fr);gap:6px}
+  .cal-grid{container-type:inline-size}
+  .cal-cell .v{white-space:nowrap;font-size:clamp(8.5px,2.05cqi,15px)!important;letter-spacing:-.03em}
+  .cal-cell{padding-inline:5px}
   .cal-head span{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding-bottom:8px}
   .cal-cell{min-height:74px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line);padding:7px 8px;display:flex;flex-direction:column;gap:2px}
   .cal-cell.day-click{cursor:pointer}
@@ -1584,7 +1587,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   p,li,dd,small,.perf-sub{text-wrap:pretty}
   .calc-toggle{display:none}
   @media (max-width:760px){
-    section{padding-block:52px}
+    section:not(.app-view):not(.iv-view){padding-block:52px}
     .how-steps{display:none!important}
     .how .how-security{margin-top:22px}
     #platforms .feature-art{display:none}
@@ -1675,6 +1678,46 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .longterm .compound-note{text-align:left!important}
     .longterm .calc-toggle{justify-content:center}
   }
+  body{text-wrap:pretty}
+  h1,h2,h3,h4{text-wrap:balance}
+  .company .eyebrow,.longterm .c-pct{color:#9A7414!important}
+  .sale-banner{background:#15803d}
+  @media (max-width:760px){
+    .tf button{min-height:36px}
+    .acct-menu-btn{width:36px!important;height:36px!important}
+    .dx-ref{width:34px!important;height:34px!important}
+    input[type=checkbox]{width:18px;height:18px}
+    .app small,.app .badge,.app span.d,.app .ytot,.app .y,.reveal small,.step small{font-size:12px!important}
+  }
+  @media (max-width:760px){
+    .app-title-meta span,.lb-stats span,.cal-sum span{font-size:12px}
+    .prod-switch button{min-height:36px;padding:8px 14px}
+  }
+  @media (max-width:640px){
+    .cal-card{overflow-x:visible!important}
+    .cal-head,.cal-grid{min-width:0!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:4px}
+    .cal-head span:nth-child(8),.cal-grid .cal-cell.tot{display:none}
+    .cal-cell{min-height:50px;padding:4px 3px;border-radius:8px}
+    .cal-cell .d{font-size:12px}
+    .cal-cell .v{font-size:10.5px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:clip}
+    .cal-head span{font-size:11px;padding-bottom:6px}
+  }
+  @media (max-width:760px){
+    .app-title-meta{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important;padding:12px 14px!important;width:100%}
+    .app-title-meta>div{min-width:0}
+    .app-title-meta b{font-size:14.5px;line-height:1.25}
+    .app-title{margin-bottom:14px}
+    .cv-legend{flex-wrap:wrap;row-gap:4px}
+    .cv-legend .cv-read{order:3;flex-basis:100%}
+  }
+  @media (max-width:760px){ #sessBest{font-size:26px} }
+  @media (max-width:760px){.app .app-view,.app .iv-view{padding-top:6px!important;padding-bottom:36px!important}}
+  #invView .iv-item{color:rgba(255,255,255,.72)}
+  #invView .iv-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  #invView .iv-item.is-on{background:rgba(212,175,55,.14);color:#fff;box-shadow:inset 0 0 0 1px rgba(212,175,55,.22)}
+  .app .app-view,.app .iv-view{padding-top:18px}
+  .app .app-view[data-view="metrics"]{padding-top:0}
+  @media (max-width:640px){.cal-cell{padding:4px 2px!important}.cal-cell .v{font-size:clamp(8px,2.3cqi,11px)!important;letter-spacing:-.04em}}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -2256,7 +2299,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 <section class="company" id="company">
   <div class="container">
     <div class="feature">
-      <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Company</p><h3 data-i18n="company.title">Registered and Trading since 2021</h3><p>Follow The Market Ltd started in 2021 as a trading and investment business. Today it runs FTM MACHINE on secure cloud infrastructure for clients worldwide.</p></div>
+      <div><p class="eyebrow" style="color:var(--gold);margin-bottom:12px">Company</p><h3 data-i18n="company.title">Registered and trading since 2021</h3><p>Follow The Market Ltd started in 2021 as a trading and investment business. Today it runs FTM MACHINE on secure cloud infrastructure for clients worldwide.</p></div>
       <dl class="facts">
         <div><dt>Company</dt><dd>Follow The Market Ltd.</dd></div>
         <div><dt>Developer</dt><dd>FTM Team</dd></div>
@@ -2984,7 +3027,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           <div class="app-cols">
             <div class="app-card">
               <h3>Withdraw your profit</h3>
-              <p class="hint">You can withdraw your profit share and your deposit from any investment that has passed its 13 month period.</p>
+              <p class="hint">Withdraw the profit share that has unlocked. Your capital stays invested until the end of year 5.</p>
               <div class="wd-avail"><span>Available now</span><b id="ivWAvail">&mdash;</b></div>
               <div class="app-form" style="margin-top:16px">
                 <label for="ivWAmt">Amount to withdraw</label>
@@ -2996,11 +3039,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
             <div class="app-card">
               <h3>Good to know</h3>
               <ul class="wd-notes">
-                <li>Once a deposit is eligible you can withdraw your profit share, your deposit, or both.</li>
+                <li>In months 13, 25, 37 and 49, 20% of your profit share unlocks. What you leave stays available.</li>
                 <li>Withdrawals are paid to the bank account you gave when you invested.</li>
                 <li>Processing times and any fees are set out in your investor agreement.</li>
-                <li>Before month 13 the profit share shown is building up and cannot be withdrawn yet.</li>
-              </ul>
+                              </ul>
             </div>
           </div>
           <div class="app-card">
@@ -4161,7 +4203,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     F.moneyIn = function(n, dp, currency){
       if(n===null || n===undefined || isNaN(n)) return '\u2014';
       dp = dp || 0;
-      var v = Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+      var loc = (!currency || currency==='EUR') ? 'de-DE' : 'en-US';
+      var v = Math.abs(n).toLocaleString(loc,{minimumFractionDigits:dp,maximumFractionDigits:dp});
       var sign = n<0 ? '-' : '';
       if(!currency) return sign+v;
       var sym;
@@ -5584,14 +5627,14 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
     function renderSessions(){
       var now=new Date(), uh=now.getUTCHours();
-      el('sessClock').textContent=now.toUTCString().slice(17,25)+' UTC';
+      el('sessClock').textContent=now.toUTCString().slice(17,25)+'\u00a0UTC';
       el('sessLocal').textContent='Local '+now.toLocaleTimeString((window.FTM_LOCALE||'en-GB'),{hour:'2-digit',minute:'2-digit'})+
         ' · '+Intl.DateTimeFormat().resolvedOptions().timeZone;
       el('sessList').innerHTML=SESSIONS.map(function(s){
         var on=inSession(uh,s);
         var local=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate(),uh,now.getUTCMinutes()));
         return '<li class="'+(on?'on':'')+'"><i></i>'+s.name+(on?' <span class="badge">LIVE</span>':'')+
-               '<time>'+String(s.from).padStart(2,'0')+':00–'+String(s.to).padStart(2,'0')+':00 UTC</time></li>';
+               '<time>'+String(s.from).padStart(2,'0')+':00–'+String(s.to).padStart(2,'0')+':00\u00a0UTC</time></li>';
       }).join('');
       var next=null,wait=99;
       SESSIONS.forEach(function(s){ if(inSession(uh,s))return; var d=(s.from-uh+24)%24; if(d<wait){wait=d;next=s;} });
@@ -5812,7 +5855,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   (function(){
     var F=window.FTM; if(!F||!F.data||!F.data.leaderboard)return;
     var SYM=F.data.account.currency==='USD'?'$':'€';
-    function money(n){ var v=Math.abs(Math.round(n)).toLocaleString('de-DE');
+    function money(n){ var v=Math.abs(Math.round(n)).toLocaleString(SYM==='$'?'en-US':'de-DE');
       return (n<0?'-':'')+(SYM==='$'?SYM+v:v+SYM); }
     var SIZES=[['All',0],['10K',10000],['25K',25000],['50K',50000],['100K',100000],['200K',200000],['400K',400000]];
     var filter=0;
@@ -6434,7 +6477,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     function header(view,m){
       var META={overview:['Overview','How your investment is doing.',I('ov')],performance:['Performance','How the FTM account has grown.',I('pf')],
-                investments:['My investments','Every deposit and its dates.',I('in')],withdraw:['Withdraw','Take out profit you are eligible for.',I('wd')]};
+                investments:['My investments','Every deposit and its dates.',I('in')],withdraw:['Withdraw','Take out the profit share that has unlocked.',I('wd')]};
       function I(k){ var b=document.querySelector('.iv-item[data-iv="'+{ov:'overview',pf:'performance','in':'investments',wd:'withdraw'}[k]+'"] svg'); return b?b.outerHTML:''; }
       var x=META[view]; $('ivCrumb').textContent=x[0]; $('ivTitle').textContent=x[0]; $('ivSub').textContent=x[1]; $('ivIcon').innerHTML=x[2];
       $('ivHdrInv').textContent=eur(m.total);
@@ -7082,7 +7125,7 @@ tick();setInterval(tick,5000);})();
   function render(j){
     var rows=j.rows||[], medals=['🥇','🥈','🥉'];
     var h='<div class="tf" id="lblTabs">'+BOARDS.map(function(b){return '<button type="button" data-b="'+b[0]+'" class="'+(b[0]===board?'is-on':'')+'">'+esc(t(b[1]))+'</button>';}).join('')+'</div>';
-    h+='<p class="lb-date"><i></i><span>'+esc(j.computed_at?t('Updated {}').replace('{}',new Date(j.computed_at).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):t('Being calculated. Boards update every 5 minutes.'))+'</span></p>';
+    h+='<p class="lb-date"><i></i><span>'+esc(j.computed_at?t('Updated {}').replace('{}',new Date(j.computed_at).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}).replace(/ (?=[AaPp]\.?[Mm])/g,'\u00a0')):t('Being calculated. Boards update every 5 minutes.'))+'</span></p>';
     h+=youCard(j);
     if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
     h+='<div class="lb-podium">'+rows.slice(0,3).map(function(e,i){

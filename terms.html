@@ -12,7 +12,7 @@
     --red:#E5323E; --red-dark:#C4262F;
     --blue:#1F3A93; --blue-deep:#0B1440; --gold:#D4AF37;
     --ink:#0B1440; --ink-3:#1F2F6B;
-    --text:#2E3448; --muted:#6B7188; --line:#E2E4EC;
+    --text:#2E3448; --muted:#5C6280; --line:#E2E4EC;
     --bg:#FFFFFF; --bg-2:#F1F3F8; --bg-3:#F6F7FB;
     --font:"Inter",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
@@ -94,6 +94,9 @@
   }
   @media (max-width:520px){.float-support{right:14px;bottom:14px}.fs-panel{width:calc(100vw - 28px)}}
 html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{overflow-x:clip}}
+  body{text-wrap:pretty}
+  h1,h2,h3,h4{text-wrap:balance}
+  @media (max-width:760px){.side-mobile{margin:0 0 24px!important;padding:12px 0!important;max-width:100%}}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>

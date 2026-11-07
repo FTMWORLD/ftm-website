@@ -14,7 +14,7 @@
 <style>
 
 :root{
-  --bg:#F1F3F8; --panel:#ffffff; --ink:#0B1440; --text:#2E3448; --muted:#6B7188; --line:#E2E4EC; --grid:#ECEEF4;
+  --bg:#F1F3F8; --panel:#ffffff; --ink:#0B1440; --text:#2E3448; --muted:#5C6280; --line:#E2E4EC; --grid:#ECEEF4;
   --navy:#0B1440; --blue:#1F3A93; --gold:#C9A22E; --gold-soft:rgba(212,175,55,.16); --red:#E5323E;
   --up:#16935A; --down:#E5323E; --up-soft:rgba(22,147,90,.15); --down-soft:rgba(229,50,62,.14);
   --shadow:0 12px 40px rgba(11,20,64,.06);
@@ -135,7 +135,7 @@ header{display:grid;gap:18px;background:var(--navy);color:#fff;border-radius:24p
 .jump .lbl{font-size:13px;color:rgba(255,255,255,.7);margin-right:4px}
 .jump a{font-size:14px;font-weight:700;color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.25);border-radius:96px;padding:9px 22px}
 .jump a:hover{background:rgba(255,255,255,.1)}
-.jump a:first-of-type{background:var(--red);border-color:var(--red)}
+.jump a.on[href^='#mk-'],.jump a.on.j-best[href^='#mk-']{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important}
 @media (max-width:600px){.switch{display:grid;grid-template-columns:1fr 1fr;gap:10px}.switch .lbl{grid-column:1/-1;margin:0 0 2px}.switch button{width:100%;padding:12px 10px;text-align:center}}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
 .kpi{background:var(--panel);border-radius:20px;box-shadow:var(--shadow);border:1px solid var(--line);padding:18px 20px;display:grid;gap:4px;min-width:0}
@@ -362,6 +362,11 @@ header::before,.mhead::before{content:'';position:absolute;inset:-30%;z-index:-1
 .fs-help svg{width:26px;height:26px}
 @media (max-width:520px){.fs-help{right:14px;bottom:84px}}
 html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{overflow-x:clip}}
+  body{text-wrap:pretty}
+  h1,h2,h3,h4{text-wrap:balance}
+@media (max-width:760px){small{font-size:max(12px,1em)}}
+.mblock.mk-off{display:none!important}
+.mblock[data-mk]{border-top:0!important;padding-top:0!important}
 </style>
 
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
@@ -1428,6 +1433,36 @@ document.querySelectorAll('[data-msz]').forEach(function(b){b.addEventListener('
     var x=8+Math.random()*Math.max(10,w-200);e.style.left=side?'':x+'px';e.style.right=side?x+'px':'';e.style.animationDuration=(14+Math.random()*10)+'s';e.style.animationDelay=(-Math.random()*20)+'s';box.appendChild(e);}
   var P='M0 100 C30 95 50 80 70 84 S110 60 130 64 S170 38 190 44 S240 18 280 8';
   [[0,'12%'],[1,'58%'],[0,'78%'],[1,'22%']].forEach(function(a,i){var v=document.createElementNS('http://www.w3.org/2000/svg','svg');v.setAttribute('viewBox','0 0 280 120');v.innerHTML='<path d="'+P+'"/>';v.style.top=a[1];v.style[a[0]?'right':'left']=Math.max(8,(w-280)/2)+'px';v.querySelector('path').style.animationDelay=(-i*2)+'s';box.appendChild(v);});
+})();
+</script>
+<script>
+(function(){
+  var KS=['gold','btc','jpy','ndx','boom','hk','all'], SECT=['compare','growth','years','months','weeks','trades','risk','kpis','method'];
+  function suf(k){ try{ return MKT[k].suf; }catch(e){ return ''; } }
+  var cur=null;
+  function show(k,scrollTo){
+    if(KS.indexOf(k)<0) k='all';
+    var changed=k!==cur; cur=k;
+    document.querySelectorAll('.mblock[data-mk]').forEach(function(b){ b.classList.toggle('mk-off', b.dataset.mk!==k); });
+    document.querySelectorAll('a[href^="#mk-"]').forEach(function(a){ var on=a.getAttribute('href')==='#mk-'+k; a.classList.toggle('on',on); a.setAttribute('aria-current',on?'true':'false'); });
+    if(changed){ try{ draw(); }catch(e){} try{ dispatchEvent(new Event('resize')); }catch(e){} }
+    if(scrollTo){ var t=document.getElementById(scrollTo); if(t) setTimeout(function(){ t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'}); },changed?60:0); }
+  }
+  function fromHash(){
+    var h=(location.hash||'').slice(1);
+    if(/^mk-/.test(h)){ show(h.slice(3),h); return true; }
+    var base=h.replace(/-[a-z]$/,'');
+    if(SECT.indexOf(base)>-1){ var k=cur||'all'; if(h!==base){ KS.forEach(function(x){ if(suf(x) && h===base+suf(x)) k=x; }); } else if(!cur) k='all';
+      show(k, base+suf(k)); return true; }
+    return false;
+  }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest('a[href^="#mk-"]'); if(!a) return;
+    e.preventDefault(); var k=a.getAttribute('href').slice(4); show(k,'mk-'+k);
+    try{ history.replaceState(null,'','#mk-'+k); }catch(x){}
+  });
+  if(!fromHash()) show('all');
+  addEventListener('hashchange',fromHash);
 })();
 </script>
 </body>
