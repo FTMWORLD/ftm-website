@@ -1718,6 +1718,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   .app .app-view,.app .iv-view{padding-top:18px}
   .app .app-view[data-view="metrics"]{padding-top:0}
   @media (max-width:640px){.cal-cell{padding:4px 2px!important}.cal-cell .v{font-size:clamp(8px,2.3cqi,11px)!important;letter-spacing:-.04em}}
+  footer{padding-top:0}
+  footer .foot-top,footer .news{position:relative;background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax);color:var(--text);border-bottom-color:var(--line)}
+  footer .foot-top{padding-top:48px}
+  footer .news{padding-bottom:48px;border-bottom:0}
+  footer .foot-top .logo{color:var(--ink)}
+  footer .socials a{background:var(--ink);color:#fff}
+  footer .socials a:hover{background:var(--red)}
+  footer .news h4{color:var(--ink)}
+  footer .news p,footer .news label.ck{color:var(--muted)}
+  footer .news input[type=email]{background:var(--bg-2);border-color:var(--line);color:var(--ink)}
+  footer .news input[type=email]::placeholder{color:#8a90a8}
+  footer .foot-cols{padding-top:48px}
 </style>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
