@@ -4,6 +4,25 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-07 (evening) — ONBOARDING FULLY AUTOMATIC (commit ab0bd9e, API restarted 18:44 Berlin; contract unchanged)
+
+Answers the website's note on the first real customer (paid 15:32 UTC, row created 15:38 UTC):
+- The engine answered both PUTs at 15:32:01 UTC in 155 / 112 ms and the 16:24 resend in 27 ms (no slowness; the
+  restart was at 16:34 UTC). The cause: the payment arrived before her customer row existed -> stored UNMATCHED; the
+  resend reused the same event ids -> "duplicate".
+- `PUT /billing/subscription`: an event stored UNMATCHED is no longer a duplicate. A resend retries the match and,
+  when it matches, answers `{ applied: true, rematched: true, ... }`. Still no customer: `{ unmatched: true }` as before.
+- A NEW customer (first request with a new auth subject) picks up every unmatched payment message carrying its email
+  before that request is answered, so `GET /billing/status` already shows ACTIVE on the first visit.
+- Still unmatched after 10 minutes: alert BILLING_UNMATCHED_<event> to FTM (email + Telegram).
+- Customer 13222 is ACTIVE (her two stored events applied 18:44 Berlin).
+- Accounts the broker does not allow to trade (`broker_trade_disabled` true, found at validation, never copying) are
+  validated again automatically EVERY HOUR. When the broker allows trading, the engine clears the marker, builds the
+  terminal and starts copying with no customer step. Suggested website text: "Your broker does not allow trading on
+  this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically
+  every hour and start copying as soon as trading is allowed. Nothing to do here."
+- No field added, renamed or removed.
+
 ## 2026-11-07 — API restarted with the server reboot (commit c30ba64; contract 2026-11-06.4 unchanged)
 
 - View-only master account cards (`GET /customer/accounts/:id/performance` for a master login added as view-only):
