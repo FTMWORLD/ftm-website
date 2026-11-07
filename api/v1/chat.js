@@ -29,7 +29,7 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - "Action required" reasons: login refused (check password, account number and server, then retry); not a hedging account (open a hedging MT5 account with the broker and connect that); the details logged into a different account number (check the number).
 - "Your broker does not allow trading on this account yet": usually a real account with no balance. Deposit funds at the broker. FTM checks again automatically every hour and starts copying as soon as trading is allowed; the customer does not need to remove or re-add the account.
 - Up to 3 trading accounts can be added; FTM MACHINE trades on one at a time. Switch with the menu (three dots) next to an account > Trade on this account. The same menu pauses trading, pauses and closes all trades, changes the risk profile, or removes the account.
-- Billing: Accounts > Subscription and billing shows the plan status and paid-until date. Payment receipts are emailed by Stripe.
+- Billing: the plan type (Annual, 5 Years or Lifetime) shows in green at the top of the client area and under Accounts > Subscription and billing, with the paid-until date (Lifetime has no end date). Payment receipts are emailed by Stripe.
 - Page looks wider than the phone or zoomed in: reload the page; the site has been fixed to stop phones zooming in on forms.
 `;
 

@@ -21,10 +21,10 @@ async function fromStripe(email) {
     if (s.status !== 'complete' || (s.payment_status !== 'paid' && s.payment_status !== 'no_payment_required')) return;
     if (links[s.payment_link] === 'invest' || !(s.payment_link in months)) return;
     const m = months[s.payment_link];
-    if (m === null) { best = { lifetime: true }; return; }
+    if (m === null) { best = { lifetime: true, plan: 'LIFETIME' }; return; }
     if (best && best.lifetime) return;
     const d = new Date(s.created * 1000); d.setUTCMonth(d.getUTCMonth() + m);
-    if (!best || d.toISOString() > best.period_end) best = { period_end: d.toISOString() };
+    if (!best || d.toISOString() > best.period_end) best = { period_end: d.toISOString(), plan: m >= 60 ? 'FIVE_YEARS' : 'ANNUAL' };
   });
   return best;
 }
@@ -41,15 +41,20 @@ module.exports = async function handler(req, res) {
     console.error('FTM billing status: engine unreachable:', e.message);
   }
   const body = (r && r.ok) ? Object.assign({}, r.body) : null;
-  if (!body || !body.period_end) {
-    const s = await fromStripe(user.email).catch(e => { console.error('FTM billing status: Stripe lookup failed:', e.message); return null; });
-    if (s) {
-      const out = body || { ok: true, status: 'ACTIVE' };
+  // The plan name (Annual, 5 Years, Lifetime) always comes from the customer's Stripe payment; the end date
+  // too when the engine has none.
+  const s = await fromStripe(user.email).catch(e => { console.error('FTM billing status: Stripe lookup failed:', e.message); return null; });
+  if (s) {
+    const out = body || { ok: true, status: 'ACTIVE' };
+    out.plan = s.plan;
+    if (s.lifetime) { out.lifetime = true; out.period_end = null; }
+    if (!out.period_end && !out.lifetime) {
       if (s.lifetime) out.lifetime = true; else out.period_end = s.period_end;
       out.period_source = 'stripe';
-      return res.status(200).json(out);
     }
+    return res.status(200).json(out);
   }
+  if (body && body.lifetime) body.plan = 'LIFETIME';
   if (body) return res.status(200).json(body);
   if (r) return res.status(r.status || 500).json({ ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR', message: (r.body && typeof r.body.message === 'string') ? r.body.message.slice(0, 300) : undefined });
   return res.status(502).json({ ok: false, error: 'ENGINE_UNREACHABLE' });
