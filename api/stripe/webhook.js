@@ -355,7 +355,7 @@ function isoFromUnix(t) { return t ? new Date(t * 1000).toISOString() : null; }
 async function syncEngine(event) {
   if (!process.env.FTM_ENGINE_URL || !process.env.FTM_WEBSITE_API_TOKEN) return 'not configured';
   const o = event.data.object || {};
-  let status = null, email = null, ref = null, cus = null, periodEnd = null;
+  let status = null, email = null, ref = null, cus = null, periodEnd = null, lifetime = false;
 
   switch (event.type) {
     case 'checkout.session.completed': {
@@ -365,6 +365,7 @@ async function syncEngine(event) {
       email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
       ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
       cus = typeof o.customer === 'string' ? o.customer : null;
+      if (PLAN_MONTHS[o.payment_link] === null) lifetime = true;
       if (o.payment_link in PLAN_MONTHS) {
         const m = PLAN_MONTHS[o.payment_link];
         if (m) { const d = new Date((o.created || event.created || Math.floor(Date.now() / 1000)) * 1000); d.setUTCMonth(d.getUTCMonth() + m); periodEnd = d.toISOString(); }
@@ -404,6 +405,7 @@ async function syncEngine(event) {
   if (ref) body.customer_public_id = ref; else body.email = String(email).toLowerCase();
   if (cus) body.stripe_customer_id = cus;
   if (periodEnd) body.period_end = periodEnd;
+  if (lifetime) body.lifetime = true;
 
   const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body, timeoutMs: 8000 });
   if (!r.ok) console.error('Stripe webhook: engine billing answered', r.status, JSON.stringify(r.body).slice(0, 300));
