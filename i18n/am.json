@@ -1313,6 +1313,7 @@
 "Your account": "የእርስዎ መለያ",
 "Your account cannot connect a trading account right now. Contact support.": "መለያዎ አሁን የግብይት መለያ ማገናኘት አይችልም። ድጋፍን ያግኙ።",
 "Your billing status could not be loaded. Please try again.": "የክፍያ ሁኔታዎ ሊጫን አልቻለም። እባክዎ እንደገና ይሞክሩ።",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "ደላላዎ በዚህ መለያ ላይ ገና ግብይት አይፈቅድም (ለምሳሌ ቀሪ ሂሳብ የሌለው እውነተኛ መለያ)። በደላላዎ በኩል ገንዘብ ያስገቡ፤ በየሰዓቱ በራሳችን እንደገና እንፈትሻለን እና ግብይት እንደተፈቀደ መቅዳት እንጀምራለን። እዚህ ምንም ማድረግ አያስፈልግዎትም።",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "ደላላዎ በዚህ መለያ ላይ ገና ግብይት አይፈቅድም። በደላላዎ በኩል ገንዘብ ያስገቡበት እና የባለሀብት ሳይሆን ዋና የይለፍ ቃሉን ይጠቀሙ። ከዚያ መለያውን አስወግደው እንደገና ያክሉት።",
 "Your broker’s spreads and swap, paid to the broker": "የብሮከርዎ ስፕሬዶች እና ስዋፕ፣ ለብሮከሩ የሚከፈሉ",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "ካፒታልዎ ለአደጋ ተጋልጧል። መለያው በእርስዎ ጊዜ በኪሳራ ከሆነ የትርፍ ድርሻ የለም፣ እና ካስገቡት ያነሰ ይመለስልዎታል።",

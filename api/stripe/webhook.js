@@ -216,8 +216,13 @@ module.exports = async function handler(req, res) {
     // The engine only matches a payment to a customer it already knows; asking for the customer's
     // profile creates their engine record if this is their first visit.
     if (userId && process.env.FTM_ENGINE_URL) {
-      await callEngine('/api/v1/customer/me', { method: 'GET', authSubject: userId, authEmail: email, timeoutMs: 6000 })
-        .catch(e => console.error('Stripe webhook: engine customer create failed:', e.message));
+      // Whatever /me answers, the payment is passed on next: the engine matches it by email, or applies it
+      // automatically once the customer's record appears.
+      const me = await callEngine('/api/v1/customer/me', { method: 'GET', authSubject: userId, authEmail: email, timeoutMs: 6000 })
+        .catch(e => { console.error('Stripe webhook: engine customer create failed:', e.message); return null; });
+      if (me && me.status === 409) {
+        await alertFtm('Payment email already belongs to another engine login', [['Customer', email], ['Engine', String((me.body && me.body.error) || '409')], ['Checkout', String(session.id)]]).catch(() => {});
+      }
     }
     report.engine = await syncSafe();
     if (/^(failed|engine error|engine unmatched)/.test(String(report.engine))) await alertFtm('Payment not passed to the FTM engine', [['Customer', email], ['Engine', String(report.engine)], ['Checkout', String(session.id)], ['Website plan', report.granted ? 'granted' : 'NOT granted']]).catch(() => {});
@@ -391,7 +396,7 @@ async function syncEngine(event) {
 
   const r = await callEngine('/api/v1/billing/subscription', { method: 'PUT', body, timeoutMs: 8000 });
   if (!r.ok) console.error('Stripe webhook: engine billing answered', r.status, JSON.stringify(r.body).slice(0, 300));
-  if (r.ok && (r.body.unmatched || r.body.applied === false) && !r.body.duplicate) return 'engine unmatched ' + status;
+  if (r.ok && r.body.unmatched) return 'engine unmatched ' + status;
   return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
 }
 module.exports._syncEngine = syncEngine;

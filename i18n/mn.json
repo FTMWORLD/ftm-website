@@ -1311,6 +1311,7 @@
 "Your account": "Таны данс",
 "Your account cannot connect a trading account right now. Contact support.": "Таны данс одоогоор арилжааны данс холбож чадахгүй байна. Дэмжлэгтэй холбогдоно уу.",
 "Your billing status could not be loaded. Please try again.": "Төлбөрийн төлөвийг ачаалж чадсангүй. Дахин оролдоно уу.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Таны брокер энэ данс дээр арилжаа хийхийг хараахан зөвшөөрөөгүй байна (жишээ нь үлдэгдэлгүй бодит данс). Брокероороо дамжуулан мөнгө байршуулна уу: бид цаг тутам автоматаар дахин шалгаж, арилжаа зөвшөөрөгдмөгц хуулбарлаж эхэлнэ. Энд хийх зүйл байхгүй.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Таны брокер энэ данс дээр арилжаа хийхийг хараахан зөвшөөрөөгүй байна. Брокероороо дамжуулан мөнгө байршуулж, хөрөнгө оруулагчийн биш, үндсэн нууц үгээ ашиглана уу. Дараа нь дансаа устгаад дахин нэмнэ үү.",
 "Your broker’s spreads and swap, paid to the broker": "Брокерын тань spread болон swap, брокерт төлнө",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Таны хөрөнгө эрсдэлтэй. Таны хугацаанд данс буурсан бол ашгийн хуваарилалт байхгүй бөгөөд та оруулснаасаа бага буцаан авна.",

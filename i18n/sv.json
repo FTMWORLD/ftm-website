@@ -1313,6 +1313,7 @@
 "Your account": "Ditt konto",
 "Your account cannot connect a trading account right now. Contact support.": "Ditt konto kan inte ansluta ett handelskonto just nu. Kontakta supporten.",
 "Your billing status could not be loaded. Please try again.": "Din faktureringsstatus kunde inte läsas in. Försök igen.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Din mäklare tillåter ännu inte handel på det här kontot (till exempel ett riktigt konto utan saldo). Sätt in pengar hos din mäklare: vi kontrollerar automatiskt igen varje timme och börjar kopiera så snart handel tillåts. Du behöver inte göra något här.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Din mäklare tillåter ännu inte handel på det här kontot. Sätt in pengar hos din mäklare och använd huvudlösenordet, inte investerarlösenordet. Ta sedan bort kontot och lägg till det igen.",
 "Your broker’s spreads and swap, paid to the broker": "Din mäklares spreadar och swap, betalas till mäklaren",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Ditt kapital är i riskzonen. Om kontot ligger back under din period finns ingen vinstandel, och du får tillbaka mindre än du investerade.",

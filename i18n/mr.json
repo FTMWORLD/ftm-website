@@ -1313,6 +1313,7 @@
 "Your account": "तुमचे खाते",
 "Your account cannot connect a trading account right now. Contact support.": "तुमचे खाते सध्या ट्रेडिंग खाते जोडू शकत नाही. सपोर्टशी संपर्क साधा.",
 "Your billing status could not be loaded. Please try again.": "तुमची बिलिंग स्थिती लोड होऊ शकली नाही. कृपया पुन्हा प्रयत्न करा.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "तुमचा ब्रोकर अद्याप या खात्यावर ट्रेडिंगला परवानगी देत नाही (उदाहरणार्थ शिल्लक नसलेले रिअल खाते). तुमच्या ब्रोकरकडे यात पैसे जमा करा: आम्ही दर तासाला आपोआप पुन्हा तपासतो आणि ट्रेडिंगला परवानगी मिळताच कॉपी करणे सुरू करतो. इथे तुम्हाला काहीही करायचे नाही.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "तुमचा ब्रोकर अद्याप या खात्यावर ट्रेडिंगला परवानगी देत नाही. तुमच्या ब्रोकरकडे यात पैसे जमा करा आणि इन्व्हेस्टर पासवर्ड नव्हे, मास्टर पासवर्ड वापरा. नंतर खाते काढून पुन्हा जोडा.",
 "Your broker’s spreads and swap, paid to the broker": "तुमच्या ब्रोकरचे स्प्रेड आणि स्वॅप, ब्रोकरला दिले जातात",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "तुमचे भांडवल जोखमीवर आहे. तुमच्या कालावधीत खाते तोट्यात असल्यास नफ्याचा वाटा नाही आणि तुम्हाला गुंतवलेल्यापेक्षा कमी परत मिळते.",

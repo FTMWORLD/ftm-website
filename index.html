@@ -5584,7 +5584,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       LOGIN_MISMATCH: 'The details you entered logged into a different account than the account number you gave. Check the account number and try again.'
     };
     var VALIDATION_REASON_FALLBACK = 'FTM could not set up this account. Check your login details, then remove the account and add it again.';
-    var CANNOT_TRADE_TEXT = 'Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.';
+    var CANNOT_TRADE_TEXT = 'Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.';
     var BELOW_MINIMUM_TEXT = 'The balance is below the FTM minimum. Deposit more with your broker, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
     function plainCode(c){ c=String(c||'').replace(/_/g,' ').toLowerCase(); return c ? c.charAt(0).toUpperCase()+c.slice(1) : 'Connecting'; }
@@ -7598,7 +7598,7 @@ tick();setInterval(tick,5000);})();
     var hint=$('actHint'), btn=$('actGo'), h='', b='';
     if(!paid){ b='Choose a plan'; }
     else if(!A.length){ b='Connect a trading account'; }
-    else if(!ok && !on){ b=bad?'Add account':''; }
+    else if(!ok && !on){ b=(bad && !(bad.brokerTradeDisabled||bad.statusReason==='CANNOT_TRADE'))?'Add account':''; }
     else if(!on){ h='Open the menu ⋮ next to your account and choose Trade on this account.'; }
     else { h=tr('FTM MACHINE is running on {}').replace('{}',on.name+' '+on.number); }
     hint.hidden=!h; hint.textContent=h?tr(h):'';

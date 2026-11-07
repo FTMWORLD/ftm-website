@@ -1313,6 +1313,7 @@
 "Your account": "သင့်အကောင့်",
 "Your account cannot connect a trading account right now. Contact support.": "သင့်အကောင့်သည် ယခုအချိန်တွင် ရောင်းဝယ်ရေးအကောင့်ကို ချိတ်ဆက်၍မရပါ။ ပံ့ပိုးမှုကို ဆက်သွယ်ပါ။",
 "Your billing status could not be loaded. Please try again.": "သင်၏ ငွေတောင်းခံမှု အခြေအနေကို ဖွင့်၍မရပါ။ ထပ်မံကြိုးစားပါ။",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "သင့်ပွဲစားသည် ဤအကောင့်တွင် ကုန်သွယ်မှုကို မခွင့်ပြုသေးပါ (ဥပမာ လက်ကျန်ငွေမရှိသော တကယ့်အကောင့်)။ သင့်ပွဲစားထံတွင် ငွေထည့်ပါ- ကျွန်ုပ်တို့သည် နာရီတိုင်း အလိုအလျောက် ပြန်စစ်ဆေးပြီး ကုန်သွယ်ခွင့်ရသည်နှင့် ကူးယူခြင်းကို စတင်ပါမည်။ ဤနေရာတွင် ဘာမှလုပ်ရန် မလိုပါ။",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "သင့်ပွဲစားသည် ဤအကောင့်တွင် ကုန်သွယ်မှုကို မခွင့်ပြုသေးပါ။ သင့်ပွဲစားထံတွင် ငွေထည့်ပြီး ရင်းနှီးမြှုပ်နှံသူစကားဝှက်မဟုတ်ဘဲ မာစတာစကားဝှက်ကို အသုံးပြုပါ။ ထို့နောက် အကောင့်ကို ဖယ်ရှားပြီး ပြန်ထည့်ပါ။",
 "Your broker’s spreads and swap, paid to the broker": "သင့်ပွဲစား၏ spread နှင့် swap၊ ပွဲစားထံ ပေးချေသည်",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "သင့်ရင်းနှီးငွေ အန္တရာယ်ရှိသည်။ သင့်ကာလအတွင်း အကောင့်ရှုံးနေပါက အမြတ်ဝေစုမရှိဘဲ မြှုပ်နှံသည်ထက်လျော့နည်းစွာ ပြန်ရမည်။",

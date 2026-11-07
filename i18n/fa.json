@@ -1313,6 +1313,7 @@
 "Your account": "حساب شما",
 "Your account cannot connect a trading account right now. Contact support.": "حساب شما در حال حاضر نمی‌تواند حساب معاملاتی متصل کند. با پشتیبانی تماس بگیرید.",
 "Your billing status could not be loaded. Please try again.": "وضعیت صورتحساب شما بارگیری نشد. لطفاً دوباره تلاش کنید.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "کارگزار شما هنوز اجازه معامله در این حساب را نمی‌دهد (برای مثال حساب واقعی بدون موجودی). آن را نزد کارگزارتان شارژ کنید: ما هر ساعت به‌طور خودکار دوباره بررسی می‌کنیم و به محض مجاز شدن معامله، کپی را آغاز می‌کنیم. اینجا کاری لازم نیست.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "کارگزار شما هنوز اجازه معامله در این حساب را نمی‌دهد. آن را نزد کارگزارتان شارژ کنید و از رمز اصلی استفاده کنید، نه رمز سرمایه‌گذار. سپس حساب را حذف کرده و دوباره اضافه کنید.",
 "Your broker’s spreads and swap, paid to the broker": "اسپرد و سوآپ بروکر شما، پرداختی به بروکر",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "سرمایه شما در معرض ریسک است. اگر حساب در دوره شما در ضرر باشد، سهم سودی وجود ندارد و کمتر از مبلغ سرمایه‌گذاری‌شده بازمی‌گردد.",

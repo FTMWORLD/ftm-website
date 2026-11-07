@@ -1313,6 +1313,7 @@
 "Your account": "お客様の口座",
 "Your account cannot connect a trading account right now. Contact support.": "現在、お客様のアカウントでは取引口座を接続できません。サポートにお問い合わせください。",
 "Your billing status could not be loaded. Please try again.": "請求ステータスを読み込めませんでした。もう一度お試しください。",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "ご利用のブローカーは、この口座での取引をまだ許可していません（例：残高のないリアル口座）。ブローカーで入金してください。1時間ごとに自動で再確認し、取引が許可され次第コピーを開始します。ここで行う操作はありません。",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "ご利用のブローカーは、この口座での取引をまだ許可していません。ブローカーで入金し、投資家パスワードではなくマスターパスワードを使用してください。その後、口座を削除して再度追加してください。",
 "Your broker’s spreads and swap, paid to the broker": "ブローカーのスプレッドとスワップ（ブローカーに支払い）",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "あなたの元本はリスクにさらされています。期間中にアカウントがマイナスの場合、利益分配はなく、投資額を下回る金額が戻ります。",

@@ -1313,6 +1313,7 @@
 "Your account": "គណនីរបស់អ្នក",
 "Your account cannot connect a trading account right now. Contact support.": "គណនីរបស់អ្នកមិនអាចភ្ជាប់គណនីជួញដូរបានទេនៅពេលនេះ។ ទាក់ទងជំនួយ។",
 "Your billing status could not be loaded. Please try again.": "មិនអាចផ្ទុកស្ថានភាពវិក្កយបត្ររបស់អ្នកបានទេ។ សូមព្យាយាមម្តងទៀត។",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "ឈ្មួញកណ្តាលរបស់អ្នកមិនទាន់អនុញ្ញាតឱ្យជួញដូរលើគណនីនេះនៅឡើយទេ (ឧទាហរណ៍ គណនីពិតដែលគ្មានសមតុល្យ)។ ដាក់ប្រាក់តាមឈ្មួញកណ្តាលរបស់អ្នក៖ យើងពិនិត្យម្តងទៀតដោយស្វ័យប្រវត្តិរៀងរាល់ម៉ោង ហើយចាប់ផ្តើមចម្លងភ្លាមៗនៅពេលការជួញដូរត្រូវបានអនុញ្ញាត។ មិនចាំបាច់ធ្វើអ្វីនៅទីនេះទេ។",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "ឈ្មួញកណ្តាលរបស់អ្នកមិនទាន់អនុញ្ញាតឱ្យជួញដូរលើគណនីនេះនៅឡើយទេ។ ដាក់ប្រាក់ចូលតាមឈ្មួញកណ្តាលរបស់អ្នក ហើយប្រើពាក្យសម្ងាត់មេ មិនមែនពាក្យសម្ងាត់អ្នកវិនិយោគទេ។ បន្ទាប់មកដកគណនីចេញ ហើយបន្ថែមវាម្តងទៀត។",
 "Your broker’s spreads and swap, paid to the broker": "spread និង swap របស់ឈ្មួញកណ្ដាលរបស់អ្នក បង់ទៅឈ្មួញកណ្ដាល",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "ដើមទុនរបស់អ្នកមានហានិភ័យ។ ប្រសិនបើគណនីខាតក្នុងរយៈពេលរបស់អ្នក គ្មានចំណែកប្រាក់ចំណេញទេ ហើយអ្នកទទួលបានតិចជាងអ្វីដែលអ្នកបានវិនិយោគ។",

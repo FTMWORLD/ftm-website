@@ -1311,6 +1311,7 @@
 "Your account": "आपका खाता",
 "Your account cannot connect a trading account right now. Contact support.": "आपका खाता अभी ट्रेडिंग खाता नहीं जोड़ सकता। सहायता से संपर्क करें।",
 "Your billing status could not be loaded. Please try again.": "आपकी बिलिंग स्थिति लोड नहीं हो सकी। कृपया फिर से प्रयास करें।",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "आपका ब्रोकर अभी इस खाते पर ट्रेडिंग की अनुमति नहीं देता (जैसे बिना बैलेंस वाला रियल खाता)। अपने ब्रोकर के पास इसमें पैसे जमा करें: हम हर घंटे अपने-आप फिर से जाँचते हैं और ट्रेडिंग की अनुमति मिलते ही कॉपी करना शुरू कर देते हैं। यहाँ आपको कुछ नहीं करना है।",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "आपका ब्रोकर अभी इस खाते पर ट्रेडिंग की अनुमति नहीं देता। अपने ब्रोकर के पास इसमें पैसे जमा करें और इन्वेस्टर पासवर्ड नहीं, मास्टर पासवर्ड का उपयोग करें। फिर खाता हटाकर दोबारा जोड़ें।",
 "Your broker’s spreads and swap, paid to the broker": "आपके ब्रोकर के स्प्रेड और स्वैप, ब्रोकर को भुगतान",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "आपकी पूँजी जोखिम में है। अगर आपकी अवधि में खाता गिरा है तो कोई मुनाफ़ा हिस्सा नहीं है, और आपको निवेश से कम वापस मिलता है।",

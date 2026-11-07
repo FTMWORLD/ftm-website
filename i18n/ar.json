@@ -1311,6 +1311,7 @@
 "Your account": "حسابك",
 "Your account cannot connect a trading account right now. Contact support.": "لا يمكن لحسابك ربط حساب تداول الآن. تواصل مع الدعم.",
 "Your billing status could not be loaded. Please try again.": "تعذّر تحميل حالة الفوترة. يرجى المحاولة مرة أخرى.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "وسيطك لا يسمح بالتداول على هذا الحساب بعد (مثل حساب حقيقي بلا رصيد). موّله لدى وسيطك: نتحقق مجددًا تلقائيًا كل ساعة ونبدأ النسخ فور السماح بالتداول. لا شيء عليك فعله هنا.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "وسيطك لا يسمح بالتداول على هذا الحساب بعد. موّله لدى وسيطك واستخدم كلمة المرور الرئيسية، وليس كلمة مرور المستثمر. ثم احذف الحساب وأضفه مرة أخرى.",
 "Your broker’s spreads and swap, paid to the broker": "فروق الأسعار ورسوم التبييت لدى وسيطك، تُدفع للوسيط",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "رأس مالك معرّض للمخاطر. إذا كان الحساب في تراجع خلال فترتك فلا توجد حصة ربح وتسترد أقل مما استثمرت.",

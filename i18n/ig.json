@@ -1313,6 +1313,7 @@
 "Your account": "Akaụntụ gị",
 "Your account cannot connect a trading account right now. Contact support.": "Akaụntụ gị enweghị ike ijikọ akaụntụ ịre ahịa ugbu a. Kpọtụrụ nkwado.",
 "Your billing status could not be loaded. Please try again.": "Enweghị ike ibunye ọnọdụ ịkwụ ụgwọ gị. Biko nwaa ọzọ.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Onye ndọrọ ego gị ekweghị ka a zụọ ahịa n'akaụntụ a ugbu a (dịka ọmụmaatụ akaụntụ n'ezie na-enweghị ego). Tinye ego n'ime ya site n'aka onye ndọrọ ego gị: anyị na-enyocha ọzọ n'onwe anyị kwa elekere ma malite ịdepụta ozugbo e kwere ka a zụọ ahịa. Ọ dịghị ihe ị ga-eme ebe a.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Onye ndọrọ ego gị ekweghị ka a zụọ ahịa n'akaụntụ a ugbu a. Tinye ego n'ime ya site n'aka onye ndọrọ ego gị ma jiri paswọọdụ isi, ọ bụghị paswọọdụ onye ntinye ego. Wee wepụ akaụntụ ahụ ma tinyeghachi ya.",
 "Your broker’s spreads and swap, paid to the broker": "Spreads na swap nke broker gị, a na-akwụ broker",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Ego gị dị n'ihe ize ndụ. Ọ bụrụ na akaụntụ nọ na mfu n'oge gị, enweghị òkè uru, ị ga-enwetakwa obere karịa ihe ị tinyere.",

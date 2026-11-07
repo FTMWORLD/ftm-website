@@ -1313,6 +1313,7 @@
 "Your account": "Váš účet",
 "Your account cannot connect a trading account right now. Contact support.": "Váš účet momentálně nemůže propojit obchodní účet. Kontaktujte podporu.",
 "Your billing status could not be loaded. Please try again.": "Stav fakturace se nepodařilo načíst. Zkuste to prosím znovu.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Váš broker na tomto účtu zatím nepovoluje obchodování (například reálný účet bez zůstatku). Vložte na něj prostředky u svého brokera: každou hodinu to automaticky znovu ověříme a kopírování spustíme, jakmile bude obchodování povoleno. Zde nemusíte nic dělat.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Váš broker na tomto účtu zatím nepovoluje obchodování. Vložte na něj prostředky u svého brokera a použijte hlavní heslo, ne heslo investora. Poté účet odeberte a přidejte znovu.",
 "Your broker’s spreads and swap, paid to the broker": "Spready a swapy vašeho brokera, placené brokerovi",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Váš kapitál je v ohrožení. Pokud je účet za vaše období ve ztrátě, žádný podíl na zisku není a dostanete zpět méně, než jste investovali.",

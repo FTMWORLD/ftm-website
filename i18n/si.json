@@ -1311,6 +1311,7 @@
 "Your account": "ඔබගේ ගිණුම",
 "Your account cannot connect a trading account right now. Contact support.": "ඔබේ ගිණුමට දැනට වෙළඳ ගිණුමක් සම්බන්ධ කළ නොහැක. සහාය අමතන්න.",
 "Your billing status could not be loaded. Please try again.": "ඔබේ බිල්පත් තත්ත්වය පූරණය කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "ඔබේ තැරැව්කරු තවමත් මෙම ගිණුමේ වෙළඳාමට ඉඩ නොදෙයි (උදාහරණයක් ලෙස ශේෂයක් නැති සැබෑ ගිණුමක්). ඔබේ තැරැව්කරු හරහා එයට මුදල් තැන්පත් කරන්න: අපි සෑම පැයකටම ස්වයංක්‍රීයව නැවත පරීක්ෂා කර වෙළඳාමට ඉඩ ලැබුණු විගස පිටපත් කිරීම ආරම්භ කරමු. මෙහි කිසිවක් කිරීමට අවශ්‍ය නැත.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "ඔබේ තැරැව්කරු තවමත් මෙම ගිණුමේ වෙළඳාමට ඉඩ නොදෙයි. ඔබේ තැරැව්කරු හරහා එයට මුදල් තැන්පත් කර, ආයෝජක මුරපදය නොව ප්‍රධාන මුරපදය භාවිතා කරන්න. ඉන්පසු ගිණුම ඉවත් කර නැවත එක් කරන්න.",
 "Your broker’s spreads and swap, paid to the broker": "ඔබේ බ්‍රෝකර්ගේ spread සහ swap, බ්‍රෝකර් වෙත ගෙවනු ලැබේ",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "ඔබේ ප්‍රාග්ධනය අවදානමේ ඇත. ඔබේ කාලය තුළ ගිණුම පහත වැටුණහොත් ලාභ කොටසක් නැත, ඔබ ආයෝජනය කළ මුදලට වඩා අඩුවෙන් ආපසු ලැබේ.",

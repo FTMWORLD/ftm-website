@@ -1313,6 +1313,7 @@
 "Your account": "તમારું એકાઉન્ટ",
 "Your account cannot connect a trading account right now. Contact support.": "તમારું ખાતું હાલમાં ટ્રેડિંગ ખાતું જોડી શકતું નથી. સપોર્ટનો સંપર્ક કરો.",
 "Your billing status could not be loaded. Please try again.": "તમારી બિલિંગ સ્થિતિ લોડ થઈ શકી નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "તમારો બ્રોકર હજુ આ ખાતા પર ટ્રેડિંગની મંજૂરી આપતો નથી (ઉદાહરણ તરીકે બેલેન્સ વગરનું રિયલ ખાતું). તમારા બ્રોકર પાસે તેમાં ભંડોળ જમા કરો: અમે દર કલાકે આપમેળે ફરી તપાસીએ છીએ અને ટ્રેડિંગની મંજૂરી મળતાં જ કૉપી કરવાનું શરૂ કરીએ છીએ. અહીં કંઈ કરવાની જરૂર નથી.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "તમારો બ્રોકર હજુ આ ખાતા પર ટ્રેડિંગની મંજૂરી આપતો નથી. તમારા બ્રોકર પાસે તેમાં ભંડોળ જમા કરો અને ઇન્વેસ્ટર પાસવર્ડ નહીં, માસ્ટર પાસવર્ડનો ઉપયોગ કરો. પછી ખાતું દૂર કરીને ફરીથી ઉમેરો.",
 "Your broker’s spreads and swap, paid to the broker": "તમારા બ્રોકરના સ્પ્રેડ અને સ્વૉપ, બ્રોકરને ચૂકવાય છે",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "તમારી મૂડી જોખમમાં છે. તમારા સમયગાળામાં ખાતું નુકસાનમાં હોય તો નફાનો હિસ્સો નથી, અને તમને રોકેલા કરતાં ઓછું પાછું મળે છે.",

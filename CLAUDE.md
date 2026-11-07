@@ -38,3 +38,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Replies to the owner (owner instruction, 3 November 2026)
 - Always answer in 5 to 6 short sentences at most. No long notes, no long tables unless asked.
 - Format replies as short bullet points, one point per line, with space between them. Never one dense paragraph.
+
+## Ask here knows every solved problem (owner instruction, 7 November 2026)
+- Every customer problem we solve gets a short cause-and-fix line in the TROUBLESHOOTING list in `api/v1/chat.js`, in the same commit, so the Ask here assistant can answer it.
+- Messages for FTM ENGINE go through the FTM MACHINE session, which passes them on.

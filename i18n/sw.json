@@ -1311,6 +1311,7 @@
 "Your account": "Akaunti yako",
 "Your account cannot connect a trading account right now. Contact support.": "Akaunti yako haiwezi kuunganisha akaunti ya biashara kwa sasa. Wasiliana na msaada.",
 "Your billing status could not be loaded. Please try again.": "Hali yako ya malipo haikuweza kupakiwa. Tafadhali jaribu tena.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Dalali wako bado haruhusu biashara kwenye akaunti hii (kwa mfano akaunti halisi isiyo na salio). Weka pesa kupitia dalali wako: tunakagua tena kiotomatiki kila saa na kuanza kunakili mara biashara itakaporuhusiwa. Hakuna unachohitaji kufanya hapa.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Dalali wako bado haruhusu biashara kwenye akaunti hii. Weka pesa kupitia dalali wako na tumia nenosiri kuu, si nenosiri la mwekezaji. Kisha ondoa akaunti na uiongeze tena.",
 "Your broker’s spreads and swap, paid to the broker": "Spread na swap za broker wako, hulipwa kwa broker",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Mtaji wako uko hatarini. Akaunti ikishuka katika kipindi chako hakuna mgawanyo wa faida, na unarudishiwa kidogo kuliko ulichowekeza.",

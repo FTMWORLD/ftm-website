@@ -1311,6 +1311,7 @@
 "Your account": "您的账户",
 "Your account cannot connect a trading account right now. Contact support.": "您的账户目前无法关联交易账户。请联系客服。",
 "Your billing status could not be loaded. Please try again.": "无法加载您的账单状态，请重试。",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "您的经纪商尚未允许在此账户上交易（例如没有余额的真实账户）。请通过经纪商为其入金：我们每小时自动重新检查，一旦允许交易便立即开始复制。此处无需任何操作。",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "您的经纪商尚未允许在此账户上交易。请通过经纪商为其入金，并使用主密码，而不是投资者密码。然后移除该账户并重新添加。",
 "Your broker’s spreads and swap, paid to the broker": "您经纪商的点差和隔夜利息，支付给经纪商",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "您的资本有风险。如果账户在您的期间内下跌，则没有利润分成，您取回的金额会少于投资金额。",

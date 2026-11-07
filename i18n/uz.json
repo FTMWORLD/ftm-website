@@ -1313,6 +1313,7 @@
 "Your account": "Hisobingiz",
 "Your account cannot connect a trading account right now. Contact support.": "Hisobingiz hozir savdo hisobini ulay olmaydi. Yordam xizmatiga murojaat qiling.",
 "Your billing status could not be loaded. Please try again.": "Toʻlov holatingizni yuklab boʻlmadi. Qaytadan urinib koʻring.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Brokeringiz bu hisobda hali savdoga ruxsat bermaydi (masalan, balanssiz real hisob). Uni brokeringiz orqali to‘ldiring: biz har soatda avtomatik qayta tekshiramiz va savdoga ruxsat berilishi bilan nusxalashni boshlaymiz. Bu yerda hech narsa qilish shart emas.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Brokeringiz bu hisobda hali savdoga ruxsat bermaydi. Uni brokeringiz orqali to‘ldiring va investor parolini emas, asosiy parolni ishlating. So‘ng hisobni olib tashlab, qayta qo‘shing.",
 "Your broker’s spreads and swap, paid to the broker": "Brokeringizning spredlari va svopi, brokerga to‘lanadi",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Kapitalingiz xavf ostida. Agar davringizda hisob zarar ko‘rsa, foyda ulushi yo‘q va kiritganingizdan kamroq qaytib olasiz.",

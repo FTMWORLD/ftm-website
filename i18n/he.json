@@ -1313,6 +1313,7 @@
 "Your account": "החשבון שלך",
 "Your account cannot connect a trading account right now. Contact support.": "החשבון שלכם לא יכול לחבר חשבון מסחר כרגע. פנו לתמיכה.",
 "Your billing status could not be loaded. Please try again.": "לא ניתן היה לטעון את סטטוס החיוב שלך. נסה שוב.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "הברוקר שלך עדיין לא מאפשר מסחר בחשבון הזה (למשל חשבון אמיתי ללא יתרה). הפקד בו כסף אצל הברוקר: אנחנו בודקים שוב אוטומטית כל שעה ומתחילים להעתיק ברגע שהמסחר מותר. אין צורך לעשות כאן דבר.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "הברוקר שלך עדיין לא מאפשר מסחר בחשבון הזה. הפקד בו כסף אצל הברוקר והשתמש בסיסמה הראשית, לא בסיסמת המשקיע. לאחר מכן הסר את החשבון והוסף אותו שוב.",
 "Your broker’s spreads and swap, paid to the broker": "ה-spreads וה-swap של הברוקר שלך, משולמים לברוקר",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "ההון שלכם בסיכון. אם החשבון במינוס בתקופה שלכם, אין חלק רווח, ותקבלו בחזרה פחות ממה שהשקעתם.",

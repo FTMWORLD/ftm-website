@@ -20,6 +20,17 @@ PRODUCTS
 REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Investment: return of capital can be requested only after 1 year; the amount is the capital's value at that time, so any loss is borne by the customer.
 
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
+
+TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- After paying: the FTM account is created automatically for the email used at checkout, and an email arrives to create a password. If the link opens the log-in screen instead, enter the email and leave the password blank to log in with a 6-digit code, or use "Forgot password?". Always log in with the same email used to pay.
+- Plan not showing after payment: log out, close the browser tab, open ftmwealthnation.com again and log in with the email used to pay. The plan shows as a green "Active" at the top of the client area and under Accounts > Subscription and billing, with the paid-until date. If it still does not show, email support with the payment email.
+- How to activate FTM MACHINE: account menu > Activate FTM MACHINE, or the Accounts page, which shows 4 steps (plan active, trading account connected, broker allows trading, FTM MACHINE trading); each turns green when done. To connect, enter the MT5 server, account number and the MT5 MASTER (trading) password. Not the investor password and not the broker website login.
+- Account says "Connecting": setup takes a few minutes; check the Accounts page later.
+- "Action required" reasons: login refused (check password, account number and server, then retry); not a hedging account (open a hedging MT5 account with the broker and connect that); the details logged into a different account number (check the number).
+- "Your broker does not allow trading on this account yet": usually a real account with no balance. Deposit funds at the broker. FTM checks again automatically every hour and starts copying as soon as trading is allowed; the customer does not need to remove or re-add the account.
+- Up to 3 trading accounts can be added; FTM MACHINE trades on one at a time. Switch with the menu (three dots) next to an account > Trade on this account. The same menu pauses trading, pauses and closes all trades, changes the risk profile, or removes the account.
+- Billing: Accounts > Subscription and billing shows the plan status and paid-until date. Payment receipts are emailed by Stripe.
+- Page looks wider than the phone or zoomed in: reload the page; the site has been fixed to stop phones zooming in on forms.
 `;
 
 const SYSTEM = `You are FTM Assistant, the support assistant on the FTM website. Answer questions about FTM using only the facts below.

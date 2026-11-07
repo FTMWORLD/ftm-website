@@ -1311,6 +1311,7 @@
 "Your account": "Ваш счёт",
 "Your account cannot connect a trading account right now. Contact support.": "Ваш аккаунт сейчас не может подключить торговый счёт. Обратитесь в поддержку.",
 "Your billing status could not be loaded. Please try again.": "Не удалось загрузить статус оплаты. Попробуйте ещё раз.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Ваш брокер пока не разрешает торговлю на этом счёте (например, реальный счёт без средств). Пополните его у брокера: мы автоматически проверяем снова каждый час и начинаем копирование, как только торговля будет разрешена. Здесь ничего делать не нужно.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Ваш брокер пока не разрешает торговлю на этом счёте. Пополните его у брокера и используйте основной пароль, а не пароль инвестора. Затем удалите счёт и добавьте его снова.",
 "Your broker’s spreads and swap, paid to the broker": "Спреды и своп вашего брокера, оплачиваются брокеру",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Ваш капитал под риском. Если счёт за ваш период в минусе, доли прибыли нет, и вы получите меньше, чем вложили.",

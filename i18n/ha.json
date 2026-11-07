@@ -1313,6 +1313,7 @@
 "Your account": "Asusunka",
 "Your account cannot connect a trading account right now. Contact support.": "Asusunka ba zai iya haɗa asusun ciniki yanzu ba. Tuntuɓi tallafi.",
 "Your billing status could not be loaded. Please try again.": "Ba a iya loda matsayin biyan kuɗinka ba. Da fatan za a sake gwadawa.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Dillalinka bai riga ya ba da izinin ciniki a wannan asusun ba (misali asusun gaske ba tare da kuɗi ba). Saka kuɗi ta wurin dillalinka: muna sake dubawa kai tsaye kowace sa'a kuma mu fara kwafa da zarar an ba da izinin ciniki. Babu abin da za ka yi a nan.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Dillalinka bai riga ya ba da izinin ciniki a wannan asusun ba. Saka kuɗi a ciki ta wurin dillalinka kuma yi amfani da babban kalmar sirri, ba ta mai saka jari ba. Sannan cire asusun ka sake ƙara shi.",
 "Your broker’s spreads and swap, paid to the broker": "Spreads da swap na dillalinku, ana biyan dillalin",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Jarinka yana cikin haɗari. Idan asusun yana cikin asara a lokacinka, babu kason riba, kuma za ka karɓi ƙasa da abin da ka zuba.",

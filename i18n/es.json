@@ -1311,6 +1311,7 @@
 "Your account": "Su cuenta",
 "Your account cannot connect a trading account right now. Contact support.": "Tu cuenta no puede conectar una cuenta de trading en este momento. Contacta con soporte.",
 "Your billing status could not be loaded. Please try again.": "No se pudo cargar tu estado de facturación. Inténtalo de nuevo.",
+"Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.": "Tu bróker todavía no permite operar en esta cuenta (por ejemplo, una cuenta real sin saldo). Deposita fondos con tu bróker: lo comprobamos de nuevo automáticamente cada hora y empezamos a copiar en cuanto se permita operar. No tienes que hacer nada aquí.",
 "Your broker does not allow trading on this account yet. Fund it with your broker and use the master password, not the investor password. Then remove the account and add it again.": "Tu bróker todavía no permite operar en esta cuenta. Deposita fondos con tu bróker y usa la contraseña maestra, no la contraseña de inversor. Después elimina la cuenta y vuelve a añadirla.",
 "Your broker’s spreads and swap, paid to the broker": "Spreads y swaps de tu bróker, pagados al bróker",
 "Your capital is at risk. If the account is down over your period there is no profit share, and you get back less than you invested.": "Tu capital está en riesgo. Si la cuenta baja durante tu periodo, no hay reparto de ganancias y recuperas menos de lo que invertiste.",
