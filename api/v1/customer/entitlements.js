@@ -43,7 +43,28 @@ module.exports = async function handler(req, res) {
   const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const cur = await admin.from('profiles').select('products').eq('id', user.id).maybeSingle();
   const have = (cur.data && cur.data.products) || [];
-  if (have.length) return res.status(200).json({ ok: true, products: have, repaired: false });
+  if (have.length) {
+    // An Auto Trading plan must have a Stripe payment behind it. Plans set by hand for FTM's own accounts
+    // (FTM_MANUAL_PLAN_EMAILS, plus FTM's addresses) are kept; any other plan without a paid checkout for this
+    // email is removed and FTM is emailed, so a free account can never act as a paying one.
+    const manual = String(process.env.FTM_MANUAL_PLAN_EMAILS || '').toLowerCase().split(/[\s,;]+/).filter(Boolean)
+      .concat(['ftmwebnation@gmail.com', 'famouzthefirst@gmail.com']);
+    const mail = String(user.email || '').toLowerCase();
+    if (have.indexOf('auto') > -1 && manual.indexOf(mail) < 0 && (process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY || process.env.STRIPE_RESTRICTED_KEY)) {
+      let proof = null;
+      try { proof = await paidProductsFromStripe(mail); } catch (e) { console.error('entitlements: Stripe verify failed', e.message); }
+      if (proof && proof.checked && proof.products.indexOf('auto') < 0) {
+        const keep = have.filter(p => p !== 'auto');
+        const w = await admin.from('profiles').upsert({ id: user.id, products: keep });
+        if (!w.error) {
+          console.error('entitlements: removed unpaid Auto Trading plan from', mail);
+          try { await require('../../stripe/webhook.js').alertFtm('Plan removed: no payment found', [['Customer', mail], ['Removed', 'Auto Trading'], ['Why', 'The profile had a plan but Stripe has no paid checkout for this email'], ['If wrong', 'Add the email to FTM_MANUAL_PLAN_EMAILS in Vercel and set products back in Supabase']]); } catch (e) {}
+          return res.status(200).json({ ok: true, products: keep, repaired: false, removed: ['auto'] });
+        }
+      }
+    }
+    return res.status(200).json({ ok: true, products: have, repaired: false });
+  }
 
   // A plan is only ever granted on proof of payment. With the Stripe key set, Stripe is the only proof
   // (a completed, paid checkout for this email); the engine is asked only when there is no Stripe key.
