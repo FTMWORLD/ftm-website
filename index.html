@@ -1906,10 +1906,13 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 @media (prefers-reduced-motion:reduce){.app.sw-in-r>*,.app.sw-in-l>*{animation:none}}
 #appView .app-nav-item,#invView .app-nav-item{flex:0 0 auto;white-space:nowrap}
 .app-title-meta b{white-space:nowrap}
-@media (max-width:560px){.app-title-meta{flex-wrap:nowrap;padding:12px 12px;width:100%;justify-content:space-between}.app-title-meta>div{padding-inline:8px;min-width:0;flex:1 1 auto}.app-title-meta span{font-size:9.5px!important}.app-title-meta b{font-size:clamp(12px,3.6vw,15px)!important;display:block}}
+@media (max-width:560px){.app-title-meta{flex-wrap:nowrap;padding:12px 12px;width:100%;justify-content:space-between}.app-title-meta>div{padding-inline:8px;min-width:0;flex:1 1 auto}.app-title-meta span{font-size:9.5px!important}.app-title-meta b{font-size:clamp(12px,3.6vw,15px)!important;display:block;white-space:normal!important;overflow-wrap:anywhere;line-height:1.2}}
 html.app-open main#top>section,html.app-open main#top>.hero-score,html.app-open footer,html.app-open .nav-wrap{content-visibility:hidden;visibility:hidden}
 html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:paused!important}
 .tr-lab{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:999px;background:#fbf3d6;color:#8a6a0e;font-size:11px;font-weight:700;letter-spacing:.02em;vertical-align:middle;white-space:nowrap}
+.dx-tagrow{flex-wrap:wrap;row-gap:8px}.dx-tagrow .unit-sw{margin-left:auto}
+.dx-risk-tag{background:rgba(212,175,55,.18)!important;color:#fff}.dx-risk-tag em{font-style:normal;opacity:.75;font-weight:600}.dx-risk-tag b{color:#f3d77a}.dx-risk-tag[hidden]{display:none!important}
+.dx-acc-risk{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid rgba(11,20,64,.08);font-size:13px}.dx-acc-risk span{color:#5b6378;font-weight:600}.dx-acc-risk b{color:#0b1440;font-weight:800;background:#fbf3d6;border-radius:999px;padding:3px 10px}
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
 #appView .plan-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#E5323E,#b81d2a);color:#fff;box-shadow:0 12px 30px -16px rgba(229,50,62,.7)}
 #appView .plan-bar[hidden]{display:none!important}
@@ -2850,7 +2853,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
     <div class="dx-top">
       <div class="dx-hero">
         <div class="dx-hero-l">
-          <div class="dx-tagrow"><span class="dx-tag" id="dxTag">Auto Trading</span><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div></div>
+          <div class="dx-tagrow"><span class="dx-tag" id="dxTag">Auto Trading</span><span class="dx-tag dx-risk-tag" id="dxRiskTag" hidden><em>Risk profile</em> <b id="dxRiskTagV"></b></span><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div></div>
           <span class="dx-lbl">Total account value</span>
           <b class="dx-val" id="dxVal">&mdash;</b>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
@@ -2861,6 +2864,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
         <div class="dx-acc-row"><span class="dx-acc-ic">MT5</span><div><b id="dxAcct">&mdash;</b><small id="dxPlan">&mdash;</small></div><b class="dx-acc-bal" id="dxBal">&mdash;</b></div>
         <div class="dx-acc-st" id="dxSt">&mdash;</div>
+        <div class="dx-acc-risk" id="dxRiskW" hidden><span>Risk profile</span><b id="dxRisk">&mdash;</b></div>
         <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
     </div>
@@ -7468,8 +7472,12 @@ tick();setInterval(tick,5000);})();
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
     if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
     var sp=$('dxSpark'), C=((window.FTM&&FTM.data&&FTM.data.closed)||[]).filter(function(t){return t.closeTime&&t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
-    var showSp=C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
-    if(showSp){ var acc=0, pts=C.map(function(t){acc+=t.pl;return acc;}); var step=Math.max(1,Math.floor(pts.length/60)); pts=pts.filter(function(v,i){return i%step===0||i===pts.length-1;});
+    var vacc=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount();
+    var showSp=!!vacc || C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
+    var rt=vacc&&!vacc.isMaster&&!vacc.isPreview&&vacc.riskTier, rtx=rt?lt({CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[String(rt).toUpperCase()]||String(rt)):'';
+    var rtg=$('dxRiskTag'); if(rtg){ rtg.hidden=!rt; if(rt) $('dxRiskTagV').textContent=rtx; }
+    var rw=$('dxRiskW'); if(rw){ rw.hidden=!rt; if(rt) $('dxRisk').textContent=rtx; }
+    if(showSp){ var acc=0, pts=[0].concat(C.map(function(t){acc+=t.pl;return acc;})); if(pts.length<2) pts.push(0); var step=Math.max(1,Math.floor(pts.length/60)); pts=pts.filter(function(v,i){return i%step===0||i===pts.length-1;});
       var mn=Math.min.apply(null,pts), mx=Math.max.apply(null,pts), r=(mx-mn)||1;
       var d=pts.map(function(v,i){return (i?'L':'M')+(i/(pts.length-1)*160).toFixed(1)+' '+(64-(v-mn)/r*58).toFixed(1);}).join(' ');
       var up=pts[pts.length-1]>=pts[0], c=up?'#3CC98A':'#E5323E';
