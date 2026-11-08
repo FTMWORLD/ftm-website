@@ -39,6 +39,7 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Log in with a code: enter the email, leave the password empty, press Continue. FTM emails "Your FTM login code" with a 6-digit code and a Log in to FTM button; either works once.
 - Forgot password: Log in > Forgot password? emails a reset link; after saving the new password the customer goes straight into the client area.
 - On a phone, swipe left in the client area to open Investment and swipe right to go back to Auto Trading (or tap the Auto Trading / Investment switch at the top).
+- Welcome trade: FTM opens one small first trade on a newly connected account so the customer can see copying working; it is marked "Welcome trade" in open positions and trade history.
 - Dashboard: the top shows total account value, then Balance, Equity, Profit this year and Max drawdown, then circles for Win rate, By market (share of trades per market), Trade count and Win streak. When an account is already connected, the Connect your trading account form is folded away: press Add account to open it.
 - Billing: the plan type (Annual, 5 Years or Lifetime) shows in green at the top of the client area and under Accounts > Subscription and billing, with the paid-until date (Lifetime has no end date). Payment receipts are emailed by Stripe.
 - Page looks wider than the phone or zoomed in: reload the page; the site has been fixed to stop phones zooming in on forms.
