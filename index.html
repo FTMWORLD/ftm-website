@@ -1870,6 +1870,16 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-banner-txt .inv-eyebrow{display:none}
   }
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
+#appView .plan-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#E5323E,#b81d2a);color:#fff;box-shadow:0 12px 30px -16px rgba(229,50,62,.7)}
+#appView .plan-bar[hidden]{display:none!important}
+#appView .plan-bar p{margin:0;flex:1;font-size:14.5px;line-height:1.45;color:#fff}
+#appView .plan-bar .fb-ic{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);display:grid;place-items:center;flex:none}#appView .plan-bar .fb-ic svg{width:20px;height:20px}
+#appView .plan-bar .btn{background:#fff;color:#E5323E;border:0}
+#appView .plan-bar.soon{background:linear-gradient(90deg,#0b1440,#152a7a);border:1px solid rgba(212,175,55,.6)}
+#appView .plan-bar.soon .btn{background:#D4AF37;color:#0b1440}
+#appView.lapsed .cx-card .app-form,#appView.lapsed .cx-card>.hint,#appView.lapsed .cx-open-btn{display:none!important}
+#appView.lapsed .cx-lock{display:flex}
+
 .cx-lock{display:none;align-items:center;gap:14px;margin-top:14px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#fff1f2,#fff);border:1px solid rgba(229,50,62,.25);flex-wrap:wrap}
 .cx-lock p{margin:0;flex:1;min-width:200px;font-size:14px;color:#0b1440;font-weight:600;line-height:1.45}
 .cx-lock-ic{width:40px;height:40px;border-radius:50%;background:#E5323E;color:#fff;display:grid;place-items:center;flex:none}
@@ -2740,6 +2750,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </div>
     </nav>
     <div class="app-content">
+      <div class="plan-bar" id="planBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><p id="planBarTxt"></p><a class="btn btn-sm js-free-plans" href="#pricing">See the plans</a></div>
       <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> Subscribe to link your trading account and let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
       <div class="nodata-bar" id="noDataBar" hidden><b>Trade history for this account is still loading.</b> FTM is reading it from your broker. The statistics appear here as soon as it arrives.</div>
       <div class="np-panel" id="noprodA" hidden>
@@ -3493,11 +3504,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     <div class="paid-card">
       <h2>What happens next</h2>
       <ol class="paid-steps">
-        <li><b>Come back and log in</b><p>Click "Log in" and enter the email address you paid with.</p></li>
-        <li><b>Enter the code we email you</b><p>We will send a 6-digit code to that email. No password needed to get in.</p></li>
+        <li><b>Check your email</b><p>We sent “Welcome to FTM: create your password” to the email you paid with.</p></li>
+        <li><b>Create your password</b><p>Tap Create my password in that email. You go straight into your client area.</p></li>
         <li id="paidStep3"><b>You're in</b><p>You can optionally set a password from your client area, but the emailed code always works too.</p></li>
       </ol>
-      <p class="paid-note">A code not arriving within a few minutes? Look in spam or promotions, then contact us and we will sort it out.</p>
+      <p class="paid-note">Email not arriving within a few minutes? Look in spam or promotions, then contact us and we will sort it out.</p>
       <p class="paid-ref" id="paidRef" hidden></p>
     </div>
 
@@ -5356,19 +5367,32 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
         var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',EXPIRED:'Expired',NONE:'Active'}[status]||'Active');
-        F.planFree=false; F.planStatus=status||'ACTIVE'; F.planEnd=end||null; F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); h.classList.remove('plan-free'); } if(F.renderActivate) F.renderActivate();
+        F.planFree=false; F.planStatus=status||'ACTIVE'; F.planEnd=end||null; if(F.planBar) F.planBar(); F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); h.classList.remove('plan-free'); } if(F.renderActivate) F.renderActivate();
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',(F.planName&&F.planOn)?tr(F.planName)+' · '+st:st).replace('{}',d);
       };
       return F.remote.fetchBilling().then(function(j){ F.planLifetime=!!(j&&(j.lifetime||j.plan==='LIFETIME')); F.planName=(j&&{ANNUAL:'Annual',FIVE_YEARS:'5 Years',LIFETIME:'Lifetime'}[j.plan])||null; put(j&&j.status, j&&j.period_end); }).catch(function(){ put('ACTIVE',null); });
     }
     F.showPlan = showPlan;
+    F.planBar = function(){
+      var bar=document.getElementById('planBar'), txt=document.getElementById('planBarTxt'), app=document.getElementById('appView'); if(!bar||!txt) return;
+      var st=F.planStatus, lapsed=(st==='EXPIRED'||st==='CANCELED'), due=(st==='PAST_DUE');
+      var soon=(st==='ACTIVE'||st==='NONE') && F.planName==='5 Years' && F.planEnd && (Date.parse(F.planEnd)-Date.now())<30*864e5 && Date.parse(F.planEnd)>Date.now();
+      var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+      var html='';
+      if(lapsed) html=tr('<b>Your plan has ended.</b> Renew to keep FTM MACHINE trading for you. Your accounts and history stay as they are.');
+      else if(due) html=tr('<b>Your last payment did not go through.</b> Stripe has emailed you a link to update your card, so FTM MACHINE keeps trading for you.');
+      else if(soon) html=tr('<b>Your plan ends on {}.</b> Renew to keep FTM MACHINE trading without a break.').replace('{}',new Date(F.planEnd).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}));
+      txt.innerHTML=html; bar.hidden=!html; bar.classList.toggle('soon',!!soon&&!lapsed&&!due);
+      if(app) app.classList.toggle('lapsed',lapsed);
+    };
     F.resetPlan = function(){
       F.planName=null; F.planEnd=null; F.planLifetime=false; F.planStatus=null; F.planOn=false;
       F.planFree=!!(F.session && F.session.email);
       F.planLabel=F.planFree?((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Free account'):'Free account'):null;
       var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel||'—'; h.classList.remove('plan-on'); h.classList.toggle('plan-free',F.planFree); }
       var line=document.getElementById('ivPlanLine'); if(line) line.textContent=((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Subscription details will appear here once your plan is linked to your account.'):'Subscription details will appear here once your plan is linked to your account.');
+      F.planStatus=null; if(F.planBar) F.planBar();
       if(F.renderActivate) F.renderActivate();
     };
 
@@ -7185,10 +7209,30 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     document.getElementById('paidHome').addEventListener('click',function(e){ e.preventDefault(); close(); });
     view.querySelector('.js-login').addEventListener('click',close);
+    function activate(kind){
+      var A=window.FTM&&window.FTM.auth; if(!(A&&A.ready&&A.ready()&&A.restoreSession)) return show(kind);
+      A.restoreSession().then(function(r){
+        if(!r) return show(kind);
+        show(kind);
+        var lead=document.getElementById('paidLead'), base=lead.textContent, tries=0;
+        var t=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+        lead.textContent=t('Payment received. Activating your plan…');
+        var want=kind||'auto';
+        (function poll(){
+          A.restoreSession().then(function(r2){
+            if(r2 && r2.products && r2.products.indexOf(want)>-1){
+              close(); window.FTM.session={email:r2.email,products:r2.products,name:r2.name||''};
+              var l=document.querySelector('.js-login'); if(l) l.click();
+            } else if(++tries<20) setTimeout(poll,3000);
+            else lead.textContent=base;
+          }).catch(function(){ if(++tries<20) setTimeout(poll,3000); else lead.textContent=base; });
+        })();
+      }).catch(function(){ show(kind); });
+    }
     var h=(location.hash||'').toLowerCase();
-    if(h==='#paid-auto')show('auto');
-    else if(h==='#paid-invest')show('invest');
-    else if(h==='#paid')show('');
+    if(h==='#paid-auto')activate('auto');
+    else if(h==='#paid-invest')activate('invest');
+    else if(h==='#paid')activate('');
   })();
 </script>
 <script>
@@ -7801,6 +7845,21 @@ tick();setInterval(tick,5000);})();
     $('billPlan').classList.toggle('bill-free-plan',!hasAuto);
   }
   F.renderActivate=render;
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href^="https://buy.stripe.com/"]'); if(!a) return;
+    var base=a.getAttribute('data-base')||a.getAttribute('href').split('?')[0]; a.setAttribute('data-base',base);
+    var s=F.session; a.setAttribute('href', (s&&s.email) ? base+'?prefilled_email='+encodeURIComponent(s.email) : base);
+  },true);
+  var lastCheck=0;
+  function recheck(){
+    var app=$('appView'), s=F.session, A=F.auth;
+    if(!app||app.hidden||!s||!s.email||(s.products&&s.products.indexOf('auto')>-1)||!A||!A.restoreSession||document.visibilityState!=='visible'||Date.now()-lastCheck<15000) return;
+    lastCheck=Date.now();
+    A.restoreSession().then(function(r){
+      if(r && r.products && r.products.length && r.email===s.email){ F.session={email:r.email,products:r.products,name:r.name||s.name||''}; var l=document.querySelector('.js-login'); if(l) l.click(); }
+    }).catch(function(){});
+  }
+  document.addEventListener('visibilitychange',recheck); window.addEventListener('focus',recheck);
   document.addEventListener('click',function(e){
     var t=e.target.closest&&e.target.closest('#actGo,#billChat'); if(!t) return;
     if(t.id==='billChat'){ var l=document.querySelector('#acctA .um-live'); if(l) l.click(); return; }
