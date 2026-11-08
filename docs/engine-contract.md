@@ -4,6 +4,17 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-08 — WELCOME TRADE ON, LABELLED "Welcome trade" (commit 418cb1c, API restarted 11:15 Berlin)
+
+Gospel: "okay do that". No notice on the website. The welcome trade is switched on (FTM_WELCOME_TRADE=ON; it was OFF
+11:01-11:15) and every welcome trade carries its own label in the customer's own data:
+- GET /customer/accounts/:id/history: trades[].welcome_trade (bool), trades[].label ("Welcome trade" or null); a closed
+  welcome trade has closed_by "Welcome trade" (shown wherever closed_by is shown today).
+- GET /customer/accounts/:id/positions: positions[].welcome_trade, positions[].label (same values).
+Website: please show `label` next to the trade where it is not null. Nothing else changes.
+Live proof 11:16: account 5739503's history labels exactly its 7 Nov welcome trade (BTCUSD SELL 0.01, -0.03) and none of
+its 28 master copies; dry run 11:15 reads FTM_WELCOME_TRADE ON, all 8 checks pass.
+
 ## 2026-11-08 — AUTOMATIC SAFE RE-LINK + WELCOME TRADE ON (commit d5ad053, API restarted 10:49 Berlin)
 
 Gospel: "Both, I'm at the screen". Live proof 10:50 Berlin over HTTP with a throw-away customer (removed): an unverified
