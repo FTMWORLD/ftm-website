@@ -4,6 +4,27 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-08 — MASTER PREVIEW FOR EVERY CUSTOMER (commit e3e7083, website request "master preview", API restarted 07:03 Berlin)
+
+Gospel: free customers see the FTM master account as "this is how your account looks once you subscribe".
+- `GET /customer/accounts`: every customer without a view-only master row of their own (free customers included) gets
+  one extra card, after their own accounts: `account_id` `f7a00000-0000-4000-8000-000000000001`, `view_only: true`,
+  `preview: true`, `preview_note` ("This is the FTM master account. Your own account looks like this once you
+  subscribe."), `view_only_label` / `status_text` "View only - FTM master account", `display_status` PAUSED,
+  balance / equity / floating_profit / open_positions / deposits / withdrawals filled. `account_number` and `server`
+  are null in the preview (the master's login is never sent). It never counts toward `account_limit`.
+- `GET /customer/accounts/{preview id}/history`, `/positions`, `/performance`, `/stats` answer as for Gospel's own
+  view-only card (the statistics sync's read of the master, else the master records).
+- Every control route answers 404 ACCOUNT_NOT_FOUND for the preview id: pause, resume, activate, risk_tier, password,
+  remove, close a position, stats refresh.
+- Gospel's own login (which has the master as its own view-only row) gets no second card.
+- Proven by `scripts/verify-master-preview.js` (12/12, a throw-away free customer through the real routes), now in the
+  deploy gate. Live proof 8 Nov 07:05 Berlin with a throw-away free login on the live API: one card (preview), balance
+  98208.47, equity 98224.63, history 18 closed, positions 1 open, performance and stats 200, pause / activate 404, the
+  master login in no response.
+- The same restart made the welcome-trade off switch live (`FTM_WELCOME_TRADE`, not set = OFF): no welcome trade is
+  opened for anyone; copying the master's open trades on a new account stays on.
+
 ## 2026-11-07 (late night) — PAID-UNTIL FOR EVERY CUSTOMER, WELCOME TRADE FOR EVERY PAYING CUSTOMER (commit 99ef8af, migration 040, API restarted 22:00 Berlin)
 
 - `PUT /billing/subscription`: an end date is never shortened (the later of the stored and the new `period_end` is

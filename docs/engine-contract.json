@@ -41,7 +41,8 @@
     "account_number is a string of digits (MT5 logins can carry leading zeros).",
     "The same 404 ACCOUNT_NOT_FOUND answers an unknown id, a malformed id, somebody else's account and a removed account; the three are deliberately indistinguishable.",
     "Three connected accounts per customer, one of them trading (is_trading). The others read status_reason PAUSED, shown as 'Connected - not trading'.",
-    "An FTM master login added by a customer becomes a view-only row (view_only: true, status PAUSED, label 'View only - FTM master account'): statistics, history, performance and remove work; activate, pause and password change answer 409 MASTER_ACCOUNT."
+    "An FTM master login added by a customer becomes a view-only row (view_only: true, status PAUSED, label 'View only - FTM master account'): statistics, history, performance and remove work; activate, pause and password change answer 409 MASTER_ACCOUNT.",
+    "Master preview (8 Nov 2026): every customer without a view-only master row of their own, free customers included, gets one extra card in GET /customer/accounts: account_id f7a00000-0000-4000-8000-000000000001, view_only: true, preview: true, preview_note, account_number and server null. It is not one of their accounts and never counts toward account_limit. GET history, positions, performance and stats answer for it; every control route (pause, resume, activate, risk_tier, password, remove, close a position, stats refresh) answers 404 ACCOUNT_NOT_FOUND."
   ],
   "display_status": {
     "ACTIVE": "Copying the FTM master.",
