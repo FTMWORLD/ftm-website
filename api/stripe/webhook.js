@@ -208,6 +208,16 @@ module.exports = async function handler(req, res) {
       }
     }
 
+    // Upgrade (for example Annual -> 5 Years or Lifetime): the old Annual subscription would keep renewing,
+    // so FTM is emailed the subscription to cancel in Stripe.
+    if (product === 'auto' && session.mode !== 'subscription') {
+      report.upgrade = await oldSubscriptions(email, session.id).then(async subs => {
+        if (!subs.length) return 'none';
+        await alertFtm('Upgrade: cancel the old Annual subscription', [['Customer', email], ['New plan checkout', String(session.id)], ['Cancel in Stripe', subs.join(', ')], ['Why', 'The customer bought a longer plan; the Annual subscription would otherwise renew and charge again']]).catch(() => {});
+        return 'alerted ' + subs.join(',');
+      }).catch(e => 'check failed: ' + e.message);
+    }
+
     // Investment paid by Stripe (Gospel, 2026-11-06): record it with the engine as the first deposit of a
     // contract, or a further deposit into the open one. Idempotent: the request id is derived from the session.
     if (product === 'invest' && userId) {
@@ -284,6 +294,16 @@ async function alertFtm(title, rows) {
     + '<p style="margin:12px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
   await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
     body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM payments' }, to: [{ email: 'ftmwebnation@gmail.com' }], subject: 'FTM: ' + title, htmlContent: html }) });
+}
+
+// Earlier subscription checkouts (Annual) for this email that are still running, from Stripe (read-only key).
+async function oldSubscriptions(email, exceptSession) {
+  const key = process.env.STRIPE_SECRET_KEY || process.env.STRIPE_API_KEY || process.env.STRIPE_RESTRICTED_KEY;
+  if (!key) return [];
+  const r = await fetch('https://api.stripe.com/v1/checkout/sessions?limit=20&customer_details[email]=' + encodeURIComponent(email), { headers: { Authorization: 'Bearer ' + key }, signal: AbortSignal.timeout(6000) });
+  if (!r.ok) return [];
+  const j = await r.json();
+  return (j.data || []).filter(x => x.id !== exceptSession && x.mode === 'subscription' && x.status === 'complete' && x.subscription).map(x => String(x.subscription));
 }
 
 async function addToCustomerList(email) {

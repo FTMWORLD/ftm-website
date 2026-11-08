@@ -29,6 +29,10 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - "Action required" reasons: login refused (check password, account number and server, then retry); not a hedging account (open a hedging MT5 account with the broker and connect that); the details logged into a different account number (check the number).
 - "Your broker does not allow trading on this account yet": usually a real account with no balance. Deposit funds at the broker. FTM checks again automatically every hour and starts copying as soon as trading is allowed; the customer does not need to remove or re-add the account.
 - Up to 3 trading accounts can be added; FTM MACHINE trades on one at a time. Switch with the menu (three dots) next to an account > Trade on this account. The same menu pauses trading, pauses and closes all trades, changes the risk profile, or removes the account.
+- Upgrading from a free account: log in, choose a plan and pay with the same email. No new password is needed; the plan appears in the client area automatically.
+- Renewing: Annual plans renew automatically each year. If a plan has ended, the client area says so and keeps everything (accounts, history); paying for a plan again switches FTM MACHINE back on without starting over.
+- Changing plan (for example Annual to 5 Years): buy the new plan with the same email. It is added to the account at once; FTM stops the old Annual renewal for you.
+- Payment failed: Stripe emails a link to update the card; FTM MACHINE keeps the account while it is updated.
 - Plan ended: when an Annual or 5 Years plan reaches its paid-until date the status shows Expired; the Activate panel then offers Choose a plan to renew.
 - What a free account includes: the client area shows the FTM master account as a preview of how a subscribed account looks. Connecting a trading account, the community and the leaderboard are for subscribers and investors; the client area shows See the plans and Invest now to upgrade.
 - Free account: Get started > or Create a free account (or the phone menu). FTM emails "Welcome to FTM: create your password"; its button opens the create-password screen, then the client area.
