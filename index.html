@@ -1880,6 +1880,9 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 @media (min-width:901px){.hero-photo .hp-alt{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16%),linear-gradient(180deg,transparent 0,#000 18%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 16%),linear-gradient(180deg,transparent 0,#000 18%);mask-composite:intersect}}
 @media (prefers-reduced-motion:reduce){.hero-photo .hp-alt{display:none}}
 .hero-code{opacity:.55}
+@keyframes swInR{from{transform:translateX(28px);opacity:.4}to{transform:none;opacity:1}}@keyframes swInL{from{transform:translateX(-28px);opacity:.4}to{transform:none;opacity:1}}
+.app.sw-in-r>*{animation:swInR .32s ease-out}.app.sw-in-l>*{animation:swInL .32s ease-out}
+@media (prefers-reduced-motion:reduce){.app.sw-in-r>*,.app.sw-in-l>*{animation:none}}
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
 #appView .plan-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#E5323E,#b81d2a);color:#fff;box-shadow:0 12px 30px -16px rgba(229,50,62,.7)}
 #appView .plan-bar[hidden]{display:none!important}
@@ -4543,7 +4546,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
-      if(window.FTM){ FTM.session=null; if(FTM.resetPlan) FTM.resetPlan(); }
+      if(window.FTM){ FTM.session=null; FTM._liveLoaded=false; if(FTM.resetPlan) FTM.resetPlan(); }
       window.__ftmWelcomed=0;
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
@@ -5349,7 +5352,9 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     function loadLive(){
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
+      var seq=F._loadSeq=(F._loadSeq||0)+1;
       return F.remote.fetchAccounts().then(function(accounts){
+        if(seq!==F._loadSeq) return true;
         if(!accounts.length){ F.data = emptyLiveData(); return true; }
 
         F.data.accounts = accounts;
@@ -5359,6 +5364,9 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         F.data.account = {currency: primary.currency || null, deposits:0, withdrawals:0};
         return F.remote.fetchAllExecutions(primary.accountId).then(function(closed){
           return F.remote.fetchPositions(primary.accountId).then(function(open){
+            if(seq!==F._loadSeq) return;
+            F._liveLoaded = true;
+            F.data.accounts = accounts; F.data.account = {currency: primary.currency || null, deposits:0, withdrawals:0};
             F.data.closed = closed;
             F.data.open = open;
             F._cache=F._cache||{}; F._cacheAt=F._cacheAt||{};
@@ -5366,13 +5374,18 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           });
         }).catch(function(err2){
           console.warn('FTM trade history/positions fetch failed (accounts still loaded):', err2);
-          F.data.closed = [];
-          F.data.open = [];
+          if(seq!==F._loadSeq) return;
+          var c0=F._cache&&F._cache[primary.accountId];
+          F.data.closed = c0?c0.closed:[];
+          F.data.open = c0?c0.open:[];
         }).then(function(){ return true; });
       }).catch(function(err){
 
         console.warn('FTM live data fetch failed:', err);
-        if(F.session) F.data = emptyLiveData();
+        if(seq!==F._loadSeq) return false;
+        // A passing network problem keeps the figures already on screen; only a real refusal clears them.
+        var hard=err && (err.status===401 || err.status===403 || err.code==='EMAIL_ALREADY_REGISTERED');
+        if(F.session && (hard || !(F.data.accounts||[]).length)) F.data = emptyLiveData();
         if(err && err.code==='EMAIL_ALREADY_REGISTERED'){
           var bar=document.getElementById('planBar'), txt=document.getElementById('planBarTxt');
           var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
@@ -7043,7 +7056,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var has=s.products.indexOf(p)!==-1, free=!s.products.length;
       A.hidden=p!=='auto'; I.hidden=p!=='invest';
 
-      if(free && F.emptyLiveData){ if(!F._sample)F._sample=F.data; F.data=F.emptyLiveData(); }
+      if(free && F.emptyLiveData && !F._liveLoaded){ if(!F._sample)F._sample=F.data; F.data=F.emptyLiveData(); }
       else if(F._sample && !(window.FTM.auth&&window.FTM.auth.ready())){ F.data=F._sample; F._sample=null; }
       A.classList.toggle('free', p==='auto' && !has);
       if(has && F.showPlan) F.showPlan();
@@ -7977,6 +7990,32 @@ tick();setInterval(tick,5000);})();
     if(t.id==='cxOpen'){ setTimeout(function(){ var f=$('appBroker'); if(f) f.focus(); },60); }
   },true);
   try{ draw(); }catch(e){}
+})();
+</script>
+<script>
+(function(){
+  var F=window.FTM; if(!F) return;
+  function scrollableX(el,stop){
+    for(var n=el; n && n!==stop; n=n.parentElement){
+      if(n.scrollWidth>n.clientWidth+4){ var o=getComputedStyle(n).overflowX; if(o==='auto'||o==='scroll') return true; }
+      if(n.matches && n.matches('input,textarea,select,svg,canvas,.cv-wrap,.chart-wrap,.app-nav,.prod-switch')) return true;
+    }
+    return false;
+  }
+  ['appView','invView'].forEach(function(id){
+    var box=document.getElementById(id); if(!box) return;
+    var x0=0,y0=0,t0=0,skip=false;
+    box.addEventListener('touchstart',function(e){ if(e.touches.length!==1){ skip=true; return; } var t=e.touches[0]; x0=t.clientX; y0=t.clientY; t0=Date.now(); skip=scrollableX(e.target,box)||!!document.querySelector('.mdl:not([hidden]),#pwModal:not([hidden])'); },{passive:true});
+    box.addEventListener('touchend',function(e){
+      if(skip||!F.openArea) return; var t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+      if(Math.abs(dx)<70 || Math.abs(dx)<Math.abs(dy)*1.6 || Date.now()-t0>800) return;
+      var to = dx<0 ? 'invest' : 'auto';
+      if((to==='invest' && id==='invView') || (to==='auto' && id==='appView')) return;
+      F.openArea(to);
+      var nb=document.getElementById(to==='invest'?'invView':'appView');
+      if(nb){ nb.scrollTop=0; nb.classList.remove('sw-in-l','sw-in-r'); void nb.offsetWidth; nb.classList.add(dx<0?'sw-in-r':'sw-in-l'); }
+    },{passive:true});
+  });
 })();
 </script>
 <script>
