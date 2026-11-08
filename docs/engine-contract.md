@@ -4,6 +4,25 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-08 — AUTOMATIC SAFE RE-LINK + WELCOME TRADE ON (commit d5ad053, API restarted 10:49 Berlin)
+
+Gospel: "Both, I'm at the screen". Live proof 10:50 Berlin over HTTP with a throw-away customer (removed): an unverified
+email got 409 RELINK_EMAIL_NOT_VERIFIED; the retry with the website's confirmation got 200 as that customer; audit
+CUSTOMER_LOGIN_RELINKED holds the record as it was.
+
+For the website (WR from FTM MACHINE, website commit 0d533a9):
+- Send `X-FTM-Relink-Capable: 1` and `X-FTM-Auth-Email-Verified: true|false` (server-side, from email_confirmed_at).
+- A 409 EMAIL_ALREADY_REGISTERED then carries `relink: { reason, previous_subject }`. The first reason is
+  RELINK_NOT_CONFIRMED when Email-Verified is sent (RELINK_NOT_REQUESTED without it): retry once on either, when the email
+  is verified and Supabase getUserById(previous_subject) answers not found, adding `X-FTM-Relink-From-Subject:
+  <previous_subject>` and `X-FTM-Relink-Previous-Gone: true`.
+- Refusal reasons: RELINK_EMAIL_NOT_VERIFIED, RELINK_NOT_CONFIRMED, RELINK_PREVIOUS_LOGIN_EXISTS, RELINK_NO_SINGLE_RECORD,
+  RELINK_NEW_LOGIN_HAS_RECORD, RELINK_CUSTOMER_CLOSED, RELINK_RECENTLY_RELINKED (24 h). Each alerts FTM.
+
+Welcome trade: FTM_WELCOME_TRADE=ON. Dry run 10:50 (ops\dry-runs\dry-run-2026-11-08-09-50.txt): all 8 checks PASS, no
+welcome trade on any existing or copying account. A new account gets one only when the master has NO open position and
+the account never had an FTM trade (rule-2 guards). The connect page must tell the customer (FTM MACHINE's text).
+
 ## 2026-11-08 — SAFETY GUARDS ON EVERY TRADE THE ENGINE OPENS (commit 2fb3ea8, API restarted 07:39 Berlin)
 
 Live proof 07:40-07:41 Berlin: a fake "unknown" position on the test row 9900000099 (no terminal, no broker) was flagged
