@@ -339,7 +339,7 @@ Sections in page order, with the line where each begins:
 
 | Where | URL |
 |---|---|
-| Open account, all "Learn more", Create account, step 1 | `https://t.deriv.link?t=M44EJ6HPC8Z8` |
+| Open account, all "Learn more", Create account, step 1 | `https://t.deriv.link?t=ECECYN33UYBT` (owner, 9 Nov 2026; was M44EJ6HPC8Z8) |
 | All partner and affiliate buttons | `https://t.deriv.link?t=M8A8ZGSDWZNB` |
 | Annual plan | `https://buy.stripe.com/eVq00idqj6Fm7Jo2Jm7wA0f` |
 | 5 Years plan | `https://buy.stripe.com/aFa3cubib3ta3t897K7wA0g` |
