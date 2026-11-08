@@ -947,7 +947,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .gs-card:hover .gs-go svg{transform:translateX(5px)}
   .gs-foot{margin-top:30px;color:rgba(255,255,255,.75);font-size:15px}
   .gs-foot.gs-free{margin-top:8px}
-  .mm-free{background:#fff;border:2px solid #D4AF37;color:#0b1440;font-weight:800;margin-top:10px;width:100%}
+  .mm-login{background:#0b1440;border:2px solid #0b1440;color:#fff;font-weight:800;margin-top:10px;width:100%}
+  .mm-free{background:#D4AF37;border:2px solid #D4AF37;color:#0b1440;font-weight:800;margin-top:10px;width:100%}
   .gs-login{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--gold-light);text-decoration:underline;cursor:pointer}
   @media (max-width:700px){.gs-grid{grid-template-columns:1fr}.gs-card p{min-height:0}.gs-inner{padding-top:64px}}
   @media (prefers-reduced-motion:reduce){.gs-card,.gs-go svg{transition:none}}
@@ -2153,6 +2154,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 </div>
 <div class="mobile-menu" id="mobileMenu">
   <a class="btn btn-red js-start mm-start" href="#get-started" data-i18n="btn.start">Get started</a>
+  <button type="button" class="btn mm-login js-login">Log in</button>
   <button type="button" class="btn mm-free js-signup">Create a free account</button>
   <details class="mm-sec"><summary>Auto Trading</summary><div class="mm-links"><a href="#auto">FTM MACHINE</a><a href="#how">How it works</a><a href="#pricing">Subscription plans</a><a href="/performance.html">Performance record</a></div></details>
   <details class="mm-sec"><summary>Investment</summary><div class="mm-links"><a href="#invest">Investment</a><a href="#ivCalc">Work out your share</a><a href="#faq" class="js-faq">Frequently asked questions</a></div></details>
@@ -2164,7 +2166,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   <details class="mm-sec mm-lang"><summary>Language</summary>
   <div class="mobile-lang" id="mobileLang"><label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="mobileLangSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label></div>
   </details>
-  <button class="btn btn-outline js-login">Log in</button>
 </div>
 
 <main id="top">
@@ -3570,10 +3571,14 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     var client = null;
     var recoveryHandler = null;
     var inviteLink = false;
-    var setpwLink = false, setpwFired = false, paidLink = false;
+    var setpwLink = false, setpwFired = false, paidLink = false, loginLink = false;
     var pendingKind = null;
 
     function ready(){ return !!client; }
+    function authEmail(email, mode){
+      return fetch('/api/v1/auth-email',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:email,mode:mode})})
+        .then(function(r){ if(!r.ok){ var e=new Error('HTTP '+r.status); e.status=r.status; throw e; } return r.json(); });
+    }
     function fireRecovery(kind){
       if(recoveryHandler) recoveryHandler(kind); else pendingKind = kind;
     }
@@ -3583,6 +3588,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(event==='PASSWORD_RECOVERY'){
           if(setpwLink){ inviteLink=false; if(!setpwFired){ setpwFired=true; fireRecovery('invite'); } }
           else fireRecovery('recovery');
+        }
+        else if(loginLink && (event==='SIGNED_IN' || event==='INITIAL_SESSION')){
+          loginLink = false;
+          if(!setpwFired){ setpwFired=true; fireRecovery('login'); }
         }
         else if(inviteLink && (event==='SIGNED_IN' || event==='INITIAL_SESSION')){
           inviteLink = false;
@@ -3613,7 +3622,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
 
         setpwLink = /[?&]setpw=1(&|$)/.test(location.search||'');
-        paidLink = setpwLink || /[#&?]type=invite(&|$)/.test((location.hash||'')+'&'+(location.search||''));
+        paidLink = (setpwLink && !/[?&]free=1(&|$)/.test(location.search||'')) || (!setpwLink && /[#&?]type=invite(&|$)/.test((location.hash||'')+'&'+(location.search||'')));
+        loginLink = /[?&]login=1(&|$)/.test(location.search||'') && /[#&]access_token=/.test(location.hash||'');
         inviteLink = /[#&?]type=(invite|signup)(&|$)/.test((location.hash||'')+'&'+(location.search||'')) || (setpwLink && /[#&]access_token=/.test(location.hash||''));
         client = window.supabase.createClient(url, anonKey);
         wireRecovery();
@@ -3625,9 +3635,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(pendingKind){ var k=pendingKind; pendingKind=null; cb(k); }
       },
 
-      resetPassword: function(email){
-        return client.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin + '/'});
-      },
+      resetPassword: function(email){ return authEmail(email,'reset'); },
+      sendSignup: function(email){ return authEmail(email,'signup'); },
 
       signIn: function(email, password){
         return client.auth.signInWithPassword({email:email, password:password}).then(function(r){
@@ -3639,10 +3648,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       },
       signOut: function(){ return client.auth.signOut(); },
 
-      sendOtp: function(email){ return client.auth.signInWithOtp({email:email, options:{shouldCreateUser:true}}); },
+      sendOtp: function(email){ return authEmail(email,'login'); },
 
       verifyOtp: function(email, code){
-        return client.auth.verifyOtp({email:email, token:code, type:'email'}).then(function(r){
+        return client.auth.verifyOtp({email:email, token:code, type:'email'}).then(function(r0){ return r0.error ? client.auth.verifyOtp({email:email, token:code, type:'magiclink'}) : r0; }).then(function(r){
           if(r.error) throw new Error(r.error.message.indexOf('expired')!==-1 ? 'That code has expired. Request a new one.' : 'That code is not correct.');
           return fetchEntitlements(r.data.user.id).then(function(products){
             return {email:r.data.user.email, products:products, userId:r.data.user.id, name:((r.data.user.user_metadata||{}).full_name||''), passwordSet:!!(r.data.user.user_metadata && r.data.user.user_metadata.password_set)};
@@ -4316,6 +4325,16 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       }).catch(function(e2){ console.warn('FTM.auth: session restore failed:', e2); lift(); });
 
       window.FTM.auth.onPasswordRecovery(function(kind){
+        if(kind==='login'){
+          if(history.replaceState) history.replaceState(null,'',location.pathname);
+          window.FTM.auth.restoreSession().then(function(r){
+            lift();
+            if(!r) return;
+            window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products,name:r.name||''};
+            if(r.passwordSet) enter(r.email,r.products,false,r.name); else promptSetPassword(r);
+          }).catch(function(){ lift(); });
+          return;
+        }
         if(kind==='invite'){
           if(history.replaceState) history.replaceState(null,'',location.pathname);
           window.FTM.auth.restoreSession().then(function(r){
@@ -4344,7 +4363,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(!/[?&]setpw=1(&|$)/.test(q) || !/(^#|&)error/.test(h)) return;
         var m=q.match(/[?&]e=([^&#]+)/), mail=m?decodeURIComponent(m[1]):'';
         if(history.replaceState) history.replaceState(null,'',location.pathname);
-        if(mail) fetch('/api/v1/password-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail})}).catch(function(){});
+        if(mail) fetch('/api/v1/password-link',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,free:/[?&]free=1(&|$)/.test(q)})}).catch(function(){});
         lift(); open();
         if(mail) emailEl.value=mail;
         var msg='This link has expired or was already used. We have emailed you a new one: open the newest FTM email and tap Create my password. Or log in now: leave the password empty and tap Continue to get a 6-digit code.';
@@ -7172,7 +7191,7 @@ tick();setInterval(tick,5000);})();
                   show(true); f.hidden=true;
                   var sent=document.getElementById('suSent'); document.getElementById('suSentTo').textContent=mail; sent.hidden=false;
                   var web=mailWeb(mail), om=document.getElementById('suOpenMail'); om.hidden=!web; if(web)om.href=web;
-                  FTM.auth.sendOtp(mail).catch(function(){});
+                  FTM.auth.sendSignup(mail).catch(function(){});
                 }
                 else if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
               else msg(f,'You are subscribed. Thank you.',true);

@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
     }
     if (found) {
       const meta = found.user_metadata || {};
-      await sendPasswordEmail(admin, email, { name: meta.full_name || '', fresh: true });
+      await sendPasswordEmail(admin, email, { name: meta.full_name || '', fresh: true, free: body.free === true });
     }
   } catch (e) {
     console.error('password-link: failed for', email, e.message);
