@@ -61,7 +61,23 @@ async function verifyCustomer(req) {
   // this is real verification, not a decode-and-trust of the JWT payload.
   const { data, error } = await getSupabaseAdmin().auth.getUser(token);
   if (error || !data || !data.user) return null;
+  verified.set(data.user.id, { emailVerified: !!data.user.email_confirmed_at, createdAt: data.user.created_at || null, at: Date.now() });
   return data.user; // { id, email, ... } — verified
+}
+
+/* Facts about each verified login, read server-side from Supabase (never from the browser), sent to the
+   engine for its automatic re-link (contract: X-FTM-Relink-Capable). Kept per warm instance. */
+const verified = new Map();
+
+// Re-link only when the earlier login is really gone from Supabase: a definite "user not found".
+async function previousLoginGone(subject) {
+  if (!/^[0-9a-f-]{36}$/i.test(String(subject || ''))) return false;
+  try {
+    const r = await getSupabaseAdmin().auth.admin.getUserById(String(subject));
+    if (r && r.data && r.data.user) return false;
+    const e = r && r.error;
+    return !!(e && (e.status === 404 || /not.?found/i.test(e.message || '')));
+  } catch (e) { return false; }
 }
 
 /* Calls the FTM engine through the Cloudflare Access tunnel. `customerId`
@@ -86,15 +102,45 @@ async function callEngine(path, { method = 'GET', body = null, authSubject = nul
   };
   if (authSubject !== null) headers['X-FTM-Auth-Subject'] = String(authSubject);
   if (authEmail !== null) headers['X-FTM-Auth-Email'] = String(authEmail);
+  const facts = authSubject !== null ? verified.get(String(authSubject)) : null;
+  if (authSubject !== null) {
+    headers['X-FTM-Relink-Capable'] = '1';
+    if (facts) {
+      headers['X-FTM-Auth-Email-Verified'] = facts.emailVerified ? 'true' : 'false';
+      if (facts.createdAt) headers['X-FTM-Auth-Created-At'] = String(facts.createdAt);
+    }
+  }
 
-  const r = await fetch(`${process.env.FTM_ENGINE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-    signal: AbortSignal.timeout(timeoutMs)
-  });
+  const send = async (h) => {
+    const r = await fetch(`${process.env.FTM_ENGINE_URL}${path}`, {
+      method,
+      headers: h,
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(timeoutMs)
+    });
+    const j = await r.json().catch(() => ({}));
+    return { r, j };
+  };
 
-  const j = await r.json().catch(() => ({}));
+  let { r, j } = await send(headers);
+
+  // Automatic re-link (engine contract): retry ONCE when the email belongs to an earlier login that no longer
+  // exists in Supabase and this login's email is verified. Never on a guess.
+  const rl = j && j.error === 'EMAIL_ALREADY_REGISTERED' && j.relink;
+  if (r.status === 409 && rl && rl.reason === 'RELINK_NOT_REQUESTED' && rl.previous_subject && facts && facts.emailVerified
+      && String(rl.previous_subject) !== String(authSubject) && await previousLoginGone(rl.previous_subject)) {
+    const h2 = Object.assign({}, headers, {
+      'X-FTM-Relink-From-Subject': String(rl.previous_subject),
+      'X-FTM-Relink-Previous-Gone': 'true',
+      'X-FTM-Auth-Email-Verified': 'true'
+    });
+    ({ r, j } = await send(h2));
+    if (r.ok) console.error('engine re-link done for', authEmail);
+    else console.error('engine re-link refused for', authEmail, j && j.relink && j.relink.reason);
+  }
+
+  // The earlier login's id never leaves the server.
+  if (j && j.relink) { j = Object.assign({}, j); j.relink = { reason: j.relink.reason }; }
   return { ok: r.ok && j.ok !== false, status: r.status, body: j };
 }
 
