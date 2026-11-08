@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Этот счёт больше не активен в FTM. Удалите его и добавьте снова, чтобы продолжить.",
 "This account is no longer active. Please contact support.": "Этот счёт больше не активен. Обратитесь в поддержку.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Этот счёт ещё не готов. Дождитесь, пока он будет отображаться как подключённый, и попробуйте снова.",
+"This account is on server {}. Remove it and add it again with that server.": "Этот счёт находится на сервере {}. Удалите его и добавьте снова с этим сервером.",
 "This account is still being removed. Please wait a minute and try again.": "Этот счёт ещё удаляется. Подождите минуту и попробуйте снова.",
 "This account needs attention. Please contact support.": "Этому счёту требуется внимание. Обратитесь в поддержку.",
 "This account still has open copied positions. You can remove it once they have closed.": "На этом счёте ещё есть открытые скопированные позиции. Вы сможете удалить его после их закрытия.",

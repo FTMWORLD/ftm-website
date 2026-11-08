@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "यह खाता अब FTM पर सक्रिय नहीं है। जारी रखने के लिए इसे हटाकर दोबारा जोड़ें।",
 "This account is no longer active. Please contact support.": "यह खाता अब सक्रिय नहीं है। कृपया सहायता से संपर्क करें।",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "यह खाता अभी तैयार नहीं है। इसके कनेक्टेड दिखने तक प्रतीक्षा करें, फिर से प्रयास करें।",
+"This account is on server {}. Remove it and add it again with that server.": "यह खाता सर्वर {} पर है। इसे हटाकर उसी सर्वर के साथ दोबारा जोड़ें।",
 "This account is still being removed. Please wait a minute and try again.": "यह खाता अभी भी हटाया जा रहा है। कृपया एक मिनट रुककर फिर से कोशिश करें।",
 "This account needs attention. Please contact support.": "इस खाते पर ध्यान देने की ज़रूरत है। कृपया सहायता से संपर्क करें।",
 "This account still has open copied positions. You can remove it once they have closed.": "इस खाते में अभी भी खुली कॉपी की गई पोज़िशन हैं। उनके बंद होने के बाद आप इसे हटा सकते हैं।",

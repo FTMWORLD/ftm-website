@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "لم يعد هذا الحساب نشطًا على FTM. احذفه وأضِفه مرة أخرى للمتابعة.",
 "This account is no longer active. Please contact support.": "هذا الحساب لم يعد نشطاً. يرجى التواصل مع الدعم.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "هذا الحساب غير جاهز بعد. انتظر حتى يظهر متصلًا، ثم حاول مرة أخرى.",
+"This account is on server {}. Remove it and add it again with that server.": "هذا الحساب على الخادم {}. احذفه وأضِفه مرة أخرى باستخدام ذلك الخادم.",
 "This account is still being removed. Please wait a minute and try again.": "لا يزال هذا الحساب قيد الإزالة. يرجى الانتظار دقيقة والمحاولة مرة أخرى.",
 "This account needs attention. Please contact support.": "هذا الحساب يحتاج إلى انتباه. يرجى التواصل مع الدعم.",
 "This account still has open copied positions. You can remove it once they have closed.": "لا يزال لهذا الحساب مراكز منسوخة مفتوحة. يمكنك إزالته بعد إغلاقها.",

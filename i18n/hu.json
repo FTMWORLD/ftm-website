@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Ez a fiók már nem aktív az FTM-en. A folytatáshoz távolítsa el, és adja hozzá újra.",
 "This account is no longer active. Please contact support.": "Ez a számla már nem aktív. Kérjük, lépjen kapcsolatba az ügyfélszolgálattal.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Ez a fiók még nem áll készen. Várjon, amíg csatlakoztatottként jelenik meg, majd próbálja újra.",
+"This account is on server {}. Remove it and add it again with that server.": "Ez a számla a(z) {} szerveren van. Távolítsa el, és adja hozzá újra ezzel a szerverrel.",
 "This account is still being removed. Please wait a minute and try again.": "Ez a számla még törlés alatt áll. Várjon egy percet, majd próbálja újra.",
 "This account needs attention. Please contact support.": "Ez a számla figyelmet igényel. Kérjük, lépjen kapcsolatba az ügyfélszolgálattal.",
 "This account still has open copied positions. You can remove it once they have closed.": "Ezen a számlán még nyitott másolt pozíciók vannak. Eltávolíthatja, ha lezárultak.",

@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Bu hesap artık FTM'de aktif değil. Devam etmek için kaldırıp yeniden ekleyin.",
 "This account is no longer active. Please contact support.": "Bu hesap artık etkin değil. Lütfen destekle iletişime geçin.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Bu hesap henüz hazır değil. Bağlı olarak görünene kadar bekleyin, ardından tekrar deneyin.",
+"This account is on server {}. Remove it and add it again with that server.": "Bu hesap {} sunucusunda. Kaldırıp o sunucuyla yeniden ekleyin.",
 "This account is still being removed. Please wait a minute and try again.": "Bu hesap hâlâ kaldırılıyor. Lütfen bir dakika bekleyip tekrar deneyin.",
 "This account needs attention. Please contact support.": "Bu hesabın ilgilenilmesi gerekiyor. Lütfen destekle iletişime geçin.",
 "This account still has open copied positions. You can remove it once they have closed.": "Bu hesapta hâlâ kopyalanmış açık pozisyonlar var. Kapandıktan sonra kaldırabilirsiniz.",

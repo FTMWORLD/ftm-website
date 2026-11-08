@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "이 계좌는 더 이상 FTM에서 활성 상태가 아닙니다. 계속하려면 삭제한 후 다시 추가하세요.",
 "This account is no longer active. Please contact support.": "이 계좌는 더 이상 활성 상태가 아닙니다. 지원팀에 문의하세요.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "이 계좌는 아직 준비되지 않았습니다. 연결됨으로 표시될 때까지 기다린 후 다시 시도해 주세요.",
+"This account is on server {}. Remove it and add it again with that server.": "이 계좌는 {} 서버에 있습니다. 삭제한 후 해당 서버로 다시 추가하세요.",
 "This account is still being removed. Please wait a minute and try again.": "이 계좌는 아직 삭제 중입니다. 잠시 후 다시 시도해 주세요.",
 "This account needs attention. Please contact support.": "이 계좌는 확인이 필요합니다. 지원팀에 문의하세요.",
 "This account still has open copied positions. You can remove it once they have closed.": "이 계좌에는 아직 열려 있는 복사 포지션이 있습니다. 모두 청산되면 제거할 수 있습니다.",

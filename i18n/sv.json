@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Det här kontot är inte längre aktivt hos FTM. Ta bort det och lägg till det igen för att fortsätta.",
 "This account is no longer active. Please contact support.": "Detta konto är inte längre aktivt. Kontakta supporten.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Det här kontot är inte klart än. Vänta tills det visas som anslutet och försök sedan igen.",
+"This account is on server {}. Remove it and add it again with that server.": "Det här kontot finns på servern {}. Ta bort det och lägg till det igen med den servern.",
 "This account is still being removed. Please wait a minute and try again.": "Det här kontot tas fortfarande bort. Vänta en minut och försök igen.",
 "This account needs attention. Please contact support.": "Detta konto behöver uppmärksamhet. Kontakta supporten.",
 "This account still has open copied positions. You can remove it once they have closed.": "Detta konto har fortfarande öppna kopierade positioner. Du kan ta bort det när de har stängts.",

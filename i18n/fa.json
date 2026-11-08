@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "این حساب دیگر در FTM فعال نیست. برای ادامه، آن را حذف و دوباره اضافه کنید.",
 "This account is no longer active. Please contact support.": "این حساب دیگر فعال نیست. لطفاً با پشتیبانی تماس بگیرید.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "این حساب هنوز آماده نیست. صبر کنید تا متصل نشان داده شود، سپس دوباره تلاش کنید.",
+"This account is on server {}. Remove it and add it again with that server.": "این حساب روی سرور {} است. آن را حذف کنید و دوباره با همان سرور اضافه کنید.",
 "This account is still being removed. Please wait a minute and try again.": "این حساب هنوز در حال حذف است. لطفاً یک دقیقه صبر کنید و دوباره امتحان کنید.",
 "This account needs attention. Please contact support.": "این حساب نیاز به توجه دارد. لطفاً با پشتیبانی تماس بگیرید.",
 "This account still has open copied positions. You can remove it once they have closed.": "این حساب هنوز پوزیشن‌های باز کپی‌شده دارد. پس از بسته شدن آن‌ها می‌توانید آن را حذف کنید.",

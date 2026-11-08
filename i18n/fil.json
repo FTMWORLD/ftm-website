@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Hindi na aktibo ang account na ito sa FTM. Alisin ito at idagdag muli para magpatuloy.",
 "This account is no longer active. Please contact support.": "Hindi na aktibo ang account na ito. Pakikontak ang suporta.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Hindi pa handa ang account na ito. Hintaying lumabas itong konektado, saka subukang muli.",
+"This account is on server {}. Remove it and add it again with that server.": "Nasa server na {} ang account na ito. Alisin ito at idagdag muli gamit ang server na iyon.",
 "This account is still being removed. Please wait a minute and try again.": "Inaalis pa ang account na ito. Maghintay ng isang minuto at subukang muli.",
 "This account needs attention. Please contact support.": "Kailangan ng atensyon ang account na ito. Pakikontak ang suporta.",
 "This account still has open copied positions. You can remove it once they have closed.": "May mga bukas pang kinopyang posisyon ang account na ito. Maaari mo itong alisin kapag nasara na ang mga iyon.",

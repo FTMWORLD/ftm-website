@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Acest cont nu mai este activ pe FTM. Eliminați-l și adăugați-l din nou pentru a continua.",
 "This account is no longer active. Please contact support.": "Acest cont nu mai este activ. Contactează suportul.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Acest cont nu este încă pregătit. Așteaptă până apare ca fiind conectat, apoi încearcă din nou.",
+"This account is on server {}. Remove it and add it again with that server.": "Acest cont este pe serverul {}. Eliminați-l și adăugați-l din nou cu acel server.",
 "This account is still being removed. Please wait a minute and try again.": "Acest cont este încă în curs de eliminare. Așteaptă un minut și încearcă din nou.",
 "This account needs attention. Please contact support.": "Acest cont necesită atenție. Contactează suportul.",
 "This account still has open copied positions. You can remove it once they have closed.": "Acest cont are încă poziții copiate deschise. Îl poți elimina după ce acestea se închid.",

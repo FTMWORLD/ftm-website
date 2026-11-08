@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Энэ данс FTM дээр идэвхгүй болсон. Үргэлжлүүлэхийн тулд устгаад дахин нэмнэ үү.",
 "This account is no longer active. Please contact support.": "Энэ данс цаашид идэвхгүй. Дэмжлэгтэй холбогдоно уу.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Энэ данс хараахан бэлэн болоогүй байна. Холбогдсон гэж харагдтал хүлээгээд дахин оролдоно уу.",
+"This account is on server {}. Remove it and add it again with that server.": "Энэ данс {} сервер дээр байна. Үүнийг устгаад тэр сервертэйгээр дахин нэмнэ үү.",
 "This account is still being removed. Please wait a minute and try again.": "Энэ данс устгагдсаар байна. Нэг минут хүлээгээд дахин оролдоно уу.",
 "This account needs attention. Please contact support.": "Энэ данс анхаарал шаардаж байна. Дэмжлэгтэй холбогдоно уу.",
 "This account still has open copied positions. You can remove it once they have closed.": "Энэ дансанд хуулбарласан нээлттэй позиц одоо ч байна. Хаагдсаны дараа устгаж болно.",

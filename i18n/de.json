@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Dieses Konto ist bei FTM nicht mehr aktiv. Entfernen Sie es und fügen Sie es erneut hinzu, um fortzufahren.",
 "This account is no longer active. Please contact support.": "Dieses Konto ist nicht mehr aktiv. Bitte kontaktieren Sie den Support.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Dieses Konto ist noch nicht bereit. Warten Sie, bis es als verbunden angezeigt wird, und versuchen Sie es dann erneut.",
+"This account is on server {}. Remove it and add it again with that server.": "Dieses Konto ist auf dem Server {}. Entfernen Sie es und fügen Sie es mit diesem Server erneut hinzu.",
 "This account is still being removed. Please wait a minute and try again.": "Dieses Konto wird noch entfernt. Bitte warten Sie eine Minute und versuchen Sie es erneut.",
 "This account needs attention. Please contact support.": "Dieses Konto braucht Aufmerksamkeit. Bitte kontaktieren Sie den Support.",
 "This account still has open copied positions. You can remove it once they have closed.": "Dieses Konto hat noch offene kopierte Positionen. Sie können es entfernen, sobald sie geschlossen sind.",

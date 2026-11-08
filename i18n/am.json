@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "ይህ መለያ በFTM ላይ ከአሁን በኋላ ንቁ አይደለም። ለመቀጠል ያስወግዱትና እንደገና ያክሉት።",
 "This account is no longer active. Please contact support.": "ይህ መለያ ከእንግዲህ ንቁ አይደለም። እባክዎ ድጋፍን ያግኙ።",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "ይህ መለያ ገና ዝግጁ አይደለም። እንደተገናኘ እስኪታይ ይጠብቁ፣ ከዚያ እንደገና ይሞክሩ።",
+"This account is on server {}. Remove it and add it again with that server.": "ይህ መለያ በአገልጋይ {} ላይ ነው። ያስወግዱትና በዚያ አገልጋይ እንደገና ያክሉት።",
 "This account is still being removed. Please wait a minute and try again.": "ይህ ሂሳብ አሁንም እየተወገደ ነው። እባክዎ አንድ ደቂቃ ቆይተው እንደገና ይሞክሩ።",
 "This account needs attention. Please contact support.": "ይህ መለያ ትኩረት ይፈልጋል። እባክዎ ድጋፍን ያግኙ።",
 "This account still has open copied positions. You can remove it once they have closed.": "ይህ መለያ አሁንም የተቀዱ ክፍት ቦታዎች አሉት። ከተዘጉ በኋላ ማስወገድ ይችላሉ።",

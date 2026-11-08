@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "此帳戶在 FTM 上已不再有效。請移除後重新新增以繼續。",
 "This account is no longer active. Please contact support.": "該帳戶已不再活躍。請聯絡客服。",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "此帳戶尚未就緒。請等到顯示為已連線後再試一次。",
+"This account is on server {}. Remove it and add it again with that server.": "此帳戶位於伺服器 {}。請移除後使用該伺服器重新新增。",
 "This account is still being removed. Please wait a minute and try again.": "此帳戶仍在移除中。請稍候一分鐘再試。",
 "This account needs attention. Please contact support.": "該帳戶需要關注。請聯絡客服。",
 "This account still has open copied positions. You can remove it once they have closed.": "該帳戶仍有已複製的未平倉頭寸。待其平倉後即可移除。",

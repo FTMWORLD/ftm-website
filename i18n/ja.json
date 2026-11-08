@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "この口座はFTMで有効ではなくなりました。続行するには、削除して再度追加してください。",
 "This account is no longer active. Please contact support.": "この口座はすでに無効です。サポートにお問い合わせください。",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "この口座はまだ準備ができていません。接続済みと表示されるまでお待ちのうえ、もう一度お試しください。",
+"This account is on server {}. Remove it and add it again with that server.": "この口座はサーバー {} にあります。削除して、そのサーバーで再度追加してください。",
 "This account is still being removed. Please wait a minute and try again.": "この口座はまだ削除処理中です。1 分ほど待ってからもう一度お試しください。",
 "This account needs attention. Please contact support.": "この口座は対応が必要です。サポートにお問い合わせください。",
 "This account still has open copied positions. You can remove it once they have closed.": "この口座には、コピーされたオープンポジションがまだあります。決済された後に削除できます。",

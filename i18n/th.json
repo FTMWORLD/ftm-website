@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "บัญชีนี้ไม่ได้ใช้งานบน FTM แล้ว ลบบัญชีแล้วเพิ่มใหม่อีกครั้งเพื่อดำเนินการต่อ",
 "This account is no longer active. Please contact support.": "บัญชีนี้ไม่ใช้งานแล้ว โปรดติดต่อฝ่ายสนับสนุน",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "บัญชีนี้ยังไม่พร้อม รอจนกว่าจะแสดงว่าเชื่อมต่อแล้ว จากนั้นลองอีกครั้ง",
+"This account is on server {}. Remove it and add it again with that server.": "บัญชีนี้อยู่บนเซิร์ฟเวอร์ {} ลบบัญชีแล้วเพิ่มใหม่อีกครั้งโดยใช้เซิร์ฟเวอร์นั้น",
 "This account is still being removed. Please wait a minute and try again.": "บัญชีนี้ยังอยู่ระหว่างการลบ โปรดรอสักครู่แล้วลองอีกครั้ง",
 "This account needs attention. Please contact support.": "บัญชีนี้ต้องได้รับการตรวจสอบ โปรดติดต่อฝ่ายสนับสนุน",
 "This account still has open copied positions. You can remove it once they have closed.": "บัญชีนี้ยังมีตำแหน่งที่คัดลอกมาเปิดอยู่ คุณลบได้เมื่อตำแหน่งเหล่านั้นปิดแล้ว",

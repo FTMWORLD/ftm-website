@@ -5119,6 +5119,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
           riskTier: a.risk_tier || null,
 
           validationReason: a.validation_reason || null,
+          serverHint: typeof a.broker_server_hint==='string' ? a.broker_server_hint : null,
           brokerTradeDisabled: a.broker_trade_disabled===true || a.trade_allowed===false,
           lastValidatedAt: a.last_validated_at ? Date.parse(a.last_validated_at) : null,
 
@@ -5912,7 +5913,8 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
           var detail = '';
           var showNote = (a.displayStatus==='ACTION_REQUIRED') || !!s.support;
           if(a.displayStatus==='ACTION_REQUIRED'){
-            if(a.validationReason==='NOT_HEDGING') detail = VALIDATION_REASON_TEXT.NOT_HEDGING;
+            if(a.validationReason==='WRONG_SERVER' && a.serverHint) detail = ((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('This account is on server {}. Remove it and add it again with that server.'):'This account is on server {}. Remove it and add it again with that server.').replace('{}',String(a.serverHint).replace(/[<>&"]/g,''));
+            else if(a.validationReason==='NOT_HEDGING') detail = VALIDATION_REASON_TEXT.NOT_HEDGING;
             else if(a.validationReason==='NOT_CONNECTED' && a.canRetryPassword) detail = 'The broker refused these login details. Check your password, account number and server, then try again.';
             else detail = (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK;
           } else if(s.support){

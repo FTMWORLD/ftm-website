@@ -1130,6 +1130,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "Tento účet již na FTM není aktivní. Chcete-li pokračovat, odeberte jej a přidejte znovu.",
 "This account is no longer active. Please contact support.": "Tento účet již není aktivní. Kontaktujte podporu.",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "Tento účet ještě není připraven. Počkejte, až se zobrazí jako připojený, a zkuste to znovu.",
+"This account is on server {}. Remove it and add it again with that server.": "Tento účet je na serveru {}. Odeberte jej a přidejte znovu s tímto serverem.",
 "This account is still being removed. Please wait a minute and try again.": "Tento účet se stále odstraňuje. Počkejte minutu a zkuste to znovu.",
 "This account needs attention. Please contact support.": "Tento účet vyžaduje pozornost. Kontaktujte podporu.",
 "This account still has open copied positions. You can remove it once they have closed.": "Tento účet má stále otevřené zkopírované pozice. Můžete ho odebrat, až se uzavřou.",

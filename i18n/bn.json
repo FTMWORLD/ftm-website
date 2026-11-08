@@ -1128,6 +1128,7 @@
 "This account is no longer active on FTM. Remove it and add it again to continue.": "এই অ্যাকাউন্টটি FTM-এ আর সক্রিয় নেই। চালিয়ে যেতে এটি সরিয়ে আবার যোগ করুন।",
 "This account is no longer active. Please contact support.": "এই অ্যাকাউন্ট আর সক্রিয় নেই। অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
 "This account is not ready yet. Wait until it shows as connected, then try again.": "এই অ্যাকাউন্টটি এখনও প্রস্তুত নয়। সংযুক্ত দেখানো পর্যন্ত অপেক্ষা করুন, তারপর আবার চেষ্টা করুন।",
+"This account is on server {}. Remove it and add it again with that server.": "এই অ্যাকাউন্টটি {} সার্ভারে আছে। এটি সরিয়ে সেই সার্ভার দিয়ে আবার যোগ করুন।",
 "This account is still being removed. Please wait a minute and try again.": "এই অ্যাকাউন্টটি এখনও সরানো হচ্ছে। অনুগ্রহ করে এক মিনিট অপেক্ষা করে আবার চেষ্টা করুন।",
 "This account needs attention. Please contact support.": "এই অ্যাকাউন্টে মনোযোগ দরকার। অনুগ্রহ করে সহায়তার সাথে যোগাযোগ করুন।",
 "This account still has open copied positions. You can remove it once they have closed.": "এই অ্যাকাউন্টে এখনো খোলা কপি করা পজিশন আছে। সেগুলো বন্ধ হলে আপনি এটি সরাতে পারবেন।",
