@@ -58,6 +58,11 @@ module.exports = async function handler(req, res) {
         const w = await admin.from('profiles').upsert({ id: user.id, products: keep });
         if (!w.error) {
           console.error('entitlements: removed unpaid Auto Trading plan from', mail);
+          // Take them off the Brevo "Customers" list too, so paid-customer emails (Welcome aboard) stop.
+          try {
+            const key = process.env.BREVO_API_KEY, list = parseInt(String(process.env.BREVO_CUSTOMERS_LIST_ID || '').replace(/\D/g, ''), 10);
+            if (key && list && !keep.length) await fetch('https://api.brevo.com/v3/contacts/lists/' + list + '/contacts/remove', { method: 'POST', headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ emails: [mail] }), signal: AbortSignal.timeout(5000) });
+          } catch (e) { console.error('entitlements: Brevo list removal failed', e.message); }
           try { await require('../../stripe/webhook.js').alertFtm('Plan removed: no payment found', [['Customer', mail], ['Removed', 'Auto Trading'], ['Why', 'The profile had a plan but Stripe has no paid checkout for this email'], ['If wrong', 'Add the email to FTM_MANUAL_PLAN_EMAILS in Vercel and set products back in Supabase']]); } catch (e) {}
           return res.status(200).json({ ok: true, products: keep, repaired: false, removed: ['auto'] });
         }
