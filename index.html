@@ -946,6 +946,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .gs-go svg{width:18px;height:18px;transition:transform .18s}
   .gs-card:hover .gs-go svg{transform:translateX(5px)}
   .gs-foot{margin-top:30px;color:rgba(255,255,255,.75);font-size:15px}
+  .gs-foot.gs-free{margin-top:8px}
+  .mm-free{background:#fff;border:2px solid #D4AF37;color:#0b1440;font-weight:800;margin-top:10px;width:100%}
   .gs-login{background:none;border:0;padding:0;font:inherit;font-weight:800;color:var(--gold-light);text-decoration:underline;cursor:pointer}
   @media (max-width:700px){.gs-grid{grid-template-columns:1fr}.gs-card p{min-height:0}.gs-inner{padding-top:64px}}
   @media (prefers-reduced-motion:reduce){.gs-card,.gs-go svg{transition:none}}
@@ -2151,6 +2153,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 </div>
 <div class="mobile-menu" id="mobileMenu">
   <a class="btn btn-red js-start mm-start" href="#get-started" data-i18n="btn.start">Get started</a>
+  <button type="button" class="btn mm-free js-signup">Create a free account</button>
   <details class="mm-sec"><summary>Auto Trading</summary><div class="mm-links"><a href="#auto">FTM MACHINE</a><a href="#how">How it works</a><a href="#pricing">Subscription plans</a><a href="/performance.html">Performance record</a></div></details>
   <details class="mm-sec"><summary>Investment</summary><div class="mm-links"><a href="#invest">Investment</a><a href="#ivCalc">Work out your share</a><a href="#faq" class="js-faq">Frequently asked questions</a></div></details>
   <details class="mm-sec"><summary>Performance</summary><div class="mm-links"><a href="/performance.html">Trust engine</a><a href="/performance.html#mk-all">Portfolio</a><a href="/performance.html#mk-gold">Gold</a><a href="/performance.html#mk-btc">Bitcoin</a><a href="/performance.html#mk-jpy">USD/JPY</a><a href="/performance.html#mk-ndx">US Tech 100</a><a href="/performance.html#mk-boom">Boom 1000</a><a href="/performance.html#mk-hk">HK50</a></div></details>
@@ -3381,6 +3384,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </a>
     </div>
     <p class="gs-foot">Already a client? <button type="button" class="gs-login js-login">Log in</button></p>
+    <p class="gs-foot gs-free">or <button type="button" class="gs-login js-signup">Create a free account</button></p>
   </div>
 </div>
 
@@ -7020,6 +7024,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     });
 
     var gl=ov.querySelector('.gs-login'); if(gl)gl.addEventListener('click',function(){ ov.hidden=true; });
+    ov.querySelectorAll('.js-signup').forEach(function(x){ x.addEventListener('click',function(){ ov.hidden=true; }); });
   })();
 
   (function(){
@@ -7180,6 +7185,15 @@ tick();setInterval(tick,5000);})();
     function show(signup){if(!lp||!sp)return;lp.hidden=signup;sp.hidden=!signup;}
     function resetSignup(){var sf=sp&&sp.querySelector('form.js-news');if(sf)sf.hidden=false;var ss=document.getElementById('suSent');if(ss)ss.hidden=true;}
     document.getElementById('authToSignup').addEventListener('click',function(e){e.preventDefault();resetSignup();show(true);});
+    document.querySelectorAll('.js-signup').forEach(function(a){a.addEventListener('click',function(e){
+      e.preventDefault();
+      var mm=document.getElementById('mobileMenu'); if(mm) mm.classList.remove('open');
+      var ao=document.getElementById('authOverlay'); if(!ao) return;
+      ao.hidden=false; document.body.style.overflow='hidden';
+      var er=document.getElementById('authError'); if(er) er.hidden=true;
+      resetSignup(); show(true);
+      setTimeout(function(){ var i=document.getElementById('suEmail'); if(i) i.focus(); },60);
+    });});
     document.getElementById('signupToLogin').addEventListener('click',function(e){e.preventDefault();show(false);});
     document.querySelectorAll('.js-login').forEach(function(a){a.addEventListener('click',function(){show(false);});});
   })();
