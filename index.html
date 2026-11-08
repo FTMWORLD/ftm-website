@@ -5009,8 +5009,9 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       function mapAccount(a){
         return {
-          name: a.name || (a.broker && a.broker.code) || 'Trading account',
-          number: a.account_number,
+          name: a.preview ? 'FTM' : (a.name || (a.broker && a.broker.code) || 'Trading account'),
+          number: a.account_number || (a.preview ? 'MASTER' : a.account_number),
+          isPreview: a.preview===true,
           provider: a.broker && (a.broker.name || a.broker.code),
           server: a.server || null,
           balance: num(a.balance!=null?a.balance:(a.performance&&a.performance.balance)),
@@ -5773,7 +5774,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(F.pendingRemove && F.pendingRemove[a.accountId]){
           status='<span class="conn conn-wait">Removing…</span>';
         } else if(a.isMaster){
-          status='<span class="conn conn-neutral">'+(a.viewOnlyLabel||'View only — FTM master account').replace(/</g,'&lt;')+'</span><div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button></div></div>';
+          status='<span class="conn conn-neutral">'+(a.viewOnlyLabel||'View only — FTM master account').replace(/</g,'&lt;')+'</span>'+((a.isPreview && F.viewedAccount && F.viewedAccount()===a)?'':'<div class="acct-menu"><button class="acct-menu-btn" type="button" data-menu-toggle="'+i+'" aria-haspopup="true" aria-expanded="false" aria-label="Account actions">&#8942;</button><div class="acct-menu-list" data-menu-list="'+i+'" hidden>'+(F.viewedAccount && F.viewedAccount()!==a?'<button class="acct-menu-item" data-viewst="'+i+'">View statistics</button>':'')+(a.isPreview?'':'<button class="acct-menu-item danger" data-remove="'+i+'">Remove account</button>')+'</div></div>')+'';
         } else if(a.displayStatus){
           var s = (a.statusReason && STATUS_REASON_OVERRIDE[a.statusReason]) ||
                   STATUS_LABEL[a.displayStatus] || {text:(a.statusText||plainCode(a.statusReason||a.displayStatus)), tone:'wait'};
@@ -5821,7 +5822,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         var balCell = a.balance==null ? '&mdash;' : '<span'+(stale?' class="running-pl none"':'')+freshness+'>'+money(a.balance,2,a.currency)+'</span>';
         var typeCell = a.currency ? '<span class="tag-demo">'+a.currency+'</span>' : '<span class="running-pl none">&mdash;</span>';
 
-        var kindLabel = (a.tradeMode && TRADE_MODE_LABEL[a.tradeMode]) || 'Account type not yet confirmed';
+        var kindLabel = a.isPreview ? 'View only' : ((a.tradeMode && TRADE_MODE_LABEL[a.tradeMode]) || 'Account type not yet confirmed');
         var nameCell = '<b>'+a.name+'</b><div class="acct-kind">'+kindLabel+'</div>';
         return '<tr class="'+(a.active?'active':'')+'"><td>'+nameCell+'</td><td>'+a.number+'</td><td>'+(a.provider||a.server||'&mdash;')+'</td>'+
           '<td>'+typeCell+'</td>'+
