@@ -21,7 +21,10 @@ async function paidProductsFromStripe(email) {
   (j.data || []).forEach(s => {
     if (s.status !== 'complete') return;
     if (s.payment_status !== 'paid' && s.payment_status !== 'no_payment_required') return;
-    out.add(map[s.payment_link] || 'auto');
+    // Only real FTM plans count: a known payment link, or at least 400 (EUR) through a link not mapped yet.
+    // Small payments such as the 1 EUR test link are not a plan.
+    if (map[s.payment_link]) out.add(map[s.payment_link]);
+    else if ((s.amount_total || 0) >= 40000) out.add('auto');
   });
   return { checked: true, products: [...out] };
 }

@@ -112,8 +112,10 @@ module.exports = async function handler(req, res) {
   const linkId = session.payment_link;
   // Every checkout that is not the investment link is an Auto Trading plan: a paying customer must never
   // be left without access because a payment link id changed in Stripe. FTM is alerted to update the map.
-  const product = PAYMENT_LINK_PRODUCT[linkId] || 'auto';
+  // An unmapped link still grants Auto Trading when it is a real plan payment (400 or more); a small payment
+  // such as a 1 EUR test grants nothing. FTM is alerted either way to update the map.
   const unknownLink = !PAYMENT_LINK_PRODUCT[linkId];
+  const product = PAYMENT_LINK_PRODUCT[linkId] || ((session.amount_total || 0) >= 40000 ? 'auto' : null);
   if (unknownLink) console.error('Stripe webhook: unrecognised payment_link', linkId, 'for', email, '— granted Auto Trading, map needs updating.');
 
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -157,7 +159,7 @@ module.exports = async function handler(req, res) {
     }
     if (!known || !known.last_sign_in_at) {
       try {
-        const sent = await sendPasswordEmail(admin, email, { name: payerName, product });
+        const sent = await sendPasswordEmail(admin, email, { name: payerName, product, free: !product });
         userId = userId || sent.userId;
         report.invited = true;
       } catch (e) {
@@ -361,6 +363,7 @@ async function syncEngine(event) {
     case 'checkout.session.completed': {
       if (o.payment_status !== 'paid' && o.payment_status !== 'no_payment_required') return 'skipped (not paid)';
       if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'skipped (investment)';
+      if (!PAYMENT_LINK_PRODUCT[o.payment_link] && (o.amount_total || 0) < 40000) return 'skipped (not a plan payment)';
       status = 'ACTIVE';
       email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
       ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
