@@ -127,7 +127,7 @@ async function callEngine(path, { method = 'GET', body = null, authSubject = nul
   // Automatic re-link (engine contract): retry ONCE when the email belongs to an earlier login that no longer
   // exists in Supabase and this login's email is verified. Never on a guess.
   const rl = j && j.error === 'EMAIL_ALREADY_REGISTERED' && j.relink;
-  if (r.status === 409 && rl && rl.reason === 'RELINK_NOT_REQUESTED' && rl.previous_subject && facts && facts.emailVerified
+  if (r.status === 409 && rl && (rl.reason === 'RELINK_NOT_REQUESTED' || rl.reason === 'RELINK_NOT_CONFIRMED') && rl.previous_subject && facts && facts.emailVerified
       && String(rl.previous_subject) !== String(authSubject) && await previousLoginGone(rl.previous_subject)) {
     const h2 = Object.assign({}, headers, {
       'X-FTM-Relink-From-Subject': String(rl.previous_subject),
