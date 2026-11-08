@@ -2006,6 +2006,36 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 .bill-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 </style>
+<script>
+(function(){
+  try{ if(/[?&]diag=1/.test(location.search)) sessionStorage.setItem('ftm_diag','1'); if(sessionStorage.getItem('ftm_diag')!=='1') return; }catch(e){ return; }
+  var rows=[], box=null, of=window.fetch;
+  function draw(){
+    if(!document.body) return;
+    if(!box){ box=document.createElement('div'); box.setAttribute('data-no-i18n',''); box.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;max-height:45vh;overflow:auto;background:#0b1440;color:#fff;font:12px/1.45 monospace;padding:10px 12px;border-radius:10px;border:2px solid #D4AF37;white-space:pre-wrap'; document.body.appendChild(box); }
+    box.textContent='FTM diagnostics (only you see this). Screenshot it.\n'+rows.join('\n');
+  }
+  window.fetch=function(u,o){
+    var url=String(u&&u.url||u);
+    var p=of.apply(this,arguments);
+    if(url.indexOf('/api/v1/')>-1){
+      p.then(function(r){ return r.clone().text().then(function(t){
+        var sum=t.slice(0,160);
+        try{ var j=JSON.parse(t);
+          if(j.accounts) sum='accounts='+j.accounts.length+' '+JSON.stringify(j.accounts.map(function(a){return {id:String(a.account_id).slice(0,8),preview:a.preview,view_only:a.view_only,status:a.display_status,balance:a.balance};}))+' limit='+JSON.stringify(j.account_limit);
+          else if(j.trades) sum='trades='+j.trades.length+' total='+(j.page&&j.page.total);
+          else if(j.positions) sum='positions='+j.positions.length;
+          else sum=t.slice(0,200);
+        }catch(e){}
+        rows.push(new Date().toLocaleTimeString()+' '+((o&&o.method)||'GET')+' '+url.replace(location.origin,'').replace(/\?.*$/,'')+' -> '+r.status+' '+sum); draw();
+      }); }).catch(function(e){ rows.push('ERR '+url+' '+e.message); draw(); });
+    }
+    return p;
+  };
+  window.addEventListener('error',function(e){ rows.push('PAGE ERROR '+e.message); draw(); });
+  document.addEventListener('DOMContentLoaded',draw);
+})();
+</script>
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
