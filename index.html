@@ -462,7 +462,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .cal-cell .v{white-space:nowrap;font-size:clamp(8.5px,2.05cqi,15px)!important;letter-spacing:-.03em}
   .cal-cell{padding-inline:5px}
   .cal-head span{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding-bottom:8px}
-  .cal-cell{min-height:74px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line);padding:7px 8px;display:flex;flex-direction:column;gap:2px}
+  .cal-cell .v,.cal-cell .q{display:block;max-width:100%;overflow:hidden;white-space:nowrap}
+  .cal-cell{min-width:0;overflow:hidden;min-height:74px;border-radius:10px;background:var(--bg-3);border:1px solid var(--line);padding:7px 8px;display:flex;flex-direction:column;gap:2px}
   .cal-cell.day-click{cursor:pointer}
   .cal-cell.day-click:hover,.cal-cell.day-click:focus-visible{box-shadow:inset 0 0 0 2px var(--blue)}
   .cal-cell.unknown{background:repeating-linear-gradient(135deg,var(--bg-3),var(--bg-3) 6px,var(--line) 6px,var(--line) 7px)}
@@ -498,6 +499,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .daily-chart{width:100%;height:150px;margin-top:10px}
   .dist-chart{width:100%;height:190px;margin-top:6px}
   @media (max-width:1050px){.cal-wrap{grid-template-columns:1fr}.cal-two{grid-template-columns:1fr}}
+  @media (max-width:1280px){.cal-wrap{grid-template-columns:1fr}.cal-two{grid-template-columns:1fr 1fr}}
+  @media (max-width:640px){.cal-two{grid-template-columns:1fr}}
   @media (max-width:640px){
     .cal-cell{min-height:56px;padding:5px;min-width:0}
     .cal-cell .v{font-size:11.5px}
@@ -2779,10 +2782,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <button class="app-nav-item" data-view="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg><span>Accounts</span></button>
       <button class="app-nav-item" data-view="perf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg><span>Performance</span></button>
       <button class="app-nav-item" data-view="calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Calendar</span></button>
+      <button class="app-nav-item" data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Sessions</span></button>
       <button class="app-nav-item" data-view="board"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M10 17h4M9 21h6M12 13v4"/></svg><span>Leaderboard</span></button>
       <button class="app-nav-item" data-view="community"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0M16.5 5.2a3.4 3.4 0 0 1 0 6.6M17 20a6 6 0 0 0-2.2-4.6"/></svg><span>Community</span></button>
       <button class="app-nav-item" data-view="charts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M4 9h6M14 14h6"/></svg><span>Charts</span></button>
-      <button class="app-nav-item" data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Sessions</span></button>
       <div class="sb-foot">
         <button type="button" class="sb-pill js-app-ai"><i></i>Ask here</button>
         <div class="sb-user"><span class="sb-av" id="sbAv">F</span><div><b id="sbEmail">&mdash;</b><small>FTM client</small></div></div>
@@ -5533,9 +5536,24 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       el('calPct').className=mPct>0?'val-up':(mPct<0?'val-down':'');
 
       var pctPrimary = F.calUnit==='percent';
+      function fitCal(g){
+        requestAnimationFrame(function(){
+          g.querySelectorAll('.cal-cell .v,.cal-cell .q').forEach(function(v){
+            if(v.dataset.l) v.textContent=v.dataset.l; else v.dataset.l=v.textContent;
+            v.style.removeProperty('font-size'); var fs=parseFloat(getComputedStyle(v).fontSize), n=0;
+            while(v.clientWidth>0 && v.scrollWidth>v.clientWidth+1 && fs>9 && n++<24){ fs-=0.5; v.style.setProperty('font-size',fs+'px','important'); }
+            if(v.clientWidth>0 && v.scrollWidth>v.clientWidth+1 && v.dataset.s){ v.textContent=v.dataset.s; v.style.removeProperty('font-size'); fs=parseFloat(getComputedStyle(v).fontSize); n=0;
+              while(v.scrollWidth>v.clientWidth+1 && fs>7 && n++<24){ fs-=0.5; v.style.setProperty('font-size',fs+'px','important'); } }
+          });
+        });
+      }
+      if(!F._calFitBound){ F._calFitBound=1; var g0=document.getElementById('calGrid');
+        if(g0 && window.ResizeObserver) new ResizeObserver(function(){ fitCal(g0); }).observe(g0);
+        else window.addEventListener('resize',function(){ if(g0) fitCal(g0); }); }
       function cellText(amt,pc){
-        var a=signed(amt,2), p=(pc>=0?'+':'')+pc.toFixed(2)+'%';
-        return pctPrimary ? [p,a] : [a,p];
+        var big=Math.abs(amt)>=1000, a=Math.abs(amt)>=100000?((amt>=0?'+':'-')+F.moneyIn(Math.round(Math.abs(amt)/1000),0,F.data.account.currency)+'K'):signed(amt,big?0:2), p=(pc>=0?'+':'')+pc.toFixed(2)+'%';
+        var sh=Math.abs(amt)>=1000?((amt>=0?'+':'-')+F.moneyIn(Math.abs(amt)/1000,1,F.data.account.currency)+'K'):a;
+        return pctPrimary ? [p,a,p,sh] : [a,p,sh,p];
       }
       var html='', day=1-lead, weekPL=null, weekTr=0, weekStart=null;
       for(var cell=0; cell<42; cell++){
@@ -5545,7 +5563,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           if(ent && ent.pl!==null){
             var pc=ent.start>0?(ent.pl/ent.start*100):0, t=cellText(ent.pl,pc);
             html+='<div class="cal-cell day-click '+(ent.pl>=0?'up':'down')+'" data-day="'+kk+'" tabindex="0"><span class="d">'+day+'</span>'+
-                  '<span class="v">'+t[0]+'</span><span class="q">'+t[1]+'</span></div>';
+                  '<span class="v" data-s="'+t[2]+'">'+t[0]+'</span><span class="q" data-s="'+t[3]+'">'+t[1]+'</span></div>';
             weekPL=(weekPL||0)+ent.pl; weekTr+=ent.trades; if(weekStart===null)weekStart=ent.start;
           } else if(ent){
 
@@ -5562,7 +5580,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           if(weekPL!==null){
             var wp=(weekStart&&weekStart>0)?(weekPL/weekStart*100):0, wt=cellText(weekPL,wp);
             html+='<div class="cal-cell tot '+(weekPL>=0?'up':'down')+'"><span class="d">Week</span>'+
-                  '<span class="v">'+wt[0]+'</span><span class="q">'+wt[1]+'</span></div>';
+                  '<span class="v" data-s="'+wt[2]+'">'+wt[0]+'</span><span class="q" data-s="'+wt[3]+'">'+wt[1]+'</span></div>';
           } else if(weekTr){ html+='<div class="cal-cell tot"><span class="d">Week</span><span class="v">No data</span></div>'; }
           else { html+='<div class="cal-cell tot"><span class="d">Week</span><span class="v">-</span></div>'; }
           weekPL=null; weekTr=0; weekStart=null;
@@ -5570,6 +5588,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         day++;
       }
       grid.innerHTML=html;
+      fitCal(grid);
       renderDayStats(D);
     }
 
@@ -6287,7 +6306,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       Object.keys(drawn).forEach(function(name){ if(name!=='metrics') forceDraw(name); });
     };
 
-    var VIEW_ORDER=['metrics','accounts','perf','calendar','board','community','charts','sessions'];
+    var VIEW_ORDER=['metrics','accounts','perf','calendar','sessions','board','community','charts'];
     function show(name){
       header(name);
 
