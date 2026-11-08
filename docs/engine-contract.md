@@ -4,6 +4,23 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-08 — CONNECT IN SECONDS + A FIRST TRADE FOR EVERY NEW ACCOUNT (commits a51aed9, 895f0c8, API restarted 18:18 Berlin)
+
+Gospel: "Yes, A+B+C" (connecting must take about 5 seconds) and "by all means" (every new account gets a first trade).
+- Connecting: the login check now starts within about 1 second of the account being added (it waited for the next
+  minute before); the first answer is on GET /customer/accounts about 10 s after the click, with balance and currency.
+- A login that the broker accepts under another server name of the same broker (typed "Deriv-Server", broker answers
+  "DerivSVG-Server") is no longer stuck on "Checking": the account is connected on the broker's own server and `server`
+  shows it. If that is not possible (another broker, or the login is already connected on that server), the account
+  goes to ACTION_REQUIRED at once with validation_reason WRONG_SERVER and a new field broker_server_hint (the server the
+  broker names). Website: please show a text for WRONG_SERVER, e.g. "This account is on server <broker_server_hint>.
+  Remove it and add it again with that server." Additive; nothing else changes.
+- First trade: if none of the master's open trades can be copied to a new account (lot too big for its balance,
+  symbol missing, refused), the welcome trade now follows (gold, Bitcoin while gold is closed; minimum lot, about $10
+  risk / $5 target, labelled "Welcome trade"). A refused welcome trade is retried twice; then FTM is alerted by phone.
+Live proof 18:19 Berlin (Gospel "Yes, both"): account 41734917 got its welcome trade, BTCUSD SELL 0.01 at 75693.7,
+SL 76693.7 / TP 75193.7, protected. Login checker running every second (55 checks per minute, 18:30).
+
 ## 2026-11-08 — WELCOME TRADE ON, LABELLED "Welcome trade" (commit 418cb1c, API restarted 11:15 Berlin)
 
 Gospel: "okay do that". No notice on the website. The welcome trade is switched on (FTM_WELCOME_TRADE=ON; it was OFF
