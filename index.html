@@ -4936,11 +4936,12 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 
     function drawOpen(m){
       var tb=document.getElementById('mOpenRows'); if(!tb)return;
+      var va=F.viewedAccount&&F.viewedAccount(), canClose=!!(va && !va.isMaster && !va.isPreview && va.canControl!==false);
       tb.innerHTML=m.open.map(function(t){
 
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
-        return '<tr><td>'+t.symbol+tlab(t)+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td><td>'+((t.positionRef&&window.FTM.remote&&window.FTM.remote.ready()&&window.FTM.session)?'<button type="button" class="conn-btn pos-close" data-ref="'+String(t.positionRef).replace(/"/g,'')+'">Close</button>':'')+'</td></tr>';
+        return '<tr><td>'+t.symbol+tlab(t)+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td><td>'+((canClose&&t.positionRef&&window.FTM.remote&&window.FTM.remote.ready()&&window.FTM.session)?'<button type="button" class="conn-btn pos-close" data-ref="'+String(t.positionRef).replace(/"/g,'')+'">Close</button>':'')+'</td></tr>';
       }).join('');
       set('mOpenHint', m.open.length+' position'+(m.open.length===1?'':'s')+' currently open.');
     }
