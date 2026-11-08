@@ -1883,6 +1883,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 @keyframes swInR{from{transform:translateX(28px);opacity:.4}to{transform:none;opacity:1}}@keyframes swInL{from{transform:translateX(-28px);opacity:.4}to{transform:none;opacity:1}}
 .app.sw-in-r>*{animation:swInR .32s ease-out}.app.sw-in-l>*{animation:swInL .32s ease-out}
 @media (prefers-reduced-motion:reduce){.app.sw-in-r>*,.app.sw-in-l>*{animation:none}}
+#appView .app-nav-item,#invView .app-nav-item{flex:0 0 auto;white-space:nowrap}
+.app-title-meta b{white-space:nowrap}
+@media (max-width:560px){.app-title-meta{flex-wrap:nowrap;padding:12px 12px;width:100%;justify-content:space-between}.app-title-meta>div{padding-inline:8px;min-width:0;flex:1 1 auto}.app-title-meta span{font-size:9.5px!important}.app-title-meta b{font-size:clamp(12px,3.6vw,15px)!important;display:block}}
+html.app-open main#top>section,html.app-open main#top>.hero-score,html.app-open footer,html.app-open .nav-wrap{content-visibility:hidden;visibility:hidden}
+html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:paused!important}
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
 #appView .plan-bar{display:flex;align-items:center;gap:14px;margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(90deg,#E5323E,#b81d2a);color:#fff;box-shadow:0 12px 30px -16px rgba(229,50,62,.7)}
 #appView .plan-bar[hidden]{display:none!important}
@@ -4112,7 +4117,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     const zoneOff=(tz,d)=>{try{const p=fmt[tz].o.formatToParts(d).find(x=>x.type==='timeZoneName');return p?p.value.replace('GMT','UTC').replace('-','−'):''}catch(e){return ''}};
     const item=(name,tz,d,hid)=>`<span class="cz"${hid?' aria-hidden="true"':''}><span data-no-i18n>${name}</span><b>${fmt[tz]?fmt[tz].t.format(d):''}</b><small>${tz==='UTC'?'UTC':zoneOff(tz,d)}</small></span>`;
     let lastMin=-1;
-    const tick=()=>{const d=new Date(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds();
+    const tick=()=>{if(document.hidden||window.__ftmAppOpen)return;const d=new Date(),h=d.getHours(),m=d.getMinutes(),s=d.getSeconds();
       H.setAttribute('transform',`rotate(${(h%12)*30+m*.5} 100 100)`);M.setAttribute('transform',`rotate(${m*6+s*.1} 100 100)`);S.setAttribute('transform',`rotate(${s*6} 100 100)`);
       T.textContent=[h,m,s].map(x=>String(x).padStart(2,'0')).join(':');
       const zl=(window.FTM_I18N?FTM_I18N.t('Your local time'):'Your local time')+' · '+off(d);if(Z.textContent!==zl)Z.textContent=zl;
@@ -4742,7 +4747,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var yearPct = yearStart>0 ? yearPL/yearStart*100 : 0;
 
       var streakTrades=0;
-      for(var i=covered.length-1;i>=0;i--){ if(covered[i].pl>0)streakTrades++; else break; }
+      for(var i=covered.length-1;i>=0;i--){ if(covered[i].pl===0) continue; if(covered[i].pl>0)streakTrades++; else break; }
 
       var byDay={}, order=[];
       closed.forEach(function(t){
@@ -4752,7 +4757,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         else { byDay[k].hasUnknown=true; }
       });
       var streakDays=0;
-      for(var j=order.length-1;j>=0;j--){ var dv=byDay[order[j]].known; if(dv!==null && dv>0)streakDays++; else break; }
+      for(var j=order.length-1;j>=0;j--){ var dv=byDay[order[j]].known; if(dv===null || dv===0) continue; if(dv>0)streakDays++; else break; }
 
       return {
         netPL:netPL, gainPct:gainPct, absPct:absPct, balance:balance, equity:equity,
@@ -6287,7 +6292,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var st=document.getElementById('hdrStatus');
 
       if(lead && lead.displayStatus){
-        var s=lead.isMaster?{text:(lead.viewOnlyLabel||'View only — FTM master account'),tone:'good'}:(STATUS_LABEL[lead.displayStatus]||{text:String(lead.statusReason||lead.displayStatus).replace(/_/g,' ').toLowerCase().replace(/^./,function(x){return x.toUpperCase();}),tone:'wait'});
+        var s=lead.isMaster?{text:'View only',tone:'good'}:(STATUS_LABEL[lead.displayStatus]||{text:String(lead.statusReason||lead.displayStatus).replace(/_/g,' ').toLowerCase().replace(/^./,function(x){return x.toUpperCase();}),tone:'wait'});
         st.textContent=s.text;
         st.className = s.tone==='good' ? 'ok' : (s.tone==='bad' ? 'val-down' : 'val-wait');
       } else {
@@ -6367,10 +6372,14 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         requestAnimationFrame(updateActiveByScroll);
       });
     }
+    var sessOnScreen=false;
+    (function(){ var v=document.querySelector('.app-view[data-view="sessions"]'); if(v && window.IntersectionObserver) new IntersectionObserver(function(es){ sessOnScreen=es[0].isIntersecting; },{root:document.getElementById('appView')}).observe(v); else sessOnScreen=true; })();
     setInterval(function(){
+      if(document.hidden) return;
+      var app=document.getElementById('appView'); if(!app||app.hidden) return;
       var v=document.querySelector('.app-view[data-view="sessions"]');
-      if(v && !v.hidden) renderSessions();
-    },1000);
+      if(v && !v.hidden && sessOnScreen) renderSessions();
+    },5000);
   })();
 
   (function(){
@@ -7315,7 +7324,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
 (function(){var SRC=[['https://api.gold-api.com/price/XAU',function(j){return +j.price;}],['https://api.coinbase.com/v2/prices/PAXG-USD/spot',function(j){return +j.data.amount;}],['https://api.binance.com/api/v3/ticker/price?symbol=PAXGUSDT',function(j){return +j.price;}]];
 var f=function(v){return v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});};
-function tick(i){i=i||0;if(i>=SRC.length)return;fetch(SRC[i][0],{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){var v=SRC[i][1](j);if(!(v>500))throw 0;
+function tick(i){i=i||0;if(i>=SRC.length||document.hidden||window.__ftmAppOpen)return;fetch(SRC[i][0],{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){var v=SRC[i][1](j);if(!(v>500))throw 0;
 var b=document.getElementById('gtBid'),a=document.getElementById('gtAsk');if(b){b.textContent=f(v-0.15);a.textContent=f(v+0.15);}}).catch(function(){tick(i+1);});}
 tick();setInterval(tick,5000);})();
 </script>
@@ -7431,7 +7440,7 @@ tick();setInterval(tick,5000);})();
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
     if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
     var sp=$('dxSpark'), C=((window.FTM&&FTM.data&&FTM.data.closed)||[]).filter(function(t){return t.closeTime&&t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
-    var showSp=!free() && C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
+    var showSp=C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
     if(showSp){ var acc=0, pts=C.map(function(t){acc+=t.pl;return acc;}); var step=Math.max(1,Math.floor(pts.length/60)); pts=pts.filter(function(v,i){return i%step===0||i===pts.length-1;});
       var mn=Math.min.apply(null,pts), mx=Math.max.apply(null,pts), r=(mx-mn)||1;
       var d=pts.map(function(v,i){return (i?'L':'M')+(i/(pts.length-1)*160).toFixed(1)+' '+(64-(v-mn)/r*58).toFixed(1);}).join(' ');
@@ -7449,7 +7458,7 @@ tick();setInterval(tick,5000);})();
   $('dxView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); });
   $('umView').addEventListener('change',function(){ if(window.FTM&&FTM.viewAccount) FTM.viewAccount(this.value); var l=document.getElementById('acctA'); if(l) l.hidden=true; });
   $('umView').addEventListener('click',function(e){ e.stopPropagation(); });
-  setInterval(function(){ if(!app.hidden) sync(); var fw=app.querySelector('.dx-feat-wrap'), ac=fw&&fw.parentNode; if(fw&&ac.lastElementChild!==fw) ac.appendChild(fw); },2000);
+  setInterval(function(){ if(document.hidden) return; if(!app.hidden) sync(); var fw=app.querySelector('.dx-feat-wrap'), ac=fw&&fw.parentNode; if(fw&&ac.lastElementChild!==fw) ac.appendChild(fw); },2000);
   ['appEmail','hdrBal','mEquity','crumbAcct','hdrPlan','hdrStatus','noDataBar'].forEach(function(i){var e=$(i); if(e) new MutationObserver(sync).observe(e,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['hidden']});});
   new MutationObserver(sync).observe(app,{attributes:true,attributeFilter:['class','hidden']});
 
@@ -7565,7 +7574,7 @@ tick();setInterval(tick,5000);})();
     d.href=hit?hit[1]:q+'deposit'; w.href=hit?hit[2]:q+'withdraw';
     var show=!!(a&&srv); d.parentNode.hidden=!show;
   }
-  setInterval(links,1500); links();
+  setInterval(function(){ if(!document.hidden && window.__ftmAppOpen) links(); },3000); links();
 })();
 </script>
 <script>
@@ -7633,7 +7642,7 @@ tick();setInterval(tick,5000);})();
       card.classList.add('hist-empty');
     });
   }
-  setInterval(tick,1000); document.addEventListener('DOMContentLoaded',tick);
+  setInterval(function(){ if(!document.hidden && window.__ftmAppOpen) tick(); },2000); document.addEventListener('DOMContentLoaded',tick);
 })();
 </script>
 <script>
@@ -7994,6 +8003,14 @@ tick();setInterval(tick,5000);})();
 </script>
 <script>
 (function(){
+  var root=document.documentElement, ids=['appView','invView'];
+  function upd(){ var open=ids.some(function(i){ var e=document.getElementById(i); return e && !e.hidden; }); root.classList.toggle('app-open',open); window.__ftmAppOpen=open; }
+  ids.forEach(function(i){ var e=document.getElementById(i); if(e) new MutationObserver(upd).observe(e,{attributes:true,attributeFilter:['hidden']}); });
+  upd();
+})();
+</script>
+<script>
+(function(){
   var F=window.FTM; if(!F) return;
   function scrollableX(el,stop){
     for(var n=el; n && n!==stop; n=n.parentElement){
@@ -8026,7 +8043,7 @@ tick();setInterval(tick,5000);})();
     alts.forEach(function(im){ im.src=im.getAttribute('data-src'); });
     var i=-1;
     setInterval(function(){
-      if(document.hidden) return;
+      if(document.hidden || window.__ftmAppOpen) return;
       var next=i+1>=alts.length?-1:i+1;
       if(i>=0) alts[i].classList.remove('on');
       if(next>=0 && alts[next].complete) alts[next].classList.add('on');
