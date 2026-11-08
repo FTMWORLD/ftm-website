@@ -4,6 +4,22 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-08 — SAFETY GUARDS ON EVERY TRADE THE ENGINE OPENS (commit 2fb3ea8, API restarted 07:39 Berlin)
+
+Live proof 07:40-07:41 Berlin: a fake "unknown" position on the test row 9900000099 (no terminal, no broker) was flagged
+by the 1-minute check after 60 s, the phone message went out, and the row was removed.
+
+Gospel's express order of 7 Nov 23:00, rule 2. Nothing changes for the website (no route, no field).
+- Every OPEN is checked once more just before a terminal receives it. It must come from an FTM master, have the
+  master's direction, and have the normal size (recomputed from the live inputs, within 10 %). A welcome trade needs the
+  switch ON, the master with no open trade (proven by a fresh list), an account that never had an FTM trade, no earlier
+  welcome trade, and the broker's minimum lot. A refused order is never sent; FTM gets a phone message at once.
+- Every 20 s every FTM position on every customer terminal is compared with the master; a mismatch lasting 40 s is
+  flagged to FTM's phone.
+- `scripts/dry-run-trade-actions.js`: what the engine would do for every account, no orders, with a written check.
+- Proven by `scripts/verify-trade-guards.js` (34/34, through the real claim route, everything rolled back) and the
+  updated `verify-first-trade.js` (26/26), both in the deploy gate. The welcome trade stays OFF.
+
 ## 2026-11-08 — MASTER PREVIEW FOR EVERY CUSTOMER (commit e3e7083, website request "master preview", API restarted 07:03 Berlin)
 
 Gospel: free customers see the FTM master account as "this is how your account looks once you subscribe".
