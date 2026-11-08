@@ -1870,6 +1870,33 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     .inv-banner-txt .inv-eyebrow{display:none}
   }
 #hdrPlan.plan-on,#dxPlan.plan-on{color:#16a34a}
+.cx-lock{display:none;align-items:center;gap:14px;margin-top:14px;padding:16px;border-radius:14px;background:linear-gradient(135deg,#fff1f2,#fff);border:1px solid rgba(229,50,62,.25);flex-wrap:wrap}
+.cx-lock p{margin:0;flex:1;min-width:200px;font-size:14px;color:#0b1440;font-weight:600;line-height:1.45}
+.cx-lock-ic{width:40px;height:40px;border-radius:50%;background:#E5323E;color:#fff;display:grid;place-items:center;flex:none}
+.cx-lock-ic svg{width:19px;height:19px}
+#appView.free .cx-card .app-form,#appView.free .cx-card>.hint,#appView.free .cx-open-btn{display:none!important}
+#appView.free .cx-lock{display:flex}
+.bill-up{display:none!important}
+#appView.free .bill-paid{display:none}
+#appView.free .bill-up{display:inline-flex!important}
+#appView.free .bill-plans{display:none!important}
+#appView.free #billSt,#billPlan.bill-free-plan{color:#E5323E}
+#appView.free #acctLimit{display:none!important}
+.soc-lock{display:none!important;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid rgba(229,50,62,.2);background:linear-gradient(135deg,#fff,#fff5f6)}
+.soc-lock h3{margin:0 0 4px}.soc-lock>div:nth-child(2){flex:1;min-width:220px}
+.soc-lock-act{display:flex;gap:10px;flex-wrap:wrap}
+#appView.free .soc-lock{display:flex!important}
+#appView.free .app-view[data-view="board"] .app-main>*:not(.soc-lock),#appView.free .app-view[data-view="community"] .app-main>*:not(.soc-lock),#appView.free .app-view[data-view="community"]>.mdl{display:none!important}
+#hdrPlan.plan-free,#dxPlan.plan-free{color:#E5323E}
+#appView .free-bar{background:linear-gradient(90deg,#E5323E,#b81d2a);border:0;color:#fff;box-shadow:0 12px 30px -16px rgba(229,50,62,.7)}
+#appView .free-bar p{color:#fff}
+#appView .free-bar .fb-ic{background:rgba(255,255,255,.18)}
+#appView .free-bar .btn{background:#fff!important;color:#E5323E!important;border-color:#fff!important}
+.master-note{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 18px;border-radius:16px;background:linear-gradient(90deg,#0b1440,#152a7a);color:#fff;border:1px solid rgba(212,175,55,.5)}
+.master-note[hidden]{display:none!important}
+.master-note p{margin:0;flex:1;min-width:220px;font-weight:700;font-size:14.5px}
+.mn-ic{width:38px;height:38px;border-radius:50%;background:#D4AF37;color:#0b1440;display:grid;place-items:center;flex:none}.mn-ic svg{width:19px;height:19px}
+
 .kp-grid{align-items:stretch}
 .kp{grid-template-rows:auto auto 1fr auto;align-content:start;position:relative;padding:22px 22px 20px}
 .kp-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#eef1fb;color:#152a7a;margin-bottom:6px}
@@ -2736,6 +2763,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       </div>
       <section class="app-view" data-view="metrics">
 <div class="app-main">
+    <div class="master-note" id="masterNote" hidden><span class="mn-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg></span><p>This is the FTM master account. Your own account looks like this once you subscribe.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a></div>
     <div class="dx-top">
       <div class="dx-hero">
         <div class="dx-hero-l">
@@ -2819,6 +2847,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         </div>
         <div class="app-card cx-card" id="cxCard">
           <div class="cx-head"><h3>Connect your trading account</h3><button type="button" class="btn btn-outline btn-sm cx-open-btn" id="cxOpen">Add account</button></div>
+          <div class="cx-lock"><span class="cx-lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p>Linking a trading account is for subscribers. Upgrade to a plan to let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a></div>
           <p class="hint">FTM only needs trading access. We never ask for your broker portal login or anything that can move money out of your account.</p>
           <div class="app-form">
             <label for="appBroker">Server</label>
@@ -2998,6 +3027,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       <section class="app-view" data-view="board" hidden>
         <div class="app-main">
+          <div class="app-card soc-lock"><span class="cx-lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div><h3>For subscribers and investors</h3><p class="hint">The FTM community and leaderboard are for subscribers and investors. Subscribe or invest to join them.</p></div><div class="soc-lock-act"><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm" href="#invest" data-go-invest>Invest now</a></div></div>
           <div class="app-card">
             <div class="lb-head">
               <span class="lb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M10 17h4M9 21h6M12 13v4"/></svg></span>
@@ -3014,6 +3044,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
       <section class="app-view" data-view="community" hidden>
         <div class="app-main">
+          <div class="app-card soc-lock"><span class="cx-lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div><h3>For subscribers and investors</h3><p class="hint">The FTM community and leaderboard are for subscribers and investors. Subscribe or invest to join them.</p></div><div class="soc-lock-act"><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm" href="#invest" data-go-invest>Invest now</a></div></div>
           <div class="app-card">
             <div class="lb-head"><span class="lb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0M16.5 5.2a3.4 3.4 0 0 1 0 6.6M17 20a6 6 0 0 0-2.2-4.6"/></svg></span>
               <div><h3>FTM Community</h3><p class="hint">Meet other traders running FTM MACHINE, follow them and talk.</p></div>
@@ -3171,12 +3202,12 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
               <dl class="bill-list">
                 <div><dt>Plan</dt><dd id="billPlan">Auto Trading</dd></div>
                 <div><dt>Status</dt><dd id="billSt">&mdash;</dd></div>
-                <div><dt>Paid until</dt><dd id="billEnd">&mdash;</dd></div>
-                <div><dt>Accounts you can connect</dt><dd id="billSlots">&mdash;</dd></div>
-                <div><dt>Receipts</dt><dd>Emailed to you by Stripe</dd></div>
+                <div class="bill-paid"><dt>Paid until</dt><dd id="billEnd">&mdash;</dd></div>
+                <div class="bill-paid"><dt>Accounts you can connect</dt><dd id="billSlots">&mdash;</dd></div>
+                <div class="bill-paid"><dt>Receipts</dt><dd>Emailed to you by Stripe</dd></div>
                 <div><dt>Signed in as</dt><dd id="billWho">&mdash;</dd></div>
               </dl>
-              <div class="bill-actions"><a class="btn btn-outline btn-sm js-free-plans" href="#pricing">Subscription plans</a><button class="btn btn-outline btn-sm" type="button" id="billChat">Chat with FTM support</button></div>
+              <div class="bill-actions"><a class="btn btn-red btn-sm js-free-plans bill-up" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm js-free-plans bill-plans" href="#pricing">Subscription plans</a><button class="btn btn-outline btn-sm" type="button" id="billChat">Chat with FTM support</button></div>
             </div>
           </div>
           <div class="app-card acct-list-card">
@@ -3607,6 +3638,13 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       }).catch(function(){ return []; });
     }
     function fetchEntitlements(userId){
+      return client.auth.getSession().then(function(r){
+        var tok=r&&r.data&&r.data.session&&r.data.session.access_token; if(!tok) throw new Error('no session');
+        return fetch('/api/v1/customer/entitlements',{headers:{Authorization:'Bearer '+tok}}).then(function(x){ if(!x.ok) throw new Error('HTTP '+x.status); return x.json(); });
+      }).then(function(j){ if(!j || !Array.isArray(j.products)) throw new Error('bad answer'); return j.products; })
+        .catch(function(){ return readEntitlements(userId); });
+    }
+    function readEntitlements(userId){
       return client.from('profiles').select('products').eq('id', userId).maybeSingle()
         .then(function(r){
           if(r.error){ console.warn('FTM.auth: entitlements lookup failed, checking payment:', r.error.message); return repairEntitlements(); }
@@ -5317,7 +5355,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
         var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',EXPIRED:'Expired',NONE:'Active'}[status]||'Active');
-        F.planStatus=status||'ACTIVE'; F.planEnd=end||null; F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); } if(F.renderActivate) F.renderActivate();
+        F.planFree=false; F.planStatus=status||'ACTIVE'; F.planEnd=end||null; F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); h.classList.remove('plan-free'); } if(F.renderActivate) F.renderActivate();
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',(F.planName&&F.planOn)?tr(F.planName)+' · '+st:st).replace('{}',d);
       };
@@ -5325,8 +5363,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     }
     F.showPlan = showPlan;
     F.resetPlan = function(){
-      F.planName=null; F.planLabel=null; F.planEnd=null; F.planLifetime=false; F.planStatus=null; F.planOn=false;
-      var h=document.getElementById('hdrPlan'); if(h){ h.textContent='—'; h.classList.remove('plan-on'); }
+      F.planName=null; F.planEnd=null; F.planLifetime=false; F.planStatus=null; F.planOn=false;
+      F.planFree=!!(F.session && F.session.email);
+      F.planLabel=F.planFree?((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Free account'):'Free account'):null;
+      var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel||'—'; h.classList.remove('plan-on'); h.classList.toggle('plan-free',F.planFree); }
       var line=document.getElementById('ivPlanLine'); if(line) line.textContent=((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Subscription details will appear here once your plan is linked to your account.'):'Subscription details will appear here once your plan is linked to your account.');
       if(F.renderActivate) F.renderActivate();
     };
@@ -6141,7 +6181,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
       ic.innerHTML = src ? src.outerHTML : '';
-      var hp=document.getElementById('hdrPlan'); hp.textContent=(F.data.plan||F.planLabel||'—'); hp.classList.toggle('plan-on',!!(F.planLabel&&F.planOn)); if(!F.planLabel&&F.showPlan&&!F._planAsked){ F._planAsked=1; F.showPlan().then(function(){ F._planAsked=0; }); }
+      var hp=document.getElementById('hdrPlan'); hp.textContent=(F.data.plan||F.planLabel||'—'); hp.classList.toggle('plan-on',!!(F.planLabel&&F.planOn)); hp.classList.toggle('plan-free',!!F.planFree); if(!F.planLabel&&F.showPlan&&!F._planAsked){ F._planAsked=1; F.showPlan().then(function(){ F._planAsked=0; }); }
       document.getElementById('hdrBal').textContent=money(m.balance,0);
       var st=document.getElementById('hdrStatus');
 
@@ -6944,10 +6984,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     function toPlans(e){
       e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e2){}
-      var t=document.getElementById('pricing'); document.documentElement.style.scrollBehavior='auto';
+      var t=document.getElementById((this&&this.hasAttribute&&this.hasAttribute('data-go-invest'))?'invest':'pricing')||document.getElementById('pricing'); document.documentElement.style.scrollBehavior='auto';
       window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); document.documentElement.style.scrollBehavior='';
     }
-    document.querySelectorAll('.js-free-plans').forEach(function(a){ a.addEventListener('click',toPlans); });
+    document.querySelectorAll('.js-free-plans,[data-go-invest]').forEach(function(a){ a.addEventListener('click',toPlans); });
     ['appConnect','acctAdd'].forEach(function(id){
       $(id).addEventListener('click',function(e){
         if(!$('appView').classList.contains('free'))return;
@@ -7265,7 +7305,7 @@ tick();setInterval(tick,5000);})();
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
-    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
+    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxPlan').classList.toggle('plan-free',$('hdrPlan').classList.contains('plan-free')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
     if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
@@ -7729,7 +7769,7 @@ tick();setInterval(tick,5000);})();
     var wait=A.filter(function(a){ return a.displayStatus==='SETUP_INCOMPLETE' || a.statusReason==='VALIDATION_PENDING'; })[0];
     var note=bad ? ((document.querySelector('#acctRows .acct-action-note')||{}).textContent||'') : '';
     var st=[
-      {t:'Plan active', d:paid},
+      {t:paid?'Plan active':'Choose a plan', d:paid},
       {t:'Trading account connected', d:A.length>0},
       {t:'Broker allows trading', d:!!(ok||on), x:!ok&&!on&&!!bad, w:!ok&&!on&&!bad&&!!wait, sub:(!ok&&!on&&bad)?note:((!ok&&!on&&wait)?tr('Checking with your broker…'):'')},
       {t:'FTM MACHINE is trading', d:!!on}
@@ -7756,7 +7796,8 @@ tick();setInterval(tick,5000);})();
     $('billEnd').textContent=F.planLifetime?tr('Lifetime'):F.planEnd?new Date(F.planEnd).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'—';
     var L=F.accountLimit; $('billSlots').textContent=(L&&L.max)?tr('{} of {} accounts used').replace('{}',L.used).replace('{}',L.max):(paid?'3':'—');
     $('billWho').textContent=s.email||'—';
-    $('billPlan').textContent=F.planName?tr(F.planName)+' · '+tr('Auto Trading'):tr('Auto Trading');
+    $('billPlan').textContent=!hasAuto?tr('Free account'):F.planName?tr(F.planName)+' · '+tr('Auto Trading'):tr('Auto Trading');
+    $('billPlan').classList.toggle('bill-free-plan',!hasAuto);
   }
   F.renderActivate=render;
   document.addEventListener('click',function(e){
@@ -7801,7 +7842,8 @@ tick();setInterval(tick,5000);})();
     if($('rgMktLeg')) $('rgMktLeg').innerHTML=top.map(function(p,i){ return '<span title="'+p.k+'"><i class="dot" style="background:'+PAL[i]+'"></i><em>'+String(p.k).replace(/</g,'&lt;')+' '+Math.round(p.v/n*100)+'%</em></span>'; }).join('');
     var m=F.metrics?F.metrics():null;
     if(m){ if($('rgPF')) $('rgPF').textContent=m.profitFactor?m.profitFactor.toFixed(2):'—'; if($('kpHigh')) $('kpHigh').textContent=$('mHigh')?$('mHigh').textContent:'—'; }
-    var app=$('appView'); if(app){ var A=(d.accounts||[]).filter(function(a){return !a.isMaster;}); app.classList.toggle('has-acct', A.length>0); }
+    var app=$('appView'); if(app){ var A=(d.accounts||[]).filter(function(a){return !a.isMaster;}); app.classList.toggle('has-acct', A.length>0);
+      var v=F.viewedAccount&&F.viewedAccount(), mn=$('masterNote'); if(mn) mn.hidden=!(app.classList.contains('free') && v && v.isMaster); }
   }
   var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ draw(); }catch(e){} return r; };
   document.addEventListener('click',function(e){
