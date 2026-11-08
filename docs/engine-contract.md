@@ -10,7 +10,7 @@ Gospel: "Both, I'm at the screen". Live proof 10:50 Berlin over HTTP with a thro
 email got 409 RELINK_EMAIL_NOT_VERIFIED; the retry with the website's confirmation got 200 as that customer; audit
 CUSTOMER_LOGIN_RELINKED holds the record as it was.
 
-For the website (WR from FTM MACHINE, website commit 0d533a9):
+For the website (request from FTM MACHINE; already live in the website repository):
 - Send `X-FTM-Relink-Capable: 1` and `X-FTM-Auth-Email-Verified: true|false` (server-side, from email_confirmed_at).
 - A 409 EMAIL_ALREADY_REGISTERED then carries `relink: { reason, previous_subject }`. The first reason is
   RELINK_NOT_CONFIRMED when Email-Verified is sent (RELINK_NOT_REQUESTED without it): retry once on either, when the email
