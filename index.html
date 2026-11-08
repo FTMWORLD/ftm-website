@@ -4627,15 +4627,15 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
               FT.remote.fetchAccounts().then(function(list){
                 var a=list.filter(function(x){return x.accountId===accId;})[0];
                 var st=a&&a.displayStatus;
-                if(st && st!=='SETUP_INCOMPLETE'){
+                if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED'){
                   msg.style.color = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? '#1f8a5b' : '#E5323E';
                   msg.textContent = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? 'Account connected.' : 'Connection needs attention. Open Accounts to see why.';
                   if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); });
                   return;
                 }
-                if(tries<24) setTimeout(poll,5000);
+                if(tries<150) setTimeout(poll,tries<30?2000:5000);
                 else { msg.style.color='#B4690E'; msg.textContent='Still connecting. This can take a few minutes; check Accounts later.'; }
-              }).catch(function(){ if(tries<24) setTimeout(poll,5000); });
+              }).catch(function(){ if(tries<150) setTimeout(poll,2000); });
             })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){
@@ -7956,6 +7956,21 @@ tick();setInterval(tick,5000);})();
     $('billPlan').classList.toggle('bill-free-plan',!hasAuto);
   }
   F.renderActivate=render;
+  var pendT=null, pendSince=0;
+  function pending(){ return ((F.data&&F.data.accounts)||[]).some(function(a){ return !a.isMaster && (a.displayStatus==='SETUP_INCOMPLETE' || a.statusReason==='VALIDATION_PENDING' || a.statusReason==='NEVER_VALIDATED' || a.statusReason==='NO_NODE_ASSIGNED'); }); }
+  function pendTick(){
+    pendT=null;
+    if(!pending()||!F.remote||!F.remote.ready()){ pendSince=0; return; }
+    if(!pendSince) pendSince=Date.now();
+    var age=Date.now()-pendSince; if(age>15*60000){ pendSince=0; return; }
+    if(document.hidden){ pendT=setTimeout(pendTick,4000); return; }
+    F.remote.fetchAccounts().then(function(list){
+      var mine=(F.data.accounts||[]); var changed=false;
+      list.forEach(function(a){ var o=mine.filter(function(x){return x.accountId===a.accountId;})[0]; if(!o||o.displayStatus!==a.displayStatus||o.statusReason!==a.statusReason) changed=true; });
+      if(changed){ if(F.loadLive) F.loadLive().then(function(){ if(F.renderAccounts)F.renderAccounts(); render(); }); }
+    }).catch(function(){}).then(function(){ pendT=setTimeout(pendTick, age<60000?2000:5000); });
+  }
+  setInterval(function(){ if(!pendT && pending()) pendTick(); },1500);
   document.addEventListener('click',function(e){
     var a=e.target.closest&&e.target.closest('a[href^="https://buy.stripe.com/"]'); if(!a) return;
     var base=a.getAttribute('data-base')||a.getAttribute('href').split('?')[0]; a.setAttribute('data-base',base);
