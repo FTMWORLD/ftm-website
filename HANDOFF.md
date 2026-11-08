@@ -184,6 +184,13 @@ this section wins.
 - [ ] Claims that cannot be backed up (9.4).
 - [ ] Set the Investment Stripe minimum to 5,000€ to match the page.
 - [ ] Real customer reviews and a verified track-record page.
+- [ ] LATER (owner, 8 November 2026), after the site set-up is finished: payments without a third party.
+      Stripe limits FTM to about 10,000 (the limit may rise, but the owner prefers not to depend on a
+      third-party processor). Plan a way for customers to pay directly into an FTM-held account (bank
+      transfer with a reference per customer, confirmed automatically or by FTM), wired to the same plan
+      grant as the Stripe webhook (profiles.products, engine PUT /billing/subscription, branded emails).
+- [ ] LATER (owner, 8 November 2026): crypto payments for customers who pay in crypto, with the same
+      automatic plan grant, receipts and alerts as card payments.
 - [ ] Housekeeping from the 5 October test: refund the 1€ test payments, deactivate the 1€
       test link in Stripe. The owner chose to keep the test accounts; they still hold the
       Auto Trading plan.
