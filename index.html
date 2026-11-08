@@ -5362,6 +5362,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
         console.warn('FTM live data fetch failed:', err);
         if(F.session) F.data = emptyLiveData();
+        if(err && err.code==='EMAIL_ALREADY_REGISTERED'){
+          var bar=document.getElementById('planBar'), txt=document.getElementById('planBarTxt');
+          var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+          if(bar&&txt){ txt.innerHTML=tr('<b>Your account is being linked.</b> This email already had an earlier FTM login. FTM has been told and links it for you shortly; nothing is lost.'); bar.hidden=false; bar.classList.remove('soon'); }
+        }
         return false;
       });
     }

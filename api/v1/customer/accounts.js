@@ -30,6 +30,8 @@ const STATUS_FOR_CODE = {
   INTERNAL_SERVER_ERROR: 500
 };
 
+const alerted = new Set(); // one alert per login per warm instance
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') {
     res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
@@ -61,6 +63,12 @@ module.exports = async function handler(req, res) {
         return;
       }
       var listCode = listResult.body && listResult.body.error;
+      // The email belongs to an earlier engine customer under another login (for example a deleted and
+      // re-created Supabase user). The engine never merges silently, so FTM is emailed to re-link it.
+      if (listCode === 'EMAIL_ALREADY_REGISTERED' && !alerted.has(user.id)) {
+        alerted.add(user.id);
+        try { await require('../../stripe/webhook.js').alertFtm('Customer login needs re-linking', [['Customer', user.email], ['New login id', user.id], ['Engine answer', '409 EMAIL_ALREADY_REGISTERED'], ['Action', 'Ask FTM ENGINE to re-link this email to the new login']]); } catch (e) {}
+      }
       var listStatus = STATUS_FOR_CODE[listCode] || listResult.status || 500;
       res.status(listStatus).json({ ok: false, error: listCode || 'INTERNAL_SERVER_ERROR' });
     } catch (e) {

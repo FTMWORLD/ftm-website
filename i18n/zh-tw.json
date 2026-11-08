@@ -84,6 +84,7 @@
 "<b>Withdrawals.</b> Once a year, in months 13, 25, 37 and 49, you can withdraw 20% of the profit share you have built up. At the end of year 5 you receive your capital and all remaining profit share.": "<b>提領。</b>每年一次，於第13、25、37和49個月，您可提領已累積利潤分成的20%。第5年末，您將取回本金及所有剩餘的利潤分成。",
 "<b>Yearly withdrawals.</b> From 13 months, you can withdraw up to 20% of the amount you invested each year, taken from your profit share. At the end of the five years you receive your profit share minus what you withdrew, plus your deposit.": "<b>每年提領。</b>自第 13 個月起，您每年最多可從利潤分成中提領投資金額的 20%。五年期滿時，您將獲得扣除已提領金額後的利潤分成，加上您的本金。",
 "<b>Yearly withdrawals.</b> Up to 20% of your investment a year from month 13. The rest of your share and your deposit are paid after five years.": "<b>年度提款。</b>從第 13 個月起，每年最多提領投資額的 20%。您份額的其餘部分與存款將於五年後支付。",
+"<b>Your account is being linked.</b> This email already had an earlier FTM login. FTM has been told and links it for you shortly; nothing is lost.": "<b>正在連結您的帳戶。</b>此電子郵件先前已有 FTM 登入紀錄。FTM 已收到通知，將很快為您完成連結，不會遺失任何內容。",
 "<b>Your last payment did not go through.</b> Stripe has emailed you a link to update your card, so FTM MACHINE keeps trading for you.": "<b>您上一筆付款未成功。</b>Stripe 已透過電子郵件寄給您更新卡片的連結，讓 FTM MACHINE 繼續為您交易。",
 "<b>Your plan ends on {}.</b> Renew to keep FTM MACHINE trading without a break.": "<b>您的方案將於 {} 到期。</b>續訂後，FTM MACHINE 將不間斷地繼續交易。",
 "<b>Your plan has ended.</b> Renew to keep FTM MACHINE trading for you. Your accounts and history stay as they are.": "<b>您的方案已到期。</b>續訂後，FTM MACHINE 將繼續為您交易。您的帳戶和歷史紀錄保持不變。",
