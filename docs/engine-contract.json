@@ -50,7 +50,7 @@
     "INACTIVE": "Connected, trading switched off by FTM or no strategy enabled.",
     "OFFLINE": "No terminal or no heartbeat right now. status_reason NO_NODE_ASSIGNED = 'Verified, being set up by FTM'.",
     "SETUP_INCOMPLETE": "Login details submitted, not yet verified by FTM (NEVER_VALIDATED) or being verified again after a password change (VALIDATION_PENDING).",
-    "ACTION_REQUIRED": "The broker refused the login details or the account cannot be used as submitted; see validation_reason (NOT_CONNECTED, NOT_HEDGING, LOGIN_MISMATCH) and can_retry_password.",
+    "ACTION_REQUIRED": "The broker refused the login details or the account cannot be used as submitted; see validation_reason (NOT_CONNECTED, NOT_HEDGING, LOGIN_MISMATCH, WRONG_SERVER -- the account is on another server name of the broker: broker_server_hint names it; remove the account and add it again with that server) and can_retry_password.",
     "SETUP_FAILED": "FTM could not set the account up (SETUP_FAILED, BELOW_MINIMUM, CANNOT_TRADE): show the 'contact support' text.",
     "BLOCKED": "Blocked by FTM; contact support.",
     "MAINTENANCE": "The platform is in maintenance; nothing is copied until it ends."
