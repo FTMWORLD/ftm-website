@@ -3566,7 +3566,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     var client = null;
     var recoveryHandler = null;
     var inviteLink = false;
-    var setpwLink = false, setpwFired = false;
+    var setpwLink = false, setpwFired = false, paidLink = false;
     var pendingKind = null;
 
     function ready(){ return !!client; }
@@ -3609,11 +3609,13 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(!window.supabase){ console.warn('FTM.auth: supabase-js did not load, staying in preview mode.'); return; }
 
         setpwLink = /[?&]setpw=1(&|$)/.test(location.search||'');
+        paidLink = setpwLink || /[#&?]type=invite(&|$)/.test((location.hash||'')+'&'+(location.search||''));
         inviteLink = /[#&?]type=(invite|signup)(&|$)/.test((location.hash||'')+'&'+(location.search||'')) || (setpwLink && /[#&]access_token=/.test(location.hash||''));
         client = window.supabase.createClient(url, anonKey);
         wireRecovery();
       },
 
+      fromPaymentEmail: function(){ return paidLink; },
       onPasswordRecovery: function(cb){
         recoveryHandler = cb;
         if(pendingKind){ var k=pendingKind; pendingKind=null; cb(k); }
@@ -4214,7 +4216,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       close();
       var pwm=document.getElementById('pwModal');
       document.getElementById('pwTitle').textContent = invited ? 'Welcome to FTM — create your password' : 'Set a password for next time';
-      document.querySelector('#pwModal .hint').textContent = (invited && !(r.products&&r.products.length))
+      var paidWelcome = !!(r.products&&r.products.length) && !!(window.FTM.auth.fromPaymentEmail && window.FTM.auth.fromPaymentEmail());
+      document.querySelector('#pwModal .hint').textContent = (invited && !paidWelcome)
         ? 'Your free FTM account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
         : invited
         ? 'Your payment went through and your account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'

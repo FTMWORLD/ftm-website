@@ -45,9 +45,11 @@ module.exports = async function handler(req, res) {
   const have = (cur.data && cur.data.products) || [];
   if (have.length) return res.status(200).json({ ok: true, products: have, repaired: false });
 
-  let found = [];
-  try { found = (await paidProductsFromStripe(user.email)).products; } catch (e) { console.error('entitlements: Stripe check failed', e.message); }
-  if (!found.length && await activeOnEngine(user)) found = ['auto'];
+  // A plan is only ever granted on proof of payment. With the Stripe key set, Stripe is the only proof
+  // (a completed, paid checkout for this email); the engine is asked only when there is no Stripe key.
+  let found = [], stripeChecked = false;
+  try { const r = await paidProductsFromStripe(user.email); found = r.products; stripeChecked = r.checked; } catch (e) { console.error('entitlements: Stripe check failed', e.message); }
+  if (!found.length && !stripeChecked && !process.env.STRIPE_SECRET_KEY && await activeOnEngine(user)) found = ['auto'];
   if (!found.length) return res.status(200).json({ ok: true, products: [], repaired: false });
 
   const w = await admin.from('profiles').upsert({ id: user.id, products: found });
