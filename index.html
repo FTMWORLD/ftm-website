@@ -379,7 +379,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-acc-row small{font-size:12.5px;color:var(--muted)}
   .dx-acc-ic{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center;background:#0b1640;color:var(--gold-light);font-size:11px;font-weight:800}
   .dx-acc-bal{font-variant-numeric:tabular-nums;flex:none}
-  .dx-acc-st{font-size:13px;font-weight:700;color:#1f8a5b}
+  .dx-acc-st{font-size:13px;font-weight:700;color:#1f8a5b}.dx-acc-st.dx-st-bad{color:#E5323E}.dx-acc-st.dx-st-wait{color:#9a7a12}
   .dx-sec{font-size:17px;margin-bottom:-8px}
   .dx-feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   .dx-card{display:grid;gap:8px;align-content:start;text-align:left;font:inherit;color:inherit;text-decoration:none;cursor:pointer;background:#fff;border:1px solid rgba(11,20,64,.04);border-radius:20px;padding:20px;box-shadow:0 14px 32px -20px rgba(11,20,64,.16);transition:transform .2s,box-shadow .2s}
@@ -4093,7 +4093,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       e.preventDefault();
 
       if(LIVE && window.FTM && FTM.session && FTM.session.email){
-        if(!ftmIdleExpired()){ window.FTM.auth.restoreSession().then(function(r){ if(r){ FTM.session={email:r.email,products:r.products,name:r.name||''}; enter(r.email,r.products,false); } else { FTM.session=null; open(); } }).catch(function(){ enter(FTM.session.email, FTM.session.products, false); }); return; }
+        if(!ftmIdleExpired()){ window.FTM.auth.restoreSession().then(function(r){ if(r){ FTM.session={email:r.email,products:r.products,name:r.name||''}; enter(r.email,r.products,false,r.name); } else { FTM.session=null; open(); } }).catch(function(){ enter(FTM.session.email, FTM.session.products, false); }); return; }
         FTM.session=null; try{ window.FTM.auth.signOut(); }catch(e3){}
       }
       open();
@@ -4197,10 +4197,12 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var t=document.createElement('div'); t.className='ftm-toast'; t.textContent=msg; document.body.appendChild(t);
       setTimeout(function(){ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(function(){t.remove();},450); },5200);
     }
-    function enter(mail,products,first){
+    function enter(mail,products,first,name){
 
       close(); passEl.value='';
-      window.FTM=window.FTM||{}; FTM.session={email:mail,products:products,name:''};
+      window.FTM=window.FTM||{};
+      var keepName=(FTM.session&&FTM.session.email===mail&&FTM.session.name)||'';
+      FTM.session={email:mail,products:products,name:name||keepName};
       if(products && products.length) FTM.openArea(products[0]);
       else FTM.openArea('auto');
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
@@ -4217,7 +4219,9 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       var pwm=document.getElementById('pwModal');
       document.getElementById('pwTitle').textContent = invited ? 'Welcome to FTM — create your password' : 'Set a password for next time';
       var paidWelcome = !!(r.products&&r.products.length) && !!(window.FTM.auth.fromPaymentEmail && window.FTM.auth.fromPaymentEmail());
-      document.querySelector('#pwModal .hint').textContent = (invited && !paidWelcome)
+      document.querySelector('#pwModal .hint').textContent = (invited && !paidWelcome && r.products && r.products.length)
+        ? 'Your FTM account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
+        : (invited && !paidWelcome)
         ? 'Your free FTM account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
         : invited
         ? 'Your payment went through and your account is ready. Choose a password of at least 8 characters to finish setting up and log straight in.'
@@ -4233,7 +4237,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         document.getElementById('pwSkipRow').hidden=true;
         document.getElementById('pwTitle').textContent='Set your password';
         document.querySelector('#pwModal .hint').textContent='Choose a password of at least 8 characters. You can also keep logging in with an emailed code instead — setting one here is optional.';
-        enter(r.email,r.products,false);
+        enter(r.email,r.products,false,r.name);
       }
       document.getElementById('pwSkip').addEventListener('click',function(e){ e.preventDefault(); pwm.hidden=true; proceed(); },{once:true});
 
@@ -4252,7 +4256,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
             window.FTM.auth.signInWithPassword(mail,pwVal).then(function(r){
               submitBtn.disabled=false;
-              enter(r.email,r.products,false);
+              enter(r.email,r.products,false,r.name);
             }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'That password isn’t correct for this email.'); });
           } else {
             window.FTM.auth.sendOtp(mail).then(function(){
@@ -4284,7 +4288,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
           submitBtn.disabled=true;
           window.FTM.auth.verifyOtp(mail2,code).then(function(r){
             submitBtn.disabled=false;
-            if(r.passwordSet) enter(r.email,r.products,false);
+            if(r.passwordSet) enter(r.email,r.products,false,r.name);
             else promptSetPassword(r);
           }).catch(function(e2){ submitBtn.disabled=false; authFail(e2,'Could not verify that code.'); });
         }
@@ -4300,7 +4304,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         if(r){
           if(wasInApp){
 
-            return enter(r.email,r.products,false).then(lift);
+            return enter(r.email,r.products,false,r.name).then(lift);
           }
           window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products,name:r.name||''};
         }
@@ -4320,6 +4324,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
         var pwm=document.getElementById('pwModal');
         document.getElementById('pwTitle').textContent='Reset your password';
         document.querySelector('#pwModal .hint').textContent='Choose a new password for your FTM account.';
+        pendingPwSuccess=function(){ window.FTM.auth.restoreSession().then(function(r){ if(r){ window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products,name:r.name||''}; enter(r.email,r.products,false,r.name); } }).catch(function(){}); };
         document.getElementById('pwCurRow').hidden=true;
         document.getElementById('pwSkipRow').hidden=true;
         ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
@@ -4424,7 +4429,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
-      if(window.FTM) FTM.session=null;
+      if(window.FTM){ FTM.session=null; if(FTM.resetPlan) FTM.resetPlan(); }
+      window.__ftmWelcomed=0;
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
 
@@ -4528,7 +4534,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     F.moneyIn = function(n, dp, currency){
       if(n===null || n===undefined || isNaN(n)) return '\u2014';
       dp = dp || 0;
-      var loc = (!currency || currency==='EUR') ? 'de-DE' : 'en-US';
+      var loc = (currency==='EUR') ? 'de-DE' : 'en-US';
       var v = Math.abs(n).toLocaleString(loc,{minimumFractionDigits:dp,maximumFractionDigits:dp});
       var sign = n<0 ? '-' : '';
       if(!currency) return sign+v;
@@ -4861,7 +4867,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       set('mEquity', cur0(m.equity));
       set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
       set('mYear', pct(m.yearPct,1), tone(m.yearPL));
-      set('mDDtile', '-'+m.ddBal.pct.toFixed(1)+'%', 'down');
+      set('mDDtile', m.ddBal.pct>0.05?'-'+m.ddBal.pct.toFixed(1)+'%':'0.0%', m.ddBal.pct>0.05?'down':null);
 
       set('mGain', pct(m.gainPct), tone(m.gainPct));
 
@@ -5284,10 +5290,10 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
     function showPlan(){
       var s=F.session, line=document.getElementById('ivPlanLine');
-      if(!(s && s.products && s.products.indexOf('auto')>-1) || !F.remote || !F.remote.ready()) return Promise.resolve();
+      if(!(s && s.products && s.products.indexOf('auto')>-1) || !F.remote || !F.remote.ready()){ F.resetPlan(); return Promise.resolve(); }
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
-        var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:'Active'}[status]||'Active');
+        var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',EXPIRED:'Expired',NONE:'Active'}[status]||'Active');
         F.planStatus=status||'ACTIVE'; F.planEnd=end||null; F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); } if(F.renderActivate) F.renderActivate();
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',(F.planName&&F.planOn)?tr(F.planName)+' · '+st:st).replace('{}',d);
@@ -5295,6 +5301,12 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       return F.remote.fetchBilling().then(function(j){ F.planLifetime=!!(j&&(j.lifetime||j.plan==='LIFETIME')); F.planName=(j&&{ANNUAL:'Annual',FIVE_YEARS:'5 Years',LIFETIME:'Lifetime'}[j.plan])||null; put(j&&j.status, j&&j.period_end); }).catch(function(){ put('ACTIVE',null); });
     }
     F.showPlan = showPlan;
+    F.resetPlan = function(){
+      F.planName=null; F.planLabel=null; F.planEnd=null; F.planLifetime=false; F.planStatus=null; F.planOn=false;
+      var h=document.getElementById('hdrPlan'); if(h){ h.textContent='—'; h.classList.remove('plan-on'); }
+      var line=document.getElementById('ivPlanLine'); if(line) line.textContent=((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Subscription details will appear here once your plan is linked to your account.'):'Subscription details will appear here once your plan is linked to your account.');
+      if(F.renderActivate) F.renderActivate();
+    };
 
     F.loadLive = function(){
       return loadLive().then(function(){
@@ -7220,7 +7232,7 @@ tick();setInterval(tick,5000);})();
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
-    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxSt').textContent=tx('hdrStatus');
+    $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
     if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
@@ -7676,7 +7688,7 @@ tick();setInterval(tick,5000);})();
   function go(view){ var n=document.querySelector('#appView .app-nav-item[data-view="'+view+'"]'); if(n) n.click(); }
   function render(){
     var steps=$('actSteps'); if(!steps) return;
-    var s=F.session||{}, paid=!!(s.products&&s.products.indexOf('auto')>-1);
+    var s=F.session||{}, paid=!!(s.products&&s.products.indexOf('auto')>-1) && F.planStatus!=='EXPIRED' && F.planStatus!=='CANCELED';
     var A=((F.data&&F.data.accounts)||[]).filter(function(a){ return !a.isMaster; });
     var on=A.filter(function(a){ return a.active; })[0];
     var ok=A.filter(function(a){ return a.displayStatus && !BAD[a.displayStatus] && a.displayStatus!=='SETUP_INCOMPLETE' && !a.brokerTradeDisabled; })[0];
@@ -7705,9 +7717,9 @@ tick();setInterval(tick,5000);})();
     else { h=tr('FTM MACHINE is running on {}').replace('{}',on.name+' '+on.number); }
     hint.hidden=!h; hint.textContent=h?tr(h):'';
     btn.hidden=!b; btn.textContent=b?tr(b):''; btn.dataset.act=b;
-    var bs=$('billSt'), stt=paid?(F.planStatus||'ACTIVE'):'NONE';
-    bs.textContent=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',NONE:paid?'Active':'No active plan'}[stt]||'Active');
-    bs.className=(stt==='ACTIVE'||(paid&&stt==='NONE'))?'on':(paid?'off':'');
+    var hasAuto=!!(s.products&&s.products.indexOf('auto')>-1), bs=$('billSt'), stt=hasAuto?(F.planStatus||'ACTIVE'):'NONE';
+    bs.textContent=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',EXPIRED:'Expired',NONE:paid?'Active':'No active plan'}[stt]||'Active');
+    bs.className=(stt==='ACTIVE'||(paid&&stt==='NONE'))?'on':((stt==='EXPIRED'||stt==='CANCELED'||stt==='PAST_DUE')?'off':'');
     $('billEnd').textContent=F.planLifetime?tr('Lifetime'):F.planEnd?new Date(F.planEnd).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'—';
     var L=F.accountLimit; $('billSlots').textContent=(L&&L.max)?tr('{} of {} accounts used').replace('{}',L.used).replace('{}',L.max):(paid?'3':'—');
     $('billWho').textContent=s.email||'—';

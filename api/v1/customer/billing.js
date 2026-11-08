@@ -29,6 +29,12 @@ async function fromStripe(email) {
   return best;
 }
 
+// A dated plan whose end has passed is EXPIRED, whatever an older record says.
+function expire(o) {
+  if (o && !o.lifetime && o.period_end && Date.parse(o.period_end) < Date.now() && (!o.status || o.status === 'ACTIVE' || o.status === 'NONE')) o.status = 'EXPIRED';
+  return o;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   const user = await verifyCustomer(req).catch(() => null);
@@ -52,10 +58,10 @@ module.exports = async function handler(req, res) {
       if (s.lifetime) out.lifetime = true; else out.period_end = s.period_end;
       out.period_source = 'stripe';
     }
-    return res.status(200).json(out);
+    return res.status(200).json(expire(out));
   }
   if (body && body.lifetime) body.plan = 'LIFETIME';
-  if (body) return res.status(200).json(body);
+  if (body) return res.status(200).json(expire(body));
   if (r) return res.status(r.status || 500).json({ ok: false, error: (r.body && r.body.error) || 'INTERNAL_SERVER_ERROR', message: (r.body && typeof r.body.message === 'string') ? r.body.message.slice(0, 300) : undefined });
   return res.status(502).json({ ok: false, error: 'ENGINE_UNREACHABLE' });
 };
