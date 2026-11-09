@@ -5823,7 +5823,7 @@ h3.has-tip{cursor:help}
         closed: [], open: [], accounts: [],
         plan: null,
 
-        profile: F.data.profile, members: F.data.members, threads: F.data.threads, leaderboard: F.data.leaderboard
+        profile: {handle:(F.session&&F.session.name)||'', country:'', flag:'', bio:'', visible:false, followers:0, following:0, blocked:[]}, members: [], threads: [], leaderboard: F.data.leaderboard
 
       };
     }
@@ -5846,6 +5846,8 @@ h3.has-tip{cursor:help}
     F.clearSnaps=function(){ try{ Object.keys(localStorage).forEach(function(k){ if(k.indexOf('ftm_snap_')===0) localStorage.removeItem(k); }); }catch(e){} };
     function loadLive(){
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
+      if(F.session && !F._commReal){ F._commReal=true; if(F.data.members) F.data.members.length=0; if(F.data.threads) F.data.threads.length=0;
+        var pr=F.data.profile||(F.data.profile={}); Object.keys(pr).forEach(function(k){ delete pr[k]; }); Object.assign(pr,{handle:F.session.name||'', country:'', flag:'', bio:'', visible:false, followers:0, following:0, blocked:[]}); }
       if(!F._liveLoaded && !F._snapTried && F.session){ F._snapTried=true;
         if(F.loadSnap()){ F._liveLoaded=true; setTimeout(function(){ try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); if(F.updStamp) F.updStamp(); }catch(e){} },0); } }
       var seq=F._loadSeq=(F._loadSeq||0)+1;
