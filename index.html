@@ -7954,7 +7954,14 @@ tick();setInterval(tick,5000);})();
   function sync(){
     var em=tx('appEmail'); $('sbEmail').textContent=em; $('sbAv').textContent=(em||'F').charAt(0);
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
-    var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxVal').textContent=bal; $('dxBal').textContent=bal;
+    var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxBal').textContent=bal;
+    (function(el){ var tgt=null; try{ tgt=FTM.metrics().equity; }catch(e){}
+      if(tgt==null||!isFinite(tgt)||!bal||bal==='\u2014'||matchMedia('(prefers-reduced-motion:reduce)').matches){ el.textContent=bal; el._v=tgt; return; }
+      if(el._t===tgt && el.textContent===bal) return; var from=(el._v!=null&&isFinite(el._v))?el._v:0; el._t=tgt; el._v=tgt;
+      if(Math.abs(tgt-from)<0.5){ el.textContent=bal; return; }
+      var cu=(FTM.data&&FTM.data.account&&FTM.data.account.currency)||null, t0=performance.now(), D=900; cancelAnimationFrame(el._raf);
+      (function step(now){ var k=Math.min(1,(now-t0)/D), e=1-Math.pow(1-k,3); if(k<1){ el.textContent=FTM.moneyIn(Math.round(from+(tgt-from)*e),0,cu); el._raf=requestAnimationFrame(step); } else el.textContent=bal; })(t0);
+    })($('dxVal'));
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxPlan').classList.toggle('plan-free',$('hdrPlan').classList.contains('plan-free')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
