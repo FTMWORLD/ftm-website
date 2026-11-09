@@ -4,6 +4,16 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — NO COPY OF A TRADE THE MASTER CLOSES FOR THE NIGHT AT ONCE (commit 8fa00f2, API restarted 01:26 Berlin)
+
+Gospel: "Yes, build it" and "Yes, turn it on". On 8 Nov at 22:44 Berlin the master's Bitcoin pattern order filled after
+its nightly close time, and the master's EA closed it within a second; account 41734917 copied it (open and close
+within a second, -0.20 USD). From now on such an OPEN (M and W pattern trades, Bitcoin, 21:55-23:00 Berlin) is not
+copied: the customer's execution shows status SKIPPED with planning_reason SKIPPED_MASTER_FLAT_WINDOW_<symbol>_<hhmm>_BROKER.
+Closes are never blocked; every other trade is unchanged. Interim until the master's EA 3.5 (FTM MACHINE). Nothing
+changes in the API's fields. Proof: replayed on the live database (rolled back), all 314 past master trades replayed
+read-only (only the 8 Nov trade would have been skipped), regression gate SAFE TO DEPLOY.
+
 ## 2026-11-08 — CONNECT IN SECONDS + A FIRST TRADE FOR EVERY NEW ACCOUNT (commits a51aed9, 895f0c8, API restarted 18:18 Berlin)
 
 Gospel: "Yes, A+B+C" (connecting must take about 5 seconds) and "by all means" (every new account gets a first trade).
