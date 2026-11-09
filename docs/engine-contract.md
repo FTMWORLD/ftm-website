@@ -4,6 +4,22 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — HIGHEST BALANCE FROM CLOSED TRADES ONLY, FOR EVERY ACCOUNT (commit 9a91968, API restarted 18:42 Berlin)
+
+Gospel's rule: profit and drawdown come from closed trades only; deposits and withdrawals change the balance only. Same
+shared code for every account (every customer, the master preview, demo, future customers); no account-specific case.
+- GET /customer/accounts/:id/stats, new: peak_balance_trading = initial_balance + the best running total of closed
+  trades (commission and swap included, cash moves never), peak_balance_trading_at, peak_trading_profit,
+  peak_balance_trading_basis INITIAL_BALANCE_PLUS_BEST_CLOSED_TRADES_TOTAL_EXCLUDING_DEPOSITS_WITHDRAWALS.
+- For EVERY account the website shows: "Highest balance" = peak_balance_trading (date peak_balance_trading_at);
+  "Max drawdown" = max_drawdown_closed_balance_pct. peak_balance stays the raw balance (deposits included). An account
+  with pending=true has no statistics yet: show a dash.
+- Tanaya's 594 / 18.6 % were never sent by the engine (all 15 /stats calls today: account db4fed4f = record 2022, 200,
+  < 0.4 s). Engine figures: peak_balance_trading 522.53 (14:33 UTC 9 Nov), closed-balance drawdown 1.03 %.
+Proof: verify-stats-peaks 13/13, incl. L4 over every connected account (master preview 102,528.95 / 9.02 %, demo 184
+20,028.06 / 49.34 %, Tanaya 522.53 / 1.03 %, master view-only row the same as the preview; two never-read test rows
+pending); live GET on Tanaya after the restart: 200, 378 ms, the new fields present; regression gate SAFE TO DEPLOY.
+
 ## 2026-11-09 — RISK GAUGE + FASTER CONNECT (commit a6cafbc, API restarted 15:27 Berlin)
 
 Gospel: "Both".
