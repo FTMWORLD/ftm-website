@@ -2990,7 +2990,9 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       <div class="app-card">
         <h4 class="mg-title">Capital flows</h4>
         <dl class="mg">
-          <div><dt>Deposits / withdrawals</dt><dd id="mFlows">&mdash;</dd></div>
+          <div><dt>Deposits</dt><dd id="mDep">&mdash;</dd></div>
+          <div><dt>Withdrawals</dt><dd id="mWdr">&mdash;</dd></div>
+          <div><dt>Net deposits</dt><dd id="mNetDep">&mdash;</dd></div>
           <div><dt>Commission &amp; swap</dt><dd id="mFees">&mdash;</dd></div>
           <div><dt>Total lots</dt><dd id="mLots">&mdash;</dd></div>
         </dl>
@@ -4735,11 +4737,25 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
         equity = balance + floating;
       }
 
+      var flows=(d.flows||[]).filter(function(f){return f.t&&f.amt;});
+      if(!flows.length && (acct.deposits>0 || acct.withdrawals>0)){
+        var firstT=covered.length?covered[0].openTime:Date.now(), lastT=covered.length?covered[covered.length-1].closeTime:Date.now();
+        if(acct.deposits>0) flows.push({t:firstT-1, amt:acct.deposits});
+        if(acct.withdrawals>0) flows.push({t:lastT+1, amt:-acct.withdrawals});
+      }
+      var flowSum=flows.reduce(function(s,f){return s+f.amt;},0);
       var anchor = (liveAcct && liveAcct.balance!=null)
-        ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0)
-        : acct.deposits - acct.withdrawals;
-      var run = anchor, curve=[{t:covered.length?covered[0].openTime:Date.now(), v:run}];
-      covered.forEach(function(t){ run+=t.pl; curve.push({t:t.closeTime, v:run}); });
+        ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0) - flowSum
+        : acct.deposits - acct.withdrawals - flowSum;
+      var ev=covered.map(function(t){return {t:t.closeTime,pl:t.pl};}).concat(flows.map(function(f){return {t:f.t,flow:f.amt};})).sort(function(a,b){return a.t-b.t;});
+      var t0=ev.length?Math.min(ev[0].t,covered.length?covered[0].openTime:ev[0].t):Date.now();
+      var run = anchor, curve=[{t:t0, v:run}], pnlSeries=[0], peakAdj=[];
+      var ddRun=anchor, ddPeak=anchor, ddMaxAbs=0, ddMaxPct=0;
+      ev.forEach(function(e){
+        if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push({t:e.t, v:run, flow:e.flow}); return; }
+        run+=e.pl; ddRun+=e.pl; curve.push({t:e.t, v:run});
+        if(ddRun>ddPeak) ddPeak=ddRun; var dr=ddPeak-ddRun; if(dr>ddMaxAbs){ ddMaxAbs=dr; ddMaxPct=ddPeak>0?dr/ddPeak*100:0; }
+      });
       var curveIncomplete = covered.length < closed.length;
       var curveStart = covered.length ? covered[0].closeTime : null;
 
@@ -4753,13 +4769,15 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
         return {abs:maxAbs, pct:maxPct};
       }
       var balSeries=curve.map(function(p){return p.v;});
-      var ddBal=drawdown(balSeries);
-      var ddEq=drawdown(balSeries.concat([equity]));
+      var ddBal=flows.length?{abs:ddMaxAbs,pct:ddMaxPct}:drawdown(balSeries);
+      var eqDrop=Math.max(0,ddPeak-(ddRun+(equity-balance)));
+      var ddEq=flows.length?(eqDrop>ddMaxAbs?{abs:eqDrop,pct:ddPeak>0?eqDrop/ddPeak*100:0}:ddBal):drawdown(balSeries.concat([equity]));
 
       var twr=1, base=anchor;
-      covered.forEach(function(t){ if(base>0){ twr*=(1+t.pl/base); base+=t.pl; } });
+      ev.forEach(function(e){ if(e.flow){ base+=e.flow; return; } if(base>0){ twr*=(1+e.pl/base); } base+=e.pl; });
       var gainPct=(twr-1)*100;
-      var absPct=anchor>0 ? (netPL/anchor*100) : 0;
+      var capIn=anchor+flows.filter(function(f){return f.amt>0;}).reduce(function(s,f){return s+f.amt;},0);
+      var absPct=capIn>0 ? (netPL/capIn*100) : 0;
 
       var n=covered.length;
       var expectancy = n? netPL/n : 0;
@@ -5034,7 +5052,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       set('mBal2', cur(m.balance));
       set('mHigh', cur(m.highest));
 
-      set('mFlows', cur0(m.deposits)+' / '+cur0(m.withdrawals));
+      set('mDep', cur(m.deposits||0)); set('mWdr', m.withdrawals?('-'+cur(m.withdrawals)):cur(0), m.withdrawals?'down':null); set('mNetDep', cur((m.deposits||0)-(m.withdrawals||0)));
       set('mFees', cur(-Math.abs(m.fees)), m.fees?'down':null);
       set('mLots', m.lots.toFixed(2));
 
@@ -5120,6 +5138,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
           floating: num(a.floating_profit!=null?a.floating_profit:(a.performance&&a.performance.floating_profit)),
           currency: a.currency || null,
           openPositions: a.open_positions || 0,
+          deposits: num(a.deposits), withdrawals: num(a.withdrawals),
           riskTier: a.risk_tier || null,
 
           validationReason: a.validation_reason || null,
@@ -5199,6 +5218,17 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
         resumeAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/resume', { method:'POST' }); },
         activateAccount: function(accountId){ return call('/accounts/'+encodeURIComponent(accountId)+'/activate', { method:'POST' }); },
         closePosition: function(accountId, ref){ return call('/accounts/'+encodeURIComponent(accountId)+'/positions/'+encodeURIComponent(ref)+'/close', { method:'POST' }); },
+        fetchStats: function(accountId){
+          return call('/accounts/'+accountId+'/stats?limit=2000').then(function(j){
+            if(!j || j.pending) return null;
+            var flows=(j.history||[]).filter(function(r){ return String(r.type||r.deal_type||'').toUpperCase()==='BALANCE'; }).map(function(r){
+              var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at;
+              var amt=num(r.profit!=null?r.profit:(r.amount!=null?r.amount:r.net_profit));
+              return {t:t?Date.parse(t):null, amt:amt};
+            }).filter(function(f){ return f.t && f.amt; }).sort(function(a,b){return a.t-b.t;});
+            return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, startBalance:num(j.start_balance) };
+          });
+        },
         fetchPositions: function(accountId){
           return call('/accounts/'+accountId+'/positions').then(function(j){
             return (j.positions||[]).map(function(p){
@@ -5402,7 +5432,15 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
           return F.remote.fetchPositions(primary.accountId).then(function(open){
             if(seq!==F._loadSeq) return;
             F._liveLoaded = true;
-            F.data.accounts = accounts; F.data.account = {currency: primary.currency || null, deposits:0, withdrawals:0};
+            F.data.accounts = accounts; F.data.account = {currency: primary.currency || null, deposits:primary.deposits||0, withdrawals:primary.withdrawals||0};
+            var sc=F._statsCache&&F._statsCache[primary.accountId]; F.data.flows = sc?sc.flows:[];
+            if(sc){ if(sc.deposits!=null) F.data.account.deposits=sc.deposits; if(sc.withdrawals!=null) F.data.account.withdrawals=sc.withdrawals; }
+            if(F.remote.fetchStats && !(primary.isPreview)) F.remote.fetchStats(primary.accountId).then(function(st){
+              if(!st || seq!==F._loadSeq) return;
+              F._statsCache=F._statsCache||{}; F._statsCache[primary.accountId]=st;
+              F.data.flows=st.flows; if(st.deposits!=null) F.data.account.deposits=st.deposits; if(st.withdrawals!=null) F.data.account.withdrawals=st.withdrawals;
+              if(F.render) F.render(); if(F.redrawAllViews) F.redrawAllViews();
+            }).catch(function(){});
             F.data.closed = closed;
             F.data.open = open;
             F._cache=F._cache||{}; F._cacheAt=F._cacheAt||{};
