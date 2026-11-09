@@ -22,7 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
-- Figures that did not match the balance (e.g. 100,000 deposited, balance 99,606 but -4.91% shown): the engine's trade history did not add up to the balance. The website now checks every account: if the history does not match the balance, profit and % are worked out from balance minus net deposits, history-based charts are hidden with a notice, and FTM is told to correct the history.
+- Profit and % come from the closed trades, never from balance minus deposits. If the balance shown looks different from the broker app, tell FTM support: the engine re-reads the account.
 - Balance chart header showed a different profit than the rest of the page: it skipped the first day's trades. Fixed: with All selected it equals the all-time profit and %.
 - Risk level card: shows the account's largest drop from a high (max drawdown, closed trades only, from the FTM engine) against the normal range of its risk profile: Conservative 10-20%, Balanced 20-40%, Growth 40% and more. 'Below the normal range' means less risk than the profile allows.
 - Wrong figures after switching to view another account (e.g. the master preview): the previous account's engine figures were briefly mixed in. Fixed: each account only ever uses its own engine figures; while they load a dash shows. The small chart in the blue box shows profit and loss from trades, with a dashed break-even line.

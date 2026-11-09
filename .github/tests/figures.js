@@ -92,8 +92,8 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(!errs.length, 'switch: no script errors '+(errs[0]||''));
   await p.close();
  }
- // History that does not add up to the balance (the master on 9 Nov: 100,000 in, balance 99,606.31, history -5,154.34):
- // the site must show balance-based figures and never figures built on the broken history.
+ // Engine balance that disagrees with the history (the master on 9 Nov: history -5,154.34 was right, the reported balance 99,606.31 was not):
+ // profit and % must come from the closed-trade history, never from balance minus deposits.
  {
   const p=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   const gh=[{type:'BALANCE',time:new Date(now-6*D).toISOString(),profit:100000,net:100000},{type:'SELL',entry:'OUT',position_ref:'G1',time:new Date(now-4*D).toISOString(),profit:2528.95,net:2528.95,symbol:'USTEC',volume:1},{type:'BUY',entry:'OUT',position_ref:'G2',time:new Date(now-2*D).toISOString(),profit:-7683.29,net:-7683.29,symbol:'USTEC',volume:1}];
@@ -108,11 +108,10 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   await p.goto(BASE+'/');await p.waitForTimeout(800);
   await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'gap@ftm.com',products:[],name:'Gap'};});
   await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2500);
-  const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {gain:g('mGain'),year:g('mYear'),net:g('mNet'),gap:document.getElementById('appView').classList.contains('data-gap'),pp:getComputedStyle(document.getElementById('ppCard')).display};});
-  ok(/-0\.39%/.test(v.gain)&&/-0\.39%/.test(v.year), 'broken history: gain and profit this year = (99,606.31 - 100,000) / 100,000 = -0.39% (got '+v.gain+' / '+v.year+')');
-  ok(/-\$393\.69/.test(v.net), 'broken history: net P/L = balance - net deposits = -393.69 (got '+v.net+')');
-  ok(v.gap && v.pp==='none', 'broken history: the notice shows and history-based cards are hidden');
-  ok(!errs.length, 'broken history: no script errors '+(errs[0]||''));
+  const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {gain:g('mGain'),year:g('mYear'),net:g('mNet')};});
+  ok(/-5\.15%/.test(v.gain)&&/-5\.15%/.test(v.year), 'balance disagrees: gain and profit this year come from the trade history = -5.15% (got '+v.gain+' / '+v.year+')');
+  ok(/-\$5,154\.34/.test(v.net), 'balance disagrees: net P/L is the engine closed P/L -5,154.34 (got '+v.net+')');
+  ok(!errs.length, 'balance disagrees: no script errors '+(errs[0]||''));
   await p.close();
  }
  console.log(fails.length?('FAILED: '+fails.length):'ALL FIGURES OK'); process.exit(fails.length?1:0);
