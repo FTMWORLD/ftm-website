@@ -1956,7 +1956,12 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .auth-pk[hidden]{display:none!important}
 .auth-or{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
 .auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:rgba(11,20,64,.12)}
-.auth-pk-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%}
+.auth-pk-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:100%;min-width:0;white-space:normal;text-align:center;line-height:1.25;padding-left:16px;padding-right:16px}
+.auth-pk-btn svg{flex:0 0 auto}@media (max-width:600px){.auth-pk-btn{font-size:15px}}.auth-form{min-width:0}
+#dxTag,#dxRiskTag{display:none!important}
+.dx-hero .dx-lbl{font-size:15px}
+.dx-hero .dx-val{font-size:clamp(42px,5.2vw,62px)}
+@media (max-width:560px){.dx-hero .dx-val{font-size:44px}}
 .auth-pk-btn svg{width:20px;height:20px;color:#152a7a}
 .um-pk.is-on::after{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#16a34a;margin-left:8px;vertical-align:1px}
 .pk-toast{position:fixed;left:50%;bottom:22px;z-index:9998;width:min(520px,calc(100% - 32px));transform:translate(-50%,16px);opacity:0;transition:opacity .25s,transform .25s;display:grid;grid-template-columns:auto 1fr;gap:10px 14px;align-items:center;background:#0B1440;color:#fff;border:1px solid rgba(212,175,55,.4);border-radius:18px;padding:16px 18px;box-shadow:0 24px 50px -18px rgba(11,20,64,.6)}
