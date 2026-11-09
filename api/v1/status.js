@@ -20,7 +20,7 @@ async function check(name, fn) {
   }
 }
 
-async function get(url, opts) {
+async function getOnce(url, opts) {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), 10000);
   try {
@@ -28,6 +28,13 @@ async function get(url, opts) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+// A service that is slow or drops one request is tried once more after 3 seconds before it counts as down,
+// so a single network blip does not send a false alarm.
+async function get(url, opts) {
+  try { return await getOnce(url, opts); }
+  catch (e) { await new Promise(r => setTimeout(r, 3000)); return getOnce(url, opts); }
 }
 
 function must(r, what) {
