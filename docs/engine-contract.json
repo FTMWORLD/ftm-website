@@ -958,6 +958,7 @@
           "deposits_total": 10000,
           "withdrawals_total": 0,
           "growth_pct": 4.5,
+          "return_basis": "TIME_WEIGHTED_CLOSED_TRADES_EXCLUDING_DEPOSITS_WITHDRAWALS",
           "max_drawdown_pct": 1.79,
           "max_drawdown_basis": "EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS",
           "max_drawdown_closed_balance_pct": 1.2,
