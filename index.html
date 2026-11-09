@@ -5391,10 +5391,10 @@ h3.has-tip{cursor:help}
       set('mEquity', cur0(m.equity));
       set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
       set('mYear', pct(m.yearPct,1), tone(m.yearPL));
-      var ddW=Math.max(m.ddBal.pct,m.ddEq.pct); set('mDDtile', ddW>0.05?'-'+ddW.toFixed(1)+'%':'0.0%', ddW>0.05?'down':null);
+      set('mDDtile', '\u2014');
 
       var ES=(F.data&&F.data.engineStats)||{};
-      var gainV=ES.growthPct!=null?ES.growthPct:m.gainPct; set('mGain', pct(gainV), tone(gainV));
+      if(ES.growthPct!=null) set('mGain', pct(ES.growthPct), tone(ES.growthPct)); else set('mGain','\u2014');
 
       set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
       var netV=ES.closedPl!=null?ES.closedPl:m.netPL; set('mNet', (netV>=0?'+':'')+cur(netV), tone(netV));
@@ -5412,12 +5412,11 @@ h3.has-tip{cursor:help}
         set('mDDbal', cur0(cAbs)+' ('+cPct.toFixed(2)+'%)', 'down');
         set('mDDeq', cur0(eAbs)+' ('+ES.maxDDPct.toFixed(2)+'%)', 'down');
       } else {
-        set('mDDbal', cur0(m.ddBal.abs)+' ('+m.ddBal.pct.toFixed(2)+'%)', 'down');
-        set('mDDeq', cur0(m.ddEq.abs)+' ('+m.ddEq.pct.toFixed(2)+'%)', 'down');
+        set('mDDbal', '\u2014'); set('mDDeq', '\u2014');
       }
       set('mEq2', cur(m.equity));
       set('mBal2', cur(m.balance));
-      set('mHigh', cur(ES.peakBalance!=null?ES.peakBalance:m.highest));
+      set('mHigh', ES.peakBalance!=null ? cur(ES.peakBalance)+(ES.peakBalanceAt?' \u00B7 '+new Date(ES.peakBalanceAt).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):'') : '\u2014');
 
       set('mDep', cur(m.deposits||0)); set('mWdr', m.withdrawals?('-'+cur(m.withdrawals)):cur(0), m.withdrawals?'down':null); set('mNetDep', cur((m.deposits||0)-(m.withdrawals||0)));
       set('mFees', cur(-Math.abs(m.fees)), m.fees?'down':null);
@@ -5607,7 +5606,7 @@ h3.has-tip{cursor:help}
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
-                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
+                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
                      ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc,
                      riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
