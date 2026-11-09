@@ -57,5 +57,36 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
   await p.close();
  }
+ // Switching accounts: a customer viewing the master preview must see only the master's own engine figures.
+ {
+  const p=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  const DEMO='f7a00000-0000-4000-8000-0000000000d1', MAS='f7a00000-0000-4000-8000-0000000000a5';
+  const demoStats=Object.assign({},full,{peak_balance:20028.06,peak_balance_at:new Date(now-30*D).toISOString(),max_drawdown_closed_balance_pct:49.34});
+  const mh=[{type:'BALANCE',time:new Date(now-6*D).toISOString(),profit:100000,net:100000},{type:'SELL',entry:'OUT',position_ref:'M1',time:new Date(now-4*D).toISOString(),profit:2528.95,net:2528.95,symbol:'XAUUSD',volume:1},{type:'BUY',entry:'OUT',position_ref:'M2',time:new Date(now-2*D).toISOString(),profit:-8795.31,net:-8795.31,symbol:'XAUUSD',volume:1}];
+  const masStats={ok:true,history:mh.slice().reverse(),history_total:mh.length,deposits_total:100000,withdrawals_total:0,closed_pl_total:-6266.36,trades_closed:2,wins:1,losses:1,win_rate_pct:50,
+   peak_balance:102528.95,peak_balance_at:new Date(now-4*D).toISOString(),max_drawdown_pct:10.48,max_drawdown_basis:'EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS',max_drawdown_closed_balance_pct:8.58};
+  await p.route('**/api/v1/**',async r=>{const u=r.request().url();
+   if(u.includes('/stats')){ await new Promise(z=>setTimeout(z,u.includes(MAS)?900:0)); return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(u.includes(MAS)?masStats:demoStats)}); }
+   if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
+   if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
+   if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
+   if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[
+     {account_id:DEMO,account_number:'184',name:'DERIV',currency:'USD',balance:'12000',equity:'12000',display_status:'ACTIVE',status_reason:'OK',is_trading:true,deposits:'20000',withdrawals:'0'},
+     {account_id:MAS,account_number:null,preview:true,view_only:true,currency:'USD',balance:'93733.64',equity:'93733.64',display_status:'PAUSED',deposits:'100000',withdrawals:'0'}]})});
+   return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
+  await p.goto(BASE+'/');await p.waitForTimeout(800);
+  await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'sw@ftm.com',products:['auto'],name:'Sw'};});
+  await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2000);
+  const g=()=>p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {high:g('mHigh'),dd:g('mDDtile'),gain:g('mGain')};});
+  const before=await g(); ok(/20,028\.06/.test(before.high), 'switch: demo shows its own highest balance (got '+before.high+')');
+  await p.evaluate(()=>FTM.viewAccount('MASTER')); await p.waitForTimeout(300);
+  const mid=await g(); ok(!/20,028/.test(mid.high) && !/49\.34/.test(mid.dd), 'switch: while the master loads, no demo figures are shown (got '+mid.high+' / '+mid.dd+')');
+  await p.waitForTimeout(2500);
+  const after=await g(); ok(/102,528\.95/.test(after.high) && /8\.58%/.test(after.dd), 'switch: master shows its own engine figures (got '+after.high+' / '+after.dd+')');
+  const yr=await p.evaluate(()=>[document.getElementById('mYear').textContent,document.getElementById('mGain').textContent]);
+  ok(/-6\.27%/.test(yr[0]) && /-6\.27%/.test(yr[1]), 'switch: master profit this year and gain = (93,733.64 - 100,000) / 100,000 = -6.27% (got '+yr.join(' / ')+')');
+  ok(!errs.length, 'switch: no script errors '+(errs[0]||''));
+  await p.close();
+ }
  console.log(fails.length?('FAILED: '+fails.length):'ALL FIGURES OK'); process.exit(fails.length?1:0);
 })();
