@@ -59,7 +59,7 @@ After 20, start again at 1 and look for what changed.
 - Redesigned balance chart.
 
 **Next, ranked**
-1. Monthly statement PDF.
+1. Monthly statement PDF. BUILT 9 Nov (Accounts > Account activity > Download statement).
 2. Freshness stamp ("updated Xs ago").
 3. Risk gauge 1-10 next to the chosen profile (engine figure).
 4. Factsheet strip: month, YTD, 12m, annualised, best and worst month.

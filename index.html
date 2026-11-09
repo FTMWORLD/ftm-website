@@ -1924,6 +1924,13 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .al-amt{font-weight:800;font-variant-numeric:tabular-nums;text-align:right}.al-amt.up{color:#16a34a}.al-amt.dn{color:#E5323E}
 .al-empty{color:#5b6378;padding:14px 0}
 .al-more{margin-top:12px}
+.st-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.st-bar[hidden]{display:none!important}
+.st-bar select{height:36px;border-radius:99px;border:1px solid rgba(11,20,64,.16);padding:0 30px 0 14px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#fff}
+.st-dl{display:inline-flex;align-items:center;gap:7px;background:#0B1440;color:#fff;border:1px solid #0B1440}
+.st-dl svg{width:16px;height:16px;color:#E3B62F}
+.st-dl:hover{background:#152a7a}
+.st-dl[disabled]{opacity:.5;cursor:not-allowed}
 .pp-card{margin-top:18px}
 .pp-card[hidden]{display:none!important}
 .pp-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 18px;flex-wrap:wrap;margin-bottom:16px}
@@ -3369,6 +3376,7 @@ h3.has-tip{cursor:help}
           </div>
           <div class="app-card act-log">
             <div class="al-head"><div><h3>Account activity</h3><p class="hint">Every trade, deposit and withdrawal on this account.</p></div>
+              <div class="st-bar"><select id="stPeriod" aria-label="Statement period"></select><button type="button" class="btn btn-navy btn-sm st-dl" id="stDl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Download statement</span></button></div>
               <div class="tf" id="alTabs"><button class="is-on" data-k="all">All</button><button data-k="trade">Trades</button><button data-k="in">Deposits</button><button data-k="out">Withdrawals</button></div></div>
             <ul class="al-list" id="alList"></ul>
             <div class="xp-row" id="alXp" hidden><button type="button" class="xp-btn" id="alMore"><span>Show more</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button><button type="button" class="xp-btn xp-up" id="alLess" hidden><span>Show less</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 15 6-6 6 6"/></svg></button></div>
@@ -5349,7 +5357,7 @@ h3.has-tip{cursor:help}
             var NT={BALANCE:1,CREDIT:1,CHARGE:1,CORRECTION:1,BONUS:1,COMMISSION:1};
             var deals=(j.history||[]).filter(function(r){ return !NT[String(r.type||r.deal_type||'').toUpperCase()]; }).map(function(r){
               var pl=num(r.net!=null?r.net:(r.net_profit!=null?r.net_profit:r.profit)); if(pl!=null && r.net==null && r.net_profit==null){ pl+= (num(r.commission)||0)+(num(r.swap)||0)+(num(r.fee)||0); }
-              return {t:tOf(r), pl:pl, open:String(r.entry||'').toUpperCase()==='IN'};
+              return {t:tOf(r), pl:pl, open:String(r.entry||'').toUpperCase()==='IN', symbol:r.symbol||null, side:String(r.type||r.deal_type||'').toUpperCase(), lots:num(r.volume), ticket:r.ticket||null};
             }).filter(function(x){ return x.t && x.pl!=null && x.pl!==0; }).sort(function(a,b){return a.t-b.t;});
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
@@ -8341,8 +8349,68 @@ tick();setInterval(tick,5000);})();
     window.addEventListener('scroll',function(){ if(cur) hide(true); },{passive:true});
     document.querySelectorAll('[data-tip]').forEach(function(el){ if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0'); });
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); activity(); }catch(e){} return r; };
-  try{ pnl(); activity(); }catch(e){}
+  (function(){
+    var sel=$('stPeriod'), btn=$('stDl'); if(!sel||!btn) return;
+    function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+    function events(){
+      var d=F.data||{}, es=d.engineStats, ev=[];
+      var useE=!!(es && es.deals && es.deals.length && (es.historyTotal==null || (es.rows||0)>=es.historyTotal*0.98));
+      if(useE) es.deals.forEach(function(x){ ev.push({t:x.t,k:x.open?'fee':'trade',amt:x.pl,sym:x.symbol,side:x.side,lots:x.lots}); });
+      else (d.closed||[]).forEach(function(t){ if(t.closeTime&&t.pl!=null) ev.push({t:t.closeTime,k:'trade',amt:t.pl,sym:t.symbol,side:String(t.dir||'').toUpperCase(),lots:t.lots,lab:t.label}); });
+      (d.flows||[]).forEach(function(f){ ev.push({t:f.t,k:f.amt>0?'in':'out',amt:f.amt}); });
+      ev.sort(function(a,b){return a.t-b.t;});
+      var m=F.metrics?F.metrics():null, run=m?m.balance:0;
+      for(var i=ev.length-1;i>=0;i--){ ev[i].after=run; run-=ev[i].amt; }
+      return {ev:ev, start:run};
+    }
+    function fill(){
+      var E=events().ev, seen={}, opts=['<option value="all">'+esc(tr('All time'))+'</option>'];
+      for(var i=E.length-1;i>=0;i--){ var dt=new Date(E[i].t), k=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2); if(seen[k]) continue; seen[k]=1; opts.push('<option value="'+k+'">'+esc(dt.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}))+'</option>'); }
+      var cur=sel.value; sel.innerHTML=opts.join(''); if(cur && sel.querySelector('option[value="'+cur+'"]')) sel.value=cur; else if(opts.length>1) sel.selectedIndex=1;
+      btn.disabled=!E.length; sel.closest('.st-bar').hidden=!E.length;
+    }
+    function build(){
+      var all=events(), E=all.ev, v=sel.value, a=-Infinity, b=Infinity, label=tr('All time');
+      if(v!=='all'){ var y=+v.slice(0,4), mo=+v.slice(5,7)-1; a=new Date(y,mo,1).getTime(); b=new Date(y,mo+1,1).getTime(); label=new Date(y,mo,1).toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}); }
+      var rows=E.filter(function(e){return e.t>=a&&e.t<b;}), before=E.filter(function(e){return e.t<a;});
+      var open=before.length?before[before.length-1].after:all.start, close=rows.length?rows[rows.length-1].after:open;
+      var dep=0,wd=0,res=0,nT=0,nW=0; rows.forEach(function(e){ if(e.k==='in')dep+=e.amt; else if(e.k==='out')wd+=-e.amt; else { res+=e.amt; if(e.k==='trade'){ nT++; if(e.amt>0)nW++; } } });
+      var va=(F.viewedAccount&&F.viewedAccount())||{}, cur=(F.data&&F.data.account&&F.data.account.currency)||'';
+      var M=function(n){ return money(n,2); }, S=function(n){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),2); };
+      var fd=function(t){ return new Date(t).toLocaleString((window.FTM_LOCALE||undefined),{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
+      var det=function(e){ if(e.k==='in') return tr('Deposited'); if(e.k==='out') return tr('Withdrawn'); if(e.k==='fee') return tr('Commission')+(e.sym?' · '+e.sym:''); return (e.sym||'')+' · '+(e.side==='SELL'?tr('Sell'):tr('Buy'))+(e.lots!=null?' · '+e.lots.toFixed(2):'')+(e.lab?' · '+tr(e.lab):''); };
+      var ref='FTM-'+String(va.accountId||va.number||'').replace(/[^A-Za-z0-9]/g,'').slice(0,8).toUpperCase()+'-'+(v==='all'?'ALL':v.replace('-',''))+'-'+rows.length;
+      var dir=document.documentElement.getAttribute('dir')||'ltr', lang=document.documentElement.getAttribute('lang')||'en';
+      var css='@page{size:A4;margin:14mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#0B1440;font-size:11.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
+        '.hd{background:#0B1440;color:#fff;border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}.lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.02em}.lg img{width:36px;height:36px;border-radius:9px}'+
+        '.hd h1{margin:0;font-size:18px;color:#E3B62F;font-weight:800}.hd p{margin:4px 0 0;color:rgba(255,255,255,.75);font-size:11px}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}'+
+        '.meta div{border:1px solid #e3e6f0;border-radius:10px;padding:9px 12px}.meta span,.sum span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7393}.meta b{display:block;margin-top:3px;font-size:12px}'+
+        '.sum{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid #e3e6f0;border-radius:12px;overflow:hidden;margin-bottom:18px}.sum div{padding:12px;border-inline-end:1px solid #e3e6f0}.sum div:last-child{border:0;background:#fbf6e4}.sum b{display:block;margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}'+
+        'table{width:100%;border-collapse:collapse}th{text-align:start;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b7393;border-bottom:2px solid #0B1440;padding:7px 6px}td{padding:7px 6px;border-bottom:1px solid #eceef5;font-variant-numeric:tabular-nums}tr{break-inside:avoid}'+
+        '.n{text-align:end;white-space:nowrap}.up{color:#15803d}.dn{color:#c81e2b}.ft{margin-top:18px;padding-top:10px;border-top:2px solid #D4AF37;display:flex;justify-content:space-between;gap:12px;color:#6b7393;font-size:10px}';
+      var h='<!doctype html><html lang="'+esc(lang)+'" dir="'+esc(dir)+'"><head><meta charset="utf-8"><title>'+esc(tr('Account statement')+' · '+label)+'</title><style>'+css+'</style></head><body>'+
+        '<div class="hd"><div class="lg"><img src="https://www.ftmwealthnation.com/email-logo.png" alt="">FTM</div><div style="text-align:end"><h1>'+esc(tr('Account statement'))+'</h1><p>'+esc(label)+'</p></div></div>'+
+        '<div class="meta"><div><span>'+esc(tr('Account'))+'</span><b>'+esc((va.name||'')+' '+(va.number||''))+'</b></div><div><span>'+esc(tr('Currency'))+'</span><b>'+esc(cur)+'</b></div><div><span>'+esc(tr('Generated'))+'</span><b>'+esc(fd(Date.now()))+'</b></div><div><span>'+esc(tr('Reference'))+'</span><b>'+esc(ref)+'</b></div></div>'+
+        '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div><div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
+        '<table><thead><tr><th>'+esc(tr('Date'))+'</th><th>'+esc(tr('Details'))+'</th><th class="n">'+esc(tr('Amount'))+'</th><th class="n">'+esc(tr('Running balance'))+'</th></tr></thead><tbody>'+
+        rows.map(function(e){ return '<tr><td>'+esc(fd(e.t))+'</td><td>'+esc(det(e))+'</td><td class="n '+(e.amt>0?'up':(e.amt<0?'dn':''))+'">'+S(e.amt)+'</td><td class="n">'+M(e.after)+'</td></tr>'; }).join('')+
+        '</tbody></table><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(1):'0.0')+'%</span></div></body></html>';
+      return h;
+    }
+    F.statementHtml=build;
+    btn.addEventListener('click',function(){
+      var html=build(), fr=document.getElementById('stFrame');
+      if(fr) fr.remove();
+      fr=document.createElement('iframe'); fr.id='stFrame'; fr.setAttribute('aria-hidden','true'); fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
+      document.body.appendChild(fr);
+      var doc=fr.contentWindow.document; doc.open(); doc.write(html); doc.close();
+      var go=function(){ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){ var w=window.open('','_blank'); if(w){ w.document.write(html); w.document.close(); w.focus(); w.print(); } } };
+      var img=doc.querySelector('img'); if(img && !img.complete){ img.onload=img.onerror=function(){ setTimeout(go,50); }; setTimeout(go,1500); } else setTimeout(go,50);
+    });
+    F._stFill=fill;
+  })();
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){} return r; };
+  try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>
 <script>
