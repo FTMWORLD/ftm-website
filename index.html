@@ -2008,6 +2008,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .rk-h{display:grid;gap:4px}.rk-h[hidden]{display:none}
 .rk-hist{width:100%;height:64px;border-radius:10px;background:#f6f7fb}
 .rk-h small{font-size:11px;color:var(--muted);text-align:end}
+.rk-tf{margin-top:2px;justify-self:end}.rk-tf button{padding:4px 9px;font-size:11.5px}
 @media (max-width:900px){.rk-card{grid-template-columns:1fr;gap:16px}.rk-l{grid-template-columns:auto 1fr;align-items:center;column-gap:16px}.rk-l .app-label{grid-column:1/-1}.rk-vs{justify-self:end}}
 .pp-card{margin-top:0}
 .cv-card .cv-legend{display:none}
@@ -3062,7 +3063,7 @@ h3.has-tip{cursor:help}
         <div class="rk-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
         <div class="rk-legend"><span>Calm</span><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span><span>Very risky</span></div>
       </div>
-      <div class="rk-h"><svg class="rk-hist" id="rkHist" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"></svg><small>Last 90 days</small></div>
+      <div class="rk-h"><svg class="rk-hist" id="rkHist" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"></svg><div class="tf rk-tf" id="rkSpan"><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div></div>
     </div>
 
     <div class="app-card pp-card" id="ppCard" hidden>
@@ -8613,7 +8614,8 @@ tick();setInterval(tick,5000);})();
     card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
     var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[String(R.profile||'').toUpperCase()]||'';
     $('rkRange').textContent=(pn?tr(pn)+' · ':'')+(isFinite(lo)&&isFinite(hi)?lo+'–'+hi:'');
-    var H=(es.riskHistory||[]).filter(function(x){return x&&x.score!=null;}).slice(-90), svg=$('rkHist');
+    var rr=F.rkRange||0, from=0; if(rr){ var fd=new Date(); fd.setMonth(fd.getMonth()-rr); from=fd.getTime(); }
+    var H=(es.riskHistory||[]).filter(function(x){ if(!x||x.score==null) return false; var t=Date.parse(x.date); return !from||!isFinite(t)||t>=from; }), svg=$('rkHist');
     if(H.length>1){ var W=200,Hh=64, y=function(v){ return (Hh-6-(Math.max(1,Math.min(10,+v))-1)/9*(Hh-12)).toFixed(1); };
       var d=H.map(function(x,i){ return (i?'L':'M')+(i/(H.length-1)*W).toFixed(1)+' '+y(x.score); }).join(' ');
       var bandSvg=(isFinite(lo)&&isFinite(hi))?'<rect x="0" y="'+y(hi)+'" width="'+W+'" height="'+(y(lo)-y(hi)).toFixed(1)+'" fill="rgba(212,175,55,.16)"/>':'';
@@ -8621,6 +8623,7 @@ tick();setInterval(tick,5000);})();
       svg.parentNode.hidden=false; } else svg.parentNode.hidden=true;
     card.hidden=false;
   }
+  (function(){ var tf=$("rkSpan"); if(!tf) return; tf.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; tf.querySelectorAll('button').forEach(function(x){x.classList.toggle('is-on',x===b);}); F.rkRange=+b.dataset.r; riskCard(); }); })();
   var alKind='all', AL0=5, alShow=AL0;
   function activity(){
     var ul=$('alList'); if(!ul) return;
