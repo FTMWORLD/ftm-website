@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Connect account did nothing / said 'Pick or type your MT5 server first' although the server was typed: the server box only accepted a server picked from its list. Fixed: a typed server name is now used as it is. If it still fails, check the server name is exactly as the broker wrote it.
 - Risk level card (Dashboard): a score from 1 (calm) to 10 (very risky) worked out daily by the FTM engine; the shaded band is the normal range for the chosen risk profile (Conservative 2-4, Balanced 4-6, Growth 5-8). 'Above the normal range' means the account is moving more than usual for that profile.
 - Client area opens with the last known figures straight away ('Updated x min ago') and refreshes them from the engine in the background; logging out removes them from the device.
 - Connecting an account now reports the result the moment the engine has it (usually a few seconds).

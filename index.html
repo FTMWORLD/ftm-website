@@ -4842,9 +4842,10 @@ h3.has-tip{cursor:help}
       var srv=(window.FTM&&FTM.server)?FTM.server():'';
       var msg=document.getElementById('appConnectMsg');
       var btn=this;
-      if(!srv){ alert('Pick or type your MT5 server first. It must match your account exactly.'); document.getElementById('appBroker').focus(); return; }
-      if(!/^\d{5,12}$/.test(n)){ alert('Enter your MT5 account number. It is the 5 to 12 digit number your broker gave you.'); acct.focus(); return; }
-      if(!pw.value){ alert('Enter your MT5 master trading password.'); pw.focus(); return; }
+      var blocked=function(r){ try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'connect_blocked', reason:r, live:!!(window.FTM.remote&&window.FTM.remote.ready()), at:new Date().toISOString()})); }catch(e){} };
+      if(!srv){ blocked('NO_SERVER'); alert('Pick or type your MT5 server first. It must match your account exactly.'); document.getElementById('appBroker').focus(); return; }
+      if(!/^\d{5,12}$/.test(n)){ blocked('BAD_NUMBER'); alert('Enter your MT5 account number. It is the 5 to 12 digit number your broker gave you.'); acct.focus(); return; }
+      if(!pw.value){ blocked('NO_PASSWORD'); alert('Enter your MT5 master trading password.'); pw.focus(); return; }
       var pwVal=pw.value;
       var profileMap={'Conservative':'CONSERVATIVE','Balanced':'BALANCED','Growth':'GROWTH'};
       var tier=profileMap[document.getElementById('appProfile').value]||'BALANCED';
@@ -4891,7 +4892,7 @@ h3.has-tip{cursor:help}
               }).catch(function(){ if(Date.now()-t0c<10*60000) setTimeout(poll,2000); });
             })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
-        }).catch(function(e){
+        }).catch(function(e){ blocked('API_'+String((e&&e.code)||(e&&e.status)||'ERR').slice(0,40));
           btn.disabled=false;
           msg.hidden=false; msg.className='hint';
 
@@ -4899,7 +4900,7 @@ h3.has-tip{cursor:help}
           msg.textContent=e.message||'Could not connect that account. Check the details and try again.';
         });
       } else {
-        alert('Preview only. In the live client area this sends account '+n+' on '+srv+' and your master password securely to the FTM backend to connect FTM MACHINE. The password has been cleared from this form.');
+        blocked('NOT_READY'); alert('Preview only. In the live client area this sends account '+n+' on '+srv+' and your master password securely to the FTM backend to connect FTM MACHINE. The password has been cleared from this form.');
       }
     });
 
@@ -7232,7 +7233,10 @@ h3.has-tip{cursor:help}
       var sel=list.querySelector('.sel');
       if(sel){ list.scrollTop = sel.offsetTop - list.clientHeight/2 + sel.offsetHeight/2; }
     }
+    function adopt(){ var q=input.value.trim(); if(!q||q===chosen) return; var hit=SERVERS.filter(function(n){return n.toLowerCase()===q.toLowerCase();})[0]; items=[{name:hit||q, custom:!hit}]; pick(0); }
     function close(){ list.hidden=true; input.setAttribute('aria-expanded','false'); if(!input.value.trim())input.value=chosen; }
+    input.addEventListener('blur',function(){ setTimeout(function(){ if(document.activeElement!==input) adopt(); },150); });
+    input.addEventListener('change',adopt);
     function pick(i){
       var it=items[i]; if(!it)return;
       chosen=it.name; input.value=it.name; close();
@@ -7258,7 +7262,7 @@ h3.has-tip{cursor:help}
     });
     list.addEventListener('mousedown',function(e){ var o=e.target.closest('.opt'); if(o){ e.preventDefault(); pick(+o.dataset.i); } });
     document.addEventListener('click',function(e){ if(!e.target.closest('#bkBox'))close(); });
-    window.FTM=window.FTM||{}; window.FTM.server=function(){ return chosen; };
+    window.FTM=window.FTM||{}; window.FTM.server=function(){ if(!chosen && input.value.trim()) adopt(); return chosen || input.value.trim(); };
   })();
 
   (function(){
