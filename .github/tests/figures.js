@@ -92,5 +92,28 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(!errs.length, 'switch: no script errors '+(errs[0]||''));
   await p.close();
  }
+ // History that does not add up to the balance (the master on 9 Nov: 100,000 in, balance 99,606.31, history -5,154.34):
+ // the site must show balance-based figures and never figures built on the broken history.
+ {
+  const p=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  const gh=[{type:'BALANCE',time:new Date(now-6*D).toISOString(),profit:100000,net:100000},{type:'SELL',entry:'OUT',position_ref:'G1',time:new Date(now-4*D).toISOString(),profit:2528.95,net:2528.95,symbol:'USTEC',volume:1},{type:'BUY',entry:'OUT',position_ref:'G2',time:new Date(now-2*D).toISOString(),profit:-7683.29,net:-7683.29,symbol:'USTEC',volume:1}];
+  const gs={ok:true,history:gh.slice().reverse(),history_total:gh.length,deposits_total:100000,withdrawals_total:0,closed_pl_total:-5154.34,trades_closed:2,wins:1,losses:1,win_rate_pct:50,peak_balance:102528.95,peak_balance_at:new Date(now-4*D).toISOString(),max_drawdown_pct:9.5,max_drawdown_basis:'EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS',max_drawdown_closed_balance_pct:9.02};
+  await p.route('**/api/v1/**',r=>{const u=r.request().url();
+   if(u.includes('/stats'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(gs)});
+   if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
+   if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
+   if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
+   if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[{account_id:'f7a00000-0000-4000-8000-0000000000b7',account_number:null,preview:true,view_only:true,currency:'USD',balance:'99606.31',equity:'99644.10',display_status:'PAUSED',deposits:'100000',withdrawals:'0'}]})});
+   return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
+  await p.goto(BASE+'/');await p.waitForTimeout(800);
+  await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'gap@ftm.com',products:[],name:'Gap'};});
+  await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2500);
+  const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {gain:g('mGain'),year:g('mYear'),net:g('mNet'),gap:document.getElementById('appView').classList.contains('data-gap'),pp:getComputedStyle(document.getElementById('ppCard')).display};});
+  ok(/-0\.39%/.test(v.gain)&&/-0\.39%/.test(v.year), 'broken history: gain and profit this year = (99,606.31 - 100,000) / 100,000 = -0.39% (got '+v.gain+' / '+v.year+')');
+  ok(/-\$393\.69/.test(v.net), 'broken history: net P/L = balance - net deposits = -393.69 (got '+v.net+')');
+  ok(v.gap && v.pp==='none', 'broken history: the notice shows and history-based cards are hidden');
+  ok(!errs.length, 'broken history: no script errors '+(errs[0]||''));
+  await p.close();
+ }
  console.log(fails.length?('FAILED: '+fails.length):'ALL FIGURES OK'); process.exit(fails.length?1:0);
 })();

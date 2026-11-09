@@ -62,3 +62,4 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Risk profiles (owner instruction, 9 November 2026)
 - Normal drawdown range per profile: Conservative 10–20%, Balanced 20–40%, Growth 2× 40% and more. The Risk level card compares the engine's max_drawdown_closed_balance_pct with this range.
+- Consistency check (all accounts): deposits − withdrawals + history must equal the balance. If not, the website shows balance-based profit and % (balance − net deposits), hides history-based charts with a notice, and logs it; the engine must fix the history.
