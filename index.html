@@ -5407,11 +5407,12 @@ h3.has-tip{cursor:help}
 
       if(ES.ddBasis && ES.maxDDPct!=null){
         var eo=ES.ddEqObj||{}, co=ES.ddClosed||{};
-        var eAbs=(eo.peak!=null&&eo.trough!=null)?(+eo.peak-+eo.trough):m.ddEq.abs, cAbs=(co.peak!=null&&co.trough!=null)?(+co.peak-+co.trough):m.ddBal.abs;
-        var cPct=ES.ddClosedPct!=null?ES.ddClosedPct:m.ddBal.pct;
-        set('mDDtile', ES.maxDDPct>0.05?'-'+ES.maxDDPct.toFixed(1)+'%':'0.0%', ES.maxDDPct>0.05?'down':null);
-        set('mDDbal', cur0(cAbs)+' ('+cPct.toFixed(2)+'%)', 'down');
-        set('mDDeq', cur0(eAbs)+' ('+ES.maxDDPct.toFixed(2)+'%)', 'down');
+        var eAbs=(eo.peak!=null&&eo.trough!=null)?(+eo.peak-+eo.trough):null, cAbs=(co.peak!=null&&co.trough!=null)?(+co.peak-+co.trough):null;
+        var cPct=ES.ddClosedPct;
+        var tileDD=ES.ddClosedPct!=null?ES.ddClosedPct:ES.maxDDPct;
+        set('mDDtile', tileDD>0.05?'-'+tileDD.toFixed(1)+'%':'0.0%', tileDD>0.05?'down':null);
+        set('mDDbal', cPct==null?'\u2014':((cAbs!=null?cur0(cAbs)+' (':'')+cPct.toFixed(2)+'%'+(cAbs!=null?')':'')), cPct?'down':null);
+        set('mDDeq', (eAbs!=null?cur0(eAbs)+' (':'')+ES.maxDDPct.toFixed(2)+'%'+(eAbs!=null?')':''), ES.maxDDPct?'down':null);
       } else {
         set('mDDbal', '\u2014'); set('mDDeq', '\u2014');
       }
@@ -5607,7 +5608,7 @@ h3.has-tip{cursor:help}
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
-                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
+                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance_trading!=null?j.peak_balance_trading:j.peak_balance), peakBalanceAt:(j.peak_balance_trading!=null?j.peak_balance_trading_at:j.peak_balance_at)||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
                      ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc,
                      riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
@@ -5986,7 +5987,7 @@ h3.has-tip{cursor:help}
     }
     function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
     function balAt(t){ var cv=F.metrics().curve||[], b=null; for(var i=0;i<cv.length;i++){ if(cv[i].t<t) b=cv[i].v; else break; } return b===null?(cv.length?cv[0].v:0):b; }
-    function sgnU(pl,t,dp){ if(F.unit==='percent'){ var base=balAt(t); return base>0 ? ((pl>=0?'+':'')+(pl/base*100).toFixed(2)+'%') : '—'; } return signed(pl,dp); }
+    function sgnU(pl,t,dp,tEnd){ if(F.unit==='percent'){ var base=Math.max(0,balAt(t)); if(tEnd) (F.data.flows||[]).forEach(function(f){ if(f.amt>0&&f.t>=t&&f.t<tEnd) base+=f.amt; }); return base>0 ? ((pl>=0?'+':'')+(pl/base*100).toFixed(2)+'%') : '—'; } return signed(pl,dp); }
     function el(id){ return document.getElementById(id); }
     function key(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
@@ -6224,10 +6225,10 @@ h3.has-tip{cursor:help}
           if(!e)return '<div class="perf-cell" data-m="'+names[mi0]+'"><b>-</b></div>';
           tot+=e.pl; tn+=e.n;
           var mi=byYear[y].m.indexOf(e);
-          return '<div class="perf-cell '+(e.pl>=0?'up':'down')+'" data-m="'+names[mi]+'"><b>'+sgnU(e.pl,new Date(+y,mi,1).getTime(),0)+'</b><small>'+e.n+' trades</small></div>';
+          return '<div class="perf-cell '+(e.pl>=0?'up':'down')+'" data-m="'+names[mi]+'"><b>'+sgnU(e.pl,new Date(+y,mi,1).getTime(),0,new Date(+y,mi+1,1).getTime())+'</b><small>'+e.n+' trades</small></div>';
         }).join('');
         return '<div class="perf-row"><span class="yr">'+y+'</span>'+cells+
-          '<div class="perf-cell ytd '+(tot>=0?'up':'down')+'" data-m="Total"><b>'+sgnU(tot,new Date(+y,0,1).getTime(),0)+'</b><small>'+tn+' trades</small></div></div>';
+          '<div class="perf-cell ytd '+(tot>=0?'up':'down')+'" data-m="Total"><b>'+sgnU(tot,new Date(+y,0,1).getTime(),0,new Date(+y+1,0,1).getTime())+'</b><small>'+tn+' trades</small></div></div>';
       }).join('');
       el('perfYears').innerHTML=head+rows;
 
