@@ -568,3 +568,6 @@ Every customer gets a Client ID 'FTM-XXXX-XXXXXX' made from the first 10 hex cha
 
 ## Statement PDF
 Accounts > Account activity > Download statement builds the PDF in the browser with /vendor/html2pdf.bundle.min.js (html2pdf.js 0.10.1, MIT, self-hosted). If the library fails to load it falls back to the print window.
+
+## Face ID / fingerprint login (passkeys, 9 Nov 2026)
+api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase user's app_metadata.passkeys (server-only), rpID ftmwealthnation.com. Challenges are signed with a key derived from SUPABASE_SERVICE_ROLE_KEY (3 min). A verified login returns a magic-link token_hash that the browser exchanges with supabase.auth.verifyOtp. Only works on ftmwealthnation.com (not on preview URLs).
