@@ -21,7 +21,7 @@ await p.route('**/api/v1/**',async r=>{const u=new URL(r.request().url()),m=r.re
  if(path==='/api/v1/chat')return j(200,{ok:true,reply:'Hello, how can I help?'});
  if(failNext&&m!=='GET'){const f=failNext;failNext=null;return j(f[0],f[1]);}
  if(path.endsWith('/customer/accounts')&&m==='GET')return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(accts())});
- if(path.endsWith('/customer/accounts')&&m==='POST'){const n=JSON.parse(pd).account_number;return n==='53131445'?j(409,{ok:false,error:'MASTER_ACCOUNT',message:'This is the FTM master account. It cannot be added as a copy account.'}):j(202,{ok:true,account_id:'acc-N',status:'SETUP_INCOMPLETE'});}
+ if(path.endsWith('/customer/accounts')&&m==='POST'){const n=JSON.parse(pd).account_number;return n==='9900000099'?j(409,{ok:false,error:'MASTER_ACCOUNT',message:'This is the FTM master account. It cannot be added as a copy account.'}):j(202,{ok:true,account_id:'acc-N',status:'SETUP_INCOMPLETE'});}
  if(path.endsWith('/history'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,trades:[],page:{offset:0,limit:200,total:0}})});
  if(path.endsWith('/positions'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,positions:[{position_ref:'P1',symbol:'USTEC',market:'US Tech 100',side:'BUY',volume:'0.10',open_price:'21000',opened_at:new Date().toISOString()}]})});
  if(path.endsWith('/risk_tier')){riskTries++;return riskTries===1?j(409,{ok:false,error:'GROWTH_ACKNOWLEDGEMENT_REQUIRED',acknowledgement_text:'I accept larger swings with Growth.'}):j(200,{ok:true});}
@@ -46,7 +46,7 @@ const menu=async(i,sel)=>{await nav('accounts');await p.waitForTimeout(400);
 const rows=()=>p.evaluate(()=>[...document.querySelectorAll('#acctRows tr')].map(r=>(r.querySelector('.conn')||{}).textContent).join(' / '));
 const cmsg=()=>p.evaluate(()=>document.getElementById('appConnectMsg').textContent);
 async function addAcct(n){await nav('metrics');await p.waitForFunction(()=>window.FTM&&FTM._liveLoaded,null,{timeout:10000}).catch(()=>{});await p.waitForTimeout(300);if(await p.isVisible('#cxOpen'))await p.click('#cxOpen');await p.click('#appBroker');await p.fill('#appBroker','Deriv-Demo');await p.keyboard.press('Enter');await p.fill('#appAcct',n);await p.fill('#appPass','secret');if(await p.inputValue('#appPass')!=='secret')await p.fill('#appPass','secret');await p.click('#appConnect');}
-await step('Add account (master 53131445)',()=>addAcct('53131445'),cmsg,['POST /accounts','This is the FTM master account']);
+await step('Add account (master refused)',()=>addAcct('9900000099'),cmsg,['POST /accounts','This is the FTM master account']);
 await step('Add account (normal)',()=>addAcct('40123456'),cmsg,['-> 202','Connecting']);
 await step('Pause trading (row menu)',()=>menu(1,'data-pause'),rows,['POST /accounts/acc-A/pause {}']);
 await step('Pause and close all trades',()=>menu(1,'data-pauseclose'),rows,['close_open']);
