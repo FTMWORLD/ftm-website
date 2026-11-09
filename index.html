@@ -5608,7 +5608,7 @@ h3.has-tip{cursor:help}
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
-                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance_trading!=null?j.peak_balance_trading:j.peak_balance), peakBalanceAt:(j.peak_balance_trading!=null?j.peak_balance_trading_at:j.peak_balance_at)||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
+                     rows:(j.history||[]).length, peakBalance:num(j.peak_balance_trading), peakBalanceAt:j.peak_balance_trading_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
                      ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc,
                      riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
@@ -8765,7 +8765,7 @@ tick();setInterval(tick,5000);})();
       if(F._cidFor===em && F._cid){ show(); return; }
       if(!F.auth||!F.auth.getAccessToken||F._cidBusy) return;
       F._cidBusy=true;
-      var fromEngine=(F.remote&&F.remote.ready&&F.remote.ready()&&F.remote.fetchMe) ? F.remote.fetchMe().then(function(j){ if(j&&j.customer_public_id){ F.publicId=F.publicId||j.customer_public_id; return fmt(j.customer_public_id); } return null; }).catch(function(){ return null; }) : Promise.resolve(null);
+      var fromEngine=(F.remote&&F.remote.ready&&F.remote.ready()&&F.remote.fetchMe) ? F.remote.fetchMe().then(function(j){ if(j&&j.customer_public_id) F.publicId=F.publicId||j.customer_public_id; if(j&&typeof j.client_id==='string'&&/^FTM-[0-9A-Z-]{6,20}$/.test(j.client_id)) return j.client_id; if(j&&j.customer_public_id) return fmt(j.customer_public_id); return null; }).catch(function(){ return null; }) : Promise.resolve(null);
       fromEngine
         .then(function(c){ if(c){ F._cid=c; F._cidFor=em; } show(); }).catch(function(){}).then(function(){ F._cidBusy=false; });
     };
