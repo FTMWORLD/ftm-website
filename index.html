@@ -525,6 +525,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .px-bars i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:var(--line);min-height:2px}
   .px-bars i.up{background:#2fae74}.px-bars i.down{background:#e2475a}.px-bars i.nt{background:var(--blue)}
   .px-bars b{font-size:11.5px;color:var(--ink)}.px-bars small{font-size:10.5px;color:var(--muted);white-space:nowrap}
+  @media (max-width:600px){.px-bars{gap:4px}.px-bars small{white-space:normal;text-align:center;line-height:1.15;font-size:9.5px;min-height:22px}.cal-cell{border-color:transparent;background:#f6f7fb}}
   .px-sk i{background:var(--line)!important;opacity:.6}
   .px-empty{font-size:13.5px;color:var(--muted);margin-top:10px}
   .perf-row{display:grid;grid-template-columns:52px repeat(13,minmax(0,1fr));gap:5px;margin-top:12px}
@@ -1987,14 +1988,16 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .rk-vs.rk-within{background:rgba(22,163,74,.1);color:#15803d}.rk-vs.rk-above{background:rgba(229,50,62,.1);color:#c81e2b}.rk-vs.rk-below{background:rgba(21,42,122,.08);color:#152a7a}
 .rk-vs:empty{display:none}
 .rk-m{min-width:0}
-.rk-scale{position:relative;height:14px;border-radius:99px;background:linear-gradient(90deg,#16a34a 0%,#7cc36a 28%,#E3B62F 55%,#ef8a3c 75%,#E5323E 100%);box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
-.rk-band{position:absolute;top:-6px;bottom:-6px;border:2px solid #0B1440;border-radius:10px;background:rgba(255,255,255,.28);box-shadow:0 0 0 3px rgba(255,255,255,.6)}
+.rk-scale{position:relative;display:grid;grid-template-columns:repeat(10,1fr);gap:4px;padding:6px 0}
+.rk-seg{display:block;height:10px;border-radius:4px;background:#e9ecf4;transition:background .4s}
+.rk-seg.on.z1{background:#2fae74}.rk-seg.on.z2{background:#D4AF37}.rk-seg.on.z3{background:#E5323E}
+.rk-seg.cur{position:relative;transform:scaleY(1.6);box-shadow:0 4px 10px -4px rgba(11,20,64,.45)}
+.rk-seg.cur::after{content:"";position:absolute;inset:-5px -3px;border-radius:6px;border:2px solid rgba(21,42,122,.35);animation:rkPulse 2.4s ease-out infinite}
+@keyframes rkPulse{0%{opacity:1}100%{opacity:0;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.rk-seg.cur::after{animation:none}}
+.rk-band{position:absolute;top:0;bottom:0;border:1.5px dashed #152a7a;border-radius:8px;pointer-events:none}
 .rk-band[hidden]{display:none}
-.rk-pin{position:absolute;top:50%;width:26px;height:26px;margin-left:-13px;margin-top:-13px;border-radius:50%;background:#0B1440;border:4px solid #fff;box-shadow:0 6px 14px -4px rgba(11,20,64,.55);transition:left 1s cubic-bezier(.2,.8,.2,1)}
-.rk-pin::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(212,175,55,.6);animation:rkPulse 2.4s ease-out infinite}
-@keyframes rkPulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.25);opacity:0}}
-@media (prefers-reduced-motion:reduce){.rk-pin::after{animation:none}}
-.rk-ticks{display:flex;justify-content:space-between;margin-top:10px;padding:0 1px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rk-ticks{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;text-align:center;margin-top:6px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 .rk-legend{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--muted)}
 .rk-legend>span:first-child,.rk-legend>span:last-child{white-space:nowrap}.rk-legend .rk-rng{text-align:center}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
 .rk-h{display:grid;gap:4px}.rk-h[hidden]{display:none}
@@ -2002,6 +2005,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .rk-h small{font-size:11px;color:var(--muted);text-align:end}
 @media (max-width:900px){.rk-card{grid-template-columns:1fr;gap:16px}.rk-l{grid-template-columns:auto 1fr;align-items:center;column-gap:16px}.rk-l .app-label{grid-column:1/-1}.rk-vs{justify-self:end}}
 .pp-card{margin-top:0}
+.cv-card .cv-legend{display:none}
 .op-empty{flex:1;display:grid;place-items:center;padding:18px 0 6px}.op-empty[hidden]{display:none}.op-empty svg{width:84px;height:84px;animation:opFloat 4s ease-in-out infinite}
 @keyframes opFloat{50%{transform:translateY(-5px)}}
 @media (prefers-reduced-motion:reduce){.op-empty svg{animation:none}}
@@ -3048,7 +3052,7 @@ h3.has-tip{cursor:help}
     <div class="app-card rk-card" id="rkCard" hidden data-tip="A score from 1 (calm) to 10 (very risky), worked out every day by the FTM engine from how much the account moves, its drawdown and the margin in use. The shaded band is the normal range for the risk profile you chose.">
       <div class="rk-l"><span class="app-label">Risk level</span><div class="rk-score"><b id="rkScore">&mdash;</b><small>/ 10</small></div><span class="rk-vs" id="rkVs"></span></div>
       <div class="rk-m">
-        <div class="rk-scale"><i class="rk-band" id="rkBand"></i><i class="rk-pin" id="rkPin"></i></div>
+        <div class="rk-scale" id="rkScale"><i class="rk-band" id="rkBand"></i></div>
         <div class="rk-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
         <div class="rk-legend"><span>Calm</span><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span><span>Very risky</span></div>
       </div>
@@ -8591,11 +8595,12 @@ tick();setInterval(tick,5000);})();
     var es=(F.data&&F.data.engineStats)||null, va=F.viewedAccount&&F.viewedAccount();
     if(!es || es.riskScore==null || (es.accountId && va && va.accountId && es.accountId!==va.accountId)){ card.hidden=true; return; }
     var sc=Math.max(1,Math.min(10,es.riskScore)), R=es.riskRange||{}, lo=+R.typical_min, hi=+R.typical_max, vs=String(es.riskVs||'').toUpperCase();
-    var pos=function(v){ return ((v-1)/9*100).toFixed(2)+'%'; };
+    var sEl=$('rkScale'), cur=Math.round(sc);
+    if(!sEl.querySelector('.rk-seg')){ var h=''; for(var k=1;k<=10;k++) h+='<i class="rk-seg z'+(k<=3?'1':(k<=6?'2':'3'))+'" data-k="'+k+'"></i>'; sEl.insertAdjacentHTML('beforeend',h); }
+    sEl.querySelectorAll('.rk-seg').forEach(function(g){ var k=+g.getAttribute('data-k'); g.classList.toggle('on',k<=cur); g.classList.toggle('cur',k===cur); });
     $('rkScore').textContent=(Math.round(sc*10)/10).toString();
     var band=$('rkBand');
-    if(isFinite(lo)&&isFinite(hi)&&hi>=lo){ band.hidden=false; band.style.left=pos(lo); band.style.width=((hi-lo)/9*100).toFixed(2)+'%'; } else band.hidden=true;
-    $('rkPin').style.left=pos(sc);
+    if(isFinite(lo)&&isFinite(hi)&&hi>=lo){ band.hidden=false; band.style.left='calc('+((lo-1)*10)+'% - 3px)'; band.style.width='calc('+((hi-lo+1)*10)+'% + 2px)'; } else band.hidden=true;
     var vsTxt={WITHIN:'Within the normal range',ABOVE:'Above the normal range',BELOW:'Below the normal range'}[vs]||'';
     var el=$('rkVs'); el.textContent=vsTxt?tr(vsTxt):''; el.className='rk-vs rk-'+(vs.toLowerCase()||'none');
     card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
