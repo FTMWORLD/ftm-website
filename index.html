@@ -5394,7 +5394,8 @@ h3.has-tip{cursor:help}
       set('mDDtile', '\u2014');
 
       var ES=(F.data&&F.data.engineStats)||{};
-      if(ES.growthPct!=null) set('mGain', pct(ES.growthPct), tone(ES.growthPct)); else set('mGain','\u2014');
+      var netIn=(m.deposits||0)-(m.withdrawals||0);
+      if(netIn>0){ var gP=(m.balance-netIn)/netIn*100; set('mGain', pct(gP), tone(gP)); } else set('mGain','\u2014');
 
       set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
       var netV=ES.closedPl!=null?ES.closedPl:m.netPL; set('mNet', (netV>=0?'+':'')+cur(netV), tone(netV));
@@ -8588,6 +8589,7 @@ tick();setInterval(tick,5000);})();
       var inP=(d.flows||[]).filter(function(f){return f.t>=p[1];});
       var startBal=bal-v-inP.reduce(function(a,f){return a+f.amt;},0);
       var capital=Math.max(0,startBal)+inP.filter(function(f){return f.amt>0;}).reduce(function(a,f){return a+f.amt;},0);
+      if(p[1]===0){ var dIn=(d.account&&d.account.deposits)||0, wOut=(d.account&&d.account.withdrawals)||0, net=dIn-wOut; if(net>0){ v=bal-net; return {l:p[0],v:v,pc:v/net*100}; } }
       return {l:p[0],v:v,pc:capital>0?(v/capital*100):0};
     });
     var mx=Math.max.apply(null,R.map(function(r){return Math.abs(r.pc);}))||1;
