@@ -4,6 +4,21 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — CLIENT ID FOR EVERY CUSTOMER (commit f1eafe1, migration 041 applied 19:10, API restarted 19:18 Berlin)
+
+Website request via FTM MACHINE; Gospel "Yes, build it".
+- GET /customer/me: client_id "FTM-XXXX-XXXXXX" = FTM- + the first 10 hex characters of customer_public_id, upper case
+  (the value the website already shows). Use client_id.
+- Stable and unique forever, for every customer past and future: customers.public_id can never change (database trigger);
+  a new customer whose random id would share its first 10 hex characters gets a fresh one; a unique index guards it.
+  All existing customers checked: every Client ID distinct.
+- FTM staff: GET /api/v1/operator/customers/by-client-id/:client_id (operator token only; the website token is refused):
+  FTM-1A2B-3C4D5E or the plain 10 characters, any case -> email, plan, accounts and the support view; 422 malformed,
+  404 unknown. The operator support page's search box takes a Client ID too.
+Proof: verify-client-id 9/9 in the gate; live after the restart: Tanaya's /me client_id FTM-0DDE-4EC966, the staff lookup
+finds the same customer with her 3 account rows, the website token gets 401; regression gate SAFE TO DEPLOY.
+Applies to all accounts, past and future: yes.
+
 ## 2026-11-09 — HIGHEST BALANCE FROM CLOSED TRADES ONLY, FOR EVERY ACCOUNT (commit 9a91968, API restarted 18:42 Berlin)
 
 Gospel's rule: profit and drawdown come from closed trades only; deposits and withdrawals change the balance only. Same
