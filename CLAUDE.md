@@ -42,3 +42,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Ask here knows every solved problem (owner instruction, 7 November 2026)
 - Every customer problem we solve gets a short cause-and-fix line in the TROUBLESHOOTING list in `api/v1/chat.js`, in the same commit, so the Ask here assistant can answer it.
 - Messages for FTM ENGINE go through the FTM MACHINE session, which passes them on.
+
+## Figures come from the engine (owner instruction, 9 November 2026)
+- FTM is a financial company: every customer figure must be exact. Balance, equity, deposits, withdrawals, P/L, growth, drawdown, win rate and trade counts are taken directly from the FTM engine (`/customer/accounts`, `/customer/accounts/:id/stats`, `/history`, `/positions`), never estimated by the website when the engine has the number.
+- The website only calculates what the engine does not send, and then from the engine's full history. When a figure is missing, ask FTM ENGINE (via FTM MACHINE) to add it rather than approximating.

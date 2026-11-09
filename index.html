@@ -5069,11 +5069,12 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       set('mYear', pct(m.yearPct,1), tone(m.yearPL));
       var ddW=Math.max(m.ddBal.pct,m.ddEq.pct); set('mDDtile', ddW>0.05?'-'+ddW.toFixed(1)+'%':'0.0%', ddW>0.05?'down':null);
 
-      set('mGain', pct(m.gainPct), tone(m.gainPct));
+      var ES=(F.data&&F.data.engineStats)||{};
+      var gainV=ES.growthPct!=null?ES.growthPct:m.gainPct; set('mGain', pct(gainV), tone(gainV));
 
       set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
-      set('mNet', (m.netPL>=0?'+':'')+cur(m.netPL), tone(m.netPL));
-      set('mCount', String(m.count));
+      var netV=ES.closedPl!=null?ES.closedPl:m.netPL; set('mNet', (netV>=0?'+':'')+cur(netV), tone(netV));
+      set('mCount', String(ES.tradesClosed!=null?ES.tradesClosed:m.count));
       set('mStreakDays', String(m.streakDays));
       set('mStreakTrades', String(m.streakTrades));
 
@@ -5091,7 +5092,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       set('mSD', cur(m.sd));
       set('mSharpe', m.sharpe.toFixed(2), tone(m.sharpe));
 
-      set('mWin', m.winRate.toFixed(1)+'%');
+      set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(1)+'%');
       set('mPF', m.profitFactor.toFixed(2), m.profitFactor>=1?'up':'down');
       set('mAvg', cur0(m.avgWin)+' / '+cur0(m.avgLoss));
       var mins=Math.round(m.avgDurMs/60000);
@@ -5263,7 +5264,8 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
               return {t:tOf(r), pl:pl};
             }).filter(function(x){ return x.t && x.pl!=null && x.pl!==0; }).sort(function(a,b){return a.t-b.t;});
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
-                     maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance) };
+                     maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
+                     closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null };
           });
         },
         fetchPositions: function(accountId){
