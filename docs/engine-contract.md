@@ -4,6 +4,24 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — ACCOUNTS ROW SHOWS THE NEWEST BALANCE (commit c64c5a8, API restarted 00:48 Berlin)
+
+Website "WRONG MASTER BALANCE" via FTM MACHINE; Gospel's yes for the restart in the engine chat.
+- Cause: GET /customer/accounts took a terminal heartbeat (account_state) whenever one existed, whatever its age. The
+  view-only master row kept a copy-terminal heartbeat of 6 Nov 15:41 UTC (99,606.31 / 99,643.78) that hid every newer
+  read. Same flaw for any paused or disconnected account with an old heartbeat.
+- Fix (every account): balance, equity, floating_profit, currency, last_reported_at and open_positions on the accounts
+  row come from the NEWEST reading -- the terminal heartbeat, the statistics snapshot or (view-only) the master Sender,
+  whichever was read last. GET /stats already worked this way.
+- Master balance is 94,855.93 = 100,000 deposit - 5,154.34 closed P/L + 10.27 (USTEC index dividend +12.08, tax -1.81,
+  9 Nov 22:34 UTC). The money identity for the website: balance = start_balance + deposits_total - withdrawals_total +
+  credit_total + closed_pl_total + fees_and_adjustments (start_balance 0 when the statement begins at the opening
+  deposit; demo #184's statement begins 5 Oct at 11,965.28).
+Proof: verify-balances 4/4 in the gate (every account: accounts row = newest stored reading = /stats balance; the money
+identity within 1 cent; a 3-day-old heartbeat never wins, on a throw-away account); against the old code it fails with
+#260 at 99,606.31. Live after the restart: #260 row 94,855.93 / 94,660.21; regression gate SAFE TO DEPLOY.
+Applies to all accounts, past and future: yes.
+
 ## 2026-11-09 — ONE TIME-WEIGHTED % EVERYWHERE + WHOLE-LIFE RISK HISTORY (commit d9b3424, API restarted 19:35 Berlin)
 
 Gospel's rule via FTM MACHINE; Gospel's yes for the restart in the engine chat.
