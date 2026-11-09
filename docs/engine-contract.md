@@ -4,6 +4,22 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — RISK GAUGE + FASTER CONNECT (commit a6cafbc, API restarted 15:27 Berlin)
+
+Gospel: "Both".
+- GET /customer/accounts/:id/stats: risk_score (1-10), risk_score_basis, risk_score_parts {volatility_30d_pct,
+  current_drawdown_pct, margin_used_pct, returns_used}, risk_score_history [{date, score, margin_known}] (90 days),
+  expected_range {profile, typical_min, typical_max} (CONSERVATIVE 2-4, BALANCED 4-6, GROWTH 5-8: FTM MACHINE's backtest
+  bands with the same formula), risk_score_vs_range WITHIN / ABOVE / BELOW. Formula in docs/client-area-stats-api.md.
+  Profiles are CONSERVATIVE / BALANCED / GROWTH (there is no GROWTH_2X).
+- GET /customer/accounts: every account carries status_signature. LONG-POLL for the connect screen:
+  ?wait_for=<account_id>&since=<status_signature>&wait=<0-25> answers the moment that account's status changes (measured
+  about 0.2 s after the validator's report), else when the wait ends; header X-FTM-Wait: changed | timeout. Every GET
+  already sends an ETag: If-None-Match gives 304 when nothing changed.
+- Validator (connect check): the folder for the next connect is prepared in advance (switch FTM_VALIDATOR_FAST=ON,
+  on since 15:28): MT5's start measured 3.7 s -> 1.9 s. First real connect timing to follow.
+Proof: verify-risk-score 10/10, verify-connect-speed 24/24 (long-poll D1-D6), regression gate SAFE TO DEPLOY.
+
 ## 2026-11-09 — STATISTICS MATHEMATICALLY RIGHT FOR EVERY ACCOUNT (commit bdaa55f, API restarted 13:24 Berlin)
 
 Gospel (via the website session): the statistics must be mathematically right for every account. GET

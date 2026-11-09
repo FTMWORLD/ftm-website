@@ -529,7 +529,7 @@
       "path": "/customer/accounts",
       "auth": "customer",
       "status": "live",
-      "summary": "Every connected account of the customer (removed ones are gone). Key the texts on display_status / status_reason; everything else is information. Every row also carries deposits / withdrawals (balance operations read by the statistics sync, so Gain % never counts a deposit as profit), last_synced_at (the sync) and last_reported_at (the terminal heartbeat, else the sync, else the master records). For an account without a copy terminal the balance / equity / floating fields hold what the sync read. (deposits / withdrawals / last_synced_at: from the next API restart.)",
+      "summary": "Every connected account of the customer (removed ones are gone). Key the texts on display_status / status_reason; everything else is information. Every row also carries deposits / withdrawals (balance operations read by the statistics sync, so Gain % never counts a deposit as profit), last_synced_at (the sync) and last_reported_at (the terminal heartbeat, else the sync, else the master records). For an account without a copy terminal the balance / equity / floating fields hold what the sync read. (deposits / withdrawals / last_synced_at: from the next API restart.) 9 Nov 2026 LONG-POLL for the connect screen: ?wait_for=<account_id>&since=<that account's status_signature>&wait=<0-25 s> holds the request until that account's status changes (or the wait ends) and then answers exactly as without it; header X-FTM-Wait: changed | timeout. Every GET also sends an ETag: send If-None-Match to get 304 when nothing changed.",
       "response": {
         "200": {
           "ok": true,
@@ -540,6 +540,7 @@
           "accounts": [
             {
               "account_id": "<uuid>",
+              "status_signature": "<32 hex: changes whenever the status can change; send it back as ?since= with ?wait_for= to long-poll>",
               "is_trading": true,
               "view_only": false,
               "view_only_label": null,
@@ -963,6 +964,12 @@
           "peak_balance_at": "2026-10-20T14:05:00.000Z",
           "peak_equity": 10620,
           "peak_equity_at": "2026-10-20T13:40:00.000Z",
+          "risk_score": 3,
+          "risk_score_basis": "30-day equity volatility (50 %), current drawdown from the equity peak (30 %), margin use now (20 %); deposits and withdrawals excluded",
+          "risk_score_parts": { "volatility_30d_pct": 0.8, "current_drawdown_pct": 1.79, "margin_used_pct": 2.1, "returns_used": 22 },
+          "risk_score_history": [ { "date": "2026-10-20", "score": 3, "margin_known": true } ],
+          "expected_range": { "profile": "BALANCED", "typical_min": 4, "typical_max": 6 },
+          "risk_score_vs_range": "BELOW",
           "trades_closed": 3,
           "wins": 2,
           "losses": 1,
