@@ -4773,7 +4773,10 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       var anchor = (liveAcct && liveAcct.balance!=null)
         ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0) - flowSum
         : acct.deposits - acct.withdrawals - flowSum;
-      var ev=covered.map(function(t){return {t:t.closeTime,pl:t.pl};}).concat(flows.map(function(f){return {t:f.t,flow:f.amt};})).sort(function(a,b){return a.t-b.t;});
+      var es=d.engineStats, esComplete=!!(es && (es.historyTotal==null || (es.deals.length+(es.flows||[]).length)>=es.historyTotal*0.98)), useDeals=!!(es && es.deals && es.deals.length>covered.length && esComplete);
+      var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
+      if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; }
+      var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt};})).sort(function(a,b){return a.t-b.t;});
       var t0=ev.length?Math.min(ev[0].t,covered.length?covered[0].openTime:ev[0].t):Date.now();
       var run = anchor, curve=[{t:t0, v:run}], pnlSeries=[0], peakAdj=[];
       var ddRun=anchor, ddPeak=anchor, ddMaxAbs=0, ddMaxPct=0;
@@ -4799,6 +4802,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       var eqDrop=Math.max(0,ddPeak-(ddRun+(equity-balance)));
       var ddEq=flows.length?(eqDrop>ddMaxAbs?{abs:eqDrop,pct:ddPeak>0?eqDrop/ddPeak*100:0}:ddBal):drawdown(balSeries.concat([equity]));
 
+      if(es && es.maxDDPct!=null && es.maxDDPct>ddEq.pct){ var pk=Math.max.apply(null,balSeries); ddEq={abs:pk*es.maxDDPct/100, pct:es.maxDDPct, engine:true}; }
       var twr=1, base=anchor;
       ev.forEach(function(e){ if(e.flow){ base+=e.flow; return; } if(base>0){ twr*=(1+e.pl/base); } base+=e.pl; });
       var gainPct=(twr-1)*100;
@@ -4815,7 +4819,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       var yr=new Date().getFullYear(), yearPL=0, yearStart=null;
       curve.forEach(function(p){ if(new Date(p.t).getFullYear()<yr) yearStart=p.v; });
       if(yearStart===null) yearStart=curve[0].v;
-      covered.forEach(function(t){ if(new Date(t.closeTime).getFullYear()===yr) yearPL+=t.pl; });
+      plEvents.forEach(function(t){ if(new Date(t.t).getFullYear()===yr) yearPL+=t.pl; });
       var yearPct = yearStart>0 ? yearPL/yearStart*100 : 0;
 
       var streakTrades=0;
@@ -5063,7 +5067,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
       set('mEquity', cur0(m.equity));
       set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
       set('mYear', pct(m.yearPct,1), tone(m.yearPL));
-      set('mDDtile', m.ddBal.pct>0.05?'-'+m.ddBal.pct.toFixed(1)+'%':'0.0%', m.ddBal.pct>0.05?'down':null);
+      var ddW=Math.max(m.ddBal.pct,m.ddEq.pct); set('mDDtile', ddW>0.05?'-'+ddW.toFixed(1)+'%':'0.0%', ddW>0.05?'down':null);
 
       set('mGain', pct(m.gainPct), tone(m.gainPct));
 
@@ -5253,7 +5257,13 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
               var amt=num(r.profit!=null?r.profit:(r.amount!=null?r.amount:r.net_profit));
               return {t:t?Date.parse(t):null, amt:amt};
             }).filter(function(f){ return f.t && f.amt; }).sort(function(a,b){return a.t-b.t;});
-            return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, startBalance:num(j.start_balance) };
+            var tOf=function(r){ var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at; return t?Date.parse(t):null; };
+            var deals=(j.history||[]).filter(function(r){ return String(r.type||r.deal_type||'').toUpperCase()!=='BALANCE'; }).map(function(r){
+              var pl=num(r.net_profit!=null?r.net_profit:r.profit); if(pl!=null && r.net_profit==null){ pl+= (num(r.commission)||0)+(num(r.swap)||0); }
+              return {t:tOf(r), pl:pl};
+            }).filter(function(x){ return x.t && x.pl!=null && x.pl!==0; }).sort(function(a,b){return a.t-b.t;});
+            return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
+                     maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance) };
           });
         },
         fetchPositions: function(accountId){
@@ -5462,10 +5472,11 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
             F.data.accounts = accounts; F.data.account = {currency: primary.currency || null, deposits:primary.deposits||0, withdrawals:primary.withdrawals||0};
             var sc=F._statsCache&&F._statsCache[primary.accountId]; F.data.flows = sc?sc.flows:[];
             if(sc){ if(sc.deposits!=null) F.data.account.deposits=sc.deposits; if(sc.withdrawals!=null) F.data.account.withdrawals=sc.withdrawals; }
-            if(F.remote.fetchStats && !(primary.isPreview)) F.remote.fetchStats(primary.accountId).then(function(st){
+            F.data.engineStats = sc||null;
+            if(F.remote.fetchStats) F.remote.fetchStats(primary.accountId).then(function(st){
               if(!st || seq!==F._loadSeq) return;
               F._statsCache=F._statsCache||{}; F._statsCache[primary.accountId]=st;
-              F.data.flows=st.flows; if(st.deposits!=null) F.data.account.deposits=st.deposits; if(st.withdrawals!=null) F.data.account.withdrawals=st.withdrawals;
+              F.data.flows=st.flows; F.data.engineStats=st; if(st.deposits!=null) F.data.account.deposits=st.deposits; if(st.withdrawals!=null) F.data.account.withdrawals=st.withdrawals;
               if(F.render) F.render(); if(F.redrawAllViews) F.redrawAllViews();
             }).catch(function(){});
             F.data.closed = closed;
