@@ -416,6 +416,7 @@
         "200": {
           "ok": true,
           "customer_public_id": "<uuid>",
+          "client_id": "FTM-1A2B-3C4D5E (FTM- + the first 10 hex characters of customer_public_id, upper case; stable and unique forever)",
           "email": "<email>",
           "display_name": null,
           "status": "PENDING",
