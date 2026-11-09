@@ -34,15 +34,24 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2500);
   const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {high:g('mHigh'),kp:g('kpHigh'),dd:g('mDDtile'),ddb:g('mDDbal'),gain:g('mGain'),pnl:g('dxPnl')};});
   if(stats===full){
-   ok(/522\.53/.test(v.high)&&/522\.53/.test(v.kp), label+': highest balance is the engine trading peak (got '+v.high+')');
+   ok(/504\.94/.test(v.high)&&/504\.94/.test(v.kp), label+': highest balance is the highest balance the account really reached, from the engine (got '+v.high+')');
    ok(/1\.0%/.test(v.dd), label+': drawdown tile is the engine closed-balance drawdown (got '+v.dd+')');
    ok(/1\.03%/.test(v.ddb), label+': balance drawdown from the engine (got '+v.ddb+')');
   } else {
    ok(v.high.trim()==='—', label+': no website-made highest balance (got '+v.high+')');
    ok(v.dd.trim()==='—', label+': no website-made drawdown (got '+v.dd+')');
   }
-  ok(/\+4\.70%/.test(v.gain), label+': gain = (balance - net deposits) / net deposits = +4.70% (got '+v.gain+')');
-  ok(/\+\$23/.test(v.pnl)||/\+\$22/.test(v.pnl), label+': all-time profit = balance - net deposits = +22.53 (got '+v.pnl.replace(/\s+/g,' ').slice(-40)+')');
+  ok(/\+8\.06%/.test(v.gain), label+': gain is time-weighted: each trade on the balance at that moment, chained = +8.06% (got '+v.gain+')');
+  const same=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';const F=window.FTM;F.unit='percent';
+    const nav=v=>document.querySelector('#appView .app-nav-item[data-view="'+v+'"]').click();
+    const yr=g('mYear'); const all=[...document.querySelectorAll('#dxPnl .pp-t')].map(x=>x.textContent);
+    F.redrawAllViews&&F.redrawAllViews(); F.renderPerf&&0;
+    return {yr, allTime:all[3]||'', perfTotal:(document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||'', pxYear:(document.querySelector('#pxYears tbody tr td:nth-child(4)')||{}).textContent||''};});
+  ok(/8\.1%/.test(same.yr), label+': profit this year matches the gain (got '+same.yr+')');
+  ok(/8\.06%/.test(same.allTime)&&/\+\$23|\+\$22/.test(same.allTime), label+': profit by period, all time = +22.53 and +8.06% (got '+same.allTime+')');
+  ok(/8\.06%/.test(same.pxYear), label+': year-by-year return matches (got '+same.pxYear+')');
+  const pt=await p.evaluate(()=>{FTM.unit='percent';document.querySelector('#appView .app-nav-item[data-view="perf"]').click();return new Promise(r=>setTimeout(()=>{FTM.unit='percent';if(FTM.redrawAllViews)FTM.redrawAllViews();setTimeout(()=>r((document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||''),600);},600));});
+  ok(/8\.06%/.test(pt), label+': yearly performance total (in %) matches (got '+pt+')');
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
   await p.close();
  }

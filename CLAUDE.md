@@ -52,3 +52,8 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## FTM document standard (owner instruction, 9 November 2026)
 - Every FTM document (statements, reports, PDFs) has: top = navy band with the FTM logo on the left and the document name on the right; bottom of EVERY page = a slim full-width navy band (#0b1640) with "Invest today, secure tomorrow." centred in gold.
+
+## How FTM figures are calculated (owner instruction, 9 November 2026)
+- Money profit = sum of closed-trade results (net). Deposits and withdrawals change the balance only, never profit, % or drawdown.
+- Every % (gain, profit this year, profit by period, monthly, weekly, daily, yearly, chart in %) is time-weighted: each trade's result on the balance at that moment, chained. One shared function (FTM.metrics().seg) feeds every view; never add a second formula.
+- Highest balance = the highest balance the account actually reached (engine peak_balance, with its date). Drawdown = engine max_drawdown_closed_balance_pct. The website never estimates these.
