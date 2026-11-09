@@ -4,6 +4,26 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — ONE TIME-WEIGHTED % EVERYWHERE + WHOLE-LIFE RISK HISTORY (commit d9b3424, API restarted 19:35 Berlin)
+
+Gospel's rule via FTM MACHINE; Gospel's yes for the restart in the engine chat.
+- Every % is ONE shared time-weighted return (src/services/returns.js): each closed trade line divided by the real
+  balance just before it, chained; deposits and withdrawals never change it. return_basis
+  TIME_WEIGHTED_CLOSED_TRADES_EXCLUDING_DEPOSITS_WITHDRAWALS.
+- Same value in: GET /stats growth_pct and performance.totals.return_pct; monthly_returns[].return_pct; GET /performance
+  (now exactly /stats.performance for every account, with currency, balance, equity, last_updated); the master preview;
+  the leaderboard (SINCE_CONNECT = growth_pct, MONTH / PREVIOUS_MONTH = that month's figure). An account with closed
+  copies but no balance read is measured from its connect balance.
+- GET /stats risk_score_history: the account's WHOLE life, one entry per day {date, score, margin_known}; optional
+  ?risk_days=N keeps the last N days.
+- Website: show growth_pct (= performance.totals.return_pct), monthly_returns[].return_pct and the leaderboard's
+  return_pct as sent.
+Proof: verify-returns 6/6 in the gate (Tanaya +5.49 %; every account /stats = /performance = an independent
+re-computation from the deals: demo 184 -14.10 %, master preview -6.05 %; every leaderboard row = the dashboard);
+verify-risk-score 10/10, verify-leaderboard 33/33; live after the restart for Tanaya: /stats 5.49, /performance 5.49,
+leaderboard 5.49, risk history from 8 Nov (2 days), ?risk_days=1 -> 1; regression gate SAFE TO DEPLOY.
+Applies to all accounts, past and future: yes.
+
 ## 2026-11-09 — CLIENT ID FOR EVERY CUSTOMER (commit f1eafe1, migration 041 applied 19:10, API restarted 19:18 Berlin)
 
 Website request via FTM MACHINE; Gospel "Yes, build it".
