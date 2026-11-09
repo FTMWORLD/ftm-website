@@ -5043,7 +5043,7 @@ h3.has-tip{cursor:help}
       var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
       if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; }
       var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt};})).sort(function(a,b){return a.t-b.t;});
-      var gap=0; if(useDeals && flows.length && ev.length && ev[0].flow>0){ var tol0=Math.max(5, Math.abs(balance)*0.002); if(Math.abs(anchor)>tol0){ gap=anchor; anchor=0; } }
+      var gap=0; if(useDeals && es && (es.startBalance!=null || (flows.length && ev.length && ev[0].flow>0))){ var expA=(es.startBalance||0)+(es.feesAdj||0)+(es.creditTotal||0), tol0=Math.max(5, Math.abs(balance)*0.002); if(Math.abs(anchor-expA)>tol0){ gap=anchor-expA; anchor=expA; } }
       var t0=ev.length?Math.min(ev[0].t,covered.length?covered[0].openTime:ev[0].t):Date.now();
       var run = anchor, curve=[{t:t0, v:run}], pnlSeries=[0], peakAdj=[];
       var ddRun=anchor, ddPeak=anchor, ddMaxAbs=0, ddMaxPct=0;
@@ -5644,7 +5644,7 @@ h3.has-tip{cursor:help}
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
-                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc,
+                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc, feesAdj:num(j.fees_and_adjustments), creditTotal:num(j.credit_total),
                      riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
           });
         },

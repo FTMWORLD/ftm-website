@@ -114,5 +114,27 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(!errs.length, 'balance disagrees: no script errors '+(errs[0]||''));
   await p.close();
  }
+ // History that starts after the account opened (like demo #184 from 5 Oct): the engine sends start_balance.
+ // Identity: balance = start_balance + deposits - withdrawals + closed P/L + fees_and_adjustments + credit. A wrong reported balance must not move the start.
+ {
+  const p=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  const sh=[{type:'BUY',entry:'OUT',position_ref:'S1',time:new Date(now-4*D).toISOString(),profit:500,net:500,symbol:'XAUUSD',volume:0.1},{type:'SELL',entry:'OUT',position_ref:'S2',time:new Date(now-2*D).toISOString(),profit:-200,net:-200,symbol:'XAUUSD',volume:0.1}];
+  const ss={ok:true,history:sh.slice().reverse(),history_total:sh.length,start_balance:10000,fees_and_adjustments:0,credit_total:0,deposits_total:0,withdrawals_total:0,closed_pl_total:300,trades_closed:2,wins:1,losses:1,win_rate_pct:50,peak_balance:10500,peak_balance_at:new Date(now-4*D).toISOString(),max_drawdown_closed_balance_pct:1.9};
+  await p.route('**/api/v1/**',r=>{const u=r.request().url();
+   if(u.includes('/stats'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ss)});
+   if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
+   if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
+   if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
+   if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[{account_id:'f7a00000-0000-4000-8000-0000000000c4',account_number:null,preview:true,view_only:true,currency:'USD',balance:'99999',equity:'99999',display_status:'PAUSED',deposits:'0',withdrawals:'0'}]})});
+   return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
+  await p.goto(BASE+'/');await p.waitForTimeout(800);
+  await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'start@ftm.com',products:[],name:'Start'};});
+  await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2500);
+  const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {gain:g('mGain'),net:g('mNet')};});
+  ok(/\+3\.00%/.test(v.gain), 'start balance: gain chained from start_balance 10,000: +5.00% then -1.90% = +3.00% (got '+v.gain+')');
+  ok(/\$300\.00/.test(v.net), 'start balance: net P/L = closed P/L +300.00 (got '+v.net+')');
+  ok(!errs.length, 'start balance: no script errors '+(errs[0]||''));
+  await p.close();
+ }
  console.log(fails.length?('FAILED: '+fails.length):'ALL FIGURES OK'); process.exit(fails.length?1:0);
 })();
