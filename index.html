@@ -2019,6 +2019,14 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 }
 #appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.sub-card,#appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.op-card{display:none}
 #appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.cx-card{grid-column:1/-1}
+.lv-strip{display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 10px 26px -18px rgba(11,20,64,.3);border:1px solid rgba(11,20,64,.05);min-width:0}
+.lv-strip[hidden]{display:none!important}
+.lv-h{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.lv-list{display:flex;gap:10px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.lv-list::-webkit-scrollbar{display:none}
+.lv-c{display:inline-flex;align-items:baseline;gap:8px;padding:8px 12px;border-radius:12px;background:#f6f7fb;white-space:nowrap;font-size:13px}
+.lv-c b{color:var(--ink)}.lv-c em{font-style:normal;color:var(--muted);font-size:12px}.lv-c strong{font-variant-numeric:tabular-nums}.lv-c strong.up{color:#15803d}.lv-c strong.dn{color:#c81e2b}
+.lv-more{color:var(--muted);font-weight:700}
+@media (max-width:600px){.lv-strip{flex-wrap:wrap;gap:10px;padding:12px}.lv-list{order:3;flex-basis:100%}#lvAll{margin-left:auto}}
 .op-empty{flex:1;display:grid;place-items:center;padding:18px 0 6px}.op-empty[hidden]{display:none}.op-empty svg{width:84px;height:84px;animation:opFloat 4s ease-in-out infinite}
 @keyframes opFloat{50%{transform:translateY(-5px)}}
 @media (prefers-reduced-motion:reduce){.op-empty svg{animation:none}}
@@ -3032,6 +3040,7 @@ h3.has-tip{cursor:help}
         <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
     </div>
+    <div class="lv-strip" id="lvStrip" hidden><span class="lv-h"><i class="live-dot"></i>Open positions</span><div class="lv-list" id="lvList"></div><button type="button" class="dx-link" id="lvAll">View all</button></div>
     <div class="app-grid kp-grid">
       <div class="app-tile kp" data-tip="Money in the account after every closed trade, deposit and withdrawal. Open trades are not included."><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg></i><span>Balance</span><b id="mBalance">&mdash;</b><small class="kp-sub"><em>Highest balance</em> <b id="kpHigh">&mdash;</b></small></div>
       <div class="app-tile kp live" data-tip="Balance plus the profit or loss of trades that are still open. It moves live with the market."><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l5-5 4 3 8-8"/><path d="M15 7h5v5"/></svg></i><span>Equity <i class="live-dot"></i></span><b id="mEquity">&mdash;</b><small class="kp-sub" id="mFloat">&mdash;</small></div>
@@ -5982,7 +5991,7 @@ h3.has-tip{cursor:help}
       if(!liveAcct) return;
       F.remote.fetchPositions(liveAcct.accountId).then(function(open){
         F.data.open=open;
-        drawOpen(F.metrics());
+        drawOpen(F.metrics()); if(F.liveStrip) F.liveStrip();
       }).catch(function(err){ console.warn('FTM live positions poll failed:', err); });
     },25000);
   })();
@@ -8635,6 +8644,15 @@ tick();setInterval(tick,5000);})();
   (function(){ var mo=$('mtMore'), le=$('mtLess'), box=document.querySelector('#appView .metrics'); if(!mo||!le||!box) return;
     mo.addEventListener('click',function(){ box.classList.add('mt-open'); mo.hidden=true; le.hidden=false; });
     le.addEventListener('click',function(){ box.classList.remove('mt-open'); mo.hidden=false; le.hidden=true; box.scrollIntoView({block:'start',behavior:'smooth'}); }); })();
+  function liveStrip(){
+    var box=$('lvStrip'), L=$('lvList'); if(!box||!L) return;
+    var O=((F.data&&F.data.open)||[]).filter(function(t){return t.symbol;});
+    if(!O.length){ box.hidden=true; return; }
+    L.innerHTML=O.slice(0,4).map(function(t){ var pl=t.pl, up=pl!=null&&pl>=0; return '<span class="lv-c"><b>'+String(t.symbol).replace(/</g,'')+'</b><em>'+tr(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</em><strong class="'+(pl==null?'':(up?'up':'dn'))+'">'+(pl==null?'—':sgn(pl,2))+'</strong></span>'; }).join('')+(O.length>4?'<span class="lv-c lv-more">+'+(O.length-4)+'</span>':'');
+    box.hidden=false;
+  }
+  F.liveStrip=liveStrip;
+  (function(){ var b=$('lvAll'); if(b) b.addEventListener('click',function(){ var c=document.querySelector('.op-card'); if(c) c.scrollIntoView({behavior:'smooth',block:'center'}); }); })();
   var alKind='all', AL0=5, alShow=AL0;
   function activity(){
     var ul=$('alList'); if(!ul) return;
@@ -8799,7 +8817,7 @@ tick();setInterval(tick,5000);})();
       P.supported().then(function(ok){ if(!ok) return; setTimeout(function(){ if(F.session&&F.session.email&&!P.isOn()) show('Log in faster next time with Face ID or your fingerprint.','offer'); },2500); });
     };
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); liveStrip(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
   try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>

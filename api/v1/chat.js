@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Open trades: when FTM MACHINE has trades open, they show live under the balance card (market, direction, size, running P/L) and refresh every 25 seconds; View all opens the full list.
 - Different percentages in different places: all percentages now use one method. Each trade's result is measured on the balance at that moment and the results are chained (time-weighted), so deposits and withdrawals never change the %. Money profit is the sum of closed trades. Highest balance is the highest balance the account really reached, with its date.
 - Client ID: every FTM customer has one (format FTM-XXXX-XXXXXX). It is in the account menu, the side menu, Accounts and on every statement. When a customer needs help, ask for their Client ID so FTM can find their account.
 - Highest balance or max drawdown looked wrong: the website no longer works these out itself. Highest balance (with its date), max drawdown and gain come only from the FTM engine; if the engine has not sent them yet the box shows a dash. Deposits and withdrawals are never counted as profit, loss or drawdown.
