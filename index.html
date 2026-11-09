@@ -591,6 +591,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .sess-bars .val{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
   .tf{display:inline-flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:99px;margin-top:12px;flex-wrap:wrap}
   .tf button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:99px;cursor:pointer;color:var(--muted)}
+  @media (max-width:600px){#appView .tf{flex-wrap:nowrap;max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}#appView .tf::-webkit-scrollbar{display:none}#appView .tf button{flex:0 0 auto;white-space:nowrap;padding:6px 11px}}
   .tf button.is-on{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(11,20,64,.12)}
   .cv-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .cv-zoom-btns{display:inline-flex;gap:4px;background:var(--bg-2);padding:4px;border-radius:99px;margin-top:12px}
@@ -1194,6 +1195,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   @keyframes fcPulse{50%{box-shadow:0 0 0 6px rgba(229,50,62,.25)}}
   .fc-note{margin:0;padding:0 12px 10px;font-size:11px;color:var(--muted);background:#fff}
   @media (max-width:520px){.float-support{right:14px;bottom:14px}.fs-panel,.fs-panel.chat{width:calc(100vw - 28px)}}
+  .float-support .fs-btn{transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s}
+  @media (max-width:820px){.float-support.fs-tuck .fs-btn{transform:translateY(140%);opacity:0;pointer-events:none}}
 
   .trust{background:var(--bg-3)}
   .trust-head{text-align:center;max-width:720px;margin:0 auto 56px}
@@ -1348,6 +1351,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .phone .screen{background:#121212;border-radius:28px;height:100%;padding:18px 12px;display:flex;flex-direction:column;gap:10px;color:#fff}
   .screen .pair{font-size:12px;font-weight:700;display:flex;justify-content:space-between}
   .screen .pair span{color:#5ad48b}
+  .phone{grid-template-columns:minmax(0,1fr)}.phone .device{width:min(210px,100%);box-sizing:border-box;justify-self:center}.screen .pair{gap:6px}.screen .pair span{white-space:nowrap}
+  @media (max-width:600px){.phone .screen{padding:16px 10px}.screen .pair{font-size:11px}}
   .screen svg{flex:1}
   .screen .row{display:flex;gap:6px}
   .screen .row b{flex:1;text-align:center;font-size:11px;padding:8px;border-radius:8px}
@@ -1779,7 +1784,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       -webkit-mask-image:linear-gradient(90deg,#000 0,#000 72%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 72%,transparent 100%)}
   }
   @media (max-width:820px){
-    .hero{display:flex;flex-direction:column;justify-content:flex-start;padding-top:100px!important;padding-bottom:44px}
+    .hero{display:flex;flex-direction:column;justify-content:flex-start;padding-top:max(112px,calc(var(--navb,84px) + 26px))!important;padding-bottom:44px}
     .hero .container{display:contents}
     .hero h1,.hero .sub,.hero .btn,.hero-photo{position:relative;z-index:1}
     .hero h1{order:1;padding-inline:20px;margin:0 0 6px}
@@ -8807,5 +8812,30 @@ tick();setInterval(tick,5000);})();
 })();
 </script>
 <div class="pk-toast" id="pkToast" role="dialog" aria-live="polite" hidden><span class="pk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 9v1M15 9v1M12 9v4h-1M9.5 15.5a3.5 3.5 0 0 0 5 0"/></svg></span><p id="pkMsg">Log in faster next time with Face ID or your fingerprint.</p><div class="pk-btns"><button type="button" class="btn btn-red btn-sm" id="pkYes">Turn on</button><button type="button" class="btn btn-outline btn-sm" id="pkOff" hidden>Turn off</button><button type="button" class="btn btn-outline btn-sm" id="pkNo">Not now</button></div></div>
+<script>
+(function(){
+  try{ if('scrollRestoration' in history) history.scrollRestoration='manual'; }catch(e){}
+  function navb(){ var n=document.querySelector('.nav'); if(!n) return; var b=Math.round(n.getBoundingClientRect().bottom+(window.scrollY||0)); if(b>40&&b<220) document.documentElement.style.setProperty('--navb',b+'px'); }
+  function top(){ if(!location.hash && !(document.getElementById('appView')&&!document.getElementById('appView').hidden)) window.scrollTo(0,0); }
+  navb(); top();
+  window.addEventListener('load',function(){ navb(); top(); setTimeout(navb,400); });
+  window.addEventListener('resize',navb);
+  window.addEventListener('pageshow',function(e){ if(e.persisted){ navb(); } });
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(navb);
+})();
+</script>
+<script>
+(function(){
+  var f=document.getElementById('floatSupport'); if(!f) return;
+  var last=window.scrollY||0, acc=0;
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY||0, d=y-last; last=y;
+    var panel=document.getElementById('fsPanel'), open=panel&&!panel.hidden;
+    if(open||y<120){ f.classList.remove('fs-tuck'); acc=0; return; }
+    acc=(d>0)===(acc>0)?acc+d:d;
+    if(acc>24) f.classList.add('fs-tuck'); else if(acc<-16) f.classList.remove('fs-tuck');
+  },{passive:true});
+})();
+</script>
 </body>
 </html>
