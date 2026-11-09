@@ -52,6 +52,8 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(/8\.06%/.test(same.pxYear), label+': year-by-year return matches (got '+same.pxYear+')');
   const pt=await p.evaluate(()=>{FTM.unit='percent';document.querySelector('#appView .app-nav-item[data-view="perf"]').click();return new Promise(r=>setTimeout(()=>{FTM.unit='percent';if(FTM.redrawAllViews)FTM.redrawAllViews();setTimeout(()=>r((document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||''),600);},600));});
   ok(/8\.06%/.test(pt), label+': yearly performance total (in %) matches (got '+pt+')');
+  const cvh=await p.evaluate(()=>{document.querySelector('#appView .app-nav-item[data-view="metrics"]').click();return new Promise(r=>setTimeout(()=>r((document.getElementById('cvChg')||{}).textContent||''),500));});
+  ok(/22\.53/.test(cvh)&&/8\.06%/.test(cvh), label+': balance chart header (All) = all-time profit +22.53 / +8.06% (got '+cvh+')');
   const fsAll=await p.evaluate(()=>{const c=[...document.querySelectorAll('#fsGrid .fs-c')].find(x=>/all time/i.test(x.textContent));return c?c.textContent:'';});
   ok(/8\.06%/.test(fsAll), label+': performance summary, all time matches (got '+fsAll+')');
   if(stats===full && !preview){ const rk=await p.evaluate(()=>[document.getElementById('rkScore').textContent,document.getElementById('rkVs').textContent,document.getElementById('rkRange').textContent]);
