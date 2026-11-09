@@ -1976,6 +1976,31 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .pk-btns{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .pk-btns .btn-outline{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}
 .pk-btns [hidden]{display:none!important}
+.rk-card{margin-top:18px;display:grid;grid-template-columns:auto minmax(0,1fr) 220px;gap:28px;align-items:center}
+.rk-card[hidden]{display:none!important}
+.rk-l{display:grid;gap:4px;min-width:150px}
+.rk-score{display:flex;align-items:baseline;gap:6px}
+.rk-score b{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
+.rk-score small{font-size:15px;font-weight:700;color:var(--muted)}
+.rk-within .rk-score b{color:#15803d}.rk-above .rk-score b{color:#c81e2b}.rk-below .rk-score b{color:#152a7a}
+.rk-vs{display:inline-block;justify-self:start;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(11,20,64,.06);color:var(--muted)}
+.rk-vs.rk-within{background:rgba(22,163,74,.1);color:#15803d}.rk-vs.rk-above{background:rgba(229,50,62,.1);color:#c81e2b}.rk-vs.rk-below{background:rgba(21,42,122,.08);color:#152a7a}
+.rk-vs:empty{display:none}
+.rk-m{min-width:0}
+.rk-scale{position:relative;height:14px;border-radius:99px;background:linear-gradient(90deg,#16a34a 0%,#7cc36a 28%,#E3B62F 55%,#ef8a3c 75%,#E5323E 100%);box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+.rk-band{position:absolute;top:-6px;bottom:-6px;border:2px solid #0B1440;border-radius:10px;background:rgba(255,255,255,.28);box-shadow:0 0 0 3px rgba(255,255,255,.6)}
+.rk-band[hidden]{display:none}
+.rk-pin{position:absolute;top:50%;width:26px;height:26px;margin-left:-13px;margin-top:-13px;border-radius:50%;background:#0B1440;border:4px solid #fff;box-shadow:0 6px 14px -4px rgba(11,20,64,.55);transition:left 1s cubic-bezier(.2,.8,.2,1)}
+.rk-pin::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(212,175,55,.6);animation:rkPulse 2.4s ease-out infinite}
+@keyframes rkPulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.25);opacity:0}}
+@media (prefers-reduced-motion:reduce){.rk-pin::after{animation:none}}
+.rk-ticks{display:flex;justify-content:space-between;margin-top:10px;padding:0 1px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rk-legend{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--muted)}
+.rk-legend>span:first-child,.rk-legend>span:last-child{white-space:nowrap}.rk-legend .rk-rng{text-align:center}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
+.rk-h{display:grid;gap:4px}.rk-h[hidden]{display:none}
+.rk-hist{width:100%;height:64px;border-radius:10px;background:#f6f7fb}
+.rk-h small{font-size:11px;color:var(--muted);text-align:end}
+@media (max-width:900px){.rk-card{grid-template-columns:1fr;gap:16px}.rk-l{grid-template-columns:auto 1fr;align-items:center;column-gap:16px}.rk-l .app-label{grid-column:1/-1}.rk-vs{justify-self:end}}
 .pp-card{margin-top:18px}
 .pp-card[hidden]{display:none!important}
 .pp-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 18px;flex-wrap:wrap;margin-bottom:16px}
@@ -3014,6 +3039,16 @@ h3.has-tip{cursor:help}
         <div class="rg-circles"><div class="rg-circ"><b id="mStreakDays">&mdash;</b><small>Days</small></div><div class="rg-circ rg-circ-gold"><b id="mStreakTrades">&mdash;</b><small>Trades</small></div></div>
         <div class="rg-foot"><span>Current streak</span><b><span id="mStreakNowT">&mdash;</span> &middot; <span id="mStreakNowD">&mdash;</span></b></div>
       </div>
+    </div>
+
+    <div class="app-card rk-card" id="rkCard" hidden data-tip="A score from 1 (calm) to 10 (very risky), worked out every day by the FTM engine from how much the account moves, its drawdown and the margin in use. The shaded band is the normal range for the risk profile you chose.">
+      <div class="rk-l"><span class="app-label">Risk level</span><div class="rk-score"><b id="rkScore">&mdash;</b><small>/ 10</small></div><span class="rk-vs" id="rkVs"></span></div>
+      <div class="rk-m">
+        <div class="rk-scale"><i class="rk-band" id="rkBand"></i><i class="rk-pin" id="rkPin"></i></div>
+        <div class="rk-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+        <div class="rk-legend"><span>Calm</span><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span><span>Very risky</span></div>
+      </div>
+      <div class="rk-h"><svg class="rk-hist" id="rkHist" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"></svg><small>Last 90 days</small></div>
     </div>
 
     <div class="app-card pp-card" id="ppCard" hidden>
@@ -4780,7 +4815,7 @@ h3.has-tip{cursor:help}
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
-      if(window.FTM){ FTM.session=null; FTM._liveLoaded=false; if(FTM.resetPlan) FTM.resetPlan(); }
+      if(window.FTM){ FTM.session=null; FTM._liveLoaded=false; FTM._snapTried=false; FTM._fromSnap=false; FTM._dataAt=null; if(FTM.clearSnaps) FTM.clearSnaps(); if(FTM.resetPlan) FTM.resetPlan(); }
       window.__ftmWelcomed=0;
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
@@ -4828,11 +4863,13 @@ h3.has-tip{cursor:help}
               });
               if(FT.renderAccounts) FT.renderAccounts();
             }
-            var tries=0, accId=r&&r.account_id;
+            var tries=0, accId=r&&r.account_id, sig=null, t0c=Date.now(), lpFail=0;
             (function poll(){
               tries++;
-              FT.remote.fetchAccounts().then(function(list){
+              var useLp=!!(sig && FT.remote.waitAccount && lpFail<2);
+              (useLp ? FT.remote.waitAccount(accId,sig).catch(function(e){ lpFail++; throw e; }) : FT.remote.fetchAccounts()).then(function(list){
                 var a=list.filter(function(x){return x.accountId===accId;})[0];
+                if(a && a.statusSignature) sig=a.statusSignature;
                 var st=a&&a.displayStatus;
                 if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED'){
                   msg.style.color = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? '#1f8a5b' : '#E5323E';
@@ -4840,9 +4877,9 @@ h3.has-tip{cursor:help}
                   if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); });
                   return;
                 }
-                if(tries<150) setTimeout(poll,tries<30?2000:5000);
+                if(Date.now()-t0c<10*60000) setTimeout(poll, (sig && lpFail<2) ? 150 : (tries<30?2000:5000));
                 else { msg.style.color='#B4690E'; msg.textContent='Still connecting. This can take a few minutes; check Accounts later.'; }
-              }).catch(function(){ if(tries<150) setTimeout(poll,2000); });
+              }).catch(function(){ if(Date.now()-t0c<10*60000) setTimeout(poll,2000); });
             })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){
@@ -5454,6 +5491,7 @@ h3.has-tip{cursor:help}
           openPositions: a.open_positions || 0,
           deposits: num(a.deposits), withdrawals: num(a.withdrawals),
           riskTier: a.risk_tier || null,
+          statusSignature: a.status_signature || null,
 
           validationReason: a.validation_reason || null,
           serverHint: typeof a.broker_server_hint==='string' ? a.broker_server_hint : null,
@@ -5498,6 +5536,9 @@ h3.has-tip{cursor:help}
         ready: ready,
         fetchAccounts: function(){
           return call('/accounts').then(function(j){ window.FTM.accountLimit = j.account_limit || null; return j.accounts.map(mapAccount); });
+        },
+        waitAccount: function(accountId, since){
+          return call('/accounts?wait_for='+encodeURIComponent(accountId)+'&since='+encodeURIComponent(since)+'&wait=8').then(function(j){ window.FTM.accountLimit = j.account_limit || window.FTM.accountLimit || null; return (j.accounts||[]).map(mapAccount); });
         },
         fetchExecutions: function(accountId, offset){
           var q = '?limit=200&offset=' + (offset||0);
@@ -5552,7 +5593,8 @@ h3.has-tip{cursor:help}
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
-                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc };
+                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc,
+                     riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
           });
         },
         fetchPositions: function(accountId){
@@ -5742,8 +5784,27 @@ h3.has-tip{cursor:help}
 
       };
     }
+    function snapKey(){ return (F.session&&F.session.email) ? 'ftm_snap_'+String(F.session.email).toLowerCase() : null; }
+    F.saveSnap=function(){
+      try{ var k=snapKey(); if(!k||!F._liveLoaded||F._fromSnap) return;
+        var o={v:1, t:F._dataAt||Date.now(), viewNum:F.viewNum||null, accounts:F.data.accounts, account:F.data.account, closed:(F.data.closed||[]).slice(-2000), open:F.data.open||[], flows:F.data.flows||[], es:F.data.engineStats||null};
+        var str=JSON.stringify(o); if(str.length>3e6){ o.es=null; str=JSON.stringify(o); }
+        localStorage.setItem(k,str);
+      }catch(e){}
+    };
+    F.loadSnap=function(){
+      try{ var k=snapKey(); if(!k) return false; var o=JSON.parse(localStorage.getItem(k)||'null');
+        if(!o||o.v!==1||!o.accounts||!o.accounts.length||Date.now()-o.t>7*864e5) return false;
+        F.data.accounts=o.accounts; F.data.account=o.account||F.data.account; F.data.closed=o.closed||[]; F.data.open=o.open||[]; F.data.flows=o.flows||[]; F.data.engineStats=o.es||null;
+        if(o.viewNum && !F.viewNum) F.viewNum=o.viewNum;
+        F._dataAt=o.t; F._fromSnap=true; return true;
+      }catch(e){ return false; }
+    };
+    F.clearSnaps=function(){ try{ Object.keys(localStorage).forEach(function(k){ if(k.indexOf('ftm_snap_')===0) localStorage.removeItem(k); }); }catch(e){} };
     function loadLive(){
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
+      if(!F._liveLoaded && !F._snapTried && F.session){ F._snapTried=true;
+        if(F.loadSnap()){ F._liveLoaded=true; setTimeout(function(){ try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); if(F.updStamp) F.updStamp(); }catch(e){} },0); } }
       var seq=F._loadSeq=(F._loadSeq||0)+1;
       return F.remote.fetchAccounts().then(function(accounts){
         if(seq!==F._loadSeq) return true;
@@ -5757,7 +5818,7 @@ h3.has-tip{cursor:help}
         return F.remote.fetchAllExecutions(primary.accountId).then(function(closed){
           return F.remote.fetchPositions(primary.accountId).then(function(open){
             if(seq!==F._loadSeq) return;
-            F._liveLoaded = true;
+            F._liveLoaded = true; F._fromSnap = false; F._dataAt = Date.now();
             F.data.accounts = accounts; F.data.account = {currency: primary.currency || null, deposits:primary.deposits||0, withdrawals:primary.withdrawals||0};
             var sc=F._statsCache&&F._statsCache[primary.accountId]; F.data.flows = sc?sc.flows:[];
             if(sc){ if(sc.deposits!=null) F.data.account.deposits=sc.deposits; if(sc.withdrawals!=null) F.data.account.withdrawals=sc.withdrawals; }
@@ -5766,7 +5827,7 @@ h3.has-tip{cursor:help}
               if(!st || seq!==F._loadSeq) return;
               F._statsCache=F._statsCache||{}; F._statsCache[primary.accountId]=st;
               F.data.flows=st.flows; F.data.engineStats=st; if(st.deposits!=null) F.data.account.deposits=st.deposits; if(st.withdrawals!=null) F.data.account.withdrawals=st.withdrawals;
-              if(F.render) F.render(); if(F.redrawAllViews) F.redrawAllViews();
+              if(F.render) F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.saveSnap) F.saveSnap(); if(F.updStamp) F.updStamp();
             }).catch(function(){});
             F.data.closed = closed;
             F.data.open = open;
@@ -5784,9 +5845,9 @@ h3.has-tip{cursor:help}
 
         console.warn('FTM live data fetch failed:', err);
         if(seq!==F._loadSeq) return false;
-        // A passing network problem keeps the figures already on screen; only a real refusal clears them.
         var hard=err && (err.status===401 || err.status===403 || err.code==='EMAIL_ALREADY_REGISTERED');
         if(F.session && (hard || !(F.data.accounts||[]).length)) F.data = emptyLiveData();
+        if(hard && F.session && F.session.email){ try{ localStorage.removeItem('ftm_snap_'+String(F.session.email).toLowerCase()); }catch(e){} }
         if(err && err.code==='EMAIL_ALREADY_REGISTERED'){
           var bar=document.getElementById('planBar'), txt=document.getElementById('planBarTxt');
           var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
@@ -7879,8 +7940,10 @@ tick();setInterval(tick,5000);})();
   new MutationObserver(function(){ if(!app.hidden && window.FTM && FTM.viewNum && FTM.viewAccount && !app._viewed){ app._viewed=true; setTimeout(function(){ FTM.viewAccount(FTM.viewNum); },300); } if(app.hidden) app._viewed=false; }).observe(app,{attributes:true,attributeFilter:['hidden']});
   sync();
   var t0=Date.now();
-  setInterval(function(){var m=Math.floor((Date.now()-t0)/60000); $('dxUpd').textContent=m<1?'Updated just now':'Updated {} min ago'.replace('{}',m);},30000);
-  $('dxRef').addEventListener('click',function(){var b=this;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');sync();t0=Date.now();$('dxUpd').textContent='Updated just now';});
+  function stamp(){ var base=(window.FTM&&FTM._dataAt)||t0, m=Math.floor((Date.now()-base)/60000); $('dxUpd').textContent=m<1?'Updated just now':'Updated {} min ago'.replace('{}',m); $('dxUpd').classList.toggle('is-stale',!!(window.FTM&&FTM._fromSnap)); }
+  if(window.FTM) FTM.updStamp=stamp;
+  setInterval(stamp,15000);
+  $('dxRef').addEventListener('click',function(){var b=this;b.classList.remove('spin');void b.offsetWidth;b.classList.add('spin');sync();t0=Date.now();stamp();});
   function go(v){var n=app.querySelector('.app-nav-item[data-view="'+v+'"]'); if(n) n.click();}
   $('dxGo').addEventListener('click',function(){ if(free()){var u=document.querySelector('.js-free-plans'); if(u) u.click();} else go('accounts'); });
   app.querySelectorAll('[data-go]').forEach(function(b){b.addEventListener('click',function(){go(b.getAttribute('data-go'));});});
@@ -8517,6 +8580,29 @@ tick();setInterval(tick,5000);})();
     }).join('');
     card.hidden=false;
   }
+  function riskCard(){
+    var card=$('rkCard'); if(!card) return;
+    var es=(F.data&&F.data.engineStats)||null, va=F.viewedAccount&&F.viewedAccount();
+    if(!es || es.riskScore==null || (es.accountId && va && va.accountId && es.accountId!==va.accountId)){ card.hidden=true; return; }
+    var sc=Math.max(1,Math.min(10,es.riskScore)), R=es.riskRange||{}, lo=+R.typical_min, hi=+R.typical_max, vs=String(es.riskVs||'').toUpperCase();
+    var pos=function(v){ return ((v-1)/9*100).toFixed(2)+'%'; };
+    $('rkScore').textContent=(Math.round(sc*10)/10).toString();
+    var band=$('rkBand');
+    if(isFinite(lo)&&isFinite(hi)&&hi>=lo){ band.hidden=false; band.style.left=pos(lo); band.style.width=((hi-lo)/9*100).toFixed(2)+'%'; } else band.hidden=true;
+    $('rkPin').style.left=pos(sc);
+    var vsTxt={WITHIN:'Within the normal range',ABOVE:'Above the normal range',BELOW:'Below the normal range'}[vs]||'';
+    var el=$('rkVs'); el.textContent=vsTxt?tr(vsTxt):''; el.className='rk-vs rk-'+(vs.toLowerCase()||'none');
+    card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
+    var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[String(R.profile||'').toUpperCase()]||'';
+    $('rkRange').textContent=(pn?tr(pn)+' · ':'')+(isFinite(lo)&&isFinite(hi)?lo+'–'+hi:'');
+    var H=(es.riskHistory||[]).filter(function(x){return x&&x.score!=null;}).slice(-90), svg=$('rkHist');
+    if(H.length>1){ var W=200,Hh=64, y=function(v){ return (Hh-6-(Math.max(1,Math.min(10,+v))-1)/9*(Hh-12)).toFixed(1); };
+      var d=H.map(function(x,i){ return (i?'L':'M')+(i/(H.length-1)*W).toFixed(1)+' '+y(x.score); }).join(' ');
+      var bandSvg=(isFinite(lo)&&isFinite(hi))?'<rect x="0" y="'+y(hi)+'" width="'+W+'" height="'+(y(lo)-y(hi)).toFixed(1)+'" fill="rgba(212,175,55,.16)"/>':'';
+      svg.innerHTML=bandSvg+'<path d="'+d+'" fill="none" stroke="#152a7a" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
+      svg.parentNode.hidden=false; } else svg.parentNode.hidden=true;
+    card.hidden=false;
+  }
   var alKind='all', AL0=5, alShow=AL0;
   function activity(){
     var ul=$('alList'); if(!ul) return;
@@ -8681,7 +8767,7 @@ tick();setInterval(tick,5000);})();
       P.supported().then(function(ok){ if(!ok) return; setTimeout(function(){ if(F.session&&F.session.email&&!P.isOn()) show('Log in faster next time with Face ID or your fingerprint.','offer'); },2500); });
     };
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
   try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>

@@ -22,6 +22,9 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Risk level card (Dashboard): a score from 1 (calm) to 10 (very risky) worked out daily by the FTM engine; the shaded band is the normal range for the chosen risk profile (Conservative 2-4, Balanced 4-6, Growth 5-8). 'Above the normal range' means the account is moving more than usual for that profile.
+- Client area opens with the last known figures straight away ('Updated x min ago') and refreshes them from the engine in the background; logging out removes them from the device.
+- Connecting an account now reports the result the moment the engine has it (usually a few seconds).
 - Client area froze for a moment on phones: background helpers re-scanned the whole page on every price or clock change, and hidden sections were redrawn all at once. They now only look at what changed and draw one section at a time. If a phone still freezes, close the tab and open the site again, and tell us the phone model.
 - Face ID / fingerprint login: after logging in once, tap Turn on when FTM offers it (or account menu > Face ID / fingerprint login). Next time press Log in with Face ID or fingerprint on the login screen. It works per device; turn it off in the same menu. If it fails, log in with email and password or the 6-digit email code.
 - Where is my Client ID: account menu (top right), under your name in the side menu, and on the Accounts page next to Connected accounts. It is also printed on every account statement. Tap the copy icon to copy it.

@@ -49,10 +49,18 @@ module.exports = async function handler(req, res) {
 
   if (req.method === 'GET') {
     try {
-      var listResult = await callEngine('/api/v1/customer/accounts', {
+      var q = req.query || {};
+      var waitFor = String(q.wait_for || ''), since = String(q.since || '');
+      var waitS = Math.max(0, Math.min(8, parseInt(q.wait, 10) || 0));
+      var path = '/api/v1/customer/accounts';
+      if (/^[0-9a-zA-Z-]{8,64}$/.test(waitFor) && since && since.length <= 200 && waitS > 0) {
+        path += '?wait_for=' + encodeURIComponent(waitFor) + '&since=' + encodeURIComponent(since) + '&wait=' + waitS;
+      }
+      var listResult = await callEngine(path, {
         method: 'GET',
         authSubject: user.id,
-        authEmail: user.email
+        authEmail: user.email,
+        timeoutMs: path.indexOf('wait_for=') > -1 ? (waitS + 6) * 1000 : 25000
       });
       if (listResult.ok) {
         // { ok:true, accounts:[...] } — passed straight through. The
