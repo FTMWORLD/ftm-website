@@ -1958,7 +1958,9 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:rgba(11,20,64,.12)}
 .auth-pk-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;max-width:100%;min-width:0;white-space:normal;text-align:center;line-height:1.25;padding-left:16px;padding-right:16px}
 .auth-pk-btn svg{flex:0 0 auto}@media (max-width:600px){.auth-pk-btn{font-size:15px}}.auth-form{min-width:0}
-#dxTag,#dxRiskTag{display:none!important}
+#dxTag{display:none!important}
+@media (min-width:561px){#dxRiskTag{display:none!important}}
+@media (max-width:560px){#appView .dx-tagrow{flex-wrap:nowrap;justify-content:space-between;align-items:center}#appView .dx-tagrow .dx-risk-tag{margin:0;min-width:0;overflow:hidden;text-overflow:ellipsis}#appView .dx-tagrow .unit-sw{margin-left:auto!important;flex:0 0 auto}}
 .dx-hero .dx-lbl{font-size:15px}
 .dx-hero .dx-val{font-size:clamp(42px,5.2vw,62px)}
 @media (max-width:560px){.dx-hero .dx-val{font-size:44px}}
@@ -4907,7 +4909,14 @@ h3.has-tip{cursor:help}
     }
     function tone(n){ return n>0?'up':(n<0?'down':null); }
 
+    var _mc=null;
+    F.metricsFresh = function(){ _mc=null; };
     F.metrics = function(){
+      if(_mc) return _mc;
+      _mc=F._metricsRaw(); Promise.resolve().then(function(){ _mc=null; });
+      return _mc;
+    };
+    F._metricsRaw = function(){
       var d=F.data, acct=d.account, closed=d.closed.slice().sort(function(a,b){return a.closeTime-b.closeTime;});
       var openT=d.open||[];
 
@@ -5322,6 +5331,7 @@ h3.has-tip{cursor:help}
     F.curveRange='0';
     F.render = function(){
       if(F.mergeEngineTrades) F.mergeEngineTrades();
+      F.metricsFresh();
       var m=F.metrics();
       set('mBalance', cur0(m.balance));
       set('mEquity', cur0(m.equity));
@@ -6708,11 +6718,19 @@ h3.has-tip{cursor:help}
         console.error('FTM: '+name+' failed to render, other sections unaffected:', e);
       }
     }
-    function draw(name){ if(!drawn[name]) forceDraw(name); }
+    function draw(name){ if(!drawn[name]) forceDraw(name); var i=rq.indexOf(name); if(i>=0) rq.splice(i,1); }
     var drawn={metrics:true};
 
+    var rq=[], rqT=null;
     F.redrawAllViews = function(){
-      Object.keys(drawn).forEach(function(name){ if(name!=='metrics') forceDraw(name); });
+      Object.keys(drawn).forEach(function(name){
+        if(name==='metrics') return;
+        var v=document.querySelector('.app-view[data-view="'+name+'"]');
+        if(v && v.hidden){ drawn[name]=false; return; }
+        if(rq.indexOf(name)<0) rq.push(name);
+      });
+      if(rqT) return;
+      (function step(){ rqT=null; var n=rq.shift(); if(!n) return; forceDraw(n); if(rq.length) rqT=setTimeout(step,16); })();
     };
 
     var VIEW_ORDER=['metrics','accounts','perf','calendar','sessions','board','community','charts'];
@@ -7841,7 +7859,7 @@ tick();setInterval(tick,5000);})();
       var d=pts.map(function(v,i){return (i?'L':'M')+(i/(pts.length-1)*160).toFixed(1)+' '+(64-(v-mn)/r*58).toFixed(1);}).join(' ');
       var up=pts[pts.length-1]>=pts[0], c=up?'#3CC98A':'#E5323E';
       var ly=(64-(pts[pts.length-1]-mn)/r*58).toFixed(1);
-      var h='<path d="'+d+' L160 70 L0 70 Z" fill="'+c+'" opacity=".15"/><path class="sp-line" d="'+d+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/><circle class="sp-dot" cx="158" cy="'+ly+'" r="3.5" fill="'+c+'"/>';
+      var h='<path d="'+d+' L160 70 L0 70 Z" fill="'+c+'" opacity=".15"/><path class="sp-line" d="'+d+'" fill="none" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path class="sp-dot" d="M158 '+ly+' l0.01 0" stroke="'+c+'" stroke-width="8" stroke-linecap="round" vector-effect="non-scaling-stroke"/>';
       if(sp.innerHTML!==h) sp.innerHTML=h; }
     var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
     $('dxViewW').hidden=A.length<2;
@@ -7982,7 +8000,7 @@ tick();setInterval(tick,5000);})();
     rows.forEach(function(r){ if(r===hr||r.parentNode.tagName==='THEAD') return; [].forEach.call(r.cells,function(c,i){ if(c.tagName==='TD'&&c.getAttribute('data-label')!==H[i]) c.setAttribute('data-label',H[i]||''); }); });
   }
   function all(){ document.querySelectorAll('.app-scroll table.app-trades').forEach(label); }
-  new MutationObserver(function(){ clearTimeout(all.t); all.t=setTimeout(all,120); }).observe(document.body,{childList:true,subtree:true});
+  new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var t=ms[i].target; if(t.nodeType===1 && (t.closest('table.app-trades') || t.querySelector && t.querySelector('table.app-trades'))){ clearTimeout(all.t); all.t=setTimeout(all,120); return; } } }).observe(document.body,{childList:true,subtree:true});
   all();
 })();
 </script>
@@ -8238,9 +8256,13 @@ tick();setInterval(tick,5000);})();
     var n, list=[]; while((n=w.nextNode())) list.push(n);
     list.forEach(function(t){ var v=t.nodeValue.replace(RX,function(m,a,d,b){ return a+WJ+(d==='-'?'\u2011':d)+WJ+b; }); if(v!==t.nodeValue) t.nodeValue=v; });
   }
-  var busy=false;
-  function run(){ if(busy) return; busy=true; requestAnimationFrame(function(){ fix(document.body); busy=false; }); }
-  run(); new MutationObserver(run).observe(document.body,{childList:true,subtree:true,characterData:true});
+  var pend=[], busy=false;
+  function flush(){ busy=false; var L=pend; pend=[]; var seen=new Set();
+    L.forEach(function(n){ if(!n||seen.has(n)||!n.isConnected) return; seen.add(n);
+      if(n.nodeType===3){ var p=n.parentNode; if(p&&!/^(SCRIPT|STYLE|TEXTAREA|INPUT)$/.test(p.nodeName)&&/\d\s?[\u2013-]\s?\d/.test(n.nodeValue)){ var v=n.nodeValue.replace(RX,function(m,a,d,b){ return a+WJ+(d==='-'?'\u2011':d)+WJ+b; }); if(v!==n.nodeValue) n.nodeValue=v; } }
+      else if(n.nodeType===1) fix(n); }); }
+  fix(document.body);
+  new MutationObserver(function(ms){ for(var i=0;i<ms.length;i++){ var m=ms[i]; if(m.type==='characterData') pend.push(m.target); else for(var j=0;j<m.addedNodes.length;j++) pend.push(m.addedNodes[j]); } if(pend.length&&!busy){ busy=true; requestAnimationFrame(flush); } }).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
 </script>
 <script>
@@ -8622,7 +8644,8 @@ tick();setInterval(tick,5000);})();
     F._stFill=fill;
   })();
   (function(){
-    function cidOf(tok){ try{ var p=JSON.parse(atob(String(tok).split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); var h=String(p.sub||'').replace(/[^0-9a-fA-F]/g,'').toUpperCase(); return h.length>=10?('FTM-'+h.slice(0,4)+'-'+h.slice(4,10)):null; }catch(e){ return null; } }
+    function fmt(id){ var h=String(id||'').replace(/[^0-9a-fA-F]/g,'').toUpperCase(); return h.length>=10?('FTM-'+h.slice(0,4)+'-'+h.slice(4,10)):null; }
+    function cidOf(tok){ try{ var p=JSON.parse(atob(String(tok).split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); return fmt(p.sub); }catch(e){ return null; } }
     function show(){
       var c=F._cid||'';
       [['appCidW','appCid'],['sbCidW','sbCid'],['acCidW','acCid']].forEach(function(p){ var w=$(p[0]), b=$(p[1]); if(w) w.hidden=!c; if(b) b.textContent=c; });
@@ -8633,7 +8656,9 @@ tick();setInterval(tick,5000);})();
       if(F._cidFor===em && F._cid){ show(); return; }
       if(!F.auth||!F.auth.getAccessToken||F._cidBusy) return;
       F._cidBusy=true;
-      Promise.resolve(F.auth.getAccessToken()).then(function(t){ var c=t&&cidOf(t); if(c){ F._cid=c; F._cidFor=em; } show(); }).catch(function(){}).then(function(){ F._cidBusy=false; });
+      var fromEngine=(F.remote&&F.remote.ready&&F.remote.ready()&&F.remote.fetchMe) ? F.remote.fetchMe().then(function(j){ if(j&&j.customer_public_id){ F.publicId=F.publicId||j.customer_public_id; return fmt(j.customer_public_id); } return null; }).catch(function(){ return null; }) : Promise.resolve(null);
+      fromEngine
+        .then(function(c){ if(c){ F._cid=c; F._cidFor=em; } show(); }).catch(function(){}).then(function(){ F._cidBusy=false; });
     };
     document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.cid-copy'); if(!b||!F._cid) return; try{ navigator.clipboard.writeText(F._cid); b.classList.add('is-ok'); setTimeout(function(){ b.classList.remove('is-ok'); },1400); }catch(x){} });
   })();

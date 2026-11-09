@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Client area froze for a moment on phones: background helpers re-scanned the whole page on every price or clock change, and hidden sections were redrawn all at once. They now only look at what changed and draw one section at a time. If a phone still freezes, close the tab and open the site again, and tell us the phone model.
 - Face ID / fingerprint login: after logging in once, tap Turn on when FTM offers it (or account menu > Face ID / fingerprint login). Next time press Log in with Face ID or fingerprint on the login screen. It works per device; turn it off in the same menu. If it fails, log in with email and password or the 6-digit email code.
 - Where is my Client ID: account menu (top right), under your name in the side menu, and on the Accounts page next to Connected accounts. It is also printed on every account statement. Tap the copy icon to copy it.
 - Download statement opened a print window: it now downloads a PDF file straight away (FTM-statement-<month>.pdf).
