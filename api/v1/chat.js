@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Risk level card: shows the account's largest drop from a high (max drawdown, closed trades only, from the FTM engine) against the normal range of its risk profile: Conservative 10-20%, Balanced 20-40%, Growth 40% and more. 'Below the normal range' means less risk than the profile allows.
 - Wrong figures after switching to view another account (e.g. the master preview): the previous account's engine figures were briefly mixed in. Fixed: each account only ever uses its own engine figures; while they load a dash shows. The small chart in the blue box shows profit and loss from trades, with a dashed break-even line.
 - Yearly / tax report: Accounts > Account activity, choose the year (e.g. 2026) and press Download statement. The PDF shows opening and closing balance, deposits, withdrawals, the trading result, a By market table and every line.
 - Open trades: when FTM MACHINE has trades open, they show live under the balance card (market, direction, size, running P/L) and refresh every 25 seconds; View all opens the full list.

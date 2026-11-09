@@ -27,7 +27,7 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
    if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
    if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
    if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
-   if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[Object.assign({account_id:'f7a00000-0000-4000-8000-000000000002',account_number:preview?null:'41734917',name:'DERIV',currency:'USD',balance:String(balance),equity:String(balance),display_status:preview?'PAUSED':'ACTIVE',status_reason:'OK',is_trading:!preview,deposits:'789.83',withdrawals:'310'},preview?{preview:true,view_only:true}:{})]})});
+   if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[Object.assign({account_id:'f7a00000-0000-4000-8000-000000000002',account_number:preview?null:'41734917',name:'DERIV',currency:'USD',balance:String(balance),equity:String(balance),display_status:preview?'PAUSED':'ACTIVE',status_reason:'OK',is_trading:!preview,risk_tier:'BALANCED',deposits:'789.83',withdrawals:'310'},preview?{preview:true,view_only:true}:{})]})});
    return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
   await p.goto(BASE+'/');await p.waitForTimeout(800);
   await p.evaluate(pv=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fig@ftm.com',products:pv?[]:['auto'],name:'Fig'};},preview);
@@ -54,6 +54,8 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(/8\.06%/.test(pt), label+': yearly performance total (in %) matches (got '+pt+')');
   const fsAll=await p.evaluate(()=>{const c=[...document.querySelectorAll('#fsGrid .fs-c')].find(x=>/all time/i.test(x.textContent));return c?c.textContent:'';});
   ok(/8\.06%/.test(fsAll), label+': performance summary, all time matches (got '+fsAll+')');
+  if(stats===full && !preview){ const rk=await p.evaluate(()=>[document.getElementById('rkScore').textContent,document.getElementById('rkVs').textContent,document.getElementById('rkRange').textContent]);
+   ok(/1\.03%/.test(rk[0]) && /Below/.test(rk[1]) && /20\D{1,4}40%/.test(rk[2]), label+': risk level = engine drawdown against the Balanced band 20-40% (got '+rk.join(' | ')+')'); }
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
   await p.close();
  }

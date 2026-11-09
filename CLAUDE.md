@@ -59,3 +59,6 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Money profit = sum of closed-trade results (net). Deposits and withdrawals change the balance only, never profit, % or drawdown.
 - Every % (gain, profit this year, profit by period, monthly, weekly, daily, yearly, chart in %) is time-weighted: each trade's result on the balance at that moment, chained. One shared function (FTM.metrics().seg) feeds every view; never add a second formula.
 - Highest balance = the highest balance the account actually reached (engine peak_balance, with its date). Drawdown = engine max_drawdown_closed_balance_pct. The website never estimates these.
+
+## Risk profiles (owner instruction, 9 November 2026)
+- Normal drawdown range per profile: Conservative 10–20%, Balanced 20–40%, Growth 2× 40% and more. The Risk level card compares the engine's max_drawdown_closed_balance_pct with this range.

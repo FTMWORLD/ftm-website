@@ -1982,7 +1982,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .pk-btns{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .pk-btns .btn-outline{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}
 .pk-btns [hidden]{display:none!important}
-.rk-card{margin-top:0;display:grid;grid-template-columns:auto minmax(0,1fr) 220px;gap:28px;align-items:center}
+.rk-card{margin-top:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
 .rk-card[hidden]{display:none!important}
 .rk-l{display:grid;gap:4px;min-width:150px}
 .rk-score{display:flex;align-items:baseline;gap:6px}
@@ -1993,18 +1993,20 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .rk-vs.rk-within{background:rgba(22,163,74,.1);color:#15803d}.rk-vs.rk-above{background:rgba(229,50,62,.1);color:#c81e2b}.rk-vs.rk-below{background:rgba(21,42,122,.08);color:#152a7a}
 .rk-vs:empty{display:none}
 .rk-m{min-width:0}
-.rk-scale{position:relative;display:grid;grid-template-columns:repeat(10,1fr);gap:4px;padding:6px 0}
-.rk-seg{display:block;height:10px;border-radius:4px;background:#e9ecf4;transition:background .4s}
-.rk-seg.on.z1{background:#2fae74}.rk-seg.on.z2{background:#D4AF37}.rk-seg.on.z3{background:#E5323E}
-.rk-seg.cur{position:relative;transform:scaleY(1.6);box-shadow:0 4px 10px -4px rgba(11,20,64,.45)}
-.rk-seg.cur::after{content:"";position:absolute;inset:-5px -3px;border-radius:6px;border:2px solid rgba(21,42,122,.35);animation:rkPulse 2.4s ease-out infinite}
-@keyframes rkPulse{0%{opacity:1}100%{opacity:0;transform:scale(1.15)}}
-@media (prefers-reduced-motion:reduce){.rk-seg.cur::after{animation:none}}
-.rk-band{position:absolute;top:0;bottom:0;border:1.5px dashed #152a7a;border-radius:8px;pointer-events:none}
-.rk-band[hidden]{display:none}
-.rk-ticks{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;text-align:center;margin-top:6px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
-.rk-legend{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--muted)}
-.rk-legend>span:first-child,.rk-legend>span:last-child{white-space:nowrap}.rk-legend .rk-rng{text-align:center}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
+.dz{position:relative;display:flex;height:14px;border-radius:99px;overflow:visible;margin:12px 0 4px}
+.dz-z{display:block;height:100%;opacity:.35}.dz-z.z0{width:12.5%;background:#cfe9da;border-radius:99px 0 0 99px}.dz-z.z1{width:12.5%;background:#2fae74}.dz-z.z2{width:25%;background:#D4AF37}.dz-z.z3{width:50%;background:linear-gradient(90deg,#ef8a3c,#E5323E);border-radius:0 99px 99px 0}
+.dz-z.mine{opacity:1}
+.dz .rk-band{position:absolute;top:-6px;bottom:-6px;border:2px solid #0B1440;border-radius:10px;pointer-events:none}.dz .rk-band[hidden]{display:none}
+.dz-pin{position:absolute;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:#0B1440;border:4px solid #fff;box-shadow:0 6px 14px -4px rgba(11,20,64,.55);transition:left 1s cubic-bezier(.2,.8,.2,1)}
+.dz-pin::after{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(212,175,55,.6);animation:rkPulse 2.4s ease-out infinite}
+@keyframes rkPulse{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.25);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dz-pin::after{animation:none}}
+.dz-t,.dz-n{position:relative;height:16px;margin-top:6px;font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.dz-t span,.dz-n span{position:absolute;transform:translateX(-50%);white-space:nowrap}.dz-t span:first-child{transform:none}.dz-t span:last-child{transform:translateX(-100%)}
+.dz-n{font-size:11.5px;color:var(--ink);font-weight:700;margin-top:2px}
+.rk-sub{font-size:12px;color:var(--muted);font-weight:600}
+@media (max-width:600px){.dz-n{display:none}.rk-l .rk-sub{align-self:end;margin-bottom:6px}}
+.rk-legend{display:flex;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted)}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
 .rk-h{display:grid;gap:4px}.rk-h[hidden]{display:none}
 .rk-hist{width:100%;height:64px;border-radius:10px;background:#f6f7fb}
 .rk-h small{font-size:11px;color:var(--muted);text-align:end}
@@ -3080,14 +3082,14 @@ h3.has-tip{cursor:help}
       </div>
     </div>
 
-    <div class="app-card rk-card" id="rkCard" hidden data-tip="A score from 1 (calm) to 10 (very risky), worked out every day by the FTM engine from how much the account moves, its drawdown and the margin in use. The shaded band is the normal range for the risk profile you chose.">
-      <div class="rk-l"><span class="app-label">Risk level</span><div class="rk-score"><b id="rkScore">&mdash;</b><small>/ 10</small></div><span class="rk-vs" id="rkVs"></span></div>
+    <div class="app-card rk-card" id="rkCard" hidden data-tip="Your largest drop from a high, from closed trades only, compared with the normal range for your risk profile: Conservative 10–20%, Balanced 20–40%, Growth 40% and more.">
+      <div class="rk-l"><span class="app-label">Risk level</span><div class="rk-score"><b id="rkScore">&mdash;</b></div><small class="rk-sub">Max drawdown</small><span class="rk-vs" id="rkVs"></span></div>
       <div class="rk-m">
-        <div class="rk-scale" id="rkScale"><i class="rk-band" id="rkBand"></i></div>
-        <div class="rk-ticks"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
-        <div class="rk-legend"><span>Calm</span><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span><span>Very risky</span></div>
+        <div class="dz" id="rkScale"><i class="dz-z z0" data-p=""></i><i class="dz-z z1" data-p="CONSERVATIVE"></i><i class="dz-z z2" data-p="BALANCED"></i><i class="dz-z z3" data-p="GROWTH"></i><i class="rk-band" id="rkBand"></i><i class="dz-pin" id="rkPin"></i></div>
+        <div class="dz-t"><span style="left:0">0%</span><span style="left:12.5%">10%</span><span style="left:25%">20%</span><span style="left:50%">40%</span><span style="left:100%">80%+</span></div>
+        <div class="dz-n"><span style="left:18.75%">Conservative</span><span style="left:37.5%">Balanced</span><span style="left:75%">Growth</span></div>
+        <div class="rk-legend"><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span></div>
       </div>
-      <div class="rk-h"><svg class="rk-hist" id="rkHist" viewBox="0 0 200 64" preserveAspectRatio="none" aria-hidden="true"></svg><div class="tf rk-tf" id="rkSpan"><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div></div>
     </div>
 
     <div class="app-card pp-card" id="ppCard" hidden>
@@ -8639,27 +8641,22 @@ tick();setInterval(tick,5000);})();
   }
   function riskCard(){
     var card=$('rkCard'); if(!card) return;
-    var es=(F.data&&F.data.engineStats)||null, va=F.viewedAccount&&F.viewedAccount();
-    if(!es || es.riskScore==null || (es.accountId && va && va.accountId && es.accountId!==va.accountId)){ card.hidden=true; return; }
-    var sc=Math.max(1,Math.min(10,es.riskScore)), R=es.riskRange||{}, lo=+R.typical_min, hi=+R.typical_max, vs=String(es.riskVs||'').toUpperCase();
-    var sEl=$('rkScale'), cur=Math.round(sc);
-    if(!sEl.querySelector('.rk-seg')){ var h=''; for(var k=1;k<=10;k++) h+='<i class="rk-seg z'+(k<=3?'1':(k<=6?'2':'3'))+'" data-k="'+k+'"></i>'; sEl.insertAdjacentHTML('beforeend',h); }
-    sEl.querySelectorAll('.rk-seg').forEach(function(g){ var k=+g.getAttribute('data-k'); g.classList.toggle('on',k<=cur); g.classList.toggle('cur',k===cur); });
-    $('rkScore').textContent=(Math.round(sc*10)/10).toString();
+    var es=F.es?F.es():null, va=F.viewedAccount&&F.viewedAccount();
+    if(!es || es.ddClosedPct==null){ card.hidden=true; return; }
+    var dd=+es.ddClosedPct, prof=String((va&&va.riskTier)||(es.riskRange&&es.riskRange.profile)||'').toUpperCase().replace(/_.*$/,'');
+    var BANDS={CONSERVATIVE:[10,20],BALANCED:[20,40],GROWTH:[40,null]}, bd=BANDS[prof]||null;
+    $('rkScore').textContent=dd.toFixed(2)+'%';
+    var P=function(v){ return Math.min(100,Math.max(0,v/80*100)); };
+    $('rkPin').style.left=P(dd)+'%';
     var band=$('rkBand');
-    if(isFinite(lo)&&isFinite(hi)&&hi>=lo){ band.hidden=false; band.style.left='calc('+((lo-1)*10)+'% - 3px)'; band.style.width='calc('+((hi-lo+1)*10)+'% + 2px)'; } else band.hidden=true;
+    if(bd){ band.hidden=false; band.style.left=P(bd[0])+'%'; band.style.width=(P(bd[1]==null?80:bd[1])-P(bd[0]))+'%'; } else band.hidden=true;
+    $('rkScale').querySelectorAll('.dz-z').forEach(function(z){ z.classList.toggle('mine', !!prof && z.getAttribute('data-p')===prof); });
+    var vs=!bd?'':(dd<bd[0]?'BELOW':((bd[1]!=null&&dd>bd[1])?'ABOVE':'WITHIN'));
     var vsTxt={WITHIN:'Within the normal range',ABOVE:'Above the normal range',BELOW:'Below the normal range'}[vs]||'';
     var el=$('rkVs'); el.textContent=vsTxt?tr(vsTxt):''; el.className='rk-vs rk-'+(vs.toLowerCase()||'none');
     card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
-    var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[String(R.profile||'').toUpperCase()]||'';
-    $('rkRange').textContent=(pn?tr(pn)+' · ':'')+(isFinite(lo)&&isFinite(hi)?lo+'–'+hi:'');
-    var rr=F.rkRange||0, from=0; if(rr){ var fd=new Date(); fd.setMonth(fd.getMonth()-rr); from=fd.getTime(); }
-    var H=(es.riskHistory||[]).filter(function(x){ if(!x||x.score==null) return false; var t=Date.parse(x.date); return !from||!isFinite(t)||t>=from; }), svg=$('rkHist');
-    if(H.length>1){ var W=200,Hh=64, y=function(v){ return (Hh-6-(Math.max(1,Math.min(10,+v))-1)/9*(Hh-12)).toFixed(1); };
-      var d=H.map(function(x,i){ return (i?'L':'M')+(i/(H.length-1)*W).toFixed(1)+' '+y(x.score); }).join(' ');
-      var bandSvg=(isFinite(lo)&&isFinite(hi))?'<rect x="0" y="'+y(hi)+'" width="'+W+'" height="'+(y(lo)-y(hi)).toFixed(1)+'" fill="rgba(212,175,55,.16)"/>':'';
-      svg.innerHTML=bandSvg+'<path d="'+d+'" fill="none" stroke="#152a7a" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';
-      svg.parentNode.hidden=false; } else svg.parentNode.hidden=true;
+    var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[prof]||'';
+    $('rkRange').textContent=bd?(tr(pn)+' · '+bd[0]+(bd[1]!=null?'–'+bd[1]+'%':'%+')):'—';
     card.hidden=false;
   }
   (function(){ var tf=$("rkSpan"); if(!tf) return; tf.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; tf.querySelectorAll('button').forEach(function(x){x.classList.toggle('is-on',x===b);}); F.rkRange=+b.dataset.r; riskCard(); }); })();
