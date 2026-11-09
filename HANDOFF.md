@@ -561,3 +561,10 @@ silently change them.
 4. If the task touches the backend, ask for the programmer's endpoint and response format
    first; that chat is separate and its decisions are not visible here.
 5. If the task is a launch step, raise section 9.3 before building anything that takes money.
+
+
+## Client ID (9 Nov 2026)
+Every customer gets a Client ID 'FTM-XXXX-XXXXXX' made from the first 10 hex characters of their Supabase user id (stable for the life of the login). It is shown in the account menu, side menu, Accounts page and on statements. If FTM ENGINE later issues its own customer number, switch F.loadCid to it.
+
+## Statement PDF
+Accounts > Account activity > Download statement builds the PDF in the browser with /vendor/html2pdf.bundle.min.js (html2pdf.js 0.10.1, MIT, self-hosted). If the library fails to load it falls back to the print window.

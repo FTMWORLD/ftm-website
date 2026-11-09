@@ -456,7 +456,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .cal-sum{display:flex;gap:22px;margin-left:auto;flex-wrap:wrap}
   .cal-sum span{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
   .cal-sum b{display:block;font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:2px}
-  .cal-wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:start}
+  .cal-wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:stretch}
+  .cal-wrap>.cal-card{display:flex;flex-direction:column}.cal-wrap>.cal-card .cal-grid{flex:1}
+  .cal-dist{margin-top:20px}.cal-dist .dist-chart{height:170px}
   .cal-card{padding:20px}
   .cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr)) minmax(0,1.15fr);gap:6px}
   .cal-grid{container-type:inline-size}
@@ -1924,6 +1926,15 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .al-amt{font-weight:800;font-variant-numeric:tabular-nums;text-align:right}.al-amt.up{color:#16a34a}.al-amt.dn{color:#E5323E}
 .al-empty{color:#5b6378;padding:14px 0}
 .al-more{margin-top:12px}
+.um-cid,.ac-cid{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--muted)}
+.um-cid[hidden],.ac-cid[hidden],.sb-cid[hidden]{display:none!important}
+.um-cid b,.ac-cid b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;letter-spacing:.04em;color:var(--ink);background:rgba(212,175,55,.14);padding:2px 8px;border-radius:6px}
+.ac-cid{margin:4px 0 6px}.ac-cid span{font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10.5px}
+.cid-copy{display:inline-grid;place-content:center;width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:var(--muted);cursor:pointer}
+.cid-copy svg{width:14px;height:14px}.cid-copy:hover{background:rgba(11,20,64,.06);color:var(--ink)}.cid-copy.is-ok{color:#15803d}
+.sb-cid{display:block;font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}.sb-cid em{font-style:normal;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#E3B62F;letter-spacing:.04em}
+.st-dl.is-busy{pointer-events:none;opacity:.8}.st-dl.is-busy svg{animation:stSpin 1s linear infinite}
+@keyframes stSpin{to{transform:rotate(360deg)}}
 .st-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .st-bar[hidden]{display:none!important}
 .st-bar select{height:36px;border-radius:99px;border:1px solid rgba(11,20,64,.16);padding:0 30px 0 14px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#fff}
@@ -1931,6 +1942,16 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .st-dl svg{width:16px;height:16px;color:#E3B62F}
 .st-dl:hover{background:#152a7a}
 .st-dl[disabled]{opacity:.5;cursor:not-allowed}
+.cl-list{display:none}
+.cl-list li{cursor:pointer}
+@media (max-width:600px){
+  .cl-list{display:block}
+  #mClosedRows{display:none}
+  .app-scroll:has(#mClosedRows){display:none}
+  .rg .rg-foot{flex-direction:column;align-items:flex-start;gap:2px}
+  .rg .rg-foot b{font-size:13px}
+  .dx-hero .dx-go{align-self:flex-start}
+}
 .pp-card{margin-top:18px}
 .pp-card[hidden]{display:none!important}
 .pp-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 18px;flex-wrap:wrap;margin-bottom:16px}
@@ -2058,8 +2079,10 @@ h3.has-tip{cursor:help}
 #appView.has-acct .cx-card:not(.cx-open) .cx-open-btn{display:inline-flex}
 @media (min-width:901px){
 #appView .app-view[data-view="metrics"] .app-cols{display:block}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:24px;align-items:start}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card{margin:0}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:24px;align-items:stretch}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card{margin:0;height:100%;display:flex;flex-direction:column}
+@media (max-width:1199px){#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child{grid-template-columns:repeat(2,minmax(0,1fr))}#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card:last-child{grid-column:1/-1}}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card>.app-actions,#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card>.cx-lock{margin-top:auto}
 }
 .cv-card .app-status{margin-bottom:10px}
 .cv-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px 24px;flex-wrap:wrap;margin-bottom:14px}
@@ -2875,7 +2898,7 @@ h3.has-tip{cursor:help}
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em><span class="um-cid" id="appCidW" hidden><small>Client ID</small> <b id="appCid"></b><button type="button" class="cid-copy" aria-label="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></span></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -2890,7 +2913,7 @@ h3.has-tip{cursor:help}
       <button class="app-nav-item" data-view="charts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4v16M17 4v16M4 9h6M14 14h6"/></svg><span>Charts</span></button>
       <div class="sb-foot">
         <button type="button" class="sb-pill js-app-ai"><i></i>Ask here</button>
-        <div class="sb-user"><span class="sb-av" id="sbAv">F</span><div><b id="sbEmail">&mdash;</b><small>FTM client</small></div></div>
+        <div class="sb-user"><span class="sb-av" id="sbAv">F</span><div><b id="sbEmail">&mdash;</b><small>FTM client</small><span class="sb-cid" id="sbCidW" hidden><small>Client ID</small> <em id="sbCid"></em></span></div></div>
       </div>
     </nav>
     <div class="app-content">
@@ -3050,6 +3073,7 @@ h3.has-tip{cursor:help}
         <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
         <tbody id="mClosedRows"></tbody>
       </table></div>
+      <ul class="al-list cl-list" id="mClosedList"></ul>
       <div class="xp-row" id="clXp" hidden><button type="button" class="xp-btn" id="clMore"><span>Show more</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button><button type="button" class="xp-btn xp-up" id="clLess" hidden><span>Show less</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 15 6-6 6 6"/></svg></button></div>
     </div>
 
@@ -3138,13 +3162,13 @@ h3.has-tip{cursor:help}
                 <svg class="daily-chart" id="dailyChart" viewBox="0 0 600 150" preserveAspectRatio="none" aria-hidden="true"></svg>
                 <div class="app-legend"><span id="dailyFrom">&mdash;</span><span id="dailyTo">&mdash;</span></div>
               </div>
-              <div class="app-card">
-                <span class="app-label">Trade distribution by hour</span>
-                <p class="hint" style="margin-top:6px">Profit and loss grouped by the hour a trade closed.</p>
-                <svg class="dist-chart" id="distChart" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg>
-                <div class="app-legend"><span>00:00</span><span>23:00</span></div>
-              </div>
             </div>
+          </div>
+          <div class="app-card cal-dist">
+            <span class="app-label">Trade distribution by hour</span>
+            <p class="hint" style="margin-top:6px">Profit and loss grouped by the hour a trade closed.</p>
+            <svg class="dist-chart" id="distChart" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg>
+            <div class="app-legend"><span>00:00</span><span>23:00</span></div>
           </div>
         </div>
       </section>
@@ -3377,7 +3401,7 @@ h3.has-tip{cursor:help}
             </div>
           </div>
           <div class="app-card acct-list-card">
-            <div class="acct-head"><div><h3>Connected accounts <small class="acct-limit" id="acctLimit" hidden></small></h3><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
+            <div class="acct-head"><div><h3>Connected accounts <small class="acct-limit" id="acctLimit" hidden></small></h3><p class="ac-cid" id="acCidW" hidden><span>Client ID</span> <b id="acCid"></b><button type="button" class="cid-copy" aria-label="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></p><p class="hint">Add as many accounts as you like. FTM MACHINE trades on one of them at a time.</p></div><button class="btn btn-red btn-sm" type="button" id="acctAdd">Add account</button></div>
             <div class="app-scroll"><table class="app-trades acct-table">
               <thead><tr><th>Name</th><th>Number</th><th>Provider</th><th>Currency</th><th>Server</th><th>Balance</th><th>Running P/L</th><th>Last reported</th><th>FTM MACHINE</th></tr></thead>
               <tbody id="acctRows"></tbody>
@@ -5114,9 +5138,10 @@ h3.has-tip{cursor:help}
     }
 
     var closedRowsCache=[], clShow=5;
+    F.mergeEngineTrades=function(){ try{ var L=closedList(); if(L.length>(F.data.closed||[]).length) F.data.closed=L.slice().reverse(); }catch(e){} };
     function closedList(){
-      var C=(F.data.closed||[]).slice(), es=F.data.engineStats;
-      if(es && es.deals && es.deals.length){
+      var C=(F.data.closed||[]).slice(), es=F.data.engineStats, va=F.viewedAccount&&F.viewedAccount();
+      if(es && es.deals && es.deals.length && (es.historyTotal==null || (es.rows||0)>=es.historyTotal*0.98) && (!es.accountId || !va || !va.accountId || es.accountId===va.accountId)){
         var outs=es.deals.filter(function(x){return !x.open && x.t;});
         if(outs.length>C.filter(function(t){return t.closeTime;}).length){
           var ins={}; es.deals.forEach(function(x){ if(x.open && x.pos) ins[x.pos]=x; });
@@ -5125,7 +5150,7 @@ h3.has-tip{cursor:help}
             var t=(x.pos&&byRef[String(x.pos)]) || C.filter(function(c){ return !used[c.closeTime+'|'+c.symbol] && c.closeTime && Math.abs(c.closeTime-x.t)<3000 && (!x.symbol||c.symbol===x.symbol); })[0];
             if(t){ used[t.closeTime+'|'+t.symbol]=1; return t; }
             var o=x.pos&&ins[x.pos];
-            return {symbol:x.symbol, dir:x.side==='SELL'?'BUY':(x.side==='BUY'?'SELL':x.side), lots:x.lots, openTime:o?o.t:null, closeTime:x.t, open:o&&o.price!=null?o.price:null, close:x.price!=null?x.price:null, pl:x.pl+(o?o.pl:0), commission:null, swap:null, label:null};
+            return {symbol:x.symbol, dir:x.side==='SELL'?'BUY':(x.side==='BUY'?'SELL':x.side), lots:x.lots, openTime:o?o.t:x.t, closeTime:x.t, open:o&&o.price!=null?o.price:null, close:x.price!=null?x.price:null, pl:x.pl+(o?o.pl:0), commission:o?o.pl:null, swap:null, label:null, positionRef:x.pos||null, fromEngine:true};
           });
           C=out;
         }
@@ -5145,6 +5170,10 @@ h3.has-tip{cursor:help}
         var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
         return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+tlab(t)+'</td><td>'+(t.dir||'&mdash;')+'</td><td>'+(t.lots!=null?t.lots.toFixed(2):'&mdash;')+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
+      var ul=document.getElementById('mClosedList');
+      if(ul){ var fm=function(ts){ return ts==null?'':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
+        var trw=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+        ul.innerHTML=recent.map(function(t,i){ var up=t.pl!=null&&t.pl>=0; return '<li class="tr-click" data-i="'+i+'" tabindex="0"><span class="al-ic trade">⇅</span><div><b>'+(t.symbol||'')+' · '+trw(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+tlab(t)+'</b><small>'+fm(t.closeTime)+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</small></div><span class="al-amt '+(t.pl==null?'':(up?'up':'dn'))+'">'+(t.pl==null?'&mdash;':((up?'+':'')+cur(t.pl)))+'</span></li>'; }).join(''); }
       set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'. Click a row for details.' : 'No trades closed yet.');
     }
 
@@ -5183,6 +5212,8 @@ h3.has-tip{cursor:help}
       var clM=document.getElementById('clMore'), clL=document.getElementById('clLess');
       if(clM) clM.addEventListener('click',function(){ clShow+=20; drawClosed(); });
       if(clL) clL.addEventListener('click',function(){ clShow=5; drawClosed(); var c=clL.closest('.app-card'); if(c&&c.getBoundingClientRect().top<0) c.scrollIntoView({block:'start',behavior:'smooth'}); });
+      var cl=document.getElementById('mClosedList');
+      if(cl) cl.addEventListener('click',function(e){ var row=e.target.closest('.tr-click'); if(!row)return; var t=closedRowsCache[+row.dataset.i]; if(t)openTradeModal(t); });
       var tb=document.getElementById('mClosedRows');
       if(tb){
         tb.addEventListener('click',function(e){
@@ -5200,6 +5231,7 @@ h3.has-tip{cursor:help}
 
     F.curveRange='0';
     F.render = function(){
+      if(F.mergeEngineTrades) F.mergeEngineTrades();
       var m=F.metrics();
       set('mBalance', cur0(m.balance));
       set('mEquity', cur0(m.equity));
@@ -5402,6 +5434,7 @@ h3.has-tip{cursor:help}
         fetchStats: function(accountId){
           return call('/accounts/'+accountId+'/stats?limit=2000').then(function(j){
             if(!j || j.pending) return null;
+            var __acc=accountId;
             var flows=(j.history||[]).filter(function(r){ return String(r.type||r.deal_type||'').toUpperCase()==='BALANCE'; }).map(function(r){
               var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at;
               var amt=num(r.net!=null?r.net:(r.profit!=null?r.profit:(r.amount!=null?r.amount:r.net_profit)));
@@ -5418,7 +5451,7 @@ h3.has-tip{cursor:help}
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
-                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null };
+                     ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc };
           });
         },
         fetchPositions: function(accountId){
@@ -5774,7 +5807,7 @@ h3.has-tip{cursor:help}
       return F.moneyIn(n,dp,currency===undefined ? F.data.account.currency : currency);
     }
     function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
-    function balAt(t){ var m=F.metrics(), b=m.balance; (F.data.closed||[]).forEach(function(x){ if(x.closeTime>t && x.pl!=null) b-=x.pl; }); return b; }
+    function balAt(t){ var cv=F.metrics().curve||[], b=null; for(var i=0;i<cv.length;i++){ if(cv[i].t<t) b=cv[i].v; else break; } return b===null?(cv.length?cv[0].v:0):b; }
     function sgnU(pl,t,dp){ if(F.unit==='percent'){ var base=balAt(t); return base>0 ? ((pl>=0?'+':'')+(pl/base*100).toFixed(2)+'%') : '—'; } return signed(pl,dp); }
     function el(id){ return document.getElementById(id); }
     function key(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -5782,12 +5815,13 @@ h3.has-tip{cursor:help}
     function days(){
       var closed=F.data.closed.slice().sort(function(a,b){return a.closeTime-b.closeTime;});
 
-      var map={}, order=[], run=F.metrics().anchor;
+      var map={}, order=[], cv=F.metrics().curve||[];
+      var startOf=function(ts){ var d0=new Date(ts); d0.setHours(0,0,0,0); var t0=d0.getTime(), b=null, inflow=0; for(var i=0;i<cv.length;i++){ if(cv[i].t<t0) b=cv[i].v; else { if(cv[i].t<t0+864e5 && cv[i].flow>0) inflow+=cv[i].flow; } } if(b===null) b=cv.length?cv[0].v:0; return Math.max(0,b)+(b>0?0:inflow); };
       closed.forEach(function(t){
         var k=key(t.closeTime), known=(t.pl!==null && t.pl!==undefined);
-        if(!map[k]){ map[k]={pl:null,trades:0,wins:0,unknownCount:0,start:run}; order.push(k); }
+        if(!map[k]){ map[k]={pl:null,trades:0,wins:0,unknownCount:0,start:startOf(t.closeTime)}; order.push(k); }
         map[k].trades++;
-        if(known){ map[k].pl=(map[k].pl||0)+t.pl; if(t.pl>0)map[k].wins++; run+=t.pl; }
+        if(known){ map[k].pl=(map[k].pl||0)+t.pl; if(t.pl>0)map[k].wins++; }
         else { map[k].unknownCount++; }
       });
       return {map:map, order:order};
@@ -6032,7 +6066,9 @@ h3.has-tip{cursor:help}
 
     function renderPerfX(){
       var cov=F.data.closed.filter(function(t){return t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
-      var m=F.metrics(), A=m.anchor>0?m.anchor:(m.deposits-m.withdrawals), bal=A, has=cov.length>0&&A>0;
+      var m=F.metrics(), A=(m.curve&&m.curve.length)?m.curve[0].v:(m.anchor>0?m.anchor:(m.deposits-m.withdrawals)), bal=A, has=cov.length>0;
+      var FL=(F.data.flows||[]).filter(function(f){return f.t&&f.amt;}).map(function(f){return {t:f.t,amt:f.amt};});
+      var EV=cov.map(function(t){return {t:t.closeTime,tr:t};}).concat(FL).sort(function(a,b){return a.t-b.t;});
       var loc=window.FTM_LOCALE||'en-GB', dS=function(t){return new Date(t).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'});};
       var mS=function(k){return new Date(k+'-01T00:00:00').toLocaleDateString(loc,{month:'short',year:'numeric'});};
       var pc=function(v){return (v>=0?'+':'')+v.toFixed(2)+'%';};
@@ -6043,19 +6079,21 @@ h3.has-tip{cursor:help}
       function facts(id,rows){ el(id).innerHTML=rows.map(function(r){return '<div><dt>'+r[0]+'</dt><dd>'+(has?r[1]:'&mdash;')+'</dd></div>';}).join(''); }
 
       var tr=[], G={d:{},w:{},m:{},y:{}}, ord={d:[],w:[],m:[],y:[]};
-      function grp(k,key,b,pl){ if(!G[k][key]){G[k][key]={s:b,pl:0,n:0};ord[k].push(key);} G[k][key].pl+=pl; G[k][key].n++; }
-      cov.forEach(function(t){ var d=new Date(t.closeTime), day=d.toISOString().slice(0,10);
-        var mo=new Date(d); mo.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7));
+      function gk(k,key,b){ if(!G[k][key]){G[k][key]={s:Math.max(0,b),pl:0,n:0,dep:0,wd:0};ord[k].push(key);} return G[k][key]; }
+      function keys(ts){ var d=new Date(ts), day=d.toISOString().slice(0,10), mo=new Date(d); mo.setUTCDate(d.getUTCDate()-((d.getUTCDay()+6)%7)); return {d:day,w:mo.toISOString().slice(0,10),m:day.slice(0,7),y:day.slice(0,4)}; }
+      EV.forEach(function(e){ var K=keys(e.t);
+        if(!e.tr){ ['d','w','m','y'].forEach(function(k){ var g=gk(k,K[k],bal); if(e.amt>0) g.dep+=e.amt; else g.wd+=-e.amt; }); bal+=e.amt; return; }
+        var t=e.tr;
         tr.push({p:bal>0?t.pl/bal*100:0, h:(t.closeTime-t.openTime)/36e5});
-        grp('d',day,bal,t.pl); grp('w',mo.toISOString().slice(0,10),bal,t.pl); grp('m',day.slice(0,7),bal,t.pl); grp('y',day.slice(0,4),bal,t.pl);
+        ['d','w','m','y'].forEach(function(k){ var g=gk(k,K[k],bal); g.pl+=t.pl; g.n++; });
         bal+=t.pl; });
-      function ret(k){ return ord[k].map(function(key){var g=G[k][key];return {k:key,r:g.s>0?g.pl/g.s*100:0,pl:g.pl,s:g.s};}); }
+      function ret(k){ return ord[k].filter(function(key){return G[k][key].n>0;}).map(function(key){var g=G[k][key], base=g.s+g.dep;return {k:key,r:base>0?g.pl/base*100:0,pl:g.pl,s:g.s,e:g.s+g.dep-g.wd+g.pl};}); }
       var Y=ret('y'), M=ret('m'), W=ret('w'), D=ret('d');
 
       el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
           var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.s+y.pl,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="pl-up">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="pl-down">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.e,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="pl-up">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="pl-down">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
          :'<tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -6080,7 +6118,7 @@ h3.has-tip{cursor:help}
       el('pxHold').innerHTML=bars(hb.map(function(b){return {l:b[2],n:tr.filter(function(x){return x.h>=b[0]&&x.h<b[1];}).length};}));
 
       var eps=[], pk=A, pkT=cov.length?cov[0].openTime:0, cur=null; bal=A;
-      cov.forEach(function(t){ bal+=t.pl;
+      EV.forEach(function(e){ if(!e.tr){ bal+=e.amt; pk+=e.amt; return; } var t=e.tr; bal+=t.pl;
         if(bal>=pk){ if(cur){cur.rec=t.closeTime;eps.push(cur);cur=null;} pk=bal; pkT=t.closeTime; }
         else { var dd=pk>0?(pk-bal)/pk*100:0; if(!cur)cur={pk:pkT,dd:0}; if(dd>cur.dd){cur.dd=dd;cur.lo=t.closeTime;} } });
       if(cur)eps.push(cur);
@@ -8350,8 +8388,9 @@ tick();setInterval(tick,5000);})();
     if(!va || !E.length){ card.hidden=true; return; }
     var bal=m.balance, now=Date.now(), sod=new Date(); sod.setHours(0,0,0,0);
     var P=[['Today',sod.getTime()],['7 days',now-7*864e5],['30 days',now-30*864e5],['All time',0]];
+    var CV=m.curve||[];
     var R=P.map(function(p){
-      var v=E.filter(function(t){return t.t>=p[1];}).reduce(function(a,t){return a+t.pl;},0);
+      var v=0; for(var ci=1;ci<CV.length;ci++){ if(CV[ci].t>=p[1] && !CV[ci].flow) v+=CV[ci].v-CV[ci-1].v; }
       var inP=(d.flows||[]).filter(function(f){return f.t>=p[1];});
       var startBal=bal-v-inP.reduce(function(a,f){return a+f.amt;},0);
       var capital=Math.max(0,startBal)+inP.filter(function(f){return f.amt>0;}).reduce(function(a,f){return a+f.amt;},0);
@@ -8438,33 +8477,77 @@ tick();setInterval(tick,5000);})();
       var dir=document.documentElement.getAttribute('dir')||'ltr', lang=document.documentElement.getAttribute('lang')||'en';
       var css='@page{size:A4;margin:14mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#0B1440;font-size:11.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
         '.hd{background:#0B1440;color:#fff;border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}.lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.02em}.lg img{width:36px;height:36px;border-radius:9px}'+
-        '.hd h1{margin:0;font-size:18px;color:#E3B62F;font-weight:800}.hd p{margin:4px 0 0;color:rgba(255,255,255,.75);font-size:11px}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}'+
+        '.hd h1{margin:0;font-size:18px;color:#E3B62F;font-weight:800}.hd p{margin:4px 0 0;color:rgba(255,255,255,.75);font-size:11px}.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}'+
         '.meta div{border:1px solid #e3e6f0;border-radius:10px;padding:9px 12px}.meta span,.sum span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7393}.meta b{display:block;margin-top:3px;font-size:12px}'+
         '.sum{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid #e3e6f0;border-radius:12px;overflow:hidden;margin-bottom:18px}.sum div{padding:12px;border-inline-end:1px solid #e3e6f0}.sum div:last-child{border:0;background:#fbf6e4}.sum b{display:block;margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}'+
         'table{width:100%;border-collapse:collapse}th{text-align:start;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b7393;border-bottom:2px solid #0B1440;padding:7px 6px}td{padding:7px 6px;border-bottom:1px solid #eceef5;font-variant-numeric:tabular-nums}tr{break-inside:avoid}'+
         '.n{text-align:end;white-space:nowrap}.up{color:#15803d}.dn{color:#c81e2b}.ft{margin-top:18px;padding-top:10px;border-top:2px solid #D4AF37;display:flex;justify-content:space-between;gap:12px;color:#6b7393;font-size:10px}';
       var h='<!doctype html><html lang="'+esc(lang)+'" dir="'+esc(dir)+'"><head><meta charset="utf-8"><title>'+esc(tr('Account statement')+' · '+label)+'</title><style>'+css+'</style></head><body>'+
-        '<div class="hd"><div class="lg"><img src="https://www.ftmwealthnation.com/email-logo.png" alt="">FTM</div><div style="text-align:end"><h1>'+esc(tr('Account statement'))+'</h1><p>'+esc(label)+'</p></div></div>'+
-        '<div class="meta"><div><span>'+esc(tr('Account'))+'</span><b>'+esc((va.name||'')+' '+(va.number||''))+'</b></div><div><span>'+esc(tr('Currency'))+'</span><b>'+esc(cur)+'</b></div><div><span>'+esc(tr('Generated'))+'</span><b>'+esc(fd(Date.now()))+'</b></div><div><span>'+esc(tr('Reference'))+'</span><b>'+esc(ref)+'</b></div></div>'+
+        '<div class="hd"><div class="lg"><img src="'+(location.protocol.indexOf('http')===0?location.origin:'https://www.ftmwealthnation.com')+'/email-logo.png" alt="">FTM</div><div style="text-align:end"><h1>'+esc(tr('Account statement'))+'</h1><p>'+esc(label)+'</p></div></div>'+
+        '<div class="meta"><div><span>'+esc(tr('Client'))+'</span><b>'+esc((F.session&&(F.session.name||F.session.email))||'\u2014')+'</b></div><div><span>'+esc(tr('Client ID'))+'</span><b>'+esc(F._cid||'\u2014')+'</b></div><div><span>'+esc(tr('Account'))+'</span><b>'+esc((va.name||'')+' '+(va.number||''))+'</b></div><div><span>'+esc(tr('Currency'))+'</span><b>'+esc(cur)+'</b></div><div><span>'+esc(tr('Generated'))+'</span><b>'+esc(fd(Date.now()))+'</b></div><div><span>'+esc(tr('Reference'))+'</span><b>'+esc(ref)+'</b></div></div>'+
         '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div><div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
         '<table><thead><tr><th>'+esc(tr('Date'))+'</th><th>'+esc(tr('Details'))+'</th><th class="n">'+esc(tr('Amount'))+'</th><th class="n">'+esc(tr('Running balance'))+'</th></tr></thead><tbody>'+
         rows.map(function(e){ return '<tr><td>'+esc(fd(e.t))+'</td><td>'+esc(det(e))+'</td><td class="n '+(e.amt>0?'up':(e.amt<0?'dn':''))+'">'+S(e.amt)+'</td><td class="n">'+M(e.after)+'</td></tr>'; }).join('')+
         '</tbody></table><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(1):'0.0')+'%</span></div></body></html>';
+      F._stFile='FTM-statement-'+(v==='all'?'all-time':v)+'.pdf';
       return h;
     }
     F.statementHtml=build;
-    btn.addEventListener('click',function(){
-      var html=build(), fr=document.getElementById('stFrame');
-      if(fr) fr.remove();
+    function printIt(html){
+      var fr=document.getElementById('stFrame'); if(fr) fr.remove();
       fr=document.createElement('iframe'); fr.id='stFrame'; fr.setAttribute('aria-hidden','true'); fr.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden';
       document.body.appendChild(fr);
       var doc=fr.contentWindow.document; doc.open(); doc.write(html); doc.close();
-      var go=function(){ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){ var w=window.open('','_blank'); if(w){ w.document.write(html); w.document.close(); w.focus(); w.print(); } } };
-      var img=doc.querySelector('img'); if(img && !img.complete){ img.onload=img.onerror=function(){ setTimeout(go,50); }; setTimeout(go,1500); } else setTimeout(go,50);
+      setTimeout(function(){ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){} },400);
+    }
+    function save(blob,name){
+      var u=URL.createObjectURL(blob), a=document.createElement('a'); a.href=u; a.download=name; a.rel='noopener'; document.body.appendChild(a); a.click();
+      setTimeout(function(){ a.remove(); URL.revokeObjectURL(u); },4000);
+    }
+    F.statementPdf=function(){
+      var html=build(), name=F._stFile||'FTM-statement.pdf';
+      return new Promise(function(res,rej){
+        var fr=document.createElement('iframe'); fr.setAttribute('aria-hidden','true'); fr.style.cssText='position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0';
+        document.body.appendChild(fr);
+        var w=fr.contentWindow, doc=w.document; doc.open(); doc.write(html.replace('</body>','<script src="/vendor/html2pdf.bundle.min.js"><\/script></body>')); doc.close();
+        var tries=0;
+        (function wait(){
+          if(w.html2pdf){
+            var el=doc.body; el.style.width='730px'; el.style.margin='0';
+            w.html2pdf().set(w.JSON.parse('{"margin":[8,8,10,8],"image":{"type":"jpeg","quality":0.96},"html2canvas":{"scale":2,"useCORS":true,"backgroundColor":"#ffffff"},"jsPDF":{"unit":"mm","format":"a4","orientation":"portrait"},"pagebreak":{"mode":["css","legacy"],"avoid":"tr"}}')).from(el).outputPdf('blob')
+              .then(function(b){ fr.remove(); res({blob:b,name:name}); }).catch(function(e){ fr.remove(); rej(e); });
+            return;
+          }
+          if(++tries>80){ fr.remove(); rej(new Error('pdf lib')); return; }
+          setTimeout(wait,100);
+        })();
+      });
+    };
+    btn.addEventListener('click',function(){
+      if(btn.classList.contains('is-busy')) return;
+      btn.classList.add('is-busy'); btn.setAttribute('aria-busy','true');
+      var done=function(){ btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); };
+      F.statementPdf().then(function(r){ save(r.blob,r.name); done(); }).catch(function(){ done(); printIt(build()); });
     });
     F._stFill=fill;
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){} return r; };
+  (function(){
+    function cidOf(tok){ try{ var p=JSON.parse(atob(String(tok).split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); var h=String(p.sub||'').replace(/[^0-9a-fA-F]/g,'').toUpperCase(); return h.length>=10?('FTM-'+h.slice(0,4)+'-'+h.slice(4,10)):null; }catch(e){ return null; } }
+    function show(){
+      var c=F._cid||'';
+      [['appCidW','appCid'],['sbCidW','sbCid'],['acCidW','acCid']].forEach(function(p){ var w=$(p[0]), b=$(p[1]); if(w) w.hidden=!c; if(b) b.textContent=c; });
+    }
+    F.loadCid=function(){
+      var em=F.session&&F.session.email;
+      if(!em){ F._cid=null; F._cidFor=null; show(); return; }
+      if(F._cidFor===em && F._cid){ show(); return; }
+      if(!F.auth||!F.auth.getAccessToken||F._cidBusy) return;
+      F._cidBusy=true;
+      Promise.resolve(F.auth.getAccessToken()).then(function(t){ var c=t&&cidOf(t); if(c){ F._cid=c; F._cidFor=em; } show(); }).catch(function(){}).then(function(){ F._cidBusy=false; });
+    };
+    document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.cid-copy'); if(!b||!F._cid) return; try{ navigator.clipboard.writeText(F._cid); b.classList.add('is-ok'); setTimeout(function(){ b.classList.remove('is-ok'); },1400); }catch(x){} });
+  })();
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); }catch(e){} return r; };
   try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>

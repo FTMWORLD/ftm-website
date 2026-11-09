@@ -22,6 +22,9 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Where is my Client ID: account menu (top right), under your name in the side menu, and on the Accounts page next to Connected accounts. It is also printed on every account statement. Tap the copy icon to copy it.
+- Download statement opened a print window: it now downloads a PDF file straight away (FTM-statement-<month>.pdf).
+- Performance or calendar percentages looked far too large (e.g. -3000%): they were measured before the first deposit. They are now measured on the money in the account, deposits included.
 - Recently closed trades in the wrong order or missing the latest close: the list now comes from the FTM engine's full deal history and always starts with the very last trade closed.
 - Need an account statement (for tax, a bank or your own records): Accounts > Account activity, pick a month or All time, then press Download statement. Choose Save as PDF in the print window. It shows opening balance, deposits, withdrawals, trading result, closing balance and every line, straight from the FTM engine.
 - Win streak showed 0: it showed only the current run. The Dashboard now shows the best win streak (trades and days in a row), with the current streak underneath. Touch or hover any figure for a short explanation of how it is counted.
