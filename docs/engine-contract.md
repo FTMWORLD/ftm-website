@@ -4,6 +4,24 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-09 — STATISTICS MATHEMATICALLY RIGHT FOR EVERY ACCOUNT (commit bdaa55f, API restarted 13:24 Berlin)
+
+Gospel (via the website session): the statistics must be mathematically right for every account. GET
+/customer/accounts/:id/stats, every account and the master preview id:
+- Deposits, withdrawals and credit are never a drawdown or a gain: each moves the running peak by the same amount
+  (Tanaya's account showed 20.42 % because of 310 withdrawn; now 1.03 %, her real worst dip).
+- max_drawdown_pct is EQUITY based from exact readings only (every account read, every Sender report on the master, the
+  live equity, every moment with no trade open). New: max_drawdown_basis, max_drawdown_closed_balance_pct and
+  max_drawdown_closed_balance (closed balance deal by deal, same rule), peak_balance + peak_balance_at,
+  peak_equity + peak_equity_at.
+- Master preview: the master's closes the Sender reported after the last account read are added to history (source
+  MASTER_EVENT, profit = the balance change at that close) and balance / equity are the Sender's, only when they add up
+  exactly to the Sender's balance (data_source STATS_SYNC+SENDER, sender_tail). It showed the 8 Nov 23:58 UTC read before.
+- history[] rows: profit, commission, swap, fee are separate; net = their sum. ?limit= default 200, max 2000; history_total
+  is the full count.
+Proof: verify-stats-peaks (9, in the gate), verify-account-stats 66/66 and verify-master-preview 12/12 against the live
+API after the restart; master preview balance = the sum of its history = the Sender balance (93,734.38).
+
 ## 2026-11-09 — NO COPY OF A TRADE THE MASTER CLOSES FOR THE NIGHT AT ONCE (commit 8fa00f2, API restarted 01:26 Berlin)
 
 Gospel: "Yes, build it" and "Yes, turn it on". On 8 Nov at 22:44 Berlin the master's Bitcoin pattern order filled after
