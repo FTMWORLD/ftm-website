@@ -1962,9 +1962,9 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .ftm-tip.below::after{bottom:auto;top:-6px;transform:translateX(-50%) rotate(225deg)}
 [data-tip]{-webkit-touch-callout:none}
 [data-tip]:focus-visible{outline:2px solid #D4AF37;outline-offset:2px}
-.kp[data-tip]>span:not(.kp-sub)::after,.rg[data-tip]>.app-label::after,h3.has-tip::after{content:"i";display:inline-grid;place-content:center;width:15px;height:15px;margin-left:6px;border-radius:50%;font:700 10px/1 Georgia,serif;font-style:italic;color:#8a6d12;background:rgba(212,175,55,.18);vertical-align:1px;letter-spacing:0;text-transform:none;transition:background .2s,color .2s}
-.tip-on.kp>span:not(.kp-sub)::after,.tip-on.rg>.app-label::after,h3.has-tip.tip-on::after{background:#D4AF37;color:#0B1440}
 h3.has-tip{cursor:help}
+[data-tip]{cursor:help}
+.tip-on.app-card,.tip-on.app-tile{box-shadow:0 0 0 2px rgba(212,175,55,.45),0 18px 36px -22px rgba(11,20,64,.4)}
 .rg .rg-foot b span{font-weight:inherit}
 #mCurve{overflow:visible}
 #mCurve .cv-grid line{stroke:rgba(11,20,64,.07);stroke-width:1}
@@ -2057,12 +2057,20 @@ h3.has-tip{cursor:help}
 #appView.has-acct .cx-card:not(.cx-open) .app-form,#appView.has-acct .cx-card:not(.cx-open)>.hint{display:none}
 #appView.has-acct .cx-card:not(.cx-open) .cx-open-btn{display:inline-flex}
 @media (min-width:901px){
-#appView .app-view[data-view="metrics"] .app-cols{align-items:stretch}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child{display:flex;flex-direction:column}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child>.app-card{flex:1;display:flex;flex-direction:column}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child .cv-wrap{flex:1;min-height:190px;display:flex}
-#appView .app-view[data-view="metrics"] .app-cols>.app-side:first-child .cv-wrap .app-chart{height:auto;min-height:190px;flex:1}
+#appView .app-view[data-view="metrics"] .app-cols{display:block}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;margin-top:24px;align-items:start}
+#appView .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.app-card{margin:0}
 }
+.cv-card .app-status{margin-bottom:10px}
+.cv-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px 24px;flex-wrap:wrap;margin-bottom:14px}
+.cv-head h3{margin:0}
+.cv-now{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:6px}
+#cvNow,.cv-now b{font-size:34px;font-weight:800;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1}
+#cvChg,.cv-now span{display:inline-block;font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;padding:4px 10px;border-radius:99px;background:rgba(11,20,64,.06);color:var(--muted)}
+#cvChg.up{background:rgba(22,163,74,.1);color:#15803d}#cvChg.dn{background:rgba(229,50,62,.1);color:#c81e2b}
+.cv-head .cv-controls .cv-zoom-btns{margin-top:0}
+#appView .app-view[data-view="metrics"] #mCurve{height:340px}
+@media (max-width:600px){#appView .app-view[data-view="metrics"] #mCurve{height:230px}#cvNow{font-size:27px!important}#cvChg{font-size:13px!important}.cv-head{margin-bottom:10px}}
 .op-list thead{display:none}
 .op-list,.op-list tbody{display:block;width:100%}
 .op-list tr{display:grid;grid-template-columns:1fr auto auto;column-gap:14px;row-gap:2px;align-items:center;padding:12px 0;border-bottom:1px solid #eef0f5}
@@ -2967,10 +2975,10 @@ h3.has-tip{cursor:help}
 
     <div class="app-cols">
       <div class="app-side">
-      <div class="app-card">
+      <div class="app-card cv-card">
         <div class="app-status" id="mStatus"><i></i>FTM MACHINE is running</div>
-        <h3 class="has-tip" data-tip="Balance after every closed trade. Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account balance</h3>
-        <p class="hint">Balance after every closed trade on the connected account.</p>
+        <div class="cv-head">
+        <div class="cv-title"><h3 class="has-tip" data-tip="Balance after every closed trade. Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account balance</h3><div class="cv-now"><b id="cvNow">&mdash;</b><span id="cvChg"></span></div></div>
         <div class="cv-controls">
           <div class="tf" id="curveTF"><button data-r="1">1M</button><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="ytd">YTD</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div>
           <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div>
@@ -2978,6 +2986,7 @@ h3.has-tip{cursor:help}
             <button class="cv-zoom-btn" id="curveZoomOut" type="button" aria-label="Zoom out">&minus;</button>
             <button class="cv-zoom-btn" id="curveZoomIn" type="button" aria-label="Zoom in">+</button>
           </div>
+        </div>
         </div>
         <div class="cv-wrap"><svg class="app-chart" id="mCurve" viewBox="0 0 600 190" aria-hidden="true"></svg><div class="cv-yaxis" id="cvYAxis"></div><div class="cv-tip" id="cvTip" hidden></div></div>
         <div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
@@ -4903,10 +4912,32 @@ h3.has-tip{cursor:help}
       };
     };
 
+    function cvHead(i){
+      var R=F._cvRaw; if(!R||!R.curve.length) return;
+      var nb=document.getElementById('cvNow'), ch=document.getElementById('cvChg'); if(!nb||!ch) return;
+      var p=R.curve[i], c=R.chg[i], capBase=R.curve[0].v, inflow=0;
+      for(var k=1;k<=i;k++){ if(R.curve[k].flow>0) inflow+=R.curve[k].flow; }
+      var base=Math.max(capBase,0)+inflow, pc=base>0?c/base*100:0;
+      nb.textContent=cur(p.v);
+      ch.textContent=(c>0?'+':(c<0?'-':''))+cur(Math.abs(c)).replace(/^-/,'')+'  ('+(pc>0?'+':'')+pc.toFixed(2)+'%)';
+      ch.className=c>0?'up':(c<0?'dn':'');
+    }
+    F.cvHead=cvHead;
     function drawCurve(m){
       var svg=document.getElementById('mCurve'); if(!svg||!m.curve.length)return;
 
-      var all=m.curve, curve=all, r=F.curveRange;
+      var all=m.curve;
+      if(all.length>2 && all[all.length-1].t-all[0].t>4*864e5){
+        var dayK=function(t){ var x=new Date(t); return x.getFullYear()*10000+x.getMonth()*100+x.getDate(); };
+        var agg=[{t:all[0].t,v:all[0].v}], lastK=dayK(all[0].t);
+        for(var ai=1;ai<all.length;ai++){
+          var pt0=all[ai], k=dayK(pt0.t), tail=agg[agg.length-1];
+          if(k===lastK && agg.length>1){ tail.t=pt0.t; tail.v=pt0.v; if(pt0.flow) tail.flow=(tail.flow||0)+pt0.flow; }
+          else { agg.push({t:pt0.t,v:pt0.v,flow:pt0.flow}); lastK=k; }
+        }
+        all=agg;
+      }
+      var curve=all, r=F.curveRange;
       if(r && r!=='0'){
         var from;
         if(r==='ytd'){ from=new Date(new Date().getFullYear(),0,1).getTime(); }
@@ -4927,6 +4958,9 @@ h3.has-tip{cursor:help}
       if(zoomInBtn)zoomInBtn.disabled = zi>=ZOOM_LEVELS.length-1 || curve.length<=2;
       if(zoomOutBtn)zoomOutBtn.disabled = zi<=0;
       while(curve.length>2 && curve[1].flow>0 && curve[0].v<curve[1].v*0.05) curve=curve.slice(1);
+      var tradeChg=[0]; for(var ci=1;ci<curve.length;ci++){ tradeChg.push(tradeChg[ci-1]+(curve[ci].flow?0:curve[ci].v-curve[ci-1].v)); }
+      F._cvRaw={curve:curve, chg:tradeChg};
+      cvHead(curve.length-1);
       m={curve:curve};
       var bb=svg.getBoundingClientRect(), W=Math.max(240,Math.round(bb.width)||600), H=Math.max(150,Math.round(bb.height)||190);
       svg.setAttribute('viewBox','0 0 '+W+' '+H);
@@ -5000,6 +5034,7 @@ h3.has-tip{cursor:help}
       function fmtV(v){ return F.curveUnit==='percent' ? (v>=0?'+':'')+v.toFixed(2)+'%' : cur0(v); }
       function hide(){
         tip.hidden=true;
+        if(F.cvHead&&F._cvRaw) F.cvHead(F._cvRaw.curve.length-1);
         var l=document.getElementById('cvLine'), d=document.getElementById('cvDot');
         if(l)l.setAttribute('visibility','hidden'); if(d)d.setAttribute('visibility','hidden');
         var hv=document.getElementById('mCurveHover');
@@ -5018,13 +5053,14 @@ h3.has-tip{cursor:help}
         var time=new Date(pt.t).toLocaleTimeString((window.FTM_LOCALE||'en-GB'),{hour:'2-digit',minute:'2-digit'});
         var prev=best>0?c.data[best-1].v:pt.v, chg=pt.v-prev;
         tip.innerHTML='<span>'+date+' \u00B7 '+time+'</span><b>'+fmtV(pt.v)+'</b>'+
-          (pt.flow?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur0(Math.abs(pt.flow))+'</span>':best>0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'+':'')+fmtV(chg)+' on this trade</span>':'');
+          (pt.flow?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur0(Math.abs(pt.flow))+'</span>':best>0&&chg!==0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'\u25B2 +':'\u25BC ')+fmtV(chg)+'</span>':'');
         tip.hidden=false;
         var px=p[0]/(c.W||600)*r.width, py=p[1]/(c.H||190)*r.height;
         var tw=tip.offsetWidth, left=Math.max(tw/2+4, Math.min(r.width-tw/2-4, px));
         tip.style.left=left+'px'; tip.style.top=py+'px';
         var hv=document.getElementById('mCurveHover');
         if(hv){ hv.textContent=date+' \u00B7 '+fmtV(pt.v); hv.className='cv-read'; }
+        if(F.cvHead) F.cvHead(best);
       }
       if(window.ResizeObserver){ var rw=0; new ResizeObserver(function(){ var w=Math.round(svg.getBoundingClientRect().width); if(w&&Math.abs(w-rw)>2&&F._cv&&!svg.closest('[hidden]')){ rw=w; clearTimeout(F._cvRs); F._cvRs=setTimeout(function(){ F.render(); },150); } }).observe(svg); }
       wrap.addEventListener('pointermove',function(e){ move(e.clientX); });
@@ -5078,9 +5114,27 @@ h3.has-tip{cursor:help}
     }
 
     var closedRowsCache=[], clShow=5;
+    function closedList(){
+      var C=(F.data.closed||[]).slice(), es=F.data.engineStats;
+      if(es && es.deals && es.deals.length){
+        var outs=es.deals.filter(function(x){return !x.open && x.t;});
+        if(outs.length>C.filter(function(t){return t.closeTime;}).length){
+          var ins={}; es.deals.forEach(function(x){ if(x.open && x.pos) ins[x.pos]=x; });
+          var byRef={}; C.forEach(function(t){ if(t.positionRef) byRef[String(t.positionRef)]=t; });
+          var used={}, out=outs.map(function(x){
+            var t=(x.pos&&byRef[String(x.pos)]) || C.filter(function(c){ return !used[c.closeTime+'|'+c.symbol] && c.closeTime && Math.abs(c.closeTime-x.t)<3000 && (!x.symbol||c.symbol===x.symbol); })[0];
+            if(t){ used[t.closeTime+'|'+t.symbol]=1; return t; }
+            var o=x.pos&&ins[x.pos];
+            return {symbol:x.symbol, dir:x.side==='SELL'?'BUY':(x.side==='BUY'?'SELL':x.side), lots:x.lots, openTime:o?o.t:null, closeTime:x.t, open:o&&o.price!=null?o.price:null, close:x.price!=null?x.price:null, pl:x.pl+(o?o.pl:0), commission:null, swap:null, label:null};
+          });
+          C=out;
+        }
+      }
+      return C.filter(function(t){return t.closeTime;}).sort(function(a,b){ return (b.closeTime-a.closeTime) || ((b.openTime||0)-(a.openTime||0)); });
+    }
     function drawClosed(){
       var tb=document.getElementById('mClosedRows'); if(!tb)return;
-      var allC=F.data.closed.slice().sort(function(a,b){return b.closeTime-a.closeTime;});
+      var allC=closedList();
       var recent=allC.slice(0,clShow);
       var xp=document.getElementById('clXp');
       if(xp){ xp.hidden=allC.length<=5; document.getElementById('clMore').hidden=allC.length<=clShow; document.getElementById('clLess').hidden=clShow<=5; }
@@ -5089,22 +5143,22 @@ h3.has-tip{cursor:help}
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
         var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
-        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+tlab(t)+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+tlab(t)+'</td><td>'+(t.dir||'&mdash;')+'</td><td>'+(t.lots!=null?t.lots.toFixed(2):'&mdash;')+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
       set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'. Click a row for details.' : 'No trades closed yet.');
     }
 
     function openTradeModal(t){
       var box=document.getElementById('tradeModalBody'); if(!box)return;
-      var openD=new Date(t.openTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      var openD=t.openTime==null?'\u2014':new Date(t.openTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       var closeD=new Date(t.closeTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       var durMs=t.closeTime-t.openTime, durMin=Math.round(durMs/60000);
-      var dur=durMin<60 ? durMin+' min' : (Math.floor(durMin/60)+'h '+(durMin%60)+'m');
+      var dur=t.openTime==null?'\u2014':(durMin<60 ? durMin+' min' : (Math.floor(durMin/60)+'h '+(durMin%60)+'m'));
       var pl=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
       var rows=[
         ['Market', t.symbol+(t.label?' · '+((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(t.label):t.label):'')],
         ['Direction', t.dir],
-        ['Size (lots)', t.lots.toFixed(2)],
+        ['Size (lots)', t.lots!=null?t.lots.toFixed(2):'&mdash;'],
         ['Entry price', t.open!=null?t.open:'&mdash;'],
         ['Close price', t.close!=null?t.close:'&mdash;'],
         ['Opened', openD],
@@ -5357,7 +5411,7 @@ h3.has-tip{cursor:help}
             var NT={BALANCE:1,CREDIT:1,CHARGE:1,CORRECTION:1,BONUS:1,COMMISSION:1};
             var deals=(j.history||[]).filter(function(r){ return !NT[String(r.type||r.deal_type||'').toUpperCase()]; }).map(function(r){
               var pl=num(r.net!=null?r.net:(r.net_profit!=null?r.net_profit:r.profit)); if(pl!=null && r.net==null && r.net_profit==null){ pl+= (num(r.commission)||0)+(num(r.swap)||0)+(num(r.fee)||0); }
-              return {t:tOf(r), pl:pl, open:String(r.entry||'').toUpperCase()==='IN', symbol:r.symbol||null, side:String(r.type||r.deal_type||'').toUpperCase(), lots:num(r.volume), ticket:r.ticket||null};
+              return {t:tOf(r), pl:pl, open:String(r.entry||'').toUpperCase()==='IN', symbol:r.symbol||null, side:String(r.type||r.deal_type||'').toUpperCase(), lots:num(r.volume), ticket:r.ticket||null, pos:r.position_ref||null, price:r.price!=null?px(r.price):null};
             }).filter(function(x){ return x.t && x.pl!=null && x.pl!==0; }).sort(function(a,b){return a.t-b.t;});
             return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance),
@@ -8201,8 +8255,9 @@ tick();setInterval(tick,5000);})();
   function draw(){
     var d=F.data||{}, closed=(d.closed||[]).filter(function(t){return t.pl!=null;});
     var w=closed.filter(function(t){return t.pl>0;}).length, l=closed.filter(function(t){return t.pl<0;}).length;
+    var ES=d.engineStats; if(ES && ES.wins!=null && ES.losses!=null){ w=ES.wins; l=ES.losses; }
     donut($('rgWin'), [{v:w,c:'#16a34a'},{v:l,c:'#E5323E'}]);
-    if($('rgWinV')) $('rgWinV').textContent=(w+l)?Math.round(w/(w+l)*100)+'%':'—';
+    if($('rgWinV')) $('rgWinV').textContent=(ES&&ES.winRatePct!=null)?Math.round(ES.winRatePct)+'%':((w+l)?Math.round(w/(w+l)*100)+'%':'—');
     if($('rgWinW')) $('rgWinW').textContent=tr('{} winning').replace('{}',w);
     if($('rgWinL')) $('rgWinL').textContent=tr('{} losing').replace('{}',l);
     var by={}; closed.forEach(function(t){ var k=t.symbol||'—'; by[k]=(by[k]||0)+1; });
