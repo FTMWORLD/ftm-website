@@ -64,3 +64,26 @@ After 20, start again at 1 and look for what changed.
 3. Risk gauge 1-10 next to the chosen profile (engine figure).
 4. Factsheet strip: month, YTD, 12m, annualised, best and worst month.
 5. "Verify my account" card with a history checksum (engine).
+
+### 9 Nov 2026 (afternoon): design critique of the client area against Robinhood, Revolut and Trading 212
+**Built**
+- Price scale on the right of the balance chart.
+- Even 24px spacing between sections.
+- Open-positions empty state.
+- Segmented risk scale.
+- Phone fixes on Performance and Calendar.
+- Risk gauge.
+- Instant load.
+- Fast connect.
+- Face ID login.
+- Statement PDF.
+
+**Kept by owner choice**
+- Win-streak circles.
+- Red call-to-action buttons.
+
+**Next candidates**
+- One compact card for free accounts in place of three half-empty ones.
+- A true minus sign (−) in all figures.
+- Merge the four statistics cards into one "Full statistics" card (folded on phone).
+- Show open positions right under the hero when there are any.
