@@ -35,7 +35,7 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {high:g('mHigh'),kp:g('kpHigh'),dd:g('mDDtile'),ddb:g('mDDbal'),gain:g('mGain'),pnl:g('dxPnl')};});
   if(stats===full){
    ok(/504\.94/.test(v.high)&&/504\.94/.test(v.kp), label+': highest balance is the highest balance the account really reached, from the engine (got '+v.high+')');
-   ok(/1\.0%/.test(v.dd), label+': drawdown tile is the engine closed-balance drawdown (got '+v.dd+')');
+   ok(/1\.03%/.test(v.dd), label+': drawdown tile is the engine closed-balance drawdown (got '+v.dd+')');
    ok(/1\.03%/.test(v.ddb), label+': balance drawdown from the engine (got '+v.ddb+')');
   } else {
    ok(v.high.trim()==='—', label+': no website-made highest balance (got '+v.high+')');
@@ -47,7 +47,7 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
     const yr=g('mYear'); const all=[...document.querySelectorAll('#dxPnl .pp-t')].map(x=>x.textContent);
     F.redrawAllViews&&F.redrawAllViews(); F.renderPerf&&0;
     return {yr, allTime:all[3]||'', perfTotal:(document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||'', pxYear:(document.querySelector('#pxYears tbody tr td:nth-child(4)')||{}).textContent||''};});
-  ok(/8\.1%/.test(same.yr), label+': profit this year matches the gain (got '+same.yr+')');
+  ok(/8\.06%/.test(same.yr), label+': profit this year matches the gain (got '+same.yr+')');
   ok(/8\.06%/.test(same.allTime)&&/\+\$23|\+\$22/.test(same.allTime), label+': profit by period, all time = +22.53 and +8.06% (got '+same.allTime+')');
   ok(/8\.06%/.test(same.pxYear), label+': year-by-year return matches (got '+same.pxYear+')');
   const pt=await p.evaluate(()=>{FTM.unit='percent';document.querySelector('#appView .app-nav-item[data-view="perf"]').click();return new Promise(r=>setTimeout(()=>{FTM.unit='percent';if(FTM.redrawAllViews)FTM.redrawAllViews();setTimeout(()=>r((document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||''),600);},600));});

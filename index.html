@@ -2110,7 +2110,8 @@ h3.has-tip{cursor:help}
 .rg-body{position:relative;width:132px;height:132px;margin:2px auto 0}
 .rg-donut{width:100%;height:100%;transform:rotate(-90deg)}
 .rg-donut circle{fill:none;stroke-width:14;transition:stroke-dasharray 1s cubic-bezier(.2,.8,.2,1),stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
-.rg-mid{position:absolute;inset:0;display:grid;place-items:center;font-size:24px;font-weight:800;color:#0b1440;font-variant-numeric:tabular-nums}
+@media (max-width:560px){.rg .rg-mid{font-size:16px}}
+.rg-mid{position:absolute;inset:0;display:grid;place-items:center;font-size:20px;font-weight:800;color:#0b1440;font-variant-numeric:tabular-nums}
 .rg-mid-sm{font-size:15px;text-align:center;line-height:1.15;padding:0 26px}
 .rg-leg{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:#5b6378;font-weight:600;margin-top:auto}
 .rg-leg span{display:inline-flex;align-items:center;gap:6px}
@@ -5389,7 +5390,7 @@ h3.has-tip{cursor:help}
       set('mBalance', cur0(m.balance));
       set('mEquity', cur0(m.equity));
       set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
-      set('mYear', pct(m.yearPct,1), tone(m.yearPL));
+      set('mYear', pct(m.yearPct), tone(m.yearPL));
       set('mDDtile', '\u2014');
 
       var ES=(F.data&&F.data.engineStats)||{};
@@ -5408,7 +5409,7 @@ h3.has-tip{cursor:help}
         var eAbs=(eo.peak!=null&&eo.trough!=null)?(+eo.peak-+eo.trough):null, cAbs=(co.peak!=null&&co.trough!=null)?(+co.peak-+co.trough):null;
         var cPct=ES.ddClosedPct;
         var tileDD=ES.ddClosedPct!=null?ES.ddClosedPct:ES.maxDDPct;
-        set('mDDtile', tileDD>0.05?'-'+tileDD.toFixed(1)+'%':'0.0%', tileDD>0.05?'down':null);
+        set('mDDtile', tileDD>0.005?'-'+tileDD.toFixed(2)+'%':'0.00%', tileDD>0.005?'down':null);
         set('mDDbal', cPct==null?'\u2014':((cAbs!=null?cur0(cAbs)+' (':'')+cPct.toFixed(2)+'%'+(cAbs!=null?')':'')), cPct?'down':null);
         set('mDDeq', (eAbs!=null?cur0(eAbs)+' (':'')+ES.maxDDPct.toFixed(2)+'%'+(eAbs!=null?')':''), ES.maxDDPct?'down':null);
       } else {
@@ -5426,7 +5427,7 @@ h3.has-tip{cursor:help}
       set('mSD', cur(m.sd));
       set('mSharpe', m.sharpe.toFixed(2), tone(m.sharpe));
 
-      set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(1)+'%');
+      set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(2)+'%');
       set('mPF', m.profitFactor.toFixed(2), m.profitFactor>=1?'up':'down');
       set('mAvg', cur0(m.avgWin)+' / '+cur0(m.avgLoss));
       var mins=Math.round(m.avgDurMs/60000);
@@ -6241,7 +6242,7 @@ h3.has-tip{cursor:help}
       var list=Object.keys(bySym).sort(function(a,b){return bySym[b].pl-bySym[a].pl;});
       el('perfSymbols').innerHTML='<thead><tr><th>Market</th><th>Trades</th><th>Win rate</th><th>Lots</th><th>Net P/L</th></tr></thead><tbody>'+
         list.map(function(k){ var b=bySym[k];
-          return '<tr><td><b>'+k+'</b></td><td>'+b.n+'</td><td>'+(b.w/b.n*100).toFixed(1)+'%</td><td>'+b.lots.toFixed(2)+'</td>'+
+          return '<tr><td><b>'+k+'</b></td><td>'+b.n+'</td><td>'+(b.w/b.n*100).toFixed(2)+'%</td><td>'+b.lots.toFixed(2)+'</td>'+
                  '<td class="'+(b.pl>=0?'pl-up':'pl-down')+'">'+signed(b.pl,0)+'</td></tr>'; }).join('')+'</tbody>';
       renderPerfX();
     }
@@ -6273,7 +6274,7 @@ h3.has-tip{cursor:help}
       el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
           var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.e,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="pl-up">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="pl-down">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.e,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="'+(b.r<0?'pl-down':'pl-up')+'">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="'+(w.r<0?'pl-down':'pl-up')+'">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
          :'<tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -6282,7 +6283,7 @@ h3.has-tip{cursor:help}
         yrs.map(function(y){ var row='<div class="y">'+y+'</div>';
           for(var i=1;i<=12;i++){ var x=M.filter(function(q){return q.k===y+'-'+String(i).padStart(2,'0');})[0];
             if(!x){row+='<div data-m="'+mn[i-1]+'"></div>';continue;} var a=Math.min(Math.abs(x.r)/15,1)*.75+.15, c=x.r>=0?'47,174,116':'226,71,90';
-            row+='<div data-m="'+mn[i-1]+'" style="background:rgba('+c+','+a.toFixed(2)+');color:'+(a>.55?'#fff':'var(--ink)')+'" title="'+mS(x.k)+': '+pc(x.r)+'">'+(x.r>0?'+':'')+x.r.toFixed(1)+'</div>'; }
+            row+='<div data-m="'+mn[i-1]+'" style="background:rgba('+c+','+a.toFixed(2)+');color:'+(a>.55?'#fff':'var(--ink)')+'" title="'+mS(x.k)+': '+pc(x.r)+'">'+(x.r>0?'+':'')+x.r.toFixed(2)+'</div>'; }
           var yy=Y.filter(function(q){return q.k===y;})[0];
           return row+'<div class="ytot '+(yy&&yy.r<0?'pl-down':'pl-up')+'" style="background:none;color:'+(yy?(yy.r<0?'var(--red-dark)':'#1f8a5b'):'')+'">'+(yy?pc(yy.r):'')+'</div>'; }).join('')+'</div>'+(has?'':empty);
 
@@ -6290,7 +6291,7 @@ h3.has-tip{cursor:help}
       el('pxWhist').innerHTML=bars(wb.map(function(b){return {l:b[2],lo:b[0],n:W.filter(function(x){return x.r>=b[0]&&x.r<b[1];}).length};}),function(x){return x.lo<0?'down':'up';});
       var wUp=W.filter(function(x){return x.r>0;}).length, best=function(L){return L.reduce(function(a,x){return x.r>a.r?x:a;},L[0]||{r:0});}, worst=function(L){return L.reduce(function(a,x){return x.r<a.r?x:a;},L[0]||{r:0});};
       var avgW=W.length?W.reduce(function(a,x){return a+x.r;},0)/W.length:0;
-      facts('pxWeeks',[['Weeks traded',W.length],['Winning weeks',wUp+' ('+(W.length?(wUp/W.length*100).toFixed(1):'0')+'%)'],['Losing weeks',W.length-wUp],['Average week',pc(avgW)],['Best week',pc(best(W).r)+' · '+dS(best(W).k)],['Worst week',pc(worst(W).r)+' · '+dS(worst(W).k)]]);
+      facts('pxWeeks',[['Weeks traded',W.length],['Winning weeks',wUp+' ('+(W.length?(wUp/W.length*100).toFixed(2):'0.00')+'%)'],['Losing weeks',W.length-wUp],['Average week',pc(avgW)],['Best week',pc(best(W).r)+' · '+dS(best(W).k)],['Worst week',pc(worst(W).r)+' · '+dS(worst(W).k)]]);
 
       var db=[[-1e9,-2,'< −2%'],[-2,-1,'−2 – −1%'],[-1,0,'−1 – 0%'],[0,1,'0 – 1%'],[1,2,'1 – 2%'],[2,1e9,'> 2%']];
       el('pxDist').innerHTML=bars(db.map(function(b){return {l:b[2],lo:b[0],n:tr.filter(function(x){return x.p>=b[0]&&x.p<b[1];}).length};}),function(x){return x.lo<0?'down':'up';});
@@ -6671,7 +6672,7 @@ h3.has-tip{cursor:help}
       el('sessTable').innerHTML='<thead><tr><th>Session</th><th>Net P/L</th><th>Win rate</th><th>Trades</th><th>Expectancy</th></tr></thead><tbody>'+
         SESSIONS.map(function(s){ var x=stats[s.name];
           return '<tr><td><b>'+s.name+'</b></td><td class="'+(x.pl>=0?'pl-up':'pl-down')+'">'+signed(x.pl,2)+'</td>'+
-                 '<td>'+(x.n?(x.w/x.n*100).toFixed(1):'0.0')+'%</td><td>'+x.n+'</td><td>'+(x.n?signed(x.pl/x.n,2):'-')+'</td></tr>';
+                 '<td>'+(x.n?(x.w/x.n*100).toFixed(2):'0.00')+'%</td><td>'+x.n+'</td><td>'+(x.n?signed(x.pl/x.n,2):'-')+'</td></tr>';
         }).join('')+'</tbody>';
     }
     el('sessMode').addEventListener('click',function(e){
@@ -6977,7 +6978,7 @@ h3.has-tip{cursor:help}
       el('cFeed').innerHTML = fol.length ? fol.map(function(x){
         return '<div class="feed-row"><span class="avatar">'+initials(x.name)+'</span>'+
           '<div><b>'+x.name+'</b><div class="lb-country">'+x.flag+' '+x.country+'</div></div>'+
-          '<span class="g val-up">+'+x.gain.toFixed(1)+'%</span></div>';
+          '<span class="g val-up">+'+x.gain.toFixed(2)+'%</span></div>';
       }).join('') : '<div class="feed-empty"><b>Follow traders to build your feed.</b>Members you follow will appear here once you start exploring the community.</div>';
     }
 
@@ -6989,7 +6990,7 @@ h3.has-tip{cursor:help}
           '<div class="top"><span class="avatar">'+initials(x.name)+'</span>'+
           '<div><b>'+x.name+'</b><div class="lb-country">'+x.flag+' '+x.country+'</div></div></div>'+
           '<p class="bio">'+x.bio+'</p>'+
-          '<div class="foot"><span class="gain">+'+x.gain.toFixed(1)+'%</span>'+
+          '<div class="foot"><span class="gain">+'+x.gain.toFixed(2)+'%</span>'+
           '<button class="msg-btn" data-msg="'+x.id+'">Message</button>'+
           '<button class="follow'+(x.following?' on':'')+'" data-follow="'+x.id+'">'+(x.following?'Following':'Follow')+'</button></div></div>';
       }).join('') : '<div class="feed-empty"><b>Nobody to show.</b>You have blocked every member in this list.</div>';
@@ -7125,11 +7126,11 @@ h3.has-tip{cursor:help}
       var rows=[];
       if(b){
         rows.push(['Leaderboard rank','#'+b.rank+' of '+b.total]);
-        rows.push(['Gain', (b.entry.gain>=0?'+':'')+b.entry.gain.toFixed(1)+'%']);
+        rows.push(['Gain', (b.entry.gain>=0?'+':'')+b.entry.gain.toFixed(2)+'%']);
         rows.push(['Account size', fmtMoney(b.entry.size)]);
         rows.push(['Equity', fmtMoney(b.entry.equity)]);
       } else if(x.gain!=null){
-        rows.push(['Gain', (x.gain>=0?'+':'')+x.gain.toFixed(1)+'%']);
+        rows.push(['Gain', (x.gain>=0?'+':'')+x.gain.toFixed(2)+'%']);
       }
       el('mpStats').innerHTML = rows.length
         ? rows.map(function(r){ return '<div><dt>'+r[0]+'</dt><dd>'+r[1]+'</dd></div>'; }).join('')
@@ -7285,7 +7286,7 @@ h3.has-tip{cursor:help}
     function t(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
     function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     function eur(n,dp){ var v=Math.abs(n).toLocaleString('de-DE',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0}); return (n<0?'-':'')+v+'€'; }
-    function pct(n,d){ return (n>0?'+':'')+n.toFixed(d===undefined?1:d)+'%'; }
+    function pct(n,d){ return (n>0?'+':'')+n.toFixed(d===undefined?2:d)+'%'; }
     function fmt(d){ return d.toLocaleDateString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'long',year:'numeric'}); }
     function fmtS(d){ return d.toLocaleDateString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric'}); }
 
@@ -7419,11 +7420,11 @@ h3.has-tip{cursor:help}
         dot.setAttribute('cx',p[0]); dot.setAttribute('cy',p[1]); dot.setAttribute('visibility','visible');
         var date=new Date(pt.t).toLocaleDateString((window.FTM_LOCALE||'en-GB'),{weekday:'short',day:'numeric',month:'short',year:'numeric'});
         var growth=pt.v-100;
-        tip.innerHTML='<span>'+date+'</span><b>'+pct(growth,1)+'</b><span>account growth since launch</span>';
+        tip.innerHTML='<span>'+date+'</span><b>'+pct(growth)+'</b><span>account growth since launch</span>';
         tip.hidden=false;
         var px=p[0]/600*r.width, py=p[1]/190*r.height, tw=tip.offsetWidth, left=Math.max(tw/2+4,Math.min(r.width-tw/2-4,px));
         tip.style.left=left+'px'; tip.style.top=py+'px';
-        var rd=$(k+'Read'); rd.textContent=date+' · '+pct(growth,1); rd.className='cv-read';
+        var rd=$(k+'Read'); rd.textContent=date+' · '+pct(growth); rd.className='cv-read';
       }
       wrap.addEventListener('pointermove',function(e){move(e.clientX);});
       wrap.addEventListener('pointerdown',function(e){move(e.clientX);});
@@ -7443,7 +7444,7 @@ h3.has-tip{cursor:help}
 
     function renderOverview(m){
       $('ivTotal').textContent=eur(m.total);
-      $('ivRet').textContent=pct(m.sinceFirst,1);
+      $('ivRet').textContent=pct(m.sinceFirst);
       $('ivRet').className=m.sinceFirst>=0?'val-up':'val-down';
       $('ivAccr').textContent=eur(m.accrued);
       $('ivAccrSub').textContent='50% of the profit the FTM account makes on your capital';
@@ -7477,13 +7478,13 @@ h3.has-tip{cursor:help}
       var prev=100, rows=months.map(function(m){ var r=(m.last/prev-1)*100; prev=m.last; return {y:m.y,m:m.m,ret:r,cum:m.last-100}; }).reverse();
       var names=['January','February','March','April','May','June','July','August','September','October','November','December'];
       $('ivMonths').innerHTML='<thead><tr><th>Month</th><th>Return</th><th>Growth since launch</th></tr></thead><tbody>'+
-        rows.map(function(r){ return '<tr><td><b>'+names[r.m]+' '+r.y+'</b></td><td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,2)+'</td><td>'+pct(r.cum,1)+'</td></tr>'; }).join('')+'</tbody>';
+        rows.map(function(r){ return '<tr><td><b>'+names[r.m]+' '+r.y+'</b></td><td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,2)+'</td><td>'+pct(r.cum)+'</td></tr>'; }).join('')+'</tbody>';
     }
     function renderTable(m){
       $('ivTable').innerHTML='<thead><tr><th>'+t('Investment')+'</th><th>'+t('Started')+'</th><th>'+t('Capital')+'</th><th>'+t('Account return')+'</th><th>'+t('Your profit share')+'</th><th>'+t('Withdrawable now')+'</th><th>'+t('Next unlock')+'</th><th>'+t('Capital back')+'</th></tr></thead><tbody>'+
         m.rows.map(function(r){
           return '<tr><td><b>'+esc(r.id)+'</b></td><td>'+fmtS(r.joined)+'</td><td>'+eur(r.amount)+'</td>'+
-            '<td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret,1)+'</td><td>'+eur(r.share,2)+'</td><td><b>'+eur(r.withdrawable,2)+'</b></td>'+
+            '<td class="'+(r.ret>=0?'pl-up':'pl-down')+'">'+pct(r.ret)+'</td><td>'+eur(r.share,2)+'</td><td><b>'+eur(r.withdrawable,2)+'</b></td>'+
             '<td>'+(r.withdrawable>0?'<span class="pill-ok">'+t('Open now')+'</span>':(r.nextWindow?fmtS(r.nextWindow):'—'))+'</td><td>'+fmtS(r.endOn)+'</td></tr>';
         }).join('')+
         '<tr><td><b>'+t('Total')+'</b></td><td></td><td><b>'+eur(m.total)+'</b></td><td></td><td><b>'+eur(m.accrued,2)+'</b></td><td><b>'+eur(m.available,2)+'</b></td><td></td><td></td></tr></tbody>';
@@ -8492,7 +8493,7 @@ tick();setInterval(tick,5000);})();
     var w=closed.filter(function(t){return t.pl>0;}).length, l=closed.filter(function(t){return t.pl<0;}).length;
     var ES=d.engineStats; if(ES && ES.wins!=null && ES.losses!=null){ w=ES.wins; l=ES.losses; }
     donut($('rgWin'), [{v:w,c:'#16a34a'},{v:l,c:'#E5323E'}]);
-    if($('rgWinV')) $('rgWinV').textContent=(ES&&ES.winRatePct!=null)?Math.round(ES.winRatePct)+'%':((w+l)?Math.round(w/(w+l)*100)+'%':'—');
+    if($('rgWinV')) $('rgWinV').textContent=(ES&&ES.winRatePct!=null)?ES.winRatePct.toFixed(2)+'%':((w+l)?(w/(w+l)*100).toFixed(2)+'%':'—');
     if($('rgWinW')) $('rgWinW').textContent=tr('{} winning').replace('{}',w);
     if($('rgWinL')) $('rgWinL').textContent=tr('{} losing').replace('{}',l);
     var by={}; closed.forEach(function(t){ var k=t.symbol||'—'; by[k]=(by[k]||0)+1; });
@@ -8704,7 +8705,7 @@ tick();setInterval(tick,5000);})();
         '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div><div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
         '<table><thead><tr><th>'+esc(tr('Date'))+'</th><th>'+esc(tr('Details'))+'</th><th class="n">'+esc(tr('Amount'))+'</th><th class="n">'+esc(tr('Running balance'))+'</th></tr></thead><tbody>'+
         rows.map(function(e){ return '<tr><td>'+esc(fd(e.t))+'</td><td>'+esc(det(e))+'</td><td class="n '+(e.amt>0?'up':(e.amt<0?'dn':''))+'">'+S(e.amt)+'</td><td class="n">'+M(e.after)+'</td></tr>'; }).join('')+
-        '</tbody></table><div class="motto">Invest today, secure tomorrow.</div><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(1):'0.0')+'%</span></div></body></html>';
+        '</tbody></table><div class="motto">Invest today, secure tomorrow.</div><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(2):'0.00')+'%</span></div></body></html>';
       F._stFile='FTM-statement-'+(v==='all'?'all-time':v)+'.pdf';
       return h;
     }

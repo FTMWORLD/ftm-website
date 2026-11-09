@@ -47,8 +47,10 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - FTM is a financial company: every customer figure must be exact. Balance, equity, deposits, withdrawals, P/L, growth, drawdown, win rate and trade counts are taken directly from the FTM engine (`/customer/accounts`, `/customer/accounts/:id/stats`, `/history`, `/positions`), never estimated by the website when the engine has the number.
 - The website only calculates what the engine does not send, and then from the engine's full history. When a figure is missing, ask FTM ENGINE (via FTM MACHINE) to add it rather than approximating.
 
-## Every fix is for every customer (owner instruction, 9 November 2026)
+## Every fix is for every customer (owner instruction, 9 November 2026, repeated with emphasis)
 - Every correction goes into the code (website and, through a note to FTM ENGINE, the engine) so past, present and future customers never meet the same problem. Never fix one account by hand.
+- For every fix: find the root cause in shared code; check every account type (customer, master preview, demo, free, new sign-up) and every view (dashboard, performance, calendar, popups, statement, phone and laptop); add an automatic test in .github/tests so it cannot come back.
+- Every report to Gospel ends with: "Applies to all accounts, past and future: yes".
 
 ## FTM document standard (owner instruction, 9 November 2026)
 - Every FTM document (statements, reports, PDFs) has: top = navy band with the FTM logo on the left and the document name on the right; bottom of EVERY page = a slim full-width navy band (#0b1640) with "Invest today, secure tomorrow." centred in gold.
