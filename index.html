@@ -8736,13 +8736,15 @@ tick();setInterval(tick,5000);})();
     }
     function fill(){
       var E=events().ev, seen={}, opts=['<option value="all">'+esc(tr('All time'))+'</option>'];
+      var yrs={}; E.forEach(function(e){ yrs[new Date(e.t).getFullYear()]=1; }); Object.keys(yrs).sort().reverse().forEach(function(yk){ opts.push('<option value="Y'+yk+'">'+yk+'</option>'); });
       for(var i=E.length-1;i>=0;i--){ var dt=new Date(E[i].t), k=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2); if(seen[k]) continue; seen[k]=1; opts.push('<option value="'+k+'">'+esc(dt.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}))+'</option>'); }
       var cur=sel.value; sel.innerHTML=opts.join(''); if(cur && sel.querySelector('option[value="'+cur+'"]')) sel.value=cur; else if(opts.length>1) sel.selectedIndex=1;
       btn.disabled=!E.length; sel.closest('.st-bar').hidden=!E.length;
     }
     function build(){
       var all=events(), E=all.ev, v=sel.value, a=-Infinity, b=Infinity, label=tr('All time');
-      if(v!=='all'){ var y=+v.slice(0,4), mo=+v.slice(5,7)-1; a=new Date(y,mo,1).getTime(); b=new Date(y,mo+1,1).getTime(); label=new Date(y,mo,1).toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}); }
+      if(v.charAt(0)==='Y'){ var yy=+v.slice(1); a=new Date(yy,0,1).getTime(); b=new Date(yy+1,0,1).getTime(); label=String(yy); }
+      else if(v!=='all'){ var y=+v.slice(0,4), mo=+v.slice(5,7)-1; a=new Date(y,mo,1).getTime(); b=new Date(y,mo+1,1).getTime(); label=new Date(y,mo,1).toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}); }
       var rows=E.filter(function(e){return e.t>=a&&e.t<b;}), before=E.filter(function(e){return e.t<a;});
       var open=before.length?before[before.length-1].after:all.start, close=rows.length?rows[rows.length-1].after:open;
       var dep=0,wd=0,res=0,nT=0,nW=0; rows.forEach(function(e){ if(e.k==='in')dep+=e.amt; else if(e.k==='out')wd+=-e.amt; else { res+=e.amt; if(e.k==='trade'){ nT++; if(e.amt>0)nW++; } } });
@@ -8758,15 +8760,20 @@ tick();setInterval(tick,5000);})();
         '.meta div{border:1px solid #e3e6f0;border-radius:10px;padding:9px 12px}.meta span,.sum span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7393}.meta b{display:block;margin-top:3px;font-size:12px}'+
         '.sum{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid #e3e6f0;border-radius:12px;overflow:hidden;margin-bottom:18px}.sum div{padding:12px;border-inline-end:1px solid #e3e6f0}.sum div:last-child{border:0;background:#fbf6e4}.sum b{display:block;margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}'+
         'table{width:100%;border-collapse:collapse}th{text-align:start;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b7393;border-bottom:2px solid #0B1440;padding:7px 6px}td{padding:7px 6px;border-bottom:1px solid #eceef5;font-variant-numeric:tabular-nums}tr{break-inside:avoid}'+
-        '.n{text-align:end;white-space:nowrap}.up{color:#15803d}.dn{color:#c81e2b}.ft{margin-top:18px;padding-top:10px;border-top:2px solid #D4AF37;display:flex;justify-content:space-between;gap:12px;color:#6b7393;font-size:10px}.motto{display:none}@media print{@page{margin:14mm 14mm 18mm}.motto{display:block;position:fixed;left:-14mm;right:-14mm;bottom:-18mm;height:10mm;line-height:10mm;background:#0b1640;color:#D4AF37;text-align:center;font-weight:700;font-size:10pt}}';
+        '.sh{font-size:13px;margin:6px 0 8px;color:#0B1440}.bm{margin-bottom:18px}.bm tr.tt td{font-weight:800;border-top:2px solid #0B1440}.n{text-align:end;white-space:nowrap}.up{color:#15803d}.dn{color:#c81e2b}.ft{margin-top:18px;padding-top:10px;border-top:2px solid #D4AF37;display:flex;justify-content:space-between;gap:12px;color:#6b7393;font-size:10px}.motto{display:none}@media print{@page{margin:14mm 14mm 18mm}.motto{display:block;position:fixed;left:-14mm;right:-14mm;bottom:-18mm;height:10mm;line-height:10mm;background:#0b1640;color:#D4AF37;text-align:center;font-weight:700;font-size:10pt}}';
       var h='<!doctype html><html lang="'+esc(lang)+'" dir="'+esc(dir)+'"><head><meta charset="utf-8"><title>'+esc(tr('Account statement')+' · '+label)+'</title><style>'+css+'</style></head><body>'+
         '<div class="hd"><div class="lg"><img src="'+(location.protocol.indexOf('http')===0?location.origin:'https://www.ftmwealthnation.com')+'/email-logo.png" alt="">FTM</div><div style="text-align:end"><h1>'+esc(tr('Account statement'))+'</h1><p>'+esc(label)+'</p></div></div>'+
         '<div class="meta"><div><span>'+esc(tr('Client'))+'</span><b>'+esc((F.session&&(F.session.name||F.session.email))||'\u2014')+'</b></div><div><span>'+esc(tr('Client ID'))+'</span><b>'+esc(F._cid||'\u2014')+'</b></div><div><span>'+esc(tr('Account'))+'</span><b>'+esc((va.name||'')+' '+(va.number||''))+'</b></div><div><span>'+esc(tr('Currency'))+'</span><b>'+esc(cur)+'</b></div><div><span>'+esc(tr('Generated'))+'</span><b>'+esc(fd(Date.now()))+'</b></div><div><span>'+esc(tr('Reference'))+'</span><b>'+esc(ref)+'</b></div></div>'+
         '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div><div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
+        (function(){ var by={}, ks=[]; rows.forEach(function(e){ if(e.k!=='trade'&&e.k!=='fee') return; var k=e.sym||'—'; if(!by[k]){ by[k]={n:0,amt:0}; ks.push(k); } by[k].amt+=e.amt; if(e.k==='trade') by[k].n++; });
+          if(!ks.length) return ''; ks.sort(function(x,y){ return by[y].amt-by[x].amt; }); var tot=ks.reduce(function(a,k){return a+by[k].amt;},0);
+          return '<h2 class="sh">'+esc(tr('By market'))+'</h2><table class="bm"><thead><tr><th>'+esc(tr('Market'))+'</th><th class="n">'+esc(tr('Trades'))+'</th><th class="n">'+esc(tr('Amount'))+'</th></tr></thead><tbody>'+
+            ks.map(function(k){ var x=by[k]; return '<tr><td>'+esc(k)+'</td><td class="n">'+x.n+'</td><td class="n '+(x.amt>0?'up':(x.amt<0?'dn':''))+'">'+S(x.amt)+'</td></tr>'; }).join('')+
+            '<tr class="tt"><td>'+esc(tr('Trading result'))+'</td><td class="n">'+nT+'</td><td class="n '+(tot>0?'up':(tot<0?'dn':''))+'">'+S(tot)+'</td></tr></tbody></table><h2 class="sh">'+esc(tr('Account activity'))+'</h2>'; })()+
         '<table><thead><tr><th>'+esc(tr('Date'))+'</th><th>'+esc(tr('Details'))+'</th><th class="n">'+esc(tr('Amount'))+'</th><th class="n">'+esc(tr('Running balance'))+'</th></tr></thead><tbody>'+
         rows.map(function(e){ return '<tr><td>'+esc(fd(e.t))+'</td><td>'+esc(det(e))+'</td><td class="n '+(e.amt>0?'up':(e.amt<0?'dn':''))+'">'+S(e.amt)+'</td><td class="n">'+M(e.after)+'</td></tr>'; }).join('')+
         '</tbody></table><div class="motto">Invest today, secure tomorrow.</div><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(2):'0.00')+'%</span></div></body></html>';
-      F._stFile='FTM-statement-'+(v==='all'?'all-time':v)+'.pdf';
+      F._stFile='FTM-statement-'+(v==='all'?'all-time':(v.charAt(0)==='Y'?v.slice(1):v))+'.pdf';
       return h;
     }
     F.statementHtml=build;
