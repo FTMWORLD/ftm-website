@@ -2012,6 +2012,13 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 @media (max-width:900px){.rk-card{grid-template-columns:1fr;gap:16px}.rk-l{grid-template-columns:auto 1fr;align-items:center;column-gap:16px}.rk-l .app-label{grid-column:1/-1}.rk-vs{justify-self:end}}
 .pp-card{margin-top:0}
 .cv-card .cv-legend{display:none}
+.mt-xp{display:none}
+@media (max-width:600px){
+  #appView .metrics:not(.mt-open)>*:nth-child(n+2){display:none}
+  #appView .mt-xp{display:flex;border-top:0;margin-top:-6px}
+}
+#appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.sub-card,#appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.op-card{display:none}
+#appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.cx-card{grid-column:1/-1}
 .op-empty{flex:1;display:grid;place-items:center;padding:18px 0 6px}.op-empty[hidden]{display:none}.op-empty svg{width:84px;height:84px;animation:opFloat 4s ease-in-out infinite}
 @keyframes opFloat{50%{transform:translateY(-5px)}}
 @media (prefers-reduced-motion:reduce){.op-empty svg{animation:none}}
@@ -3192,6 +3199,7 @@ h3.has-tip{cursor:help}
         </dl>
       </div>
     </div>
+    <div class="xp-row mt-xp" id="mtXp"><button type="button" class="xp-btn" id="mtMore"><span>Show more</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button><button type="button" class="xp-btn xp-up" id="mtLess" hidden><span>Show less</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 15 6-6 6 6"/></svg></button></div>
 
     <div>
 
@@ -8624,6 +8632,9 @@ tick();setInterval(tick,5000);})();
     card.hidden=false;
   }
   (function(){ var tf=$("rkSpan"); if(!tf) return; tf.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; tf.querySelectorAll('button').forEach(function(x){x.classList.toggle('is-on',x===b);}); F.rkRange=+b.dataset.r; riskCard(); }); })();
+  (function(){ var mo=$('mtMore'), le=$('mtLess'), box=document.querySelector('#appView .metrics'); if(!mo||!le||!box) return;
+    mo.addEventListener('click',function(){ box.classList.add('mt-open'); mo.hidden=true; le.hidden=false; });
+    le.addEventListener('click',function(){ box.classList.remove('mt-open'); mo.hidden=false; le.hidden=true; box.scrollIntoView({block:'start',behavior:'smooth'}); }); })();
   var alKind='all', AL0=5, alShow=AL0;
   function activity(){
     var ul=$('alList'); if(!ul) return;
