@@ -2027,6 +2027,14 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .lv-c b{color:var(--ink)}.lv-c em{font-style:normal;color:var(--muted);font-size:12px}.lv-c strong{font-variant-numeric:tabular-nums}.lv-c strong.up{color:#15803d}.lv-c strong.dn{color:#c81e2b}
 .lv-more{color:var(--muted);font-weight:700}
 @media (max-width:600px){.lv-strip{flex-wrap:wrap;gap:10px;padding:12px}.lv-list{order:3;flex-basis:100%}#lvAll{margin-left:auto}}
+.fs-card[hidden]{display:none!important}
+.fs-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0}
+.fs-c{padding:6px 14px;border-inline-start:1px solid rgba(11,20,64,.08);min-width:0}.fs-c:first-child{border:0;padding-inline-start:0}
+.fs-c span{display:block;font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fs-c b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums;color:var(--ink)}.fs-c b.up{color:#15803d}.fs-c b.dn{color:#c81e2b}
+.fs-c small{display:block;font-size:12px;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:1000px){.fs-grid{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:16px}.fs-c:nth-child(5){border:0;padding-inline-start:0}}
+@media (max-width:600px){.fs-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fs-c{border:0!important;padding:4px 0!important}.fs-c b{font-size:20px}}
 .op-empty{flex:1;display:grid;place-items:center;padding:18px 0 6px}.op-empty[hidden]{display:none}.op-empty svg{width:84px;height:84px;animation:opFloat 4s ease-in-out infinite}
 @keyframes opFloat{50%{transform:translateY(-5px)}}
 @media (prefers-reduced-motion:reduce){.op-empty svg{animation:none}}
@@ -3268,6 +3276,7 @@ h3.has-tip{cursor:help}
 
       <section class="app-view" data-view="perf" hidden>
         <div class="app-main">
+          <div class="app-card fs-card" id="fsCard" hidden><div class="fs-grid" id="fsGrid"></div></div>
           <div class="app-card">
             <h3>Yearly performance</h3>
             <p class="hint">Net profit and loss for every month, with the number of trades closed.</p>
@@ -8653,6 +8662,18 @@ tick();setInterval(tick,5000);})();
   }
   F.liveStrip=liveStrip;
   (function(){ var b=$('lvAll'); if(b) b.addEventListener('click',function(){ var c=document.querySelector('.op-card'); if(c) c.scrollIntoView({behavior:'smooth',block:'center'}); }); })();
+  function factsheet(){
+    var box=$('fsGrid'), card=$('fsCard'); if(!box||!card) return;
+    var m=F.metrics?F.metrics():null; if(!m||!m.seg||!(F.data&&F.data.closed&&F.data.closed.length)){ card.hidden=true; return; }
+    var n=new Date(), y=n.getFullYear(), mo=n.getMonth(), T=function(d){return d.getTime();};
+    var cells=[['This month',m.seg(T(new Date(y,mo,1)),null)],['Last month',m.seg(T(new Date(y,mo-1,1)),T(new Date(y,mo,1)))],['YTD',m.seg(T(new Date(y,0,1)),null)],['1Y',m.seg(T(new Date(y-1,mo,n.getDate())),null)],['All time',m.seg(null,null)]];
+    var months={}; (F.data.closed||[]).forEach(function(t){ if(t.closeTime){ var d=new Date(t.closeTime); months[d.getFullYear()*12+d.getMonth()]=1; } });
+    var best=null, worst=null; Object.keys(months).forEach(function(k){ k=+k; var a=new Date(Math.floor(k/12),k%12,1), b=new Date(Math.floor(k/12),k%12+1,1), sg=m.seg(T(a),T(b)); sg.d=a; if(!best||sg.pct>best.pct) best=sg; if(!worst||sg.pct<worst.pct) worst=sg; });
+    var ml=function(d){ return d.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'short',year:'numeric'}); };
+    if(best) cells.push(['Best month',best,ml(best.d)]); if(worst) cells.push(['Worst month',worst,ml(worst.d)]);
+    box.innerHTML=cells.map(function(c){ var g=c[1], k=g.pct>0?'up':(g.pct<0?'dn':''); return '<div class="fs-c"><span>'+tr(c[0])+'</span><b class="'+k+'">'+(g.pct>0?'+':'')+g.pct.toFixed(2)+'%</b><small>'+(c[2]?c[2]:sgn(g.pl,2))+'</small></div>'; }).join('');
+    card.hidden=false;
+  }
   var alKind='all', AL0=5, alShow=AL0;
   function activity(){
     var ul=$('alList'); if(!ul) return;
@@ -8817,7 +8838,7 @@ tick();setInterval(tick,5000);})();
       P.supported().then(function(ok){ if(!ok) return; setTimeout(function(){ if(F.session&&F.session.email&&!P.isOn()) show('Log in faster next time with Face ID or your fingerprint.','offer'); },2500); });
     };
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); liveStrip(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); liveStrip(); factsheet(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
   try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>
