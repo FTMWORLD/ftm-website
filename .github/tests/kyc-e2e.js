@@ -12,7 +12,7 @@ function engine(){ const st={full_name:null,country:null,goal:null,experience:nu
     puts.push(body); for(const k of Object.keys(body)){ const v=body[k]; if(!(k in st)) return [422,{ok:false,error:'VALIDATION_FAILED'}];
       if(v!==null && OK_V[k] && OK_V[k].indexOf(v)===-1) return [422,{ok:false,error:'VALIDATION_FAILED'}]; if(k==='country'&&v!==null&&!/^[A-Z]{2}$/.test(v)) return [422,{ok:false,error:'VALIDATION_FAILED'}]; st[k]=v; }
     return [200,view()]; } }; }
-async function open(b,vp,E){
+async function open(b,vp,E,dflt){
   const p=await b.newPage({viewport:vp}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
   await p.route('**/api/v1/**',async r=>{ const u=r.request().url();
@@ -22,14 +22,14 @@ async function open(b,vp,E){
     if(u.includes('/api/v1/community')) return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"profile":{"nickname":""},"members":[],"threads":[]}'});
     return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"positions":[],"history":[]}'}); });
   await p.goto(BASE+'/'); await p.waitForTimeout(700);
-  await p.evaluate(()=>{ try{ localStorage.removeItem('ftm_kyc_ban'); }catch(e){} const F=window.FTM; F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()}); F.session={email:'t@x.com',products:['auto'],name:'Tanaya Rao'}; F.kycOn=true; });
+  await p.evaluate(()=>{ try{ localStorage.removeItem('ftm_kyc_ban'); }catch(e){} const F=window.FTM; F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()}); F.session={email:'t@x.com',products:['auto'],name:'Tanaya Rao'}; });
   await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto'))); await p.waitForTimeout(3500);
   p.errs=errs; return p;
 }
 (async()=>{
   const b0=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})});
-  { const E=engine(), p=await open(b0,{width:1280,height:900},E); await p.evaluate(()=>{ FTM.kycOn=false; FTM.kycPaint(); });
-    ok(!(await p.isVisible('#appView .app-nav-item[data-view="kyc"]')) && !(await p.isVisible('#kycBan')),'until switched on, customers do not see KYC (preview with ?kyc=1)'); await b0.close(); }
+  { const E=engine(), p=await open(b0,{width:1280,height:900},E, true);
+    ok(await p.isVisible('#appView .app-nav-item[data-view="kyc"]'),'KYC is on for every customer by default (no switch needed)'); await b0.close(); }
   const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})});
   for(const [label,vp] of [['laptop',{width:1280,height:900}],['phone',{width:390,height:844}]]){
     const E=engine(), p=await open(b,vp,E);

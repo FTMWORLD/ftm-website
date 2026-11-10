@@ -3547,7 +3547,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
           <div class="app-card soc-lock"><span class="cx-lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><div><h3>For subscribers and investors</h3><p class="hint">The FTM community and leaderboard are for subscribers and investors. Subscribe or invest to join them.</p></div><div class="soc-lock-act"><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm" href="#invest" data-go-invest>Invest now</a></div></div>
           <div class="app-card">
             <div class="lb-head"><span class="lb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><path d="M3 20a6 6 0 0 1 12 0M16.5 5.2a3.4 3.4 0 0 1 0 6.6M17 20a6 6 0 0 0-2.2-4.6"/></svg></span>
-              <div><h3>FTM Community</h3><p class="hint">Meet other people running FTM MACHINE, follow them and talk.</p></div>
+              <div><h3>FTM Community</h3><p class="hint">Where wealthy people interact.</p></div>
             </div>
             <div class="ctabs" id="cTabs">
               <button class="is-on" data-tab="overview">Overview</button>
@@ -7187,7 +7187,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       calendar: {t:'Trading calendar',   s:'Profit and loss for every day, week and month.'},
       perf:     {t:'Performance',        s:'How every month and every market has performed.'},
       board:    {t:'Leaderboard',        s:'Where you stand among other FTM accounts.'},
-      community:{t:'FTM Community',      s:'Meet other people running FTM MACHINE.'},
+      community:{t:'FTM Community',      s:'Where wealthy people interact.'},
       accounts: {t:'Accounts overview',  s:'The accounts you have added to FTM.'},
       sessions: {t:'Trading sessions',   s:'Which session your results come from.'},
       charts:   {t:'Charts',             s:'Price history for the markets FTM MACHINE trades.'},
@@ -7689,7 +7689,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var L=CC.map(function(c){ return [c,countryName(c)]; }).sort(function(a,b){ return String(a[1]).localeCompare(String(b[1])); });
       cs.innerHTML='<option value="">'+esc(tr2('Choose your country'))+'</option>'+L.map(function(x){ return '<option value="'+x[0]+'">'+flagTxt(x[0])+' '+esc(x[1])+'</option>'; }).join(''); cs.value=P.country||''; })();
     (function(){ var form=el('kycName'); if(!form) return;
-      if(F.kycOn==null) F.kycOn=/[?&]kyc=1\b/.test(location.search);
+      if(F.kycOn==null) F.kycOn=true;
       var K={p:null,sel:{},loaded:false,who:null}, TIER={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}, LOC={'10':'CONSERVATIVE','25':'BALANCED','35':'GROWTH'};
       var api=function(path,o){ return F.remote.api(path,o); };
       el('kycCountry').innerHTML=el('cCountrySel').innerHTML;

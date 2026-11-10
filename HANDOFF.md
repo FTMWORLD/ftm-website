@@ -594,9 +594,7 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 ## Know Your Customer (10 Nov 2026)
 - Menu item at the bottom of the client menu, gold "Verify your KYC" badge until FTM ENGINE says kyc_completed, then a check.
 - Engine: GET/PUT /customer/kyc-profile (proxy ALLOW + vercel rewrite). Country is shared with the leaderboard flag.
-- NOT LIVE until Gospel approves the screenshot: F.kycOn is false unless the URL has ?kyc=1. To go live set F.kycOn=true
-  (index.html, KYC block) and add this Ask-here line to api/v1/chat.js TROUBLESHOOTING:
-  - Know Your Customer (KYC): the last item of the menu. Five optional questions (name, country, goal, experience, how big a temporary drop you could live with), about one minute; nothing is blocked if you skip it. No ID documents or selfies. The gold "Verify your KYC" badge turns into a check mark once all five are saved; answers can be changed any time. The matching risk profile is a hint only and never changes your settings.
+- LIVE for every customer since 10 Nov 2026 (Gospel approved). F.kycOn=false would hide it again.
 - Dashboard banner "Complete your KYC" at most once a week (localStorage ftm_kyc_ban). Test: .github/tests/kyc-e2e.js.
 
 ## Wording rule (owner, 10 Nov 2026)
