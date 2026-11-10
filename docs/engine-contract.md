@@ -4,6 +4,13 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — LEADERBOARD: MASTER PROFILE + COUNTRY FLAG (commit a83a5a6, API restarted 14:27 Berlin)
+
+- FTM MASTER row: risk_tier from the master EA's own trading style (newest "Multiplier: style" line of its charts; BALANCED
+  today), follows any change; country "DE".
+- country (ISO 3166-1 alpha-2) on every row: the customer's own setting, PUT /customer/leaderboard/profile
+  {"country": "DE"} (null removes it; two letters only); GET profile returns it. null = no flag. Never inferred.
+
 ## 2026-11-10 — LEADERBOARD: TRADING ACCOUNT ONLY + FTM MASTER ROW (commit 9608fbf, API restarted 14:07 Berlin)
 
 - A customer's row = the account FTM MACHINE trades on now (trading_status ACTIVE); a switch moves the row at the next
