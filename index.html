@@ -6646,7 +6646,7 @@ body.op-lock{overflow:hidden}
       arc.style.strokeDashoffset=String(C*(1-frac)); arc.style.stroke=(!F.planLifetime && F.planEnd && frac>0.9)?'#E5323E':'#D4AF37';
       var set=function(id,t){ var e=document.getElementById(id); if(e) e.textContent=t; };
       set('subLeft',left); set('subLeftL',leftL); set('subPlan',plan); set('subEnd',endT); set('subUsed',usedT);
-      if(ren){ ren.hidden=!!F.planLifetime || !!F.planFree; } if(up){ up.hidden=!!F.planLifetime; up.textContent=tr(F.planFree?'See the plans':'Upgrade plan'); }
+      var dLeft=(F.planEnd&&!F.planLifetime)?Math.ceil((Date.parse(F.planEnd)-Date.now())/864e5):null; if(ren){ ren.hidden=!!F.planLifetime || !!F.planFree || dLeft==null || dLeft>7; } if(up&&ren){ up.classList.toggle('btn-red',ren.hidden); up.classList.toggle('btn-outline',!ren.hidden); }
     };
 
     F.loadLive = function(){
