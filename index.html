@@ -2201,6 +2201,9 @@ h3.has-tip{cursor:help}
 .cw-step label{font-size:15px}
 .cx-sheet input,.cx-sheet select{font-size:16px!important}
 .cw-err{color:#c81e2b;font-size:13.5px;font-weight:600;margin:10px 0 0}
+.c-unread{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E5323E;vertical-align:middle;margin-inline-start:4px}
+#cTabs [data-tab="messages"].has-unread::after{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:#E5323E;margin-inline-start:6px;vertical-align:middle}
+#cChatErr{padding:0 14px 10px}
 .cw-nav{display:flex;gap:10px;margin-top:18px}.cw-nav .btn{flex:1;min-height:48px}
 .cw-nav.last #cwNext{display:none}.cw-nav:not(.last) #appConnect{display:none}
 .cx-sheet .bk-hint,.cx-sheet .pw-hint{margin-top:10px}.cw-nav.first #cwBack{visibility:hidden}
@@ -3464,9 +3467,10 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
                 <div class="chat-head" id="cChatHead">&mdash;</div>
                 <div class="chat-log" id="cChatLog"></div>
                 <form class="chat-form" id="cChatForm">
-                  <input type="text" id="cChatInput" placeholder="Write a message" autocomplete="off">
+                  <input type="text" id="cChatInput" placeholder="Write a message" autocomplete="off" maxlength="1000">
                   <button class="btn btn-red btn-sm" type="submit">Send</button>
                 </form>
+                <p class="cw-err" id="cChatErr" hidden></p>
               </div>
             </div>
           </div>
@@ -3524,7 +3528,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
                 <p class="hint" style="margin-top:10px"><b>FTM only asks for your MT5 master password inside the Connect account form in your client area. We will never ask for it by message, chat or email, and never ask for a transfer to a personal account.</b> If a member does, report them straight away.</p>
               </div>
               <div class="app-form" style="display:none">
-                <p class="hint" id="cSaved" hidden>Saved. In the live client area this is stored on your FTM account.</p>
+                <p class="hint" id="cSaved" hidden>Saved.</p>
               </div>
             </div>
           </div>
@@ -5978,7 +5982,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     function loadLive(){
       if(!F.remote || !F.remote.ready()) return Promise.resolve(false);
       if(F.session && !F._commReal){ F._commReal=true; if(F.data.members) F.data.members.length=0; if(F.data.threads) F.data.threads.length=0;
-        var pr=F.data.profile||(F.data.profile={}); Object.keys(pr).forEach(function(k){ delete pr[k]; }); Object.assign(pr,{handle:F.session.name||'', country:'', flag:'', bio:'', visible:false, followers:0, following:0, blocked:[]}); }
+        var pr=F.data.profile||(F.data.profile={}); Object.keys(pr).forEach(function(k){ delete pr[k]; }); Object.assign(pr,{handle:'', country:'', flag:'', bio:'', visible:false, followers:0, following:0, blocked:[]}); }
       if(!F._liveLoaded && !F._snapTried && F.session){ F._snapTried=true;
         if(F.loadSnap()){ F._liveLoaded=true; setTimeout(function(){ try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); if(F.updStamp) F.updStamp(); }catch(e){} },0); } }
       var seq=F._loadSeq=(F._loadSeq||0)+1;
@@ -7126,12 +7130,42 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     var P=F.data.profile, M=F.data.members, T=F.data.threads, openThread=T[0]?T[0].id:null;
     function el(id){ return document.getElementById(id); }
     function initials(n){ return n.replace(/[^A-Za-z ]/g,'').split(' ').filter(Boolean).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase(); }
-    function member(id){ for(var i=0;i<M.length;i++){ if(M[i].id===id)return M[i]; } return null; }
+    function member(id){ for(var i=0;i<M.length;i++){ if(M[i].id===id)return M[i]; } for(var j=0;j<T.length;j++){ if(T[j].id===id && T[j].name) return {id:id,name:T[j].name,flag:'',country:'',bio:'',gain:null,following:false}; } return null; }
+    function tr2(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }
+    function LIVE(){ return !!(F.remote&&F.remote.ready&&F.remote.ready()&&F.session); }
+    function capi(action, body){ return Promise.resolve(F.auth&&F.auth.getAccessToken?F.auth.getAccessToken():null).then(function(tok){ return fetch('/api/v1/community',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(tok||'')},body:JSON.stringify(Object.assign({action:action},body||{}))}).then(function(r){ return r.json().catch(function(){return {};}).then(function(j){ if(!r.ok||!j.ok){ var e=new Error((j&&j.error)||'FAILED'); e.code=(j&&j.error)||'FAILED'; throw e; } return j; }); }); }); }
+    var CERR={NICKNAME_INVALID:'Choose a nickname of 3 to 24 letters, digits, _ or -.',NICKNAME_TAKEN:'That name is already taken. Please choose another.',NICKNAME_RESERVED:'Names with FTM, admin or support are reserved. Please choose another.',NO_LINKS:'Links, phone numbers and contact details are not allowed.',READ_ONLY:'Messaging is for subscribers. With a free account you can browse.',PROFILE_FIRST:'Save your community profile first (My profile).',RATE_LIMIT:'You have sent a lot of messages today. Please try again tomorrow.'};
+    function cerr(e){ return tr2(CERR[e&&e.code]||'Something went wrong. Please try again.'); }
+    function flagOf(cc){ cc=String(cc||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65):''; }
+    var CM={paid:false,poll:null,last:0,loaded:false};
+    function liveLoad(full){
+      if(!LIVE()) return Promise.resolve();
+      if(CM.ensure) CM.ensure();
+      return Promise.all([full||!CM.loaded?capi('me'):null, full||!CM.loaded||Date.now()-CM.last>8000?capi('members'):null, capi('threads')]).then(function(r){
+        if(r[0]){ var me=r[0]; CM.paid=!!me.paid; CM.loaded=true; P.handle=me.profile.nickname||''; P.bio=me.profile.bio||''; P.visible=!!me.profile.visible; P.country=me.profile.country||''; P.flag=flagOf(P.country); P.followers=me.followers||0; P.blocked=(me.blocked||[]).map(function(b){return b.mid;}); CM.blockedNames={}; (me.blocked||[]).forEach(function(b){ CM.blockedNames[b.mid]=b.nickname; });
+          if(document.activeElement!==el('cName')) el('cName').value=P.handle; if(document.activeElement!==el('cBio')) el('cBio').value=P.bio; syncToggle(); }
+        if(r[1]){ CM.last=Date.now(); M.length=0; r[1].members.forEach(function(x){ M.push({id:x.mid,name:x.nickname,country:x.country||'',flag:flagOf(x.country),bio:x.bio||'',gain:null,following:!!x.following,followers:x.followers||0}); }); }
+        var keep={}; T.forEach(function(t){ keep[t.id]=t; }); T.length=0; r[2].threads.forEach(function(t){ var o=keep[t.mid]||{id:t.mid,msgs:[]}; o.name=t.nickname; o.last=t.last; o.unread=t.unread; o.pending=false; T.push(o); });
+        Object.keys(keep).forEach(function(k){ if(!T.some(function(t){return t.id===k;}) && keep[k].pending) T.unshift(keep[k]); });
+        if(openThread && !T.some(function(t){return t.id===openThread;})) openThread=T[0]?T[0].id:null; if(!openThread && T[0]) openThread=T[0].id;
+        renderOverview(); renderMembers(); renderBlocked(); renderChat();
+        var ub=document.querySelector('#cTabs [data-tab="messages"]'); if(ub) ub.classList.toggle('has-unread', T.some(function(t){return t.unread;}));
+        var mv=document.querySelector('#cTabs [data-tab="messages"].is-on'); if(mv && openThread) return loadThread(openThread);
+      }).catch(function(e){ console.warn('community:', e&&e.code); });
+    }
+    function loadThread(mid){ if(!LIVE()||!mid) return Promise.resolve(); return capi('messages',{mid:mid}).then(function(j){ var th=T.filter(function(t){return t.id===mid;})[0]; if(!th){ th={id:mid,msgs:[],name:j.nickname}; T.unshift(th); } var n0=th.msgs.length; th.msgs=j.messages; th.unread=false; th.name=j.nickname; if(openThread===mid && (n0!==th.msgs.length || !el('cChatLog').children.length)) renderChat(); }).catch(function(){}); }
+    (function(){ var sec=document.querySelector('#appView .app-view[data-view="community"]'); if(!sec) return;
+      var shown=function(){ return !sec.hidden && sec.offsetParent!==null; }; CM.ensure=function(){ if(!CM.poll && shown() && LIVE()) CM.poll=setInterval(tick,4000); };
+      var tick=function(){ if(!shown()){ clearInterval(CM.poll); CM.poll=null; return; } if(document.hidden) return; liveLoad(false); };
+      new MutationObserver(function(){ if(!sec.hidden && LIVE()){ liveLoad(true); if(!CM.poll) CM.poll=setInterval(tick,4000); } else if(sec.hidden && CM.poll){ clearInterval(CM.poll); CM.poll=null; } }).observe(sec,{attributes:true,attributeFilter:['hidden']});
+      document.addEventListener('visibilitychange',function(){ if(!document.hidden && !sec.hidden && LIVE()){ liveLoad(false); if(!CM.poll) CM.poll=setInterval(tick,4000); } });
+      F.communityLoad=liveLoad; F._cmState=function(){ return {poll:!!CM.poll, loaded:CM.loaded}; }; })();
+    function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
     function renderOverview(){
       var m=F.metrics();
       el('cAvatar').textContent=initials(P.handle);
-      el('cHandle').textContent=P.handle;
+      el('cHandle').textContent=P.handle||tr2('Choose your name in My profile');
       el('cCountry').innerHTML=P.flag+' '+P.country;
       var pill=el('cVisPill');
       pill.textContent=P.visible?'Visible to members':'Hidden';
@@ -7147,7 +7181,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       el('cFeed').innerHTML = fol.length ? fol.map(function(x){
         return '<div class="feed-row"><span class="avatar">'+initials(x.name)+'</span>'+
           '<div><b>'+x.name+'</b><div class="lb-country">'+x.flag+' '+x.country+'</div></div>'+
-          '<span class="g val-up">+'+x.gain.toFixed(2)+'%</span></div>';
+          '<span class="g val-up">'+(x.gain==null?'':(x.gain>=0?'+':'')+x.gain.toFixed(2)+'%')+'</span></div>';
       }).join('') : '<div class="feed-empty"><b>Follow traders to build your feed.</b>Members you follow will appear here once you start exploring the community.</div>';
     }
 
@@ -7155,14 +7189,14 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     function renderMembers(){
       var list=M.filter(function(x){ return !blocked(x.id); });
       el('cMembers').innerHTML = list.length ? list.map(function(x){
-        return '<div class="mem"><button class="kebab" data-menu="'+x.id+'" aria-label="More options for '+x.name+'">\u22EF</button>'+
+        return '<div class="mem"><button class="kebab" data-menu="'+x.id+'" aria-label="More options for '+esc(x.name)+'">\u22EF</button>'+
           '<div class="top"><span class="avatar">'+initials(x.name)+'</span>'+
-          '<div><b>'+x.name+'</b><div class="lb-country">'+x.flag+' '+x.country+'</div></div></div>'+
-          '<p class="bio">'+x.bio+'</p>'+
-          '<div class="foot"><span class="gain">+'+x.gain.toFixed(2)+'%</span>'+
+          '<div><b>'+esc(x.name)+'</b><div class="lb-country">'+x.flag+' '+x.country+'</div></div></div>'+
+          '<p class="bio">'+esc(x.bio||'')+'</p>'+
+          '<div class="foot"><span class="gain">'+(x.gain==null?'':(x.gain>=0?'+':'')+x.gain.toFixed(2)+'%')+'</span>'+
           '<button class="msg-btn" data-msg="'+x.id+'">Message</button>'+
           '<button class="follow'+(x.following?' on':'')+'" data-follow="'+x.id+'">'+(x.following?'Following':'Follow')+'</button></div></div>';
-      }).join('') : '<div class="feed-empty"><b>Nobody to show.</b>You have blocked every member in this list.</div>';
+      }).join('') : (LIVE()&&!P.blocked.length ? '<div class="feed-empty"><b>'+tr2('No other members are visible yet.')+'</b>'+tr2('Members appear here as soon as they switch on Show me in the community.')+'</div>' : '<div class="feed-empty"><b>Nobody to show.</b>You have blocked every member in this list.</div>');
     }
 
     var repTarget=null;
@@ -7178,6 +7212,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     document.addEventListener('keydown',function(e){ if(e.key==='Escape')closeReport(); });
     el('repSend').addEventListener('click',function(){
       if(!repTarget)return;
+      if(LIVE()) capi('report',{mid:repTarget,reason:el('repDetail').value}).catch(function(){});
       if(el('repBlock').checked) doBlock(repTarget,true);
       el('repDone').hidden=false;
       setTimeout(function(){ closeReport(); renderMembers(); renderChat(); renderBlocked(); },1400);
@@ -7186,13 +7221,13 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var x=member(id); if(!x)return;
       if(!quiet && !confirm('Block '+x.name+'? They will not be able to message you or see your profile, and you will not see them in Discover.')) return;
       if(!blocked(id)) P.blocked.push(id);
-      x.following=false;
+      x.following=false; if(LIVE()){ CM.blockedNames=CM.blockedNames||{}; CM.blockedNames[id]=x.name; capi('block',{mid:id}).then(function(){ liveLoad(true); }).catch(function(){}); }
       T=F.data.threads=F.data.threads.filter(function(t){ return t.id!==id; });
       if(openThread===id) openThread=T[0]?T[0].id:null;
       renderMembers(); renderChat(); renderOverview(); renderBlocked();
     }
     function renderBlocked(){
-      var list=P.blocked.map(member).filter(Boolean);
+      var list=P.blocked.map(function(id){ return member(id) || (CM.blockedNames&&CM.blockedNames[id]?{id:id,name:CM.blockedNames[id]}:null); }).filter(Boolean);
       el('cBlocked').innerHTML = list.length ? list.map(function(x){
         return '<div class="blocked-row"><span class="avatar">'+initials(x.name)+'</span>'+
           '<b>'+x.name+'</b><button data-unblock="'+x.id+'">Unblock</button></div>';
@@ -7201,6 +7236,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     el('cBlocked').addEventListener('click',function(e){
       var b=e.target.closest('[data-unblock]'); if(!b)return;
       P.blocked=P.blocked.filter(function(id){ return id!==b.dataset.unblock; });
+      if(LIVE()) capi('unblock',{mid:b.dataset.unblock}).then(function(){ liveLoad(true); }).catch(function(){});
       renderBlocked(); renderMembers();
     });
     document.addEventListener('click',function(e){
@@ -7224,10 +7260,10 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var r=e.target.closest('[data-report]'), b=e.target.closest('[data-block]');
       if(r){ document.querySelector('.mem-menu').remove(); openReport(r.dataset.report); return; }
       if(b){ document.querySelector('.mem-menu').remove(); doBlock(b.dataset.block); return; }
-      if(f){ var x=member(f.dataset.follow); x.following=!x.following; renderMembers(); renderOverview(); }
-      if(g){ openThread=g.dataset.msg;
-        if(!T.some(function(t){return t.id===openThread;})) T.push({id:openThread,msgs:[]});
-        showTab('messages'); renderChat(); }
+      if(f){ var x=member(f.dataset.follow); x.following=!x.following; renderMembers(); renderOverview(); if(LIVE()) capi(x.following?'follow':'unfollow',{mid:x.id}).then(function(){ liveLoad(true); }).catch(function(){}); }
+      if(g){ openThread=g.dataset.msg; var gm=member(openThread);
+        if(!T.some(function(t){return t.id===openThread;})) T.unshift({id:openThread,msgs:[],name:gm&&gm.name,pending:true});
+        showTab('messages'); renderChat(); loadThread(openThread); }
     });
 
     function renderChat(){
@@ -7235,15 +7271,15 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         var x=member(t.id); if(!x)return '';
         var last=t.msgs[t.msgs.length-1];
         return '<div class="chat-item'+(t.id===openThread?' on':'')+'" data-t="'+t.id+'">'+
-          '<span class="avatar">'+initials(x.name)+'</span><div><b>'+x.name+'</b>'+
-          '<small>'+(last?last.text:'No messages yet')+'</small></div></div>';
+          '<span class="avatar">'+initials(x.name)+'</span><div><b>'+esc(x.name)+(t.unread?' <i class="c-unread"></i>':'')+'</b>'+
+          '<small>'+esc(last?last.text:(t.last||tr2('No messages yet')))+'</small></div></div>';
       }).join('');
       var th=T.filter(function(t){return t.id===openThread;})[0], x=th?member(th.id):null;
       el('cChatHead').innerHTML = x
-        ? (x.flag+' '+x.name+'<span class="acts"><button data-creport="'+x.id+'">Report</button><button data-cblock="'+x.id+'">Block</button></span>')
+        ? (x.flag+' '+esc(x.name)+'<span class="acts"><button data-creport="'+x.id+'">Report</button><button data-cblock="'+x.id+'">Block</button></span>')
         : 'Pick a conversation';
       el('cChatLog').innerHTML = th ? th.msgs.map(function(m){
-        return '<div class="bub '+(m.from==='me'?'me':'them')+'">'+m.text+'</div>';
+        return '<div class="bub '+(m.from==='me'?'me':'them')+'">'+esc(m.text)+'</div>';
       }).join('') : '';
       var log=el('cChatLog'); log.scrollTop=log.scrollHeight;
     }
@@ -7254,12 +7290,16 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     });
     el('cThreads').addEventListener('click',function(e){
       var i=e.target.closest('[data-t]'); if(!i)return;
-      openThread=i.dataset.t; renderChat();
+      openThread=i.dataset.t; renderChat(); loadThread(openThread);
     });
     el('cChatForm').addEventListener('submit',function(e){
       e.preventDefault();
       var v=el('cChatInput').value.trim(); if(!v||!openThread)return;
       var th=T.filter(function(t){return t.id===openThread;})[0];
+      if(LIVE()){ var ce=el('cChatErr'), inp=el('cChatInput'); inp.disabled=true;
+        capi('send',{mid:openThread,text:v}).then(function(j){ inp.disabled=false; inp.value=''; if(ce) ce.hidden=true; th.msgs.push(j.message); th.pending=false; renderChat(); inp.focus(); liveLoad(false); })
+          .catch(function(e){ inp.disabled=false; if(ce){ ce.textContent=cerr(e); ce.hidden=false; } });
+        return; }
       th.msgs.push({from:'me', text:v.replace(/[<>]/g,'')});
       el('cChatInput').value=''; renderChat();
     });
@@ -7273,9 +7313,14 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     syncToggle();
     el('cVisToggle').addEventListener('click',function(){
       P.visible=!P.visible; syncToggle(); renderOverview();
+      if(LIVE() && P.handle) capi('save',{nickname:P.handle, bio:P.bio||'', country:P.country||'', visible:P.visible}).then(function(){ liveLoad(true); }).catch(function(e){ var sv=el('cSaved'); sv.textContent=cerr(e); sv.style.color='#c81e2b'; sv.hidden=false; });
       if(F.renderBoard)F.renderBoard();
     });
     el('cSave').addEventListener('click',function(){
+      if(LIVE()){ var sv=el('cSaved'), btn=this; btn.disabled=true;
+        capi('save',{nickname:el('cName').value.trim(), bio:el('cBio').value.trim(), country:P.country||'', visible:P.visible}).then(function(j){ btn.disabled=false; P.handle=j.profile.nickname; P.bio=j.profile.bio; sv.textContent=tr2('Saved.'); sv.style.color='#1f8a5b'; sv.hidden=false; renderOverview(); liveLoad(true); setTimeout(function(){ sv.hidden=true; },2600); })
+          .catch(function(e){ btn.disabled=false; sv.textContent=cerr(e); sv.style.color='#c81e2b'; sv.hidden=false; });
+        return; }
       P.handle=el('cName').value.trim()||P.handle;
       P.bio=el('cBio').value.trim();
       renderOverview(); el('cSaved').hidden=false;
@@ -7331,7 +7376,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       showTab('messages'); renderChat();
     });
 
-    function showTab(name){
+    function showTab(name){ if(typeof LIVE==='function' && LIVE() && typeof liveLoad==='function' && (arguments[0]==='discover'||arguments[0]==='messages'||arguments[0]==='overview')) setTimeout(function(){ liveLoad(true); },0);
       document.querySelectorAll('.ctab').forEach(function(t){ t.hidden = t.dataset.tab!==name; });
       document.querySelectorAll('#cTabs button').forEach(function(b){ b.classList.toggle('is-on', b.dataset.tab===name); });
       if(name==='overview')renderOverview();

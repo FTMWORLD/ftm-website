@@ -581,3 +581,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Any change to a figure: change docs/statistics.md, the website and the checker together.
 - The browser logs history_gap / return_gap / pl_gap / history_partial to /api/v1/client-log when the engine and the
   website disagree: tell FTM ENGINE (via FTM MACHINE).
+
+## Community (interim service, 10 Nov 2026)
+- api/v1/community.js: profiles, Discover, follow, block, report and direct messages, stored as JSON in a private Supabase
+  Storage bucket "community" (created on first use with the service role key). Members are addressed by an opaque id.
+- The page polls every 4 s while Community is open. Tests: .github/tests/community-api.js and community-e2e.js.
+- FTM ENGINE's Community (verified figures, phases A/B/C) will replace this; move profiles (nickname, bio, visible) over.
