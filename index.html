@@ -5338,7 +5338,7 @@ h3.has-tip{cursor:help}
       tb.innerHTML=m.open.map(function(t){
 
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
-        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
+        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur(t.pl));
         return '<tr><td>'+t.symbol+tlab(t)+'</td><td>'+t.dir+'</td><td>'+t.lots.toFixed(2)+'</td><td>'+t.open+'</td><td>'+(t.current==null?'&mdash;':t.current)+'</td><td class="'+cls+'">'+plCell+'</td><td>'+((canClose&&t.positionRef&&window.FTM.remote&&window.FTM.remote.ready()&&window.FTM.session)?'<button type="button" class="conn-btn pos-close" data-ref="'+String(t.positionRef).replace(/"/g,'')+'">Close</button>':'')+'</td></tr>';
       }).join('');
       set('mOpenHint', m.open.length+' position'+(m.open.length===1?'':'s')+' currently open.');
@@ -5376,7 +5376,7 @@ h3.has-tip{cursor:help}
       closedRowsCache=recent;
       tb.innerHTML=recent.map(function(t,i){
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
-        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
+        var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur(t.pl));
         var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
         return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+tlab(t)+'</td><td>'+(t.dir||'&mdash;')+'</td><td>'+(t.lots!=null?t.lots.toFixed(2):'&mdash;')+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
@@ -5494,7 +5494,7 @@ h3.has-tip{cursor:help}
 
       set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(2)+'%');
       set('mPF', m.profitFactor==null?'\u2014':m.profitFactor.toFixed(2), m.profitFactor==null?null:(m.profitFactor>=1?'up':'down'));
-      set('mAvg', cur0(m.avgWin)+' / '+cur0(m.avgLoss));
+      set('mAvg', cur(m.avgWin)+' / '+cur(m.avgLoss));
       var mins=Math.round(m.avgDurMs/60000);
       set('mDur', Math.floor(mins/60)+'h '+(mins%60)+'m');
 
@@ -6327,7 +6327,7 @@ h3.has-tip{cursor:help}
       el('perfSymbols').innerHTML='<thead><tr><th>Market</th><th>Trades</th><th>Win rate</th><th>Lots</th><th>Net P/L</th></tr></thead><tbody>'+
         list.map(function(k){ var b=bySym[k];
           return '<tr><td><b>'+k+'</b></td><td>'+b.n+'</td><td>'+(b.w/b.n*100).toFixed(2)+'%</td><td>'+b.lots.toFixed(2)+'</td>'+
-                 '<td class="'+(b.pl>=0?'pl-up':'pl-down')+'">'+signed(b.pl,0)+'</td></tr>'; }).join('')+'</tbody>';
+                 '<td class="'+(b.pl>=0?'pl-up':'pl-down')+'">'+signed(b.pl,2)+'</td></tr>'; }).join('')+'</tbody>';
       renderPerfX();
     }
 

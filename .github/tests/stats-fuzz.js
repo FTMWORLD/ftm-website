@@ -131,10 +131,12 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
         calCells:[...document.querySelectorAll('#calGrid .cal-cell')].map(c=>[c.classList.contains('tot')?'W':((c.classList.contains('off'))?'off':(c.querySelector('.d')||{}).textContent),(c.querySelector('.v')||{}).textContent||'',(c.querySelector('.q')||{}).textContent||'']),
         cal:[g('calTitle'),g('calTrades'),g('calWins'),g('calNet'),g('calPct')],
         sess:[...document.querySelectorAll('#sessTable tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[3].textContent]),
-        sym:[...document.querySelectorAll('#perfSymbols tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[4].textContent]),
+        sym:[...document.querySelectorAll('#perfSymbols tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[4].textContent,tr.children[0].textContent,tr.children[2].textContent,tr.children[3].textContent]),
+        recent:[...document.querySelectorAll('#mClosedRows tr')].slice(0,5).map(tr=>[tr.children[2].textContent,tr.children[5].textContent]),
         st};});
     const ACT=await p.evaluate(async()=>{ const mb=document.getElementById('alMore'); for(let i=0;i<80&&mb&&!mb.hidden;i++){ mb.click(); await new Promise(z=>setTimeout(z,5)); } return [...document.querySelectorAll('#alList li .al-amt')].map(e=>e.textContent); });
     const RG=await p.evaluate(async()=>{ const out={}; const tf=document.getElementById('curveTF'); for(const r of ['1','3','6','ytd','12','0']){ const bt=tf.querySelector('[data-r="'+r+'"]'); bt.click(); await new Promise(z=>setTimeout(z,60)); out[r]=[Date.now(),(document.getElementById('cvChg')||{}).textContent||'']; } return out; });
+    const STS=await p.evaluate(()=>{ try{ FTM._stFill&&FTM._stFill(); const sel=document.getElementById('stPeriod'); return [...sel.options].map(o=>o.value).filter(v=>v!=='all').map(v=>{ sel.value=v; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [v,[...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent])]; }); }catch(e){ return 'ERR '+e.message; } });
     const PCT=await p.evaluate(async()=>{ const bt=document.querySelector('#unitSw [data-unit="percent"]'); if(!bt) return null; bt.click(); await new Promise(z=>setTimeout(z,150));
       const r=[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent)]);
       const a=document.querySelector('#unitSw [data-unit="amount"]'); if(a) a.click(); return r; });
@@ -157,7 +159,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     { const PS=O.positions.slice().sort((x,y)=>x.close-y.close), nets=PS.map(x=>c2(x.net)), n=nets.length;
       const gp=nets.filter(x=>x>0).reduce((a,x)=>a+x,0), gl=-nets.filter(x=>x<0).reduce((a,x)=>a+x,0), w=nets.filter(x=>x>0).length, l=nets.filter(x=>x<0).length;
       if(gl>0) eq(V.pf,gp/gl,0.0051,'Profit factor'); else ok(V.pf==='—','Profit factor with no losing trade is a dash: shown '+V.pf);
-      const av=V.avg.split('/'); eq(av[0],w?gp/w:0,0.5001,'Average win'); eq(av[1],l?gl/l:0,0.5001,'Average loss');
+      const av=V.avg.split('/'); eq(av[0],w?gp/w:0,0.0051,'Average win'); eq(av[1],l?gl/l:0,0.0051,'Average loss');
       const mu=n?nets.reduce((a,x)=>a+x,0)/n:0; eq(V.exp,mu,0.0051,'Expectancy = average trade result');
       if(n>1) eq(V.sd,Math.sqrt(nets.reduce((a,x)=>a+(x-mu)**2,0)/(n-1)),0.0051,'Standard deviation of trade results');
       let run=0,bestT=0; nets.forEach(x=>{ if(x>0){ run++; bestT=Math.max(bestT,run); } else if(x<0) run=0; }); eq(V.stT,bestT,0,'Best winning streak (trades)');
@@ -214,10 +216,18 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
         if(!/K/.test(c[1])) eq(c[1],s1.pl,Math.abs(s1.pl)>=1000?0.5001:0.005,'Calendar day '+dd+' '+ct+' money'); eq(c[2],s1.pct,0.0051,'Calendar day '+dd+' '+ct+' %'); }
       const sumW=wks.reduce((a,c)=>a+(/K/.test(c[1])?NaN:num(c[1])),0); if(!isNaN(sumW)&&wks.length) eq(sumW,sg.pl,0.5001*wks.length,'Calendar weeks add up to the month'); } }
     if(V.sess.length){ const sp=V.sess.reduce((a,r)=>a+num(r[0]),0), sn=V.sess.reduce((a,r)=>a+num(r[1]),0); eq(sp,O.pl,0.05,'Sessions add up to Net P/L'); eq(sn,O.positions.length,0,'Sessions add up to the trade count'); }
-    if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.pl,V.sym.length*0.5+0.01,'Markets add up to Net P/L'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
+    if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.pl,0.011,'Markets add up to Net P/L'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
+    V.sym.forEach(r=>{ const ps=O.positions.filter(x=>x.sym===r[2]); if(!ps.length){ ok(false,'market '+r[2]+' has no trades'); return; }
+      eq(r[0],ps.length,0,'Market '+r[2]+' trades'); eq(r[3],ps.filter(x=>c2(x.net)>0).length/ps.length*100,0.0051,'Market '+r[2]+' win rate'); eq(r[4],ps.reduce((a,x)=>a+x.lots,0),0.0051,'Market '+r[2]+' lots'); eq(r[1],ps.reduce((a,x)=>a+x.net,0),0.0051,'Market '+r[2]+' net'); });
+    { const R=O.positions.slice().sort((x,y)=>y.close-x.close).slice(0,V.recent.length); V.recent.forEach((r,i)=>{ ok(r[0]===R[i].sym,'Recently closed #'+(i+1)+' market '+r[0]+' vs '+R[i].sym); eq(r[1],R[i].net,0.0051,'Recently closed #'+(i+1)+' result'); }); }
     if(Array.isArray(V.st)){ const S=Object.fromEntries(V.st); eq(S['Opening balance'],acc.S0,0.005,'Statement opening balance'); eq(S['Closing balance'],O.balance,0.005,'Statement closing balance');
       eq(S['Deposits'],O.dep,0.005,'Statement deposits'); eq(S['Withdrawals'],-O.wd,0.005,'Statement withdrawals'); eq(S['Trading result'],O.pl,0.005,'Statement trading result'); }
     else ok(false,'statement: '+V.st);
+    if(Array.isArray(STS)) STS.forEach(([v,sum])=>{ const S=Object.fromEntries(sum); let a,z; if(v[0]==='Y'){ a=new Date(+v.slice(1),0,1); z=new Date(+v.slice(1)+1,0,1); } else { a=new Date(+v.slice(0,4),+v.slice(5,7)-1,1); z=new Date(+v.slice(0,4),+v.slice(5,7),1); } a=a.getTime(); z=z.getTime();
+      let dep=0,wd=0,adj=0; acc.rows.forEach(r=>{ if(r.t<a||r.t>=z||r.entry) return; if(r.type==='BALANCE'){ if(r.net>0) dep+=r.net; else wd-=r.net; } else adj+=r.net; });
+      const L='Statement '+v+' '; eq(S['Opening balance'],O.balAt(a),0.005,L+'opening'); eq(S['Closing balance'],O.balAt(z),0.005,L+'closing'); eq(S['Deposits'],dep,0.005,L+'deposits'); eq(S['Withdrawals'],-wd,0.005,L+'withdrawals');
+      eq(S['Trading result'],O.seg(a,z).pl,0.005,L+'trading result'); if(Math.abs(adj)>=0.005) eq(S['Dividends, tax & adjustments'],adj,0.005,L+'adjustments'); });
+    else ok(false,'statements: '+STS);
     ok(!beacons.some(x=>/history_gap|return_gap|pl_gap|history_partial/.test(x)),'website and engine agree (no gap reported): '+beacons.join(' '));
     ok(!errs.length,'no script errors '+(errs[0]||''));
     await ctx.close();
