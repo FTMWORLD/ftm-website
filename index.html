@@ -2221,6 +2221,12 @@ h3.has-tip{cursor:help}
 .sub-line{display:none}
 .sub-actions{margin-top:auto;display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:10px}.sub-actions .btn{flex:1 1 140px;justify-content:center;text-align:center}.sub-actions .btn[hidden]{display:none}
 @media (max-width:380px){.sub-ring-w{width:96px;height:96px}.sub-ring-c b{font-size:21px}.sub-ring-row{gap:12px}}
+.ftm-b{display:inline-block;width:15px;height:15px;border-radius:4px;vertical-align:-2px;margin-inline-start:6px;background:#152a7a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E3B62F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 17l5-5 4 3 7-8'/%3E%3C/svg%3E") center/11px no-repeat}
+.cl-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.cl-head h3{margin:0}
+.cl-filter{font:inherit;font-size:13px;font-weight:600;color:#0b1440;border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff}
+.cl-filter[hidden]{display:none}
+.dx-split{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:rgba(255,255,255,.72);cursor:help}.dx-split[hidden]{display:none}
+.dx-split b{font-weight:700}.dx-split .up{color:#8fe0b4}.dx-split .dn{color:#ff9aa2}
 .cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
 .cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
 .cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
@@ -3104,6 +3110,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
           <div class="dx-tagrow"><span class="dx-tag" id="dxTag">Auto Trading</span><span class="dx-tag dx-risk-tag" id="dxRiskTag" hidden><em>Risk profile</em> <b id="dxRiskTagV"></b></span><div class="unit-sw" id="unitSw" role="group" aria-label="Show figures as"><button type="button" data-unit="amount" aria-pressed="true">€ $</button><button type="button" data-unit="percent" aria-pressed="false">%</button></div></div>
           <span class="dx-lbl">Total account value</span>
           <b class="dx-val" id="dxVal">&mdash;</b>
+          <span class="dx-split" id="dxSplit" hidden tabindex="0"></span>
           <span class="dx-init" id="dxInit" hidden><em id="dxInitL">Initial deposit</em> <b id="dxInitV">&mdash;</b></span>
           <span class="dx-upd"><button type="button" class="dx-ref" id="dxRef" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><span id="dxUpd">Updated just now</span></span>
         </div>
@@ -3252,7 +3259,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     </div>
 
     <div class="app-card">
-      <h3>Recently closed trades</h3>
+      <div class="cl-head"><h3>Recently closed trades</h3><select id="clFilter" class="cl-filter" hidden aria-label="Show trades"><option value="all">All trades</option><option value="ftm">Copied by FTM</option><option value="own">My own trades</option></select></div>
       <p class="hint" id="mClosedHint">&mdash;</p>
       <div class="app-scroll"><table class="app-trades">
         <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
@@ -5086,6 +5093,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     }
     function tone(n){ return n>0?'up':(n<0?'down':null); }
 
+    F.splitOn = (function(){ try{ if(/[?&]preview=split\b/.test(location.search)) localStorage.setItem('ftm_preview_split','1'); return localStorage.getItem('ftm_preview_split')==='1'; }catch(e){ return /[?&]preview=split\b/.test(location.search); } })();
     F.es = function(){ var es=F.data&&F.data.engineStats; if(!es) return null; var va=F.viewedAccount&&F.viewedAccount(); if(es.accountId && va && va.accountId && es.accountId!==va.accountId) return null; return es; };
     F.initialDeposit = function(){ var es=F.es(); if(!es) return null;
       if(es.initialDeposit!=null && es.initialDeposit>0) return {amt:es.initialDeposit, t:es.initialDepositAt?Date.parse(es.initialDepositAt):null, kind:'deposit'};
@@ -5141,7 +5149,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0) - flowSum
         : acct.deposits - acct.withdrawals - flowSum;
       var es=F.es(), esComplete=!!(es && (es.historyTotal==null || (es.rows||(es.deals.length+(es.flows||[]).length))>=es.historyTotal*0.98)), useDeals=!!(es && es.deals && es.deals.filter(function(x){return !x.open;}).length>=covered.length && es.deals.length && esComplete);
-      var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open,s:x.seq};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
+      var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open,s:x.seq,pos:x.pos};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
       if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; fees=es.deals.reduce(function(a,x){return a+(x.cost||0);},0); }
       var adjEv=useDeals?(es.adj||[]):[], adjSum=adjEv.reduce(function(a,x){return a+x.amt;},0); if(useDeals) anchor-=adjSum;
       var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt,s:f.seq};}), adjEv.map(function(x){return {t:x.t,flow:x.amt,adj:true,cr:x.kind==='credit',s:x.seq};})).sort(function(a,b){return (a.t-b.t)||((a.s||0)-(b.s||0));});
@@ -5152,7 +5160,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       ev.forEach(function(e){
         if(e.flow && e.adj && !e.cr){ run+=e.flow; ddRun+=e.flow; curve.push({t:e.t, v:run, flow:e.flow, adj:true}); if(ddRun>ddPeak) ddPeak=ddRun; var da=ddPeak-ddRun; if(da>ddMaxAbs){ ddMaxAbs=da; ddMaxPct=ddPeak>0?da/ddPeak*100:0; } return; }
         if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push(e.adj?{t:e.t, v:run, flow:e.flow, adj:true, cr:true}:{t:e.t, v:run, flow:e.flow}); return; }
-        run+=e.pl; ddRun+=e.pl; curve.push({t:e.t, v:run});
+        run+=e.pl; ddRun+=e.pl; curve.push(e.pos?{t:e.t, v:run, pos:e.pos}:{t:e.t, v:run});
         if(ddRun>ddPeak) ddPeak=ddRun; var dr=ddPeak-ddRun; if(dr>ddMaxAbs){ ddMaxAbs=dr; ddMaxPct=ddPeak>0?dr/ddPeak*100:0; }
       });
       var curveIncomplete = covered.length < closed.length;
@@ -5230,7 +5238,11 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         avgWin: wins?grossProfit/wins:0, avgLoss: losses?grossLoss/losses:0,
         avgDurMs: n?durMs/n:0, curve:curve, byDay:byDay, dayOrder:order,
         streakDays:streakDays, streakTrades:streakTrades, bestDays:bestDays, bestTrades:bestTrades, plEvents:sEv,
-        yearPL:yearPL, yearPct:yearPct, open:openT, seg:seg, balAt:balAtT, gap:gap
+        yearPL:yearPL, yearPct:yearPct, open:openT, seg:seg, balAt:balAtT, gap:gap,
+        split:function(isFtm){ var f={pl:0,fac:1,n:0,w:0}, o={pl:0,fac:1,n:0,w:0};
+          for(var si=1; si<curve.length; si++){ var cp=curve[si], cq=curve[si-1]; if(cp.flow) continue; var d=cp.v-cq.v, side=(cp.pos && isFtm(String(cp.pos)))?f:o; side.pl+=d; if(cq.v>0) side.fac*=(1+d/cq.v); }
+          covered.forEach(function(t){ var side=(t.positionRef && isFtm(String(t.positionRef)))?f:o; side.n++; if(t.pl>0.004) side.w++; });
+          var out=function(x){ return {closed_pl:x.pl, pl_pct:x.n?(x.fac-1)*100:null, trades_closed:x.n, win_rate_pct:x.n?x.w/x.n*100:null}; }; return {ftm:out(f), own:out(o)}; }
       };
     };
 
@@ -5460,8 +5472,10 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     }
     function drawClosed(){
       var tb=document.getElementById('mClosedRows'); if(!tb)return;
-      var allC=closedList();
+      var allC=closedList(), hasOwn=F.splitOn && allC.some(function(t){ return t.copiedByFtm===false; }), flt=document.getElementById('clFilter');
+      if(flt){ flt.hidden=!hasOwn; var fv=hasOwn?flt.value:'all'; if(fv==='ftm') allC=allC.filter(function(t){ return t.copiedByFtm!==false; }); else if(fv==='own') allC=allC.filter(function(t){ return t.copiedByFtm===false; }); }
       var recent=allC.slice(0,clShow);
+      var ftmB=function(t){ return (F.splitOn && t.copiedByFtm===true) ? ' <i class="ftm-b" title="Copied by FTM" aria-label="Copied by FTM"></i>' : ''; };
       var xp=document.getElementById('clXp');
       if(xp){ xp.hidden=allC.length<=5; document.getElementById('clMore').hidden=allC.length<=clShow; document.getElementById('clLess').hidden=clShow<=5; }
       closedRowsCache=recent;
@@ -5469,12 +5483,12 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         var cls=t.pl==null?'':(t.pl>=0?'pl-up':'pl-down');
         var plCell=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur(t.pl));
         var fmt=function(ts){ return ts==null?'&mdash;':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
-        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+tlab(t)+'</td><td>'+(t.dir||'&mdash;')+'</td><td>'+(t.lots!=null?t.lots.toFixed(2):'&mdash;')+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
+        return '<tr class="tr-click" data-i="'+i+'" tabindex="0"><td>'+fmt(t.openTime)+'</td><td>'+fmt(t.closeTime)+'</td><td>'+t.symbol+ftmB(t)+tlab(t)+'</td><td>'+(t.dir||'&mdash;')+'</td><td>'+(t.lots!=null?t.lots.toFixed(2):'&mdash;')+'</td><td class="'+cls+'">'+plCell+'</td></tr>';
       }).join('');
       var ul=document.getElementById('mClosedList');
       if(ul){ var fm=function(ts){ return ts==null?'':new Date(ts).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); };
         var trw=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
-        ul.innerHTML=recent.map(function(t,i){ var up=t.pl!=null&&t.pl>=0; return '<li class="tr-click" data-i="'+i+'" tabindex="0"><span class="al-ic trade">⇅</span><div><b>'+(t.symbol||'')+' · '+trw(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+tlab(t)+'</b><small>'+fm(t.closeTime)+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</small></div><span class="al-amt '+(t.pl==null?'':(up?'up':'dn'))+'">'+(t.pl==null?'&mdash;':((up?'+':'')+cur(t.pl)))+'</span></li>'; }).join(''); }
+        ul.innerHTML=recent.map(function(t,i){ var up=t.pl!=null&&t.pl>=0; return '<li class="tr-click" data-i="'+i+'" tabindex="0"><span class="al-ic trade">⇅</span><div><b>'+(t.symbol||'')+ftmB(t)+' · '+trw(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+tlab(t)+'</b><small>'+fm(t.closeTime)+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</small></div><span class="al-amt '+(t.pl==null?'':(up?'up':'dn'))+'">'+(t.pl==null?'&mdash;':((up?'+':'')+cur(t.pl)))+'</span></li>'; }).join(''); }
       set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'. Click a row for details.' : 'No trades closed yet.');
     }
 
@@ -5512,6 +5526,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modal && !modal.hidden)shut(); });
       var clM=document.getElementById('clMore'), clL=document.getElementById('clLess');
       if(clM) clM.addEventListener('click',function(){ clShow+=20; drawClosed(); });
+      var clF=document.getElementById('clFilter'); if(clF) clF.addEventListener('change',function(){ clShow=5; drawClosed(); });
       if(clL) clL.addEventListener('click',function(){ clShow=5; drawClosed(); var c=clL.closest('.app-card'); if(c&&c.getBoundingClientRect().top<0) c.scrollIntoView({block:'start',behavior:'smooth'}); });
       var cl=document.getElementById('mClosedList');
       if(cl) cl.addEventListener('click',function(e){ var row=e.target.closest('.tr-click'); if(!row)return; var t=closedRowsCache[+row.dataset.i]; if(t)openTradeModal(t); });
@@ -5573,6 +5588,13 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var hiD=(ES.peakBalance!=null&&ES.peakBalanceAt)?new Date(ES.peakBalanceAt).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):'';
       set('mHigh', ES.peakBalance!=null ? cur(ES.peakBalance) : '\u2014'); set('mHighD', hiD);
 
+      (function(){ var dxS=document.getElementById('dxSplit'); if(!dxS) return; var trx=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+        var SP=null; if(F.splitOn){ if(ES.split&&ES.split.ftm&&ES.split.own) SP=ES.split; else { var C=F.data.closed||[], fl={}; C.forEach(function(t){ if(t.positionRef && t.copiedByFtm===true) fl[String(t.positionRef)]=1; }); if(C.some(function(t){ return t.copiedByFtm===false; }) && m.split) SP=m.split(function(p){ return !!fl[p]; }); } }
+        var own=SP&&SP.own, show=!!(own && +own.trades_closed>0); dxS.hidden=!show; if(!show) return;
+        var pc=function(x){ return x.pl_pct==null?'\u2014':((+x.pl_pct>0?'+':'')+(+x.pl_pct).toFixed(2)+'%'); }, cl=function(x){ return +x.pl_pct>0?'up':(+x.pl_pct<0?'dn':''); };
+        var det=function(nm,x){ return trx(nm)+': '+((+x.closed_pl>0?'+':'')+cur(+x.closed_pl||0))+' · '+(+x.trades_closed||0)+' '+trx('trades')+(x.win_rate_pct!=null?' · '+trx('Win rate')+' '+(+x.win_rate_pct).toFixed(2)+'%':'')+(x.max_drawdown_closed_pct!=null?' · '+trx('Max drawdown')+' '+(+x.max_drawdown_closed_pct).toFixed(2)+'%':''); };
+        dxS.innerHTML='<span>'+trx('FTM trades')+' <b class="'+cl(SP.ftm)+'">'+pc(SP.ftm)+'</b></span><span aria-hidden="true">\u00B7</span><span>'+trx('Your own trades')+' <b class="'+cl(own)+'">'+pc(own)+'</b></span>';
+        dxS.setAttribute('data-tip', det('FTM trades',SP.ftm)+'\n'+det('Your own trades',own)); })();
       var ini=F.initialDeposit(), iniTx=ini?cur(ini.amt)+(ini.t?' \u00B7 '+new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''):'\u2014', iniL=ini&&ini.kind==='start'?'Starting balance':'Initial deposit';
       var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', iniTx); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
       var adjV=(ES.feesAdj||0)+(ES.creditTotal||0), adjW=document.getElementById('mAdjW'); if(adjW) adjW.hidden=!(Math.abs(adjV)>=0.005); set('mAdj', (adjV>0?'+':'')+cur(adjV), tone(adjV));
