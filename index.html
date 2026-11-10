@@ -2631,6 +2631,25 @@ body.op-lock{overflow:hidden}
 #appView .hx-stat b,#appView .hx-stat em{display:block;max-width:100%;min-width:0}
 
 @media (max-width:560px){#appView .hx-stat{padding:6px 7px}#appView .hx-stat em{font-size:10.5px}#appView .hx-stat b{font-size:14.5px}}
+
+/* lighter top bar: only Status, no boxes except the product switch */
+.bar-title .app-title-meta>div:nth-child(1),.bar-title .app-title-meta>div:nth-child(2){display:none!important}
+.bar-title .app-title-meta{background:none!important;border:0!important;padding:0!important;display:block!important;width:auto!important;grid-template-columns:none!important}
+.bar-title .app-title-meta>div:nth-child(3){border:0!important;padding:0!important;display:block!important}
+.bar-title .bar-cash .dx-cbtn{background:none!important;border:0!important;padding:6px 6px!important;width:auto!important;height:auto!important;font-size:13px!important;gap:6px!important;border-radius:8px}
+.bar-title .bar-cash .dx-cbtn span{font-size:inherit!important}
+.bar-title .bar-cash .dx-cbtn:hover{background:rgba(255,255,255,.08)!important;color:#E3B62F}
+.bar-title .bar-cash{gap:4px!important}
+@media (min-width:1181px){.bar-title .app-title-txt p{display:block!important}}
+.bar-title .app-title-txt h2{white-space:nowrap}
+@media (max-width:1180px) and (min-width:861px){.bar-title .bar-cash .dx-cbtn{font-size:0!important;gap:0!important;padding:7px!important}.bar-title .bar-cash .dx-cbtn span{font-size:0!important}}
+@media (max-width:860px){.bar-title .bar-cash{justify-content:flex-start}.bar-title .bar-cash .dx-cbtn{flex:0 0 auto!important;justify-content:flex-start;padding:4px 10px 4px 0!important}.bar-title .app-title-meta{width:100%!important}}
+.prod-switch button.on[data-p="auto"]{background:#2547d0!important;color:#fff!important}
+.prod-switch button.on[data-p="invest"]{background:#E3B62F!important;color:#0B1440!important}
+/* blue box: no boxes inside the box */
+#appView .hx .hx-bot{border:0!important;background:none!important;padding:2px 0 0!important}
+#appView .hx-stat{border:0!important;background:none!important;padding:0!important;border-radius:0!important}
+#appView .hx-stats{gap:18px!important}
 </style>
 <script>
 (function(){
