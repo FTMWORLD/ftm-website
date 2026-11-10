@@ -2474,7 +2474,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .bill-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 @media (max-width:900px){input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}}
 
-#appView .dx-hero.hx,.dx-hero.hx{display:grid!important;grid-template-columns:1fr;gap:18px;align-items:stretch!important;padding:26px 26px 18px!important;background:radial-gradient(120% 140% at 70% -10%,#1f3bc4 0%,#13238a 38%,#0b1a6a 70%,#0a1458 100%)!important}
+#appView .dx-hero.hx,.dx-hero.hx{display:grid!important;grid-template-columns:1fr;gap:18px;align-items:stretch!important;padding:26px 26px 18px!important}
 .hx .hx-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .hx .hx-top .dx-lbl{font-size:clamp(17px,1.6vw,22px)!important;font-weight:800;color:#dfe6ff;letter-spacing:-.01em;margin-inline-end:auto}
 .hx .dx-unitrow{display:flex!important;margin:0!important}
@@ -2588,11 +2588,11 @@ body.op-lock{overflow:hidden}
 #appView .hx .dx-cbtn{padding:6px 11px!important;font-size:12px!important;gap:5px!important;border-width:1px!important}
 #appView .hx .dx-cbtn svg{width:13px!important;height:13px!important}
 @container hx (max-width:600px){#appView .hx .hx-bot{flex-wrap:wrap}#appView .hx-sep{display:none}#appView .hx-stats{flex:1 1 100%}#appView .hx .dx-cash{flex:1 1 100%}#appView .hx .dx-cash .dx-cbtn{flex:1 1 0;justify-content:center}}
-@container hx (max-width:470px){#appView .hx .hx-top{flex-wrap:wrap}#appView .hx .hx-top .dx-lbl{flex:1 1 100%}#appView .hx-tf{margin-inline-start:auto}#appView .hx .hx-mid{grid-template-columns:1fr}#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:80px!important}#appView .hx .dx-val{font-size:38px}}
+@container hx (max-width:470px){#appView .hx .hx-top{flex-wrap:wrap}#appView .hx .hx-top .dx-lbl{flex:1 1 100%}#appView .hx-tf{margin-inline-start:auto}#appView .hx .hx-mid{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:8px}#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:86px!important}#appView .hx .dx-val{font-size:28px}#appView .hx .dx-upd{font-size:11px}}
 
 #appView .hx-stat em{white-space:normal;line-height:1.15;overflow:visible;text-overflow:clip}
 #appView .hx-stats>#dxInit{flex:1.25 1 0}
-@container hx (max-width:470px){#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:64px!important}#appView .hx .dx-val{font-size:34px}#appView .dx-hero.hx{gap:8px!important}#appView .hx .dx-cbtn{padding:7px 6px!important}}
+@container hx (max-width:470px){#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:86px!important}#appView .hx .dx-val{font-size:28px}#appView .dx-hero.hx{gap:8px!important}#appView .hx .dx-cbtn{padding:7px 6px!important}}
 </style>
 <script>
 (function(){
@@ -10140,6 +10140,13 @@ tick();setInterval(tick,5000);})();
 (function(){ ['appView','invView'].forEach(function(id){ var v=document.getElementById(id); if(!v) return; var bar=v.querySelector('.app-bar'), who=bar&&bar.querySelector('.app-who'), tt=v.querySelector('.app-title'); if(!bar||!who||!tt) return;
   var box=document.createElement('div'); box.className='bar-title'; var txt=tt.querySelector('.app-title-txt'), meta=tt.querySelector('.app-title-meta'); if(txt) box.appendChild(txt); if(meta) box.appendChild(meta);
   bar.insertBefore(box,who); bar.classList.add('has-title'); tt.classList.add('moved'); var cr=v.querySelector('.app-crumb'); if(cr) cr.classList.add('moved'); });
+})();
+</script>
+<script>
+(function(){ function align(){ ['appView','invView'].forEach(function(id){ var v=document.getElementById(id); if(!v||v.hidden) return; var bt=v.querySelector('.bar-title'), ct=v.querySelector('.app-content'); if(!bt||!ct||!bt.offsetParent) return;
+    bt.style.marginLeft=''; var main=ct.querySelector('.app-main'), pl=main?parseFloat(getComputedStyle(main).paddingLeft)||0:0, target=ct.getBoundingClientRect().left+pl, now=bt.getBoundingClientRect().left;
+    var d=Math.round(target-now); if(d>0) bt.style.marginLeft=(parseFloat(getComputedStyle(bt).marginLeft)||0)+d+'px'; }); }
+  window.addEventListener('resize',align); setInterval(align,1500); document.addEventListener('DOMContentLoaded',align); setTimeout(align,300);
 })();
 </script>
 </body>
