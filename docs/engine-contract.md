@@ -4,6 +4,17 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — LEADERBOARD: TRADING ACCOUNT ONLY + FTM MASTER ROW (commit 9608fbf, API restarted 14:07 Berlin)
+
+- A customer's row = the account FTM MACHINE trades on now (trading_status ACTIVE); a switch moves the row at the next
+  5-minute rebuild and starts it fresh (that account's split.ftm, copies closed since its activation).
+- NEW on every row: is_master (bool) and account_since (ISO: when FTM MACHINE started on this account).
+- NEW row "FTM MASTER" (is_master true): the master's split.ftm % (basis MASTER_ACCOUNT_ALL_FTM), closed trades / wins,
+  since 2026-11-04. Ranked among the customers (Gospel); rules.master_in_rank = INCLUDED (engine switch, EXCLUDED =
+  badge only, rank null).
+- Proof: verify-stats-audit A14, verify-leaderboard 33/33; regress SAFE TO DEPLOY. Live: 1 Tanaya 5.57, 2 FTM MASTER
+  -4.56, 3 Marine -7.35.
+
 ## 2026-11-10 — LIVE PRICES FOR THE CLIENT-AREA CHART (commit ae17d3d, API restarted 13:20, feed live 13:39 Berlin)
 
 - NEW GET /customer/market/candles?symbol=XAUUSD|BTCUSD|USTEC|USDJPY|HK50|BOOM1000&tf=1m|5m|15m|1h|4h|1d&limit=1-300:
