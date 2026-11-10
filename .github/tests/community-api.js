@@ -1,6 +1,6 @@
 // Community service: two members find each other, follow, message, block; rules for names, links and free accounts. Run: node .github/tests/community-api.js
 const Module=require('module'); const orig=Module._load;
-const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'}};
+const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'},'tokS':{id:'00000000-0000-4000-8000-0000000000ff',email:'team@ftmwealthnation.com'}};
 const paid={'00000000-0000-4000-8000-00000000000a':['auto'],'00000000-0000-4000-8000-00000000000b':['auto']};
 const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}})},
   from:()=>({select:()=>({eq:(c,id)=>({maybeSingle:async()=>({data:{products:paid[id]||[]}})})})}),
@@ -40,6 +40,25 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
     r=await call('tokB',{action:'unsend',mid:mA,t:t0}); ok(r[0]===200&&r[1].message.removed,'Marine removes her own message');
     r=await call('tokA',{action:'messages',mid:mB}); const rm=r[1].messages.find(x=>x.t===t0); ok(rm.removed&&rm.text===''&&!rm.reactions,'the removed message is gone for both');
     r=await call('tokA',{action:'profile',mid:mB}); ok(r[0]===200&&r[1].member.nickname==='Marine'&&'followers' in r[1].member,'tapping Marine in the chat opens her profile'); }
+  { // social feed
+    const jpg='data:image/jpeg;base64,'+Buffer.from([0xFF,0xD8,0xFF,0xE0,1,2,3,4,0xFF,0xD9]).toString('base64');
+    r=await call('tokA',{action:'post',text:'Gold closed strong today 📈',image:jpg}); ok(r[0]===200&&r[1].post.img&&r[1].post.author.nickname==='Tanaya','Tanaya posts a photo with text');
+    const pid=r[1].post.id;
+    r=await call('tokA',{action:'post',text:'join my vip signals at www.x.com'}); ok(r[1].error==='NO_LINKS','no links or selling in posts');
+    r=await call('tokB',{action:'feed'}); ok(r[1].posts.length===1&&r[1].posts[0].id===pid&&!r[1].posts[0].mine,'Marine sees Tanaya\'s post in the feed');
+    r=await call('tokB',{action:'like',id:pid}); ok(r[1].post.likes===1&&r[1].post.liked,'Marine likes it');
+    r=await call('tokB',{action:'comment',id:pid,text:'Nice one!'}); ok(r[1].post.comments.length===1&&r[1].post.comments[0].author.nickname==='Marine','Marine comments');
+    r=await call('tokA',{action:'notifs'}); ok(r[1].items.length===2&&r[1].items.some(n=>n.kind==='like')&&r[1].items.some(n=>n.kind==='comment'&&/Nice one/.test(n.text))&&r[1].unread===2,'Tanaya gets notifications for the like and the comment');
+    r=await call('tokA',{action:'notifs',read:true}); r=await call('tokA',{action:'notifs'}); ok(r[1].unread===0,'opening notifications marks them read');
+    r=await call('tokB',{action:'delpost',id:pid}); ok(r[1].error==='NOT_YOURS','nobody can delete someone else\'s post');
+    r=await call('tokS',{action:'post',text:'Welcome to the FTM Community! Gold session opens at 8:00.'}); ok(r[0]===200&&r[1].post.author.ftm&&r[1].post.author.nickname==='FTM','FTM staff post as FTM (no profile needed)');
+    const fid=r[1].post.id; r=await call('tokS',{action:'pin',id:fid}); ok(r[1].post.pinned,'FTM pins its post');
+    r=await call('tokA',{action:'pin',id:pid}); ok(r[1].error==='NOT_YOURS','only FTM can pin');
+    r=await call('tokB',{action:'feed'}); ok(r[1].posts[0].id===fid&&r[1].posts[0].pinned,'the pinned FTM post is first for everyone');
+    r=await call('tokB',{action:'notifs'}); ok(r[1].items.some(n=>n.kind==='ftm'),'members are notified of FTM posts');
+    r=await call('tokB',{action:'feed',scope:'ftm'}); ok(r[1].posts.length===1&&r[1].posts[0].author.ftm,'filter: FTM posts only');
+    r=await call('tokF',{action:'post',text:'hello'}); ok(r[1].error==='PROFILE_FIRST'||r[1].error==='READ_ONLY','free members can read but not post');
+    r=await call('tokA',{action:'delpost',id:pid}); r=await call('tokB',{action:'feed',scope:'all'}); ok(!r[1].posts.some(p=>p.id===pid),'Tanaya deletes her own post'); }
   r=await call('tokF',{action:'save',nickname:'FreeUser',visible:true}); r=await call('tokF',{action:'members'}); ok(r[1].members.length===2,'a free member can browse');
   r=await call('tokF',{action:'send',mid:mA,text:'hey'}); ok(r[0]===403&&r[1].error==='READ_ONLY','a free member cannot send messages');
   r=await call('tokB',{action:'block',mid:mA}); r=await call('tokA',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Marine'),'after Marine blocks Tanaya, they no longer see each other');

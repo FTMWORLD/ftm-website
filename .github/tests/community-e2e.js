@@ -15,6 +15,7 @@ async function open(b,tok,name){
   const p=await b.newPage({viewport:{width:1280,height:900}}); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
   await p.route('**/api/v1/**',async r=>{ const u=r.request().url();
+    if(u.includes('/api/v1/community?postimg=')){ const d=files['posts/'+decodeURIComponent(u.match(/postimg=([^&]+)/)[1])+'.jpg']; return d?r.fulfill({status:200,contentType:'image/jpeg',body:d}):r.fulfill({status:404,body:''}); }
     if(u.includes('/api/v1/community?avatar=')){ const d=files['avatars/'+decodeURIComponent(u.match(/avatar=([^&]+)/)[1])+'.jpg']; return d?r.fulfill({status:200,contentType:'image/jpeg',body:d}):r.fulfill({status:404,body:''}); }
     if(u.includes('/api/v1/community')){ const auth=r.request().headers()['authorization']||''; const body=JSON.parse(r.request().postData()||'{}');
       const out=await new Promise(res=>{ const rs={s:200,status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,{}]);}}; H({method:'POST',headers:{authorization:auth},body},rs); });
@@ -80,6 +81,27 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   await B.click('#pkX'); ok(!(await B.isVisible('#cPeek')),'the profile closes');
   await tab(B,'discover'); await B.waitForTimeout(400); await B.click('#cMembers b[data-peek]'); await B.waitForTimeout(300);
   ok(await B.isVisible('#cPeek'),'tapping a name in Discover opens the profile'); await B.keyboard.press('Escape');
+  // social feed
+  const pic=await (async()=>{ const q=await b.newPage({viewport:{width:400,height:260}}); await q.setContent('<body style="margin:0;background:linear-gradient(135deg,#0B1440,#D4AF37)"></body>'); const x=await q.screenshot({type:'jpeg'}); await q.close(); return x; })();
+  await A.bringToFront(); await tab(A,'feed'); await A.waitForTimeout(600);
+  await A.fill('#fdText','Gold closed strong today 📈'); await A.setInputFiles('#fdFile',{name:'g.jpg',mimeType:'image/jpeg',buffer:pic}); await A.waitForTimeout(600);
+  ok(await A.isVisible('#fdPrev'),'the photo preview shows before posting');
+  await A.click('#fdPost'); await A.waitForTimeout(1200);
+  ok(/Gold closed strong/.test(await A.textContent('#fdList')) && await A.evaluate(()=>!!document.querySelector('#fdList .fd-img img')),'Tanaya posts text and a photo to the feed');
+  await B.bringToFront(); await tab(B,'feed'); await B.waitForTimeout(1200);
+  ok(/Gold closed strong/.test(await B.textContent('#fdList')),'Marine sees Tanaya\'s post in her feed');
+  await B.dblclick('#fdList .fd-img'); await B.waitForTimeout(1500);
+  ok(await B.evaluate(()=>document.querySelector('#fdList [data-like]').classList.contains('on')),'Marine double-taps the photo to like it');
+  await B.fill('#fdList [data-cform] input','Beautiful chart!'); await B.press('#fdList [data-cform] input','Enter'); await B.waitForTimeout(1200);
+  ok(/Beautiful chart!/.test(await B.textContent('#fdList')),'Marine comments on the post');
+  await A.bringToFront(); await A.evaluate(()=>FTM.navCheck&&FTM.navCheck()); await A.evaluate(()=>FTM.communityLoad&&FTM.communityLoad(true)); await A.waitForTimeout(1500);
+  ok(/^[12]$/.test((await A.textContent('#ntCount')).trim()) && await A.isVisible('#ntCount'),'Tanaya gets a red count on Notifications');
+  await tab(A,'notifs'); await A.waitForTimeout(1200);
+  const nt=await A.textContent('#ntList'); ok(/liked your post/.test(nt)&&/commented/.test(nt)&&/Beautiful chart/.test(nt),'Notifications show who liked and what they commented');
+  ok(!(await A.isVisible('#ntCount')),'opening Notifications clears the count');
+  await A.click('#ntList [data-ni]'); await A.waitForTimeout(1300);
+  ok(await A.evaluate(()=>!document.querySelector('.ctab[data-tab="feed"]').hidden),'tapping a notification opens the post in the feed');
+  if(process.env.FEED_SHOTS){ const S=process.env.FEED_SHOTS; await A.screenshot({path:S+'/feed_laptop.png'}); await A.setViewportSize({width:390,height:844}); await A.waitForTimeout(300); await A.evaluate(()=>document.querySelector('#fdList').scrollIntoView()); await A.screenshot({path:S+'/feed_phone.png'}); await tab(A,'notifs'); await A.waitForTimeout(600); await A.screenshot({path:S+'/notifs_phone.png'}); }
   ok(!A.errs.length && !B.errs.length,'no script errors '+(A.errs[0]||B.errs[0]||''));
   await b.close(); console.log(fails?'FAILED: '+fails:'COMMUNITY LIVE OK'); process.exit(fails?1:0);
 })();

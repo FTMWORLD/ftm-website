@@ -9,6 +9,10 @@
      send {mid, text, reply?}    send a direct message (paid members; no links or contact details)
      react {mid, t, e}           toggle a reaction on a message; unsend {mid, t} removes your own message
      typing {mid}                'is typing' signal; profile {mid} one member's public card
+     feed {scope:all|following|ftm|<mid>, before?}   posts, newest first (pinned FTM posts on top)
+     post {text, image?}         new post (paid members and FTM); like {id}; comment {id, text}; delpost {id}; delcomment {id, cid}; pin {id} (FTM)
+     notifs {read?}              likes, comments, new followers and FTM posts for me
+   FTM staff = a login on @ftmwealthnation.com or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
    Data lives in a private Supabase Storage bucket "community" (JSON files), reachable only through this function.
    Members are addressed by an opaque id (mid), never by their login id or email. */
 
@@ -28,6 +32,9 @@ function midOf(uid) { return crypto.createHmac('sha256', key()).update(String(ui
 function clean(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, n).join(''); }
 const REACTIONS = ['\u2764\uFE0F', '\uD83D\uDC4D', '\uD83D\uDE02', '\uD83D\uDE2E', '\uD83D\uDE22', '\uD83D\uDE4F', '\uD83D\uDD25', '\uD83C\uDF89'];
 function outMsg(x, me) { const o = { from: x.f === me ? 'me' : 'them', text: x.d ? '' : x.x, t: x.t }; if (x.d) o.removed = true; if (x.r) { const r = {}; Object.keys(x.r).forEach(k => { r[k === me ? 'me' : 'them'] = x.r[k]; }); o.reactions = r; } if (x.q && !x.d) o.reply = { from: x.q.f === me ? 'me' : 'them', text: x.q.x, t: x.q.t }; return o; }
+const postsSent = new Map();
+function isStaff(user) { const e = String((user && user.email) || '').toLowerCase(); const L = String(process.env.FTM_COMMUNITY_ADMINS || '').toLowerCase().split(',').map(x => x.trim()).filter(Boolean); return !!e && (/@ftmwealthnation\.com$/.test(e) || L.indexOf(e) !== -1); }
+function cleanLong(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u0000-\u0009\u000b-\u001f<>]/g, ' ').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()).slice(0, n).join(''); }
 function pair(a, b) { return a < b ? a + '__' + b : b + '__' + a; }
 
 function store(admin) {
@@ -76,6 +83,17 @@ module.exports = async function handler(req, res) {
       return res.status(200).end(buf);
     } catch (e) { return res.status(404).end(); }
   }
+  if (req.method === 'GET' && req.query && req.query.postimg) {
+    const id = String(req.query.postimg).replace(/[^a-z0-9]/g, '').slice(0, 24);
+    try {
+      const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+      const r = await within(6000, admin.storage.from(BUCKET).download('posts/' + id + '.jpg'), 'postimg');
+      if (r.error || !r.data) return res.status(404).end();
+      const buf = Buffer.from(await r.data.arrayBuffer());
+      res.setHeader('Content-Type', 'image/jpeg'); res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return res.status(200).end(buf);
+    } catch (e) { return res.status(404).end(); }
+  }
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   let body = req.body || {};
   if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
@@ -98,12 +116,15 @@ module.exports = async function handler(req, res) {
     const followers = m => Object.keys(soc.follows).filter(k => (soc.follows[k] || []).indexOf(m) !== -1 && !hidden.has(k)).length;
     const followingOf = m => (soc.follows[m] || []).filter(k => idx.members[k] && !hidden.has(k)).length;
     const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m) }; };
+    const notify = async (m, n) => { if (!m || m === me) return; const p = 'notif/' + m + '.json', nb = await S.read(p, { items: [], read: '' }); n.t = new Date().toISOString(); nb.items = nb.items.filter(z => !(z.k === n.k && z.by === n.by && z.post === n.post && n.k !== 'comment')); nb.items.push(n); if (nb.items.length > 100) nb.items = nb.items.slice(-100); await S.write(p, nb); };
     const okTarget = m => m && m !== me && idx.members[m] && idx.members[m].visible && !hidden.has(m);
 
     if (action === 'me') {
       const paid = await isPaid(admin, user.id);
       if (mine && !!mine.sub !== paid) { mine.sub = paid; await S.write('index.json', idx); }
-      return res.status(200).json({ ok: true, mid: me, paid,
+      const nb = await S.read('notif/' + me + '.json', { items: [], read: '' });
+      const ftmNew = (await S.read('posts.json', { posts: [] })).posts.filter(x => x.ftm && x.a !== me && x.t > (nb.read || '') && x.t > (mine && mine.since || '')).length;
+      return res.status(200).json({ ok: true, mid: me, paid, staff: isStaff(user), notif_unread: nb.items.filter(x => x.t > (nb.read || '')).length + ftmNew,
         profile: mine ? { nickname: mine.nickname, bio: mine.bio || '', country: mine.country || '', visible: !!mine.visible, since: mine.since, av: mine.av || null } : { nickname: '', bio: '', country: '', visible: false, since: null, av: null },
         followers: followers(me), following: follows.length, blocked: blocks.filter(m => idx.members[m]).map(m => ({ mid: m, nickname: idx.members[m].nickname })) });
     }
@@ -145,12 +166,13 @@ module.exports = async function handler(req, res) {
       const L = (soc[k][me] || []).filter(x => x !== m); if (on) L.push(m); soc[k][me] = L;
       if (action === 'block') soc.follows[me] = (soc.follows[me] || []).filter(x => x !== m);
       await S.write('social.json', soc);
+      if (action === 'follow') await notify(m, { k: 'follow', by: me });
       return res.status(200).json({ ok: true });
     }
 
     if (action === 'report') {
       const m = String(body.mid || '');
-      await S.write('reports/' + Date.now() + '_' + me + '.json', { by: me, about: m, nickname: idx.members[m] && idx.members[m].nickname, reason: clean(body.reason, 500), at: new Date().toISOString() });
+      await S.write('reports/' + Date.now() + '_' + me + '.json', { by: me, about: m, post: body.post ? String(body.post).slice(0, 24) : undefined, nickname: idx.members[m] && idx.members[m].nickname, reason: clean(body.reason, 500), at: new Date().toISOString() });
       return res.status(200).json({ ok: true });
     }
 
@@ -222,6 +244,86 @@ module.exports = async function handler(req, res) {
       if (!idx.members[m] || hidden.has(m)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (m !== me && !idx.members[m].visible) { const ib = await S.read('inbox/' + me + '.json', { threads: {} }); if (!ib.threads[m]) return res.status(404).json({ ok: false, error: 'NOT_FOUND' }); }
       return res.status(200).json({ ok: true, member: pub(m) });
+    }
+
+    if (['feed', 'post', 'like', 'comment', 'delpost', 'delcomment', 'pin', 'notifs'].indexOf(action) !== -1) {
+      const staff = isStaff(user);
+      const P = await S.read('posts.json', { posts: [] });
+      const who = m => { const x = idx.members[m] || {}; return { mid: m, nickname: x.nickname || '', av: x.av || null, country: x.country || '', sub: !!x.sub }; };
+      const outPost = x => ({ id: x.id, author: x.ftm ? { mid: x.a, nickname: 'FTM', ftm: true } : who(x.a), text: x.x, img: x.img ? '/api/v1/community?postimg=' + x.id + '&v=' + x.img : null, t: x.t,
+        likes: (x.lk || []).filter(m => !hidden.has(m)).length, liked: (x.lk || []).indexOf(me) !== -1, pinned: !!x.pin, mine: x.a === me, can_delete: x.a === me || staff,
+        comments: (x.c || []).filter(c => !hidden.has(c.a)).map(c => ({ id: c.id, author: c.ftm ? { mid: c.a, nickname: 'FTM', ftm: true } : who(c.a), text: c.x, t: c.t, mine: c.a === me, can_delete: c.a === me || x.a === me || staff })) });
+      const find = id => P.posts.filter(x => x.id === String(id || ''))[0];
+      if (action === 'feed') {
+        const sc = String(body.scope || 'all'), fol = new Set(follows);
+        let L = P.posts.filter(x => !hidden.has(x.a) && (x.ftm || idx.members[x.a]));
+        if (sc === 'following') L = L.filter(x => x.ftm || x.a === me || fol.has(x.a));
+        else if (sc === 'ftm') L = L.filter(x => x.ftm);
+        else if (sc !== 'all') L = L.filter(x => x.a === sc && !x.ftm);
+        if (body.before) L = L.filter(x => x.t < String(body.before));
+        L.sort((a, b) => ((b.pin ? 1 : 0) - (a.pin ? 1 : 0)) || String(b.t).localeCompare(String(a.t)));
+        return res.status(200).json({ ok: true, staff, posts: L.slice(0, 30).map(outPost), more: L.length > 30 });
+      }
+      if (action === 'notifs') {
+        const nb = await S.read('notif/' + me + '.json', { items: [], read: '' }), prev = nb.read || '';
+        const ftmItems = P.posts.filter(x => x.ftm && x.a !== me && x.t > (mine && mine.since || '')).slice(-30).map(x => ({ k: 'ftm', by: x.a, post: x.id, x: Array.from(x.x || '').slice(0, 90).join(''), t: x.t }));
+        const items = nb.items.concat(ftmItems).filter(n => !hidden.has(n.by) && (n.k === 'ftm' || idx.members[n.by])).sort((a, b) => String(b.t).localeCompare(String(a.t))).slice(0, 60)
+          .map(n => ({ kind: n.k, by: n.k === 'ftm' ? { mid: n.by, nickname: 'FTM', ftm: true } : who(n.by), post: n.post || null, text: n.x || '', t: n.t, unread: n.t > prev }));
+        if (body.read) { nb.read = new Date().toISOString(); await S.write('notif/' + me + '.json', nb); }
+        return res.status(200).json({ ok: true, items, unread: items.filter(n => n.unread).length });
+      }
+      if (!staff && (!mine || !mine.nickname)) return res.status(400).json({ ok: false, error: 'PROFILE_FIRST' });
+      if (action === 'post') {
+        const text = cleanLong(body.text, 2000), img = String(body.image || '');
+        if (!text && !img) return res.status(400).json({ ok: false, error: 'EMPTY' });
+        if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
+        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        const now = Date.now(), hits = (postsSent.get(me) || []).filter(t => now - t < 864e5); if (!staff && hits.length >= 20) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
+        const id = now.toString(36) + crypto.randomBytes(3).toString('hex'), x = { id, a: me, x: text, t: new Date().toISOString(), lk: [], c: [] };
+        if (staff) x.ftm = true;
+        if (img) {
+          const mm = img.match(/^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/); if (!mm) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
+          const buf = Buffer.from(mm[1], 'base64'); if (buf.length > 700000 || buf[0] !== 0xFF || buf[1] !== 0xD8) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
+          const r = await within(8000, admin.storage.from(BUCKET).upload('posts/' + id + '.jpg', buf, { upsert: true, contentType: 'image/jpeg', cacheControl: '31536000' }), 'post image'); if (r.error) throw new Error('POSTIMG: ' + r.error.message);
+          x.img = now.toString(36);
+        }
+        hits.push(now); postsSent.set(me, hits);
+        P.posts.push(x); if (P.posts.length > 600) P.posts = P.posts.filter(p => p.pin).concat(P.posts.filter(p => !p.pin).slice(-580));
+        await S.write('posts.json', P);
+        return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      const x = find(body.id);
+      if (!x || hidden.has(x.a)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      if (action === 'like') {
+        x.lk = x.lk || []; const on = x.lk.indexOf(me) === -1; x.lk = x.lk.filter(m => m !== me); if (on) x.lk.push(me);
+        await S.write('posts.json', P); if (on && x.a !== me && !x.ftm) await notify(x.a, { k: 'like', by: me, post: x.id });
+        return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'comment') {
+        const text = cleanLong(body.text, 600); if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
+        if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
+        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        x.c = x.c || []; const c = { id: Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), a: me, x: text, t: new Date().toISOString() }; if (staff) c.ftm = true;
+        x.c.push(c); if (x.c.length > 200) x.c = x.c.slice(-200);
+        await S.write('posts.json', P); if (x.a !== me && !x.ftm) await notify(x.a, { k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') });
+        return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'delpost') {
+        if (x.a !== me && !staff) return res.status(403).json({ ok: false, error: 'NOT_YOURS' });
+        P.posts = P.posts.filter(p => p !== x); await S.write('posts.json', P);
+        return res.status(200).json({ ok: true });
+      }
+      if (action === 'delcomment') {
+        const c = (x.c || []).filter(z => z.id === String(body.cid || ''))[0]; if (!c) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        if (c.a !== me && x.a !== me && !staff) return res.status(403).json({ ok: false, error: 'NOT_YOURS' });
+        x.c = x.c.filter(z => z !== c); await S.write('posts.json', P);
+        return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'pin') {
+        if (!staff) return res.status(403).json({ ok: false, error: 'NOT_YOURS' });
+        x.pin = !x.pin; await S.write('posts.json', P);
+        return res.status(200).json({ ok: true, post: outPost(x) });
+      }
     }
 
     return res.status(400).json({ ok: false, error: 'INVALID_ACTION' });

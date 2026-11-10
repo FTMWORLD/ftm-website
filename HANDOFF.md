@@ -599,3 +599,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 
 ## Wording rule (owner, 10 Nov 2026)
 - FTM is for everyone: say "people" or "members", never "traders", for FTM customers.
+
+## Community feed and notifications (10 Nov 2026)
+- api/v1/community.js actions feed/post/like/comment/delpost/delcomment/pin/notifs; posts.json (max ~600, pinned kept), images posts/<id>.jpg
+  served by GET ?postimg=; notifications notif/<mid>.json (likes, comments, follows) plus FTM posts computed from posts.json.
+- FTM staff = login on @ftmwealthnation.com or listed in env FTM_COMMUNITY_ADMINS; staff posts show as "FTM" with a gold tick and can pin/delete anything.
+- Tests: community-api.js (feed rules), community-e2e.js (two browsers: post with photo, double-tap like, comment, notifications).
