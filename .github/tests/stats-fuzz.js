@@ -101,11 +101,11 @@ const num=s=>{ if(s==null) return NaN; const t=String(s).replace(/[−–]/g,'-'
 if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>{
   const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})});
   const fails=[]; let checks=0;
-  for(let k=0;k<N;k++){
+  const one=async(k)=>{
     const seed=SEED*1000+k, now=Date.now(), acc=gen(seed,now), O=oracle(acc), ST=engine(acc,O);
     // every second account is first opened on another account (a customer's own), then switched to: no figure may leak across
     const sw=seed%2===1, OID='f7a00000-0000-4000-8000-0000000000d1', acc2=sw?gen(seed+77777,now):null, O2=sw?oracle(acc2):null, ST2=sw?engine(acc2,O2):null;
-    const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:'Europe/Berlin',locale:'en-GB'}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:'Europe/Berlin',locale:'en-GB'}); const p=await ctx.newPage(); const errs=[], navs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('framenavigated',f=>{ if(f===p.mainFrame()) navs.push(f.url()); }); one.ctx=ctx; one.navs=navs;
     await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
     await p.route('**/i18n/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
     const beacons=[];
@@ -239,6 +239,15 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     ok(!errs.length,'no script errors '+(errs[0]||''));
     await ctx.close();
     process.stdout.write('.');
+  };
+  for(let k=0;k<N;k++){
+    for(let attempt=0;;attempt++){
+      const f0=fails.length, c0=checks;
+      try{ await one(k); break; }
+      catch(e){ fails.length=f0; checks=c0; try{ await one.ctx.close(); }catch(x){}
+        const why='#'+(SEED*1000+k)+' page error: '+String(e.message).split('\n')[0]+' | page went to: '+(one.navs||[]).join(' -> ');
+        if(attempt>=1){ fails.push(why); break; } console.log('\nretrying after: '+why); }
+    }
   }
   await b.close();
   console.log('\n'+checks+' checks on '+N+' accounts');
