@@ -19,6 +19,7 @@ const LINKS = /(https?:\/\/|www\.|\b[\w-]+\.(com|net|org|io|me|ly|co|app|xyz|inf
 const SELLING = /\b(signals?\s+for\s+sale|sell(ing)?\s+signals?|paid\s+signals?|vip\s+signals?|account\s+management)\b/i;
 let bucketReady = false;
 const sent = new Map();
+function within(ms, p, what) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT ' + what)), ms))]); }
 
 function key() { return crypto.createHmac('sha256', String(process.env.SUPABASE_SERVICE_ROLE_KEY || '')).update('ftm-community-v1').digest(); }
 function midOf(uid) { return crypto.createHmac('sha256', key()).update(String(uid)).digest('hex').slice(0, 16); }
@@ -30,17 +31,17 @@ function store(admin) {
   return {
     async ready() {
       if (bucketReady) return;
-      const g = await admin.storage.getBucket(BUCKET);
-      if (g.error) { const c = await admin.storage.createBucket(BUCKET, { public: false }); if (c.error && !/exist/i.test(c.error.message || '')) throw new Error('BUCKET: ' + c.error.message); }
+      const g = await within(6000, admin.storage.getBucket(BUCKET), 'getBucket');
+      if (g.error) { const c = await within(6000, admin.storage.createBucket(BUCKET, { public: false }), 'createBucket'); if (c.error && !/exist/i.test(c.error.message || '')) throw new Error('BUCKET: ' + c.error.message); }
       bucketReady = true;
     },
     async read(path, def) {
-      const r = await B().download(path);
+      const r = await within(6000, B().download(path), 'download');
       if (r.error || !r.data) return def;
       try { return JSON.parse(await r.data.text()); } catch (e) { return def; }
     },
     async write(path, obj) {
-      const r = await B().upload(path, Buffer.from(JSON.stringify(obj)), { upsert: true, contentType: 'application/json', cacheControl: '0' });
+      const r = await within(6000, B().upload(path, Buffer.from(JSON.stringify(obj)), { upsert: true, contentType: 'application/json', cacheControl: '0' }), 'upload');
       if (r.error) throw new Error('WRITE: ' + r.error.message);
     }
   };
@@ -152,6 +153,6 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ ok: false, error: 'INVALID_ACTION' });
   } catch (e) {
     console.error('community:', action, e && e.message);
-    return res.status(500).json({ ok: false, error: 'COMMUNITY_FAILED' });
+    return res.status(500).json({ ok: false, error: 'COMMUNITY_FAILED', detail: String((e && e.message) || '').replace(/[^\w :.-]/g, '').slice(0, 80) });
   }
 };

@@ -7243,9 +7243,9 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     function member(id){ for(var i=0;i<M.length;i++){ if(M[i].id===id)return M[i]; } for(var j=0;j<T.length;j++){ if(T[j].id===id && T[j].name) return {id:id,name:T[j].name,flag:'',country:'',bio:'',gain:null,following:false}; } return null; }
     function tr2(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }
     function LIVE(){ return !!(F.remote&&F.remote.ready&&F.remote.ready()&&F.session); }
-    function capi(action, body){ return Promise.resolve(F.auth&&F.auth.getAccessToken?F.auth.getAccessToken():null).then(function(tok){ return fetch('/api/v1/community',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(tok||'')},body:JSON.stringify(Object.assign({action:action},body||{}))}).then(function(r){ return r.json().catch(function(){return {};}).then(function(j){ if(!r.ok||!j.ok){ var e=new Error((j&&j.error)||'FAILED'); e.code=(j&&j.error)||'FAILED'; throw e; } return j; }); }); }); }
+    function capi(action, body){ return Promise.resolve(F.auth&&F.auth.getAccessToken?F.auth.getAccessToken():null).then(function(tok){ var ac=window.AbortController?new AbortController():null; if(ac) setTimeout(function(){ ac.abort(); },15000); return fetch('/api/v1/community',{signal:ac?ac.signal:undefined,method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(tok||'')},body:JSON.stringify(Object.assign({action:action},body||{}))}).then(function(r){ return r.json().catch(function(){return {};}).then(function(j){ if(!r.ok||!j.ok){ var e=new Error((j&&j.error)||'FAILED'); e.code=(j&&j.error)||('HTTP_'+r.status); e.detail=j&&j.detail; throw e; } return j; }); }).catch(function(e){ if(e&&e.name==='AbortError'){ var t=new Error('TIMEOUT'); t.code='TIMEOUT'; throw t; } if(e&&e.code) throw e; var n=new Error('NETWORK'); n.code='NETWORK'; throw n; }); }); }
     var CERR={NICKNAME_INVALID:'Choose a nickname of 3 to 24 letters, digits, _ or -.',NICKNAME_TAKEN:'That name is already taken. Please choose another.',NICKNAME_RESERVED:'Names with FTM, admin or support are reserved. Please choose another.',NO_LINKS:'Links, phone numbers and contact details are not allowed.',READ_ONLY:'Messaging is for subscribers. With a free account you can browse.',PROFILE_FIRST:'Save your community profile first (My profile).',RATE_LIMIT:'You have sent a lot of messages today. Please try again tomorrow.'};
-    function cerr(e){ return tr2(CERR[e&&e.code]||'Something went wrong. Please try again.'); }
+    function cerr(e){ var c=(e&&e.code)||'FAILED'; if(!CERR[c]){ try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'community_error', reason:String(c)+' '+String((e&&e.detail)||'').slice(0,40), live:true, at:new Date().toISOString()})); }catch(x){} } return CERR[c]?tr2(CERR[c]):tr2('Something went wrong. Please try again.')+' ('+c+')'; }
     function flagOf(cc){ cc=String(cc||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65):''; }
     var CM={paid:false,poll:null,last:0,loaded:false};
     function liveLoad(full){
@@ -7427,7 +7427,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       if(F.renderBoard)F.renderBoard();
     });
     el('cSave').addEventListener('click',function(){
-      if(LIVE()){ var sv=el('cSaved'), btn=this; btn.disabled=true;
+      if(LIVE()){ var sv=el('cSaved'), btn=this; btn.disabled=true; sv.textContent=tr2('Saving…'); sv.style.color='#5b6378'; sv.hidden=false;
         capi('save',{nickname:el('cName').value.trim(), bio:el('cBio').value.trim(), country:P.country||'', visible:P.visible}).then(function(j){ btn.disabled=false; P.handle=j.profile.nickname; P.bio=j.profile.bio; sv.textContent=tr2('Saved.'); sv.style.color='#1f8a5b'; sv.hidden=false; renderOverview(); liveLoad(true); setTimeout(function(){ sv.hidden=true; },2600); })
           .catch(function(e){ btn.disabled=false; sv.textContent=cerr(e); sv.style.color='#c81e2b'; sv.hidden=false; });
         return; }
