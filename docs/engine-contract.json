@@ -196,6 +196,10 @@
       "http": 409,
       "text": "A close request for this position is already being executed by your terminal."
     },
+    "BAD_HISTORY_PAGING": {
+      "http": 400,
+      "text": "The history page could not be read: offset must be a whole number, before_deal a deal number and as_of a date and time."
+    },
     "ACCOUNT_STATS_FAILED": {
       "http": 500,
       "text": "Statistics could not be loaded right now. Please try again in a moment."
@@ -937,7 +941,11 @@
       "summary": "The account's own statistics (balance, equity, P/L, deal history with deposits and withdrawals, growth, drawdown) read from the account itself by ONE general read-only sync, for every account the customer added: trading, paused, connected-not-trading and the view-only master row. data_source: STATS_SYNC after the first read; LIVE_TERMINAL while the trading account's terminal reports fresher numbers; MASTER_RECORDS for a view-only row before its first read; FTM_COPIES for an account never read. Before the first read of an ordinary account: pending: true with a message; poll every 15-30 s while refreshing is true. Full field list: docs/client-area-stats-api.md (served as /api/v1/dev/contract.json#docs).",
       "request": {
         "query": {
-          "limit": "history rows, default 200, max 2000"
+          "limit": "history rows, default 200, max 2000",
+          "offset": "10 Nov 2026: history rows to skip (whole number >= 0); kept for paging, but use before_deal",
+          "before_deal": "10 Nov 2026: STABLE page cursor -- the ticket of the last row of the previous page (history_paging.next_before_deal); a deal that closes between two requests never shifts the pages",
+          "as_of": "10 Nov 2026: ISO time -- only rows at or before it (send back history_paging.as_of of page 1 to freeze the view)",
+          "risk_days": "keep only the last N days of risk_score_history (1-36500)"
         }
       },
       "response": {
@@ -986,6 +994,15 @@
           "open_trades_count": 0,
           "history_total": 7,
           "history": [],
+          "history_paging": { "order": "NEWEST_FIRST_BY_TIME_THEN_DEAL_TICKET", "limit": 200, "offset": 0, "before_deal": null, "cursor_found": null, "as_of": "2026-10-20T14:05:00.000Z", "returned": 7, "total": 7, "total_in_view": 7, "has_more": false, "next_before_deal": null },
+          "start_balance": 0,
+          "start_balance_at": "2026-10-06T09:00:00.000Z",
+          "initial_deposit": 10000,
+          "initial_deposit_at": "2026-10-06T09:00:00.000Z",
+          "initial_deposit_source": "BROKER_STATEMENT | NOT_IN_BROKER_HISTORY | NO_DEPOSIT_IN_STATEMENT | NO_STATEMENT",
+          "fees_and_adjustments": 0,
+          "credit_total": 0,
+          "drawdowns": [ { "peak_at": "2026-10-07T10:00:00.000Z", "trough_at": "2026-10-08T15:00:00.000Z", "depth_pct": 1.2, "peak": 10590, "trough": 10463, "recovered_at": "2026-10-20T14:05:00.000Z" } ],
           "sync": {
             "last_outcome": "OK",
             "next_attempt_at": null
@@ -1005,6 +1022,7 @@
       "errors": [
         "UNAUTHENTICATED",
         "ACCOUNT_NOT_FOUND",
+        "BAD_HISTORY_PAGING",
         "ACCOUNT_STATS_FAILED"
       ]
     },
