@@ -4,6 +4,16 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — OPTIONAL KYC PROFILE (commit 27ddad6, migration 042, API restarted 14:47 Berlin)
+
+- NEW GET / PUT /customer/kyc-profile: {full_name, country, goal GROW_SAVINGS|MONTHLY_INCOME|LONG_TERM|TRY_FIRST,
+  experience NONE|SOME|EXPERIENCED, drawdown_comfort 10|25|35, completed_at, kyc_completed, suggested_tier,
+  full_name_saved}. PUT takes any subset; null clears a field; 422 VALIDATION_FAILED on a bad value or unknown field.
+- full_name is pre-filled from the sign-up name while none is saved (full_name_saved false); completed_at needs all five
+  saved. country = the leaderboard flag value (saving either updates both). suggested_tier is a hint only.
+- GET /customer/me: NEW kyc_completed (bool) for the menu badge. Customer-only; nothing public; nothing blocked.
+- Proof: verify-kyc 5/5 in the gate; regress SAFE TO DEPLOY.
+
 ## 2026-11-10 — LEADERBOARD: MASTER PROFILE + COUNTRY FLAG (commit a83a5a6, API restarted 14:27 Berlin)
 
 - FTM MASTER row: risk_tier from the master EA's own trading style (newest "Multiplier: style" line of its charts; BALANCED
