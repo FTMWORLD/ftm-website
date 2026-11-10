@@ -35,6 +35,7 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Profit factor showed a red 0.00 when there was no losing trade: it now shows a dash. Expectancy = the average result per closed trade. Best/worst trade % is measured on the balance when the trade opened.
 - Accounts with a very long history (more than 2,000 deals) are read page by page, so every statistic still uses the full history.
 - Trade results in Recently closed trades, the Markets table and Avg win / avg loss showed whole dollars (a $0.89 trade showed +$1). They now show cents, like the statement.
+- Balance, equity and Total account value now show the exact cents (e.g. 94,855.93, like MT5). Trade details show commission and swap to the cent. Commission & swap shows its true sign (positive when swap earned more than it cost).
 - Profit and % come from the closed trades, never from balance minus deposits. If the balance shown looks different from the broker app, tell FTM support: the engine re-reads the account.
 - Balance chart header showed a different profit than the rest of the page: it skipped the first day's trades. Fixed: with All selected it equals the all-time profit and %.
 - Risk level card: shows the account's largest drop from a high (max drawdown, closed trades only, from the FTM engine) against the normal range of its risk profile: Conservative 10-20%, Balanced 20-40%, Growth 40% and more. 'Below the normal range' means less risk than the profile allows.

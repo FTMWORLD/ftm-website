@@ -41,6 +41,10 @@ balance = start_balance + deposits - withdrawals + closed P/L + fees_and_adjustm
 | Year table | Start + Net deposits + Profit (+ Dividends, tax & adjustments) = End, to the cent | |
 | Sharpe ratio | mean / standard deviation of daily time-weighted returns, x sqrt(365), risk-free 0; — before 30 days | |
 | Statement | Opening + Deposits - Withdrawals + Trading result (+ Dividends, tax & adjustments) = Closing | |
+| Equity, floating P/L | balance + open trades' floating P/L | engine accounts row |
+| Account activity | every closed trade, deposit, withdrawal, adjustment and the opening commission of trades still open: the list adds up to the balance change | |
+| Money format | every amount to the cent (2 decimals); only compact grids (month cells, chart axis, profit-by-period cards) round | |
+| Commission & swap sign | its true sign: negative when it cost money, positive when swap earned more | |
 
 ## When the engine and the website disagree
 The browser sends `history_gap`, `return_gap` or `pl_gap` to `/api/v1/client-log` (Vercel logs). Tell FTM ENGINE (via

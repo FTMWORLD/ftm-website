@@ -52,8 +52,10 @@ function gen(seed, now){
       bal=c2(bal+e.cIn+ptot+e.cOut+e.sw);
     }
   });
+  const open=[]; if(R()<0.35){ for(let i=ri(1,3);i>0;i--){ const t=Math.max(t0+3*MIN,now-ri(10,60*30)*MIN), id='O'+seed+'_'+i, c=R()<0.6?-c2(R()*5):0, sym=pick(syms), side=pick(['BUY','SELL']), vol=pick([0.01,0.1,1]);
+      if(!okT(t)) continue; rows.push({t,type:side,entry:'IN',pos:id,sym,vol,profit:0,commission:c,swap:0,net:c}); open.push({id,sym,side,vol,t,fl:c2((R()-0.5)*Math.max(100,bal)*0.02)}); } }
   rows.sort((a,b)=>a.t-b.t||((a.entry==='IN')?-1:1));
-  return {rows,S0,startMode,t0,now};
+  return {rows,S0,startMode,t0,now,open};
 }
 
 // ---------- the independent calculation ----------
@@ -77,7 +79,8 @@ function oracle(acc){
   const outs=rows.filter(r=>r.entry==='OUT');
   const wins=pos.filter(x=>c2(x.net)>0).length;
   const first=rows.filter(r=>r.type==='BALANCE'&&r.net>0)[0];
-  return {balance:c2(B),pl:c2(pl),twr:(F-1)*100,seg,balAt,dep:c2(dep),wd:c2(wd),adj:c2(adj),credit:c2(cr),costs:c2(costs),peak:c2(peak),peakAt,dd:ddMax,
+  const fl=c2((acc.open||[]).reduce((a,x)=>a+x.fl,0));
+  return {floating:fl,equity:c2(B+fl),balance:c2(B),pl:c2(pl),twr:(F-1)*100,seg,balAt,dep:c2(dep),wd:c2(wd),adj:c2(adj),credit:c2(cr),costs:c2(costs),peak:c2(peak),peakAt,dd:ddMax,
     trades:outs.length,positions:pos,wins,losses:pos.length-wins,lots:c2(outs.reduce((a,r)=>a+r.vol,0)),
     init:acc.startMode?{amt:S0,label:'Starting balance'}:(first?{amt:first.net,label:'Initial deposit'}:null)};
 }
@@ -87,7 +90,7 @@ function engine(acc,O){
   const iso=t=>new Date(t).toISOString();
   const history=acc.rows.map((r,i)=>r.entry?{type:r.type,entry:r.entry,position_ref:r.pos,time:iso(r.t),symbol:r.sym,volume:r.vol,price:1,profit:r.profit,commission:r.commission,swap:r.swap,fee:0,net:r.net,ticket:'T'+i}
                                           :{type:r.type,time:iso(r.t),profit:r.net,commission:0,swap:0,fee:0,net:r.net,ticket:'T'+i}).reverse();
-  return {ok:true,currency:'USD',balance:O.balance,equity:O.balance,history,history_total:history.length,deposits_total:O.dep,withdrawals_total:O.wd,credit_total:O.credit,
+  return {ok:true,currency:'USD',balance:O.balance,equity:O.equity,floating_pl:O.floating,history,history_total:history.length,deposits_total:O.dep,withdrawals_total:O.wd,credit_total:O.credit,
     fees_and_adjustments:O.adj,closed_pl_total:O.pl,start_balance:acc.S0,start_balance_at:acc.startMode?iso(acc.rows[0].t):null,growth_pct:+O.twr.toFixed(2),
     return_basis:'TIME_WEIGHTED_CLOSED_TRADES_EXCLUDING_DEPOSITS_WITHDRAWALS',trades_closed:O.positions.length,wins:O.wins,losses:O.losses,
     win_rate_pct:O.positions.length?+(O.wins/O.positions.length*100).toFixed(2):0,peak_balance:O.peak,peak_balance_at:iso(O.peakAt),
@@ -110,9 +113,9 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       if(u.includes('client-log')){ beacons.push(r.request().postData()||''); return r.fulfill({status:204,body:''}); }
       if(u.includes('/stats')){ const q=new URL(u).searchParams, off=+q.get('offset')||0, lim=Math.min(2000,+q.get('limit')||200), X=u.includes(OID)?ST2:ST; return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(Object.assign({},X,{history:X.history.slice(off,off+lim)}))}); }
       if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
-      if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
+      if(u.includes('/positions')){ const A=u.includes(OID)?acc2:acc; return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,positions:(A.open||[]).map(x=>({market:x.sym,side:x.side,volume:x.vol,open_price:1,current_price:1,floating_profit:x.fl,swap:0,opened_at:new Date(x.t).toISOString(),position_ref:x.id}))})}); }
       if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
-      if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:(sw?[{account_id:OID,account_number:'184',name:'DERIV',currency:'USD',balance:String(O2.balance),equity:String(O2.balance),display_status:'ACTIVE',status_reason:'OK',is_trading:true,deposits:String(O2.dep),withdrawals:String(O2.wd)}]:[]).concat([{account_id:'f7a00000-0000-4000-8000-'+String(100000000000+seed),account_number:'5'+seed,preview:true,view_only:true,currency:'USD',balance:String(O.balance),equity:String(O.balance),display_status:'PAUSED',deposits:String(O.dep),withdrawals:String(O.wd)}])})});
+      if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:(sw?[{account_id:OID,account_number:'184',name:'DERIV',currency:'USD',balance:String(O2.balance),equity:String(O2.equity),floating_profit:String(O2.floating),display_status:'ACTIVE',status_reason:'OK',is_trading:true,deposits:String(O2.dep),withdrawals:String(O2.wd)}]:[]).concat([{account_id:'f7a00000-0000-4000-8000-'+String(100000000000+seed),account_number:'5'+seed,preview:true,view_only:true,currency:'USD',balance:String(O.balance),equity:String(O.equity),floating_profit:String(O.floating),display_status:'PAUSED',deposits:String(O.dep),withdrawals:String(O.wd)}])})});
       return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
     await p.goto(BASE+'/');await p.waitForTimeout(700);
     await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fz@ftm.com',products:[],name:'Fz'};});
@@ -121,7 +124,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     const V=await p.evaluate(()=>{const g=i=>((document.getElementById(i)||{}).textContent||'').replace(/\s+/g,' ').trim();const q=s=>[...document.querySelectorAll(s)].map(e=>e.textContent.replace(/\s+/g,' ').trim());
       const st=(()=>{ try{ FTM._stFill&&FTM._stFill(); const s=document.getElementById('stPeriod'); s.value='all'; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent]); }catch(e){ return 'ERR '+e.message; } })();
       const fx=id=>Object.fromEntries([...document.querySelectorAll('#'+id+' > div')].map(d=>[d.querySelector('dt').textContent,d.querySelector('dd').textContent]));
-      return {now:Date.now(),pf:g('mPF'),avg:g('mAvg'),exp:g('mExp'),sd:g('mSD'),stD:g('mStreakDays'),stT:g('mStreakTrades'),best:fx('pxBest'),worst:fx('pxWorst'),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
+      return {eqT:g('mEquity'),flT:g('mFloat'),dx:g('dxVal'),lv:document.getElementById('lvStrip').hidden?0:document.querySelectorAll('#lvList .lv-c').length,now:Date.now(),pf:g('mPF'),avg:g('mAvg'),exp:g('mExp'),sd:g('mSD'),stD:g('mStreakDays'),stT:g('mStreakTrades'),best:fx('pxBest'),worst:fx('pxWorst'),weeks:fx('pxWeeks'),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
         count:g('mCount'),win:g('mWin'),cv:g('cvChg'),pnl:[...document.querySelectorAll('#dxPnl .pp-t')].map(e=>[e.querySelector('.pp-l').textContent,e.querySelector('.pp-v').textContent,e.querySelector('.pp-c').textContent]),
         fs:[...document.querySelectorAll('#fsGrid .fs-c')].map(e=>[e.querySelector('span').textContent,e.querySelector('b').textContent,e.querySelector('small').textContent]),
         months:[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent+'|'+((c.querySelector('small')||{}).textContent||''))]),
@@ -146,7 +149,10 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     eq(V.net,O.pl,0.005,'Net P/L = sum of closed trade deals');
     eq(V.gain,O.twr,0.0051,'Gain = time-weighted return');
     eq(V.year,O.seg(new Date(y,0,1).getTime(),null).pct,0.0051,'Profit this year % (time-weighted from 1 Jan)');
-    eq(V.bal,O.balance,0.5,'Balance');
+    eq(V.bal,O.balance,0.005,'Balance');
+    eq(V.eqT,O.equity,0.005,'Equity = balance + open trades');
+    if((acc.open||[]).length){ eq(V.flT.replace(/floating/,''),O.floating,0.005,'Floating P/L of open trades'); eq(V.lv,Math.min(4,acc.open.length),0,'Open positions strip'); }
+    ok(V.dx.replace(/\s/g,'')===V.eqT.replace(/\s/g,''),'Total account value = equity: '+V.dx+' vs '+V.eqT);
     ok(V.high.startsWith('$'+O.peak.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})), 'Highest balance = engine peak '+O.peak+': shown '+V.high);
     eq(V.dd,-O.dd,0.0051,'Max drawdown tile = engine closed-balance drawdown');
     if(O.init) ok(V.init.startsWith(O.init.label+'|$'+O.init.amt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})),'Initial deposit: shown '+V.init+', expected '+O.init.label+' '+O.init.amt);
@@ -172,6 +178,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       const span={d:a=>[new Date(a[0],a[1],a[2]),new Date(a[0],a[1],a[2]+1)], w:a=>[new Date(a[0],a[1],a[2]),new Date(a[0],a[1],a[2]+7)], m:a=>[new Date(a[0],a[1],1),new Date(a[0],a[1]+1,1)]};
       [['d','day'],['w','week'],['m','month']].forEach(([k,name])=>{ const seen={}, L=[]; PS.forEach(x=>{ const a=K[k](x.close), key=a.join('-'); if(seen[key]) return; seen[key]=1; const b=span[k](a); L.push(O.seg(b[0].getTime(),b[1].getTime()).pct); });
         if(!L.length) return; let bi=0,wi=0; L.forEach((r,i)=>{ if(r>L[bi]) bi=i; if(r<L[wi]) wi=i; });
+        if(k==='w'){ eq(V.weeks['Weeks traded'],L.length,0,'Weeks traded'); eq(String(V.weeks['Winning weeks']).split('(')[0],L.filter(r=>r>0).length,0,'Winning weeks'); eq(V.weeks['Losing weeks'],L.length-L.filter(r=>r>0).length,0,'Losing weeks'); eq(V.weeks['Average week'],L.reduce((a,r)=>a+r,0)/L.length,0.0051,'Average week %'); }
         const B=V.best['Best '+name], Wv=V.worst['Worst '+name]; if(B) eq(B.split('·')[0],L[bi],0.0051,'Best '+name+' %'); if(Wv) eq(Wv.split('·')[0],L[wi],0.0051,'Worst '+name+' %'); }); }
     eq(V.dep,O.dep,0.005,'Deposits'); eq(V.wdr,-O.wd,0.005,'Withdrawals');
     eq(V.fees,O.costs,0.005,'Commission & swap = sum over every trade deal');
@@ -215,8 +222,8 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
         const c=dayCells[dd]; ok(!!c,'Calendar '+dd+' '+ct+': trading but no cell'); if(!c) continue;
         if(!/K/.test(c[1])) eq(c[1],s1.pl,Math.abs(s1.pl)>=1000?0.5001:0.005,'Calendar day '+dd+' '+ct+' money'); eq(c[2],s1.pct,0.0051,'Calendar day '+dd+' '+ct+' %'); }
       const sumW=wks.reduce((a,c)=>a+(/K/.test(c[1])?NaN:num(c[1])),0); if(!isNaN(sumW)&&wks.length) eq(sumW,sg.pl,0.5001*wks.length,'Calendar weeks add up to the month'); } }
-    if(V.sess.length){ const sp=V.sess.reduce((a,r)=>a+num(r[0]),0), sn=V.sess.reduce((a,r)=>a+num(r[1]),0); eq(sp,O.pl,0.05,'Sessions add up to Net P/L'); eq(sn,O.positions.length,0,'Sessions add up to the trade count'); }
-    if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.pl,0.011,'Markets add up to Net P/L'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
+    if(V.sess.length){ const sp=V.sess.reduce((a,r)=>a+num(r[0]),0), sn=V.sess.reduce((a,r)=>a+num(r[1]),0); eq(sp,O.positions.reduce((a,x)=>a+x.net,0),0.05,'Sessions add up to the closed trades'); eq(sn,O.positions.length,0,'Sessions add up to the trade count'); }
+    if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.positions.reduce((a,x)=>a+x.net,0),0.011,'Markets add up to the closed trades'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
     V.sym.forEach(r=>{ const ps=O.positions.filter(x=>x.sym===r[2]); if(!ps.length){ ok(false,'market '+r[2]+' has no trades'); return; }
       eq(r[0],ps.length,0,'Market '+r[2]+' trades'); eq(r[3],ps.filter(x=>c2(x.net)>0).length/ps.length*100,0.0051,'Market '+r[2]+' win rate'); eq(r[4],ps.reduce((a,x)=>a+x.lots,0),0.0051,'Market '+r[2]+' lots'); eq(r[1],ps.reduce((a,x)=>a+x.net,0),0.0051,'Market '+r[2]+' net'); });
     { const R=O.positions.slice().sort((x,y)=>y.close-x.close).slice(0,V.recent.length); V.recent.forEach((r,i)=>{ ok(r[0]===R[i].sym,'Recently closed #'+(i+1)+' market '+r[0]+' vs '+R[i].sym); eq(r[1],R[i].net,0.0051,'Recently closed #'+(i+1)+' result'); }); }

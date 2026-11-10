@@ -339,6 +339,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-val{font-size:clamp(30px,4.2vw,44px);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05;overflow-wrap:anywhere}
   .mg-d{display:block;font-size:11.5px;font-weight:600;color:#5b6378;margin-top:2px}
   .mg-d:empty{display:none}
+  .dx-val .dx-c{font-size:.5em;letter-spacing:0;opacity:.85;margin-inline-start:1px}
   .dx-init{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:13.5px;color:rgba(255,255,255,.72)}
   .dx-init em{font-style:normal}
   .dx-init b{color:#E3B62F;font-weight:700;font-variant-numeric:tabular-nums}
@@ -5225,7 +5226,7 @@ h3.has-tip{cursor:help}
       })(pts);
       var last=pts[pts.length-1], yB=H-pB;
       var area=dpath+' L '+last[0]+' '+yB+' L '+pts[0][0]+' '+yB+' Z';
-      var fmtY=function(v){ return pctMode ? (v>0?'+':'')+(Math.round(v*10)/10)+'%' : (Math.abs(v)>=1e4?F.moneyIn(v/1000,(Math.abs(v)>=1e5||step>=1000)?0:1,F.data.account.currency)+'K':cur0(v)); };
+      var fmtY=function(v){ return pctMode ? (v>0?'+':'')+(Math.round(v*10)/10)+'%' : (Math.abs(v)>=1e4?F.moneyIn(v/1000,(Math.abs(v)>=1e5||step>=1000)?0:1,F.data.account.currency)+'K':cur(v)); };
       var grid='';
       for(var gv=gLo; gv<=gHi+step/2; gv+=step){ var gy=Math.round(Y(gv))+.5; grid+='<line x1="0" y1="'+gy+'" x2="'+(W-pR+6)+'" y2="'+gy+'"/>'; grid+='<text x="'+(W-2)+'" y="'+(gy+4)+'" text-anchor="end">'+fmtY(gv)+'</text>'; }
       var xt='', nT=W<420?3:5;
@@ -5262,7 +5263,7 @@ h3.has-tip{cursor:help}
     (function(){
       var svg=document.getElementById('mCurve'), tip=document.getElementById('cvTip'), wrap=svg&&svg.parentElement;
       if(!svg||!tip)return;
-      function fmtV(v){ return F.curveUnit==='percent' ? (v>=0?'+':'')+v.toFixed(2)+'%' : cur0(v); }
+      function fmtV(v){ return F.curveUnit==='percent' ? (v>=0?'+':'')+v.toFixed(2)+'%' : cur(v); }
       function hide(){
         tip.hidden=true;
         if(F.cvHead&&F._cvRaw) F.cvHead(F._cvRaw.curve.length-1);
@@ -5284,7 +5285,7 @@ h3.has-tip{cursor:help}
         var time=new Date(pt.t).toLocaleTimeString((window.FTM_LOCALE||'en-GB'),{hour:'2-digit',minute:'2-digit'});
         var prev=best>0?c.data[best-1].v:pt.v, chg=pt.v-prev;
         tip.innerHTML='<span>'+date+' \u00B7 '+time+'</span><b>'+fmtV(pt.v)+'</b>'+
-          ((pt.flow&&!pt.adj)?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur0(Math.abs(pt.flow))+'</span>':best>0&&chg!==0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'\u25B2 +':'\u25BC ')+fmtV(chg)+'</span>':'');
+          ((pt.flow&&!pt.adj)?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur(Math.abs(pt.flow))+'</span>':best>0&&chg!==0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'\u25B2 +':'\u25BC ')+fmtV(chg)+'</span>':'');
         tip.hidden=false;
         var px=p[0]/(c.W||600)*r.width, py=p[1]/(c.H||190)*r.height;
         var tw=tip.offsetWidth, left=Math.max(tw/2+4, Math.min(r.width-tw/2-4, px));
@@ -5393,7 +5394,7 @@ h3.has-tip{cursor:help}
       var closeD=new Date(t.closeTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       var durMs=t.closeTime-t.openTime, durMin=Math.round(durMs/60000);
       var dur=t.openTime==null?'\u2014':(durMin<60 ? durMin+' min' : (Math.floor(durMin/60)+'h '+(durMin%60)+'m'));
-      var pl=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur0(t.pl));
+      var pl=t.pl==null?'&mdash;':((t.pl>=0?'+':'')+cur(t.pl));
       var rows=[
         ['Market', t.symbol+(t.label?' · '+((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(t.label):t.label):'')],
         ['Direction', t.dir],
@@ -5403,8 +5404,8 @@ h3.has-tip{cursor:help}
         ['Opened', openD],
         ['Closed', closeD],
         ['Duration', dur],
-        ['Commission', t.commission!=null?cur0(t.commission):'&mdash;'],
-        ['Swap', t.swap!=null?cur0(t.swap):'&mdash;'],
+        ['Commission', t.commission!=null?cur(t.commission):'&mdash;'],
+        ['Swap', t.swap!=null?cur(t.swap):'&mdash;'],
         ['Net P/L', pl]
       ];
       box.innerHTML=rows.map(function(r){ return '<div><dt>'+r[0]+'</dt><dd'+(r[0]==='Net P/L'?(' class="'+tone(t.pl)+'"'):'')+'>'+r[1]+'</dd></div>'; }).join('');
@@ -5444,16 +5445,16 @@ h3.has-tip{cursor:help}
       if(F.mergeEngineTrades) F.mergeEngineTrades();
       F.metricsFresh();
       var m=F.metrics();
-      set('mBalance', cur0(m.balance));
-      set('mEquity', cur0(m.equity));
-      set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
+      set('mBalance', cur(m.balance));
+      set('mEquity', cur(m.equity));
+      set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur(m.floating)))+' floating', tone(m.floating));
       set('mYear', pct(m.yearPct), tone(m.yearPL));
       set('mDDtile', '\u2014');
 
       var ES=F.es()||{};
       set('mGain', pct(m.gainPct), tone(m.gainPct));
 
-      set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
+      set('mGainAbs', m.deposits>0 ? ('on '+cur(m.deposits)+' deposited') : ('on '+cur(m.anchor)+' starting balance'));
       var netV=ES.closedPl!=null?ES.closedPl:m.netPL; set('mNet', (netV>=0?'+':'')+cur(netV), tone(netV));
       var avG=document.getElementById('appView'); if(avG){ var had=avG._gapLogged; if(m.gap&&!had){ avG._gapLogged=1; try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'history_gap', reason:String(Math.round(m.gap)), live:true, at:new Date().toISOString()})); }catch(e){} } 
         var lg=function(ev,why){ var key='_lg_'+ev; if(avG[key]) return; avG[key]=1; try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:ev, reason:why, live:true, at:new Date().toISOString()})); }catch(e){} };
@@ -5472,8 +5473,8 @@ h3.has-tip{cursor:help}
         var cPct=ES.ddClosedPct;
         var tileDD=ES.ddClosedPct!=null?ES.ddClosedPct:ES.maxDDPct;
         set('mDDtile', tileDD>0.005?'-'+tileDD.toFixed(2)+'%':'0.00%', tileDD>0.005?'down':null);
-        set('mDDbal', cPct==null?'\u2014':((cAbs!=null?cur0(cAbs)+' (':'')+cPct.toFixed(2)+'%'+(cAbs!=null?')':'')), cPct?'down':null);
-        set('mDDeq', (eAbs!=null?cur0(eAbs)+' (':'')+ES.maxDDPct.toFixed(2)+'%'+(eAbs!=null?')':''), ES.maxDDPct?'down':null);
+        set('mDDbal', cPct==null?'\u2014':((cAbs!=null?cur(cAbs)+' (':'')+cPct.toFixed(2)+'%'+(cAbs!=null?')':'')), cPct?'down':null);
+        set('mDDeq', (eAbs!=null?cur(eAbs)+' (':'')+ES.maxDDPct.toFixed(2)+'%'+(eAbs!=null?')':''), ES.maxDDPct?'down':null);
       } else {
         set('mDDbal', '\u2014'); set('mDDeq', '\u2014');
       }
@@ -5485,7 +5486,7 @@ h3.has-tip{cursor:help}
       var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', iniTx); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
       var adjV=(ES.feesAdj||0)+(ES.creditTotal||0), adjW=document.getElementById('mAdjW'); if(adjW) adjW.hidden=!(Math.abs(adjV)>=0.005); set('mAdj', (adjV>0?'+':'')+cur(adjV), tone(adjV));
       set('mDep', cur(m.deposits||0)); set('mWdr', m.withdrawals?('-'+cur(m.withdrawals)):cur(0), m.withdrawals?'down':null); set('mNetDep', cur((m.deposits||0)-(m.withdrawals||0)));
-      set('mFees', cur(-Math.abs(m.fees)), m.fees?'down':null);
+      set('mFees', (m.fees>0.004?'+':'')+cur(m.fees), tone(Math.round(m.fees*100)));
       set('mLots', m.lots.toFixed(2));
 
       set('mExp', (m.expectancy>=0?'+':'')+cur(m.expectancy), tone(m.expectancy));
@@ -6039,8 +6040,8 @@ h3.has-tip{cursor:help}
         if(!app || app.hidden) return;
         F.data.open.forEach(function(t){ t.pl = Math.round((t.pl + (Math.random()-0.47)*14)*100)/100; });
         var m=F.metrics(), el=document.getElementById('mEquity');
-        set('mEquity', cur0(m.equity));
-        set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur0(m.floating)))+' floating', tone(m.floating));
+        set('mEquity', cur(m.equity));
+        set('mFloat', (F.unit==='percent'&&m.balance>0?((m.floating>=0?'+':'')+(m.floating/m.balance*100).toFixed(2)+'%'):((m.floating>=0?'+':'')+cur(m.floating)))+' floating', tone(m.floating));
         el.classList.remove('up','down'); void el.offsetWidth;
         el.classList.add(m.floating>=0?'up':'down');
         setTimeout(function(){ el.classList.remove('up','down'); },600);
@@ -8018,11 +8019,12 @@ tick();setInterval(tick,5000);})();
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxBal').textContent=bal;
     (function(el){ var tgt=null; try{ tgt=FTM.metrics().equity; }catch(e){}
-      if(tgt==null||!isFinite(tgt)||!bal||bal==='\u2014'||matchMedia('(prefers-reduced-motion:reduce)').matches){ el.textContent=bal; el._v=tgt; return; }
+      var fin=function(){ var mm=String(bal).match(/^(.*?)([.,]\d{2})(\D*)$/); if(mm){ el.textContent=''; el.appendChild(document.createTextNode(mm[1])); var c=document.createElement('small'); c.className='dx-c'; c.textContent=mm[2]+mm[3]; el.appendChild(c); } else el.textContent=bal; };
+      if(tgt==null||!isFinite(tgt)||!bal||bal==='\u2014'||matchMedia('(prefers-reduced-motion:reduce)').matches){ fin(); el._v=tgt; return; }
       if(el._t===tgt && el.textContent===bal) return; var from=(el._v!=null&&isFinite(el._v))?el._v:0; el._t=tgt; el._v=tgt;
-      if(Math.abs(tgt-from)<0.5){ el.textContent=bal; return; }
+      if(Math.abs(tgt-from)<0.5){ fin(); return; }
       var cu=(FTM.data&&FTM.data.account&&FTM.data.account.currency)||null, t0=performance.now(), D=900; cancelAnimationFrame(el._raf);
-      (function step(now){ var k=Math.min(1,(now-t0)/D), e=1-Math.pow(1-k,3); if(k<1){ el.textContent=FTM.moneyIn(Math.round(from+(tgt-from)*e),0,cu); el._raf=requestAnimationFrame(step); } else el.textContent=bal; })(t0);
+      (function step(now){ var k=Math.min(1,(now-t0)/D), e=1-Math.pow(1-k,3); if(k<1){ el.textContent=FTM.moneyIn(Math.round(from+(tgt-from)*e),0,cu); el._raf=requestAnimationFrame(step); } else fin(); })(t0);
     })($('dxVal'));
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxPlan').classList.toggle('plan-free',$('hdrPlan').classList.contains('plan-free')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
@@ -8746,7 +8748,9 @@ tick();setInterval(tick,5000);})();
     var d=F.data||{}, rows=[];
     (d.closed||[]).forEach(function(t){ if(t.closeTime) rows.push({k:'trade',t:t.closeTime,title:(t.symbol||'')+' · '+(String(t.dir||'').toUpperCase()==='SELL'?tr('Sell'):tr('Buy'))+(t.label?' · '+tr(t.label):''),sub:(t.lots!=null?t.lots.toFixed(2)+' lots':''),amt:t.pl}); });
     (F.flows?F.flows():[]).forEach(function(f){ rows.push({k:f.amt>0?'in':'out',t:f.t,title:tr(f.amt>0?'Deposited':'Withdrawn'),sub:'',amt:f.amt}); });
-    var esA=F.es&&F.es(); ((esA&&esA.adj)||[]).forEach(function(x){ var T=String(x.type||''); rows.push({k:'adj',t:x.t,title:tr(/^DIVIDEND/.test(T)?'Dividend':(T==='TAX'?'Tax':(T==='CREDIT'?'Credit':(/^COMMISSION/.test(T)?'Commission':(T==='INTEREST'?'Interest':'Adjustment'))))),sub:'',amt:x.amt}); });
+    var esA=F.es&&F.es(); if(esA && esA.deals){ var cpos={}; (d.closed||[]).forEach(function(t){ if(t.positionRef) cpos[String(t.positionRef)]=1; }); var hasOut={}; esA.deals.forEach(function(x){ if(!x.open && x.pos) hasOut[x.pos]=1; });
+      esA.deals.forEach(function(x){ if(x.open && x.pl && !(x.pos && (hasOut[x.pos]||cpos[String(x.pos)]))) rows.push({k:'trade',t:x.t,title:tr('Commission')+(x.symbol?' · '+x.symbol:''),sub:tr('Open trades'),amt:x.pl}); }); }
+    ((esA&&esA.adj)||[]).forEach(function(x){ var T=String(x.type||''); rows.push({k:'adj',t:x.t,title:tr(/^DIVIDEND/.test(T)?'Dividend':(T==='TAX'?'Tax':(T==='CREDIT'?'Credit':(/^COMMISSION/.test(T)?'Commission':(T==='INTEREST'?'Interest':'Adjustment'))))),sub:'',amt:x.amt}); });
     rows.sort(function(a,b){return b.t-a.t;});
     var list=rows.filter(function(r){return alKind==='all'||r.k===alKind;});
     var IC={trade:'⇅',in:'↓',out:'↑',adj:'±'};
