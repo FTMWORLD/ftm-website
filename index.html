@@ -2506,8 +2506,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .hx .dx-cbtn.hx-dep{border-color:#E3B62F!important}.hx .dx-cbtn:hover{background:rgba(227,182,47,.18)!important}.hx .dx-cbtn[hidden]{display:none!important}
 .hx .dx-cbtn svg{width:17px!important;height:17px!important;color:#E3B62F}#dxPause svg{color:#fff}
 .hx .dx-go{justify-self:start}
-@media (max-width:1100px){.hx .hx-bot{flex-wrap:wrap}.hx-sep{display:none}.hx-stats{flex:1 1 100%}.hx .dx-cash{flex:1 1 100%}.hx .dx-cash .dx-cbtn{flex:1 1 0;justify-content:center}}
-@media (max-width:860px){.hx .hx-mid{grid-template-columns:1fr;min-height:0}.hx .dx-right{min-height:120px;height:130px}.hx .dx-spark:not([hidden]){min-height:120px}}
+
+
 @media (max-width:560px){#appView .dx-hero.hx,.dx-hero.hx{padding:18px 16px 14px!important;gap:14px}.hx .hx-top{gap:10px}.hx .hx-top .dx-lbl{flex:1 1 100%;order:0}.hx .dx-tagrow{order:1}.hx-tf{order:2;margin-inline-start:auto}.hx-tf button{padding:6px 9px;font-size:13px}
   #appView .hx .dx-val,.hx .dx-val{font-size:44px}.hx-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.hx-stat{padding:8px 10px}.hx-stat em{font-size:11.5px}.hx-stat b{font-size:16px}.hx-stat small{font-size:11px}
   .hx .dx-cash{gap:8px}.hx .dx-cbtn{padding:10px 10px!important;font-size:13.5px!important;gap:6px!important}.hx .hx-bot{padding:10px;border-radius:16px}}
@@ -2564,9 +2564,35 @@ body.op-lock{overflow:hidden}
 @media (max-width:860px){.bar-title .app-title-meta{grid-template-columns:auto auto minmax(0,1fr)!important}}
 
 .dx-hero.hx{container-type:inline-size;container-name:hx}
-@container hx (max-width:900px){.hx .hx-bot{flex-wrap:wrap}.hx-sep{display:none}.hx-stats{flex:1 1 100%}.hx .dx-cash{flex:1 1 100%}.hx .dx-cash .dx-cbtn{flex:1 1 0;justify-content:center}.hx-stat b{font-size:20px}}
-@container hx (max-width:640px){.hx .hx-mid{grid-template-columns:1fr;min-height:0}.hx .dx-right{min-height:120px;height:130px}.hx .dx-spark:not([hidden]){min-height:120px}}
 @media (max-width:340px){.bar-title .app-title-meta{grid-template-columns:1fr 1fr!important}.bar-title .app-title-meta>div:nth-child(3){grid-column:1/-1;border-left:0!important;padding-left:0!important;margin-top:6px}}
+
+/* compact hero: same footprint as before */
+#appView .dx-hero.hx{padding:16px 20px 14px!important;gap:10px!important;border-radius:24px}
+#appView .hx .hx-top{gap:10px;flex-wrap:nowrap}
+#appView .hx .hx-top .dx-lbl{font-size:15px!important;white-space:nowrap}
+#appView .hx .unit-sw{padding:2px!important}#appView .hx .unit-sw button{font-size:12px!important;padding:4px 11px!important}
+#appView .hx-tf button{font-size:12px;padding:4px 8px}
+#appView .hx .hx-mid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;min-height:0;align-items:center}
+#appView .hx .dx-hero-l{gap:6px!important}
+#appView .hx .dx-val{font-size:clamp(30px,3.2vw,44px)}
+#appView .hx .dx-float{font-size:12.5px!important;padding:4px 11px!important}
+#appView .hx .dx-upd{font-size:12px}#appView .hx .dx-upd .dx-ref{width:22px;height:22px}
+#appView .hx .dx-right{min-height:0;height:104px}#appView .hx .dx-spark:not([hidden]){min-height:0;height:104px!important}
+#appView .hx-dot{width:10px;height:10px}
+#appView .hx .hx-bot{gap:8px;padding:7px;border-radius:14px;flex-wrap:nowrap}
+#appView .hx-stats{gap:6px}
+#appView .hx-stat{padding:5px 9px;border-radius:10px;gap:0}
+#appView .hx-stat em{font-size:10.5px}#appView .hx-stat b{font-size:14.5px}#appView .hx-stat small{font-size:9.5px}
+#appView .hx-sep{margin:4px 0}
+#appView .hx .dx-cash{gap:6px}
+#appView .hx .dx-cbtn{padding:6px 11px!important;font-size:12px!important;gap:5px!important;border-width:1px!important}
+#appView .hx .dx-cbtn svg{width:13px!important;height:13px!important}
+@container hx (max-width:600px){#appView .hx .hx-bot{flex-wrap:wrap}#appView .hx-sep{display:none}#appView .hx-stats{flex:1 1 100%}#appView .hx .dx-cash{flex:1 1 100%}#appView .hx .dx-cash .dx-cbtn{flex:1 1 0;justify-content:center}}
+@container hx (max-width:470px){#appView .hx .hx-top{flex-wrap:wrap}#appView .hx .hx-top .dx-lbl{flex:1 1 100%}#appView .hx-tf{margin-inline-start:auto}#appView .hx .hx-mid{grid-template-columns:1fr}#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:80px!important}#appView .hx .dx-val{font-size:38px}}
+
+#appView .hx-stat em{white-space:normal;line-height:1.15;overflow:visible;text-overflow:clip}
+#appView .hx-stats>#dxInit{flex:1.25 1 0}
+@container hx (max-width:470px){#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:64px!important}#appView .hx .dx-val{font-size:34px}#appView .dx-hero.hx{gap:8px!important}#appView .hx .dx-cbtn{padding:7px 6px!important}}
 </style>
 <script>
 (function(){
