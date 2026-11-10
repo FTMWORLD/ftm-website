@@ -2176,7 +2176,35 @@ h3.has-tip{cursor:help}
 .metrics>.app-card{height:100%}
 .cx-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .cx-head h3{margin:0}
-.cx-open-btn{display:none}
+.cx-card>.app-form{display:none}
+.cx-sheet{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;background:rgba(8,14,40,.55);backdrop-filter:blur(3px);padding:20px}
+.cx-sheet[hidden]{display:none}
+.cx-sheet .app-form{display:block;background:#fff;width:min(460px,100%);max-height:calc(100dvh - 40px);overflow:auto;border-radius:22px;padding:22px 22px 18px;box-shadow:0 30px 80px -20px rgba(8,14,40,.6);animation:cwIn .22s ease-out}
+@keyframes cwIn{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.cw-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
+.cw-title b{display:block;font-size:18px;color:#0b1440;line-height:1.25}.cw-title span{display:block;font-size:12.5px;font-weight:700;color:#8a6d12;margin-top:3px;letter-spacing:.02em}
+.cw-x{flex:none;width:36px;height:36px;border-radius:50%;border:0;background:#f2f4fa;color:#0b1440;display:grid;place-items:center;cursor:pointer}.cw-x svg{width:16px;height:16px}
+.cw-bar{height:4px;border-radius:4px;background:#eef0f6;overflow:hidden;margin-bottom:18px}.cw-bar i{display:block;height:100%;width:25%;background:linear-gradient(90deg,#D4AF37,#E3B62F);border-radius:4px;transition:width .3s}
+.cw-step{display:none}.cw-step.on{display:block;animation:cwIn .2s ease-out}
+.cx-sheet .bk-list{position:static!important;max-height:216px;margin-top:6px;box-shadow:none;border:1px solid #e3e6f0;inset:auto!important;width:auto!important}
+.cx-sheet .cw-step{min-height:150px}
+.cw-step label{font-size:15px}
+.cx-sheet input,.cx-sheet select{font-size:16px!important}
+.cw-err{color:#c81e2b;font-size:13.5px;font-weight:600;margin:10px 0 0}
+.cw-nav{display:flex;gap:10px;margin-top:18px}.cw-nav .btn{flex:1;min-height:48px}
+.cw-nav.last #cwNext{display:none}.cw-nav:not(.last) #appConnect{display:none}
+.cx-sheet .bk-hint,.cx-sheet .pw-hint{margin-top:10px}.cw-nav.first #cwBack{visibility:hidden}
+.cx-sheet #appConnect{flex:1.4;min-height:48px;margin:0}
+.cx-card .cx-open-btn{display:inline-flex}
+.cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
+.cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
+.cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
+#appView.free .cx-steps,#appView.lapsed .cx-steps{display:none}
+#appView.has-acct .cx-card:not(.cx-open)>.hint{display:block}
+.cx-card>.hint{font-size:12.5px;margin-top:10px}
+html.cw-lock,html.cw-lock body{overflow:hidden}
+@media (max-width:600px){.cx-sheet{align-items:flex-end;padding:0}.cx-sheet .app-form{width:100%;border-radius:22px 22px 0 0;max-height:92dvh;padding:18px 16px calc(16px + env(safe-area-inset-bottom));animation:cwUp .25s ease-out}
+  @keyframes cwUp{from{transform:translateY(40%)}to{transform:none}}}
 #appView.has-acct .cx-card:not(.cx-open) .app-form,#appView.has-acct .cx-card:not(.cx-open)>.hint{display:none}
 #appView.has-acct .cx-card:not(.cx-open) .cx-open-btn{display:inline-flex}
 @media (min-width:901px){
@@ -3150,8 +3178,12 @@ h3.has-tip{cursor:help}
         <div class="app-card cx-card" id="cxCard">
           <div class="cx-head"><h3>Connect your trading account</h3><button type="button" class="btn btn-outline btn-sm cx-open-btn" id="cxOpen">Add account</button></div>
           <div class="cx-lock"><span class="cx-lock-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p>Linking a trading account is for subscribers. Upgrade to a plan to let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">See the plans</a></div>
+          <ol class="cx-steps"><li><b>1</b><span>Server</span></li><li><b>2</b><span>MT5 account number</span></li><li><b>3</b><span>Master trading password</span></li><li><b>4</b><span>Risk profile</span></li></ol>
           <p class="hint">FTM only needs trading access. We never ask for your broker portal login or anything that can move money out of your account.</p>
-          <div class="app-form">
+          <div class="app-form" id="cxForm">
+            <div class="cw-top"><div class="cw-title"><b>Connect your trading account</b><span id="cwStep">Step 1 of 4</span></div><button type="button" class="cw-x" id="cwClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+            <div class="cw-bar"><i id="cwBar"></i></div>
+            <div class="cw-step" data-s="1">
             <label for="appBroker">Server</label>
             <div class="bk" id="bkBox">
               <input type="text" id="appBroker" role="combobox" aria-expanded="false" aria-controls="bkList" aria-autocomplete="list" autocomplete="off" placeholder="Type or pick your MT5 server" value="">
@@ -3159,8 +3191,12 @@ h3.has-tip{cursor:help}
               <ul class="bk-list" id="bkList" role="listbox" hidden></ul>
             </div>
             <p class="bk-hint" id="bkHint">Use the exact server name. You will find it in your broker's welcome email, or in MT5 under File, Login to Trade Account.</p>
+            </div>
+            <div class="cw-step" data-s="2">
             <label for="appAcct">MT5 account number</label>
-            <input type="text" id="appAcct" placeholder="e.g. 51234567" autocomplete="off">
+            <input type="text" id="appAcct" placeholder="e.g. 51234567" autocomplete="off" inputmode="numeric">
+            </div>
+            <div class="cw-step" data-s="3">
             <label for="appPass">Master trading password</label>
             <div class="pw">
               <input type="password" id="appPass" placeholder="Your MT5 master password" autocomplete="new-password" autocapitalize="off" spellcheck="false">
@@ -3169,14 +3205,18 @@ h3.has-tip{cursor:help}
               </button>
             </div>
             <p class="pw-hint">This is the MT5 master password your broker sent when you opened the account. It lets FTM MACHINE place trades. It cannot be used to withdraw money, and you can revoke access any time by changing it in MT5. Do not use your investor password or your broker portal login.</p>
+            </div>
+            <div class="cw-step" data-s="4">
             <label for="appProfile">Risk profile</label>
             <div class="rp-row">
               <select id="appProfile"><option>Conservative</option><option selected>Balanced</option><option>Growth</option></select>
               <button type="button" class="rp-info" id="rpInfoBtn" aria-labelledby="rpInfoTxt" aria-controls="rpInfoTxt" aria-expanded="false"><span aria-hidden="true">i</span></button>
             </div>
             <p class="rp-note" id="rpInfoTxt" hidden>Growth scales at twice my normal size</p>
-            <button class="btn btn-red" type="button" id="appConnect">Connect account</button>
             <p class="hint" id="appConnectMsg" style="margin-top:10px" hidden></p>
+            </div>
+            <p class="cw-err" id="cwErr" hidden></p>
+            <div class="cw-nav"><button type="button" class="btn btn-outline" id="cwBack">Back</button><button type="button" class="btn btn-red" id="cwNext">Next</button><button class="btn btn-red" type="button" id="appConnect">Connect account</button></div>
           </div>
         </div>
       </div>
@@ -8622,9 +8662,34 @@ tick();setInterval(tick,5000);})();
     var t=e.target.closest&&e.target.closest('#cxOpen,#acctAdd,.um-act,#actGo');
     if(!t) return; var c=$('cxCard'); if(!c) return;
     if(t.id==='actGo' && t.dataset.act==='Choose a plan') return;
-    c.classList.add('cx-open');
-    if(t.id==='cxOpen'){ setTimeout(function(){ var f=$('appBroker'); if(f) f.focus(); },60); }
+    var av=$('appView'); if(av && (av.classList.contains('free')||av.classList.contains('lapsed'))) return;
+    if(F.cxWizard) F.cxWizard.open();
   },true);
+  (function(){
+    var form=$('cxForm'), card=$('cxCard'), av=$('appView'); if(!form||!card||!av) return;
+    var sheet=document.createElement('div'); sheet.className='cx-sheet'; sheet.hidden=true; sheet.setAttribute('role','dialog'); sheet.setAttribute('aria-modal','true'); sheet.setAttribute('aria-labelledby','cwStep'); av.appendChild(sheet);
+    var step=1, N=4, last=null;
+    function err(t){ var e=$('cwErr'); e.textContent=t?tr(t):''; e.hidden=!t; }
+    function show(n){ step=n; form.querySelectorAll('.cw-step').forEach(function(x){ x.classList.toggle('on', +x.dataset.s===n); });
+      $('cwStep').textContent=tr('Step {} of {}').replace('{}',n).replace('{}',N); $('cwBar').style.width=(n/N*100)+'%';
+      var nav=form.querySelector('.cw-nav'); nav.classList.toggle('first',n===1); nav.classList.toggle('last',n===N); err('');
+      setTimeout(function(){ var f=form.querySelector('.cw-step.on input,.cw-step.on select'); if(f && !matchMedia('(pointer:coarse)').matches) f.focus(); else if(f && n>1) f.focus(); },80); }
+    function ok(n){
+      if(n===1){ var b=$('appBroker'); if(b){ b.dispatchEvent(new Event('change',{bubbles:true})); b.blur(); } if(!(F.server&&F.server())){ err('Pick or type your MT5 server first. It must match your account exactly.'); return false; } }
+      if(n===2 && !/^\d{5,12}$/.test($('appAcct').value.trim())){ err('Enter your MT5 account number. It is the 5 to 12 digit number your broker gave you.'); return false; }
+      if(n===3 && !$('appPass').value){ err('Enter your MT5 master trading password.'); return false; }
+      return true; }
+    function open(){ last=document.activeElement; sheet.appendChild(form); sheet.hidden=false; document.documentElement.classList.add('cw-lock'); var m=$('appConnectMsg'); if(m && !$('appConnect').disabled){ m.hidden=true; m.textContent=''; } show(1); }
+    function close(){ sheet.hidden=true; card.appendChild(form); document.documentElement.classList.remove('cw-lock'); var p=$('appPass'); if(p) p.value=''; err(''); if(last&&last.focus) try{ last.focus(); }catch(e){} }
+    $('cwNext').addEventListener('click',function(){ if(ok(step)) show(Math.min(N,step+1)); });
+    $('cwBack').addEventListener('click',function(){ show(Math.max(1,step-1)); });
+    $('cwClose').addEventListener('click',close);
+    sheet.addEventListener('click',function(e){ if(e.target===sheet) close(); });
+    document.addEventListener('keydown',function(e){ if(sheet.hidden) return; if(e.key==='Escape'){ var l=$('bkList'); if(l&&!l.hidden) return; close(); } });
+    form.addEventListener('keydown',function(e){ if(e.key!=='Enter'||e.target.tagName==='BUTTON') return; var l=$('bkList'); if(step===1 && l && !l.hidden) return; e.preventDefault(); if(step<N){ if(ok(step)) show(step+1); } else $('appConnect').click(); }, true);
+    var msg=$('appConnectMsg'); if(msg) new MutationObserver(function(){ if(!sheet.hidden && /^Account connected/.test(msg.textContent.trim())) setTimeout(close,1800); }).observe(msg,{childList:true,characterData:true,subtree:true});
+    F.cxWizard={open:open, close:close, step:function(){ return step; }};
+  })();
   try{ draw(); }catch(e){}
 })();
 </script>
