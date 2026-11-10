@@ -100,21 +100,24 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
   const fails=[]; let checks=0;
   for(let k=0;k<N;k++){
     const seed=SEED*1000+k, now=Date.now(), acc=gen(seed,now), O=oracle(acc), ST=engine(acc,O);
+    // every second account is first opened on another account (a customer's own), then switched to: no figure may leak across
+    const sw=seed%2===1, OID='f7a00000-0000-4000-8000-0000000000d1', acc2=sw?gen(seed+77777,now):null, O2=sw?oracle(acc2):null, ST2=sw?engine(acc2,O2):null;
     const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:'Europe/Berlin',locale:'en-GB'}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
     await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
     await p.route('**/i18n/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
     const beacons=[];
     await p.route('**/api/v1/**',r=>{const u=r.request().url();
       if(u.includes('client-log')){ beacons.push(r.request().postData()||''); return r.fulfill({status:204,body:''}); }
-      if(u.includes('/stats')){ const q=new URL(u).searchParams, off=+q.get('offset')||0, lim=Math.min(2000,+q.get('limit')||200); return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(Object.assign({},ST,{history:ST.history.slice(off,off+lim)}))}); }
+      if(u.includes('/stats')){ const q=new URL(u).searchParams, off=+q.get('offset')||0, lim=Math.min(2000,+q.get('limit')||200), X=u.includes(OID)?ST2:ST; return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(Object.assign({},X,{history:X.history.slice(off,off+lim)}))}); }
       if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
       if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
       if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
-      if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[{account_id:'f7a00000-0000-4000-8000-'+String(100000000000+seed),account_number:'5'+seed,preview:true,view_only:true,currency:'USD',balance:String(O.balance),equity:String(O.balance),display_status:'PAUSED',deposits:String(O.dep),withdrawals:String(O.wd)}]})});
+      if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:(sw?[{account_id:OID,account_number:'184',name:'DERIV',currency:'USD',balance:String(O2.balance),equity:String(O2.balance),display_status:'ACTIVE',status_reason:'OK',is_trading:true,deposits:String(O2.dep),withdrawals:String(O2.wd)}]:[]).concat([{account_id:'f7a00000-0000-4000-8000-'+String(100000000000+seed),account_number:'5'+seed,preview:true,view_only:true,currency:'USD',balance:String(O.balance),equity:String(O.balance),display_status:'PAUSED',deposits:String(O.dep),withdrawals:String(O.wd)}])})});
       return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
     await p.goto(BASE+'/');await p.waitForTimeout(700);
     await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fz@ftm.com',products:[],name:'Fz'};});
     await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(1800);
+    if(sw){ await p.evaluate(n=>FTM.viewAccount(n),'5'+seed); await p.waitForTimeout(2200); }
     const V=await p.evaluate(()=>{const g=i=>((document.getElementById(i)||{}).textContent||'').replace(/\s+/g,' ').trim();const q=s=>[...document.querySelectorAll(s)].map(e=>e.textContent.replace(/\s+/g,' ').trim());
       const st=(()=>{ try{ FTM._stFill&&FTM._stFill(); const s=document.getElementById('stPeriod'); s.value='all'; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent]); }catch(e){ return 'ERR '+e.message; } })();
       const fx=id=>Object.fromEntries([...document.querySelectorAll('#'+id+' > div')].map(d=>[d.querySelector('dt').textContent,d.querySelector('dd').textContent]));
@@ -132,7 +135,10 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
         st};});
     const ACT=await p.evaluate(async()=>{ const mb=document.getElementById('alMore'); for(let i=0;i<80&&mb&&!mb.hidden;i++){ mb.click(); await new Promise(z=>setTimeout(z,5)); } return [...document.querySelectorAll('#alList li .al-amt')].map(e=>e.textContent); });
     const RG=await p.evaluate(async()=>{ const out={}; const tf=document.getElementById('curveTF'); for(const r of ['1','3','6','ytd','12','0']){ const bt=tf.querySelector('[data-r="'+r+'"]'); bt.click(); await new Promise(z=>setTimeout(z,60)); out[r]=[Date.now(),(document.getElementById('cvChg')||{}).textContent||'']; } return out; });
-    const tag='#'+seed+(acc.startMode?' (start balance)':'')+' ', ok=(c,m)=>{checks++; if(!c) fails.push(tag+m);};
+    const PCT=await p.evaluate(async()=>{ const bt=document.querySelector('#unitSw [data-unit="percent"]'); if(!bt) return null; bt.click(); await new Promise(z=>setTimeout(z,150));
+      const r=[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent)]);
+      const a=document.querySelector('#unitSw [data-unit="amount"]'); if(a) a.click(); return r; });
+    const tag='#'+seed+(acc.startMode?' (start balance)':'')+(sw?' (after switching)':'')+' ', ok=(c,m)=>{checks++; if(!c) fails.push(tag+m);};
     const eq=(shown,want,tol,m)=>ok(Math.abs(num(shown)-want)<=tol, m+': shown '+shown+', expected '+(+want).toFixed(2));
     const nowP=V.now, sod=new Date(nowP); sod.setHours(0,0,0,0); const y=new Date(nowP).getFullYear(), mo=new Date(nowP).getMonth();
     eq(V.net,O.pl,0.005,'Net P/L = sum of closed trade deals');
@@ -186,6 +192,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     V.months.forEach(([yr,cells])=>{ cells.forEach((c,i)=>{ const [v,sm]=c.split('|'); if(v==='-') return; const a=i<12?new Date(+yr,i,1):new Date(+yr,0,1), z=i<12?new Date(+yr,i+1,1):new Date(+yr+1,0,1);
       const sg=O.seg(a.getTime(),z.getTime()); eq(v,sg.pl,0.5001,'Month by month '+yr+' '+(MN[i]||'Total')+' money');
       const n=O.positions.filter(x=>x.close>=a.getTime()&&x.close<z.getTime()).length; eq(sm,n,0,'Month by month '+yr+' '+(MN[i]||'Total')+' trades'); }); });
+    if(PCT) PCT.forEach(([yr,cells])=>cells.forEach((v,i)=>{ if(v==='-') return; const a=i<12?new Date(+yr,i,1):new Date(+yr,0,1), z=i<12?new Date(+yr,i+1,1):new Date(+yr+1,0,1); eq(v,O.seg(a.getTime(),z.getTime()).pct,0.0051,'Month by month in % '+yr+' '+(i<12?i+1:'Total')); }));
     const yi=n=>V.yearHead.indexOf(n);
     V.yearCells.forEach(c=>{ const yr=+c[0]; if(!yr) return; const a=new Date(yr,0,1).getTime(), z=new Date(yr+1,0,1).getTime(), sg=O.seg(a,z);
       eq(c[yi('Return')],sg.pct,0.0051,'Year '+yr+' return');

@@ -6069,7 +6069,6 @@ h3.has-tip{cursor:help}
     }
     function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
     function balAt(t){ var cv=F.metrics().curve||[], b=null; for(var i=0;i<cv.length;i++){ if(cv[i].t<t) b=cv[i].v; else break; } return b===null?(cv.length?cv[0].v:0):b; }
-    function sgnU(pl,t,dp,tEnd){ if(F.unit==='percent'){ var base=Math.max(0,balAt(t)); if(tEnd) (F.data.flows||[]).forEach(function(f){ if(f.amt>0&&f.t>=t&&f.t<tEnd) base+=f.amt; }); return base>0 ? ((pl>=0?'+':'')+(pl/base*100).toFixed(2)+'%') : '—'; } return signed(pl,dp); }
     function el(id){ return document.getElementById(id); }
     function key(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
