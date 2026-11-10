@@ -4,6 +4,18 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — LIVE PRICES FOR THE CLIENT-AREA CHART (commit ae17d3d, API restarted 13:20, feed live 13:39 Berlin)
+
+- NEW GET /customer/market/candles?symbol=XAUUSD|BTCUSD|USTEC|USDJPY|HK50|BOOM1000&tf=1m|5m|15m|1h|4h|1d&limit=1-300:
+  {ok, symbol, tf, source, digits, candles:[{t,o,h,l,c}] oldest first (last = forming), feed_age_sec, last_tick_at,
+  stale, market_closed}. NEW GET /customer/market/quotes?symbols=... {ok, source, quotes:[{symbol, ok, bid, ask, t, ...}]}.
+- Prices: FTM master prices (IC Markets, BID) from a separate price-only terminal (MT5_Feed; one EA without trading
+  code, AutoTrading off); the master terminal and Sender are untouched. Served from the engine's in-memory cache.
+- Logged-in customers only. Rate limit per customer: bursts of 10, 2 per second; over it 429 RATE_LIMITED.
+- BOOM1000 -> 404 NOT_AVAILABLE. stale = feed stopped > 10 s; market_closed = no tick for > 5 min with a live feed.
+  503 FEED_NOT_READY only before the first prices (e.g. right after an API restart, a few seconds).
+- Proof: verify-market-feed 11/11 in the gate, incl. M11 live: all 5 markets fresh (< 1 s) from the running API.
+
 ## 2026-11-10 — LEADERBOARD RANKS FTM'S TRADES ONLY (commit 78de18e, switched on 12:12 Berlin, no API restart)
 
 Gospel "Yes, build it" and "Yes, switch it on" in the engine chat.
