@@ -23,6 +23,7 @@ ACCOUNT HELP: Log in with email and password, or leave the password blank to get
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Master (IC Markets) balance showed an old figure (99,606) instead of the real 94,855.93: the engine kept an old reading for paused accounts. Fixed by FTM engine for every account (newest reading always used). The website also checks start balance + deposits - withdrawals + closed trades + fees/dividends/tax + credit, so profit and % stay right even if a reported balance is late.
+- Where is my initial deposit: the first money paid into the account, with its date, is shown under Total account value on the Dashboard and at the top of Capital flows. If FTM's records of an account start after it was opened, it shows the Starting balance on the first day FTM has on record.
 - Profit and % come from the closed trades, never from balance minus deposits. If the balance shown looks different from the broker app, tell FTM support: the engine re-reads the account.
 - Balance chart header showed a different profit than the rest of the page: it skipped the first day's trades. Fixed: with All selected it equals the all-time profit and %.
 - Risk level card: shows the account's largest drop from a high (max drawdown, closed trades only, from the FTM engine) against the normal range of its risk profile: Conservative 10-20%, Balanced 20-40%, Growth 40% and more. 'Below the normal range' means less risk than the profile allows.
