@@ -30,6 +30,10 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Dividends and tax on index trades: shown as 'Dividends, tax & adjustments' in Capital flows, the year table and the statement. They change the balance but are not trading profit.
 - Year table: Start + Net deposits + Profit (+ adjustments) = End, to the cent. Months or periods before the account existed show a dash, not 0.00%.
 - Sharpe ratio: the yearly return divided by the yearly ups and downs, from daily time-weighted returns; shown after 30 days.
+- Calendar: a day where a trade was only opened (opening commission, nothing closed) had no cell, so the days did not add up to the month. Fixed: every day the balance changed by trading has a cell; days and weeks add up to the month.
+- Account activity now also lists dividends, tax and other adjustments, so the list adds up to the change in balance.
+- Profit factor showed a red 0.00 when there was no losing trade: it now shows a dash. Expectancy = the average result per closed trade. Best/worst trade % is measured on the balance when the trade opened.
+- Accounts with a very long history (more than 2,000 deals) are read page by page, so every statistic still uses the full history.
 - Profit and % come from the closed trades, never from balance minus deposits. If the balance shown looks different from the broker app, tell FTM support: the engine re-reads the account.
 - Balance chart header showed a different profit than the rest of the page: it skipped the first day's trades. Fixed: with All selected it equals the all-time profit and %.
 - Risk level card: shows the account's largest drop from a high (max drawdown, closed trades only, from the FTM engine) against the normal range of its risk profile: Conservative 10-20%, Balanced 20-40%, Growth 40% and more. 'Below the normal range' means less risk than the profile allows.

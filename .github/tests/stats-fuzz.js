@@ -25,7 +25,7 @@ function gen(seed, now){
   const T=()=>{ for(;;){ const t=Math.round(t0+R()*(now-t0)); if(okT(t)) return t; } };
   const ev=[];
   if(!startMode) ev.push({t:t0+MIN,k:'dep',amt:A0});
-  const nT=ri(3,span<10?12:90), syms=['XAUUSD','US500','BTCUSD','USTEC','EURUSD'];
+  const big=seed%20===7, nT=big?1150:ri(3,span<10?12:90), syms=['XAUUSD','US500','BTCUSD','USTEC','EURUSD'];
   for(let i=0;i<nT;i++){ const tc=T(); let to=tc-ri(5,60*48)*MIN; if(to<t0+2*MIN) to=t0+2*MIN; if(!okT(to)) to=tc;
     ev.push({t:tc,k:'pos',to,sym:pick(syms),side:pick(['BUY','SELL']),vol:pick([0.01,0.1,0.5,1,2]),r:(R()-0.47)*pick([0.004,0.01,0.03,0.06]),
       cIn:R()<0.6?-c2(R()*7):0,cOut:R()<0.6?-c2(R()*7):0,sw:R()<0.4?c2((R()-0.6)*4):0,part:R()<0.1,id:'P'+seed+'_'+i}); }
@@ -72,7 +72,7 @@ function oracle(acc){
   const seg=(a,b)=>{ let f=1,p=0; deals.forEach(d=>{ if((a==null||d.t>=a)&&(b==null||d.t<b)){ if(d.net!==0&&d.before>0) f*=1+d.net/d.before; p+=d.net; } }); return {pl:c2(p),pct:(f-1)*100}; };
   const balAt=t=>{ let b=S0; rows.forEach(r=>{ if(r.t<t) b=c2(b+r.net); }); return b; };
   // positions (a position = its opening deal + every closing deal)
-  const P={}; rows.forEach(r=>{ if(!r.entry) return; const x=P[r.pos]=P[r.pos]||{net:0,close:0,lots:0,sym:r.sym}; x.net+=r.net; if(r.entry==='OUT'){ x.close=Math.max(x.close,r.t); x.lots+=r.vol; } });
+  const P={}; rows.forEach(r=>{ if(!r.entry) return; const x=P[r.pos]=P[r.pos]||{net:0,close:0,open:null,lots:0,sym:r.sym}; x.net+=r.net; if(r.entry==='IN') x.open=r.t; if(r.entry==='OUT'){ x.close=Math.max(x.close,r.t); x.lots+=r.vol; } });
   const pos=Object.values(P).filter(x=>x.close);
   const outs=rows.filter(r=>r.entry==='OUT');
   const wins=pos.filter(x=>c2(x.net)>0).length;
@@ -106,7 +106,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     const beacons=[];
     await p.route('**/api/v1/**',r=>{const u=r.request().url();
       if(u.includes('client-log')){ beacons.push(r.request().postData()||''); return r.fulfill({status:204,body:''}); }
-      if(u.includes('/stats'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ST)});
+      if(u.includes('/stats')){ const q=new URL(u).searchParams, off=+q.get('offset')||0, lim=Math.min(2000,+q.get('limit')||200); return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(Object.assign({},ST,{history:ST.history.slice(off,off+lim)}))}); }
       if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
       if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
       if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
@@ -117,17 +117,21 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(1800);
     const V=await p.evaluate(()=>{const g=i=>((document.getElementById(i)||{}).textContent||'').replace(/\s+/g,' ').trim();const q=s=>[...document.querySelectorAll(s)].map(e=>e.textContent.replace(/\s+/g,' ').trim());
       const st=(()=>{ try{ FTM._stFill&&FTM._stFill(); const s=document.getElementById('stPeriod'); s.value='all'; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent]); }catch(e){ return 'ERR '+e.message; } })();
-      return {now:Date.now(),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
+      const fx=id=>Object.fromEntries([...document.querySelectorAll('#'+id+' > div')].map(d=>[d.querySelector('dt').textContent,d.querySelector('dd').textContent]));
+      return {now:Date.now(),pf:g('mPF'),avg:g('mAvg'),exp:g('mExp'),sd:g('mSD'),stD:g('mStreakDays'),stT:g('mStreakTrades'),best:fx('pxBest'),worst:fx('pxWorst'),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
         count:g('mCount'),win:g('mWin'),cv:g('cvChg'),pnl:[...document.querySelectorAll('#dxPnl .pp-t')].map(e=>[e.querySelector('.pp-l').textContent,e.querySelector('.pp-v').textContent,e.querySelector('.pp-c').textContent]),
         fs:[...document.querySelectorAll('#fsGrid .fs-c')].map(e=>[e.querySelector('span').textContent,e.querySelector('b').textContent,e.querySelector('small').textContent]),
         months:[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent+'|'+((c.querySelector('small')||{}).textContent||''))]),
         years:q('#pxYears tbody tr').map(x=>x),yearCells:[...document.querySelectorAll('#pxYears tbody tr')].map(tr=>[...tr.children].map(td=>td.textContent.trim())),
         yearHead:[...document.querySelectorAll('#pxYears thead th')].map(x=>x.textContent.trim()),
         dd1:[...document.querySelectorAll('#pxDD tbody tr')].map(tr=>tr.children[2]&&tr.children[2].textContent),
+        calCells:[...document.querySelectorAll('#calGrid .cal-cell')].map(c=>[c.classList.contains('tot')?'W':((c.classList.contains('off'))?'off':(c.querySelector('.d')||{}).textContent),(c.querySelector('.v')||{}).textContent||'',(c.querySelector('.q')||{}).textContent||'']),
         cal:[g('calTitle'),g('calTrades'),g('calWins'),g('calNet'),g('calPct')],
         sess:[...document.querySelectorAll('#sessTable tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[3].textContent]),
         sym:[...document.querySelectorAll('#perfSymbols tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[4].textContent]),
         st};});
+    const ACT=await p.evaluate(async()=>{ const mb=document.getElementById('alMore'); for(let i=0;i<80&&mb&&!mb.hidden;i++){ mb.click(); await new Promise(z=>setTimeout(z,5)); } return [...document.querySelectorAll('#alList li .al-amt')].map(e=>e.textContent); });
+    const RG=await p.evaluate(async()=>{ const out={}; const tf=document.getElementById('curveTF'); for(const r of ['1','3','6','ytd','12','0']){ const bt=tf.querySelector('[data-r="'+r+'"]'); bt.click(); await new Promise(z=>setTimeout(z,60)); out[r]=[Date.now(),(document.getElementById('cvChg')||{}).textContent||'']; } return out; });
     const tag='#'+seed+(acc.startMode?' (start balance)':'')+' ', ok=(c,m)=>{checks++; if(!c) fails.push(tag+m);};
     const eq=(shown,want,tol,m)=>ok(Math.abs(num(shown)-want)<=tol, m+': shown '+shown+', expected '+(+want).toFixed(2));
     const nowP=V.now, sod=new Date(nowP); sod.setHours(0,0,0,0); const y=new Date(nowP).getFullYear(), mo=new Date(nowP).getMonth();
@@ -144,12 +148,33 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       else { const r=[]; let prev=d0.getTime(); for(let i=1;i<=nd+1;i++){ const e=new Date(d0); e.setDate(e.getDate()+i); r.push(O.seg(prev,e.getTime()).pct/100); prev=e.getTime(); }
         const mu=r.reduce((a,x)=>a+x,0)/r.length, v=r.reduce((a,x)=>a+(x-mu)**2,0)/(r.length-1), sh=v>0?mu/Math.sqrt(v)*Math.sqrt(365):null;
         if(sh==null) ok(V.sharpe==='—','Sharpe with no variation: shown '+V.sharpe); else eq(V.sharpe,sh,0.0051,'Sharpe ratio (daily time-weighted returns, x sqrt 365)'); } }
+    { const PS=O.positions.slice().sort((x,y)=>x.close-y.close), nets=PS.map(x=>c2(x.net)), n=nets.length;
+      const gp=nets.filter(x=>x>0).reduce((a,x)=>a+x,0), gl=-nets.filter(x=>x<0).reduce((a,x)=>a+x,0), w=nets.filter(x=>x>0).length, l=nets.filter(x=>x<0).length;
+      if(gl>0) eq(V.pf,gp/gl,0.0051,'Profit factor'); else ok(V.pf==='—','Profit factor with no losing trade is a dash: shown '+V.pf);
+      const av=V.avg.split('/'); eq(av[0],w?gp/w:0,0.5001,'Average win'); eq(av[1],l?gl/l:0,0.5001,'Average loss');
+      const mu=n?nets.reduce((a,x)=>a+x,0)/n:0; eq(V.exp,mu,0.0051,'Expectancy = average trade result');
+      if(n>1) eq(V.sd,Math.sqrt(nets.reduce((a,x)=>a+(x-mu)**2,0)/(n-1)),0.0051,'Standard deviation of trade results');
+      let run=0,bestT=0; nets.forEach(x=>{ if(x>0){ run++; bestT=Math.max(bestT,run); } else if(x<0) run=0; }); eq(V.stT,bestT,0,'Best winning streak (trades)');
+      const dk=t=>{ const d=new Date(t); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }; const day={},ord=[]; PS.forEach(x=>{ const k=dk(x.close); if(day[k]===undefined){ day[k]=0; ord.push(k); } day[k]+=x.net; });
+      let rd=0,bestD=0; ord.forEach(k=>{ const v=c2(day[k]); if(v>0){ rd++; bestD=Math.max(bestD,rd); } else if(v<0) rd=0; }); eq(V.stD,bestD,0,'Best winning streak (days)');
+      const tp=PS.map(x=>x.net/O.balAt(x.open!=null?x.open:x.close)*100);
+      if(V.best['Best trade']) eq(V.best['Best trade'],Math.max(...tp),0.0051,'Best trade %');
+      if(V.worst['Worst trade']) eq(V.worst['Worst trade'],Math.min(...tp),0.0051,'Worst trade %');
+      const p2=x=>(x<10?'0':'')+x, K={d:t=>{const d=new Date(t);return [d.getFullYear(),d.getMonth(),d.getDate()];}, w:t=>{const d=new Date(t);const m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return [m.getFullYear(),m.getMonth(),m.getDate()];}, m:t=>{const d=new Date(t);return [d.getFullYear(),d.getMonth(),1];}};
+      const span={d:a=>[new Date(a[0],a[1],a[2]),new Date(a[0],a[1],a[2]+1)], w:a=>[new Date(a[0],a[1],a[2]),new Date(a[0],a[1],a[2]+7)], m:a=>[new Date(a[0],a[1],1),new Date(a[0],a[1]+1,1)]};
+      [['d','day'],['w','week'],['m','month']].forEach(([k,name])=>{ const seen={}, L=[]; PS.forEach(x=>{ const a=K[k](x.close), key=a.join('-'); if(seen[key]) return; seen[key]=1; const b=span[k](a); L.push(O.seg(b[0].getTime(),b[1].getTime()).pct); });
+        if(!L.length) return; let bi=0,wi=0; L.forEach((r,i)=>{ if(r>L[bi]) bi=i; if(r<L[wi]) wi=i; });
+        const B=V.best['Best '+name], Wv=V.worst['Worst '+name]; if(B) eq(B.split('·')[0],L[bi],0.0051,'Best '+name+' %'); if(Wv) eq(Wv.split('·')[0],L[wi],0.0051,'Worst '+name+' %'); }); }
     eq(V.dep,O.dep,0.005,'Deposits'); eq(V.wdr,-O.wd,0.005,'Withdrawals');
     eq(V.fees,O.costs,0.005,'Commission & swap = sum over every trade deal');
     eq(V.lots,O.lots,0.005,'Total lots = closed volume');
     eq(V.count,O.positions.length,0,'Trade count');
     const cvm=V.cv.match(/^([+-]?)\$([\d,.]+)\s*\(([-+]?[\d.]+)%\)/); ok(!!cvm,'chart header readable: '+V.cv);
     if(cvm){ eq((cvm[1]==='-'?'-':'')+cvm[2],O.pl,0.005,'Chart header money (All) = Net P/L'); eq(cvm[3],O.twr,0.0051,'Chart header % (All) = Gain'); }
+    Object.keys(RG).forEach(r=>{ const [tn,txt]=RG[r]; let from=null; if(r==='ytd') from=new Date(new Date(tn).getFullYear(),0,1).getTime(); else if(r!=='0'){ const d=new Date(tn); d.setMonth(d.getMonth()-parseInt(r,10)); from=d.getTime(); }
+      const sg=O.seg(from,null), mm=txt.match(/^([+-]?)\$([\d,.]+)\s*\(([-+]?[\d.]+)%\)/); ok(!!mm,'chart '+r+' header readable: '+txt);
+      if(mm){ eq((mm[1]==='-'?'-':'')+mm[2],sg.pl,0.005,'Chart range '+r+' money'); eq(mm[3],sg.pct,0.0051,'Chart range '+r+' %'); } });
+    eq(ACT.reduce((a,x)=>a+num(x),0),O.balance-acc.S0,0.02,'Account activity adds up to the balance change ('+ACT.length+' rows)');
     const PER={'Today':sod.getTime(),'7 days':nowP-7*D,'30 days':nowP-30*D,'All time':null};
     V.pnl.forEach(([l,v,c])=>{ const sg=O.seg(PER[l],null); eq(v,sg.pl,0.5001,'Profit by period '+l+' money'); eq(c,sg.pct,0.0051,'Profit by period '+l+' %'); });
     const firstT=acc.rows.length?acc.rows[0].t:nowP;
@@ -169,16 +194,24 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       { const nums=['Start','Net deposits','Profit','Dividends, tax & adjustments'].map(h=>yi(h)>=0?num(c[yi(h)]):0); ok(Math.abs(nums.reduce((x,v)=>x+v,0)-num(c[yi('End')]))<=0.011,'Year '+yr+' adds up: start + net deposits + profit + adjustments = end ('+c.join(' | ')+')'); }
       if(yi('Profit')>=0) eq(c[yi('Profit')],sg.pl,0.005,'Year '+yr+' profit');
       if(yi('Net deposits')>=0){ let nd=0; acc.rows.forEach(r=>{ if(r.type==='BALANCE'&&r.t>=a&&r.t<z) nd+=r.net; }); eq(c[yi('Net deposits')],nd,0.005,'Year '+yr+' net deposits'); } });
-    if(V.dd1.length){ const deep=Math.max(...V.dd1.map(x=>Math.abs(num(x)))); eq(deep,O.dd,0.0051,'Deepest drawdown in the list = Max drawdown'); }
+    { const L=V.dd1.map(x=>Math.abs(num(x))).filter(x=>!isNaN(x)); if(L.length) eq(Math.max(...L),O.dd,0.0051,'Deepest drawdown in the list = Max drawdown'); else ok(O.dd<0.01,'Drawdown list empty but Max drawdown is '+O.dd.toFixed(2)); }
     { const ct=V.cal[0]; const d0=new Date(Date.parse('1 '+ct)); if(!isNaN(d0)){ const a=new Date(d0.getFullYear(),d0.getMonth(),1).getTime(), z=new Date(d0.getFullYear(),d0.getMonth()+1,1).getTime(), sg=O.seg(a,z), ps=O.positions.filter(x=>x.close>=a&&x.close<z);
       eq(V.cal[1],ps.length,0,'Calendar '+ct+' trades'); eq(V.cal[2],ps.filter(x=>c2(x.net)>0).length,0,'Calendar '+ct+' wins');
-      if(ps.length){ eq(V.cal[3],sg.pl,0.005,'Calendar '+ct+' net'); eq(V.cal[4],sg.pct,0.0051,'Calendar '+ct+' %'); } } }
+      if(ps.length){ eq(V.cal[3],sg.pl,0.005,'Calendar '+ct+' net'); eq(V.cal[4],sg.pct,0.0051,'Calendar '+ct+' %'); }
+      const M0=d0.getMonth(), Y0=d0.getFullYear(); let wk=[], wks=[]; const dayCells={};
+      V.calCells.forEach(c=>{ if(c[0]==='W'){ wks.push(c); return; } if(c[0]==='off') return; if(c[1]) dayCells[+c[0]]=c; });
+      for(let dd=1; dd<=new Date(Y0,M0+1,0).getDate(); dd++){ const a1=new Date(Y0,M0,dd).getTime(), z1=new Date(Y0,M0,dd+1).getTime(), s1=O.seg(a1,z1);
+        const has=acc.rows.some(r=>r.entry&&r.net!==0&&r.t>=a1&&r.t<z1);
+        if(!has){ ok(!dayCells[dd],'Calendar '+dd+' '+ct+': no trading, no cell (shown '+(dayCells[dd]||[]).join(' ')+')'); continue; }
+        const c=dayCells[dd]; ok(!!c,'Calendar '+dd+' '+ct+': trading but no cell'); if(!c) continue;
+        if(!/K/.test(c[1])) eq(c[1],s1.pl,Math.abs(s1.pl)>=1000?0.5001:0.005,'Calendar day '+dd+' '+ct+' money'); eq(c[2],s1.pct,0.0051,'Calendar day '+dd+' '+ct+' %'); }
+      const sumW=wks.reduce((a,c)=>a+(/K/.test(c[1])?NaN:num(c[1])),0); if(!isNaN(sumW)&&wks.length) eq(sumW,sg.pl,0.5001*wks.length,'Calendar weeks add up to the month'); } }
     if(V.sess.length){ const sp=V.sess.reduce((a,r)=>a+num(r[0]),0), sn=V.sess.reduce((a,r)=>a+num(r[1]),0); eq(sp,O.pl,0.05,'Sessions add up to Net P/L'); eq(sn,O.positions.length,0,'Sessions add up to the trade count'); }
     if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.pl,V.sym.length*0.5+0.01,'Markets add up to Net P/L'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
     if(Array.isArray(V.st)){ const S=Object.fromEntries(V.st); eq(S['Opening balance'],acc.S0,0.005,'Statement opening balance'); eq(S['Closing balance'],O.balance,0.005,'Statement closing balance');
       eq(S['Deposits'],O.dep,0.005,'Statement deposits'); eq(S['Withdrawals'],-O.wd,0.005,'Statement withdrawals'); eq(S['Trading result'],O.pl,0.005,'Statement trading result'); }
     else ok(false,'statement: '+V.st);
-    ok(!beacons.some(x=>/history_gap|return_gap|pl_gap/.test(x)),'website and engine agree (no gap reported): '+beacons.join(' '));
+    ok(!beacons.some(x=>/history_gap|return_gap|pl_gap|history_partial/.test(x)),'website and engine agree (no gap reported): '+beacons.join(' '));
     ok(!errs.length,'no script errors '+(errs[0]||''));
     await ctx.close();
     process.stdout.write('.');

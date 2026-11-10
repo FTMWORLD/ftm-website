@@ -1,7 +1,8 @@
 /* GET /api/v1/customer/accounts/{accountId}/stats — the account's own statistics from the FTM engine:
    balance, equity, totals of deposits and withdrawals, growth, drawdown and the full deal history, in which
    deposits and withdrawals are type "BALANCE" rows (profit > 0 deposit, < 0 withdrawal). Forwarded unchanged.
-   Query: limit (history rows, engine default 200, max 2000). */
+   Query: limit (history rows, engine default 200, max 2000); offset (rows to skip, newest first) for accounts with more
+   than 2000 rows -- the browser stops paging when a page brings no new rows. */
 
 const { verifyCustomer, callEngine } = require('../../../../_lib/engineClient');
 
@@ -12,8 +13,9 @@ module.exports = async function handler(req, res) {
   const accountId = req.query.accountId;
   if (!accountId) return res.status(400).json({ ok: false, error: 'VALIDATION_FAILED' });
   const limit = String(req.query.limit || '2000').replace(/\D/g, '') || '2000';
+  const offset = String(req.query.offset || '').replace(/\D/g, '').slice(0, 7);
   try {
-    const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/stats?limit=' + limit,
+    const r = await callEngine('/api/v1/customer/accounts/' + encodeURIComponent(accountId) + '/stats?limit=' + limit + (offset && offset !== '0' ? '&offset=' + offset : ''),
       { method: 'GET', authSubject: user.id, authEmail: user.email });
     if (r.ok) return res.status(200).json(r.body);
     const code = r.body && r.body.error;
