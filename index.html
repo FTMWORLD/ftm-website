@@ -8544,7 +8544,7 @@ tick();setInterval(tick,5000);})();
     h+=youCard(j);
     if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
     var since=function(e){ return e.account_since?' <small class="lb-since">'+esc(t('since {}').replace('{}',new Date(e.account_since).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'})))+'</small>':''; };
-    var mb=function(e){ return (e.is_master && String(e.nickname||'').toUpperCase()!=='FTM MASTER')?' <span class="lb-master">FTM MASTER</span>':''; };
+    var mb=function(){ return ''; };
     h+='<div class="lb-podium">'+rows.filter(function(e){ return e.rank!=null; }).slice(0,3).map(function(e,i){
       return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+esc(e.nickname)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+since(e)+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
         '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
