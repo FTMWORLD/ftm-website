@@ -42,7 +42,7 @@ async function open(b,vp,E,dflt){
     ok(await p.inputValue('#kycName')==='Tanaya Rao',label+': full name is pre-filled from sign-up');
     ok(/0\/5|1\/5/.test(await p.textContent('#kycCount')),label+': progress shows how many answers are given');
     if(SHOTS) await (label==='phone'?tall(p,SHOTS+'/kyc_empty_phone.png'):p.screenshot({path:SHOTS+'/kyc_empty_laptop.png'}));
-    await p.selectOption('#kycCountry','DE');
+    await p.click('#kycCountryQ'); await p.keyboard.type('germ'); await p.waitForTimeout(150); ok(await p.isVisible('.cc-list') && /Germany/.test(await p.textContent('.cc-list .cc-o.on')),label+': typing "germ" finds Germany'); if(SHOTS) await p.locator('.kyc-q').nth(1).screenshot({path:SHOTS+'/cc_'+label+'.png'}).catch(()=>{}); await p.keyboard.press('Enter');
     await p.click('.kyc-tiles[data-k="goal"] [data-v="LONG_TERM"]'); await p.click('.kyc-tiles[data-k="experience"] [data-v="SOME"]'); await p.click('.kyc-tiles[data-k="drawdown_comfort"] [data-v="25"]');
     ok(await p.isVisible('#kycHint') && /Balanced/.test(await p.textContent('#kycTier')),label+': about 25% shows the Balanced profile as a hint');
     ok(await p.textContent('#kycCount')==='5/5',label+': all five answered');

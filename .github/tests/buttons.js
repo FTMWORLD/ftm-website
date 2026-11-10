@@ -19,7 +19,7 @@ await p.route('**/api/v1/**',async r=>{const u=new URL(r.request().url()),m=r.re
  if(path==='/api/v1/customer/investments')return j(200,{ok:true,investments:[{id:'c1',amount:'10000.00',currency:'EUR',joined_at:'2025-09-20',status:'ACTIVE',eligible_from:'2026-11-01',ends_on:'2030-09-20',value_now:'11500.00',profit_to_date:'1500.00',return_pct:'30.00',withdrawable_now:'300.00',pending:[],history:[]}]});
  if(/\/investments\/c1\/withdraw$/.test(path))return j(202,{ok:true,requested:true});
  if(path==='/api/v1/chat')return j(200,{ok:true,reply:'Hello, how can I help?'});
- if(failNext&&m!=='GET'){const f=failNext;failNext=null;return j(f[0],f[1]);}
+ if(failNext&&m!=='GET'&&path.indexOf('/api/v1/community')!==0){const f=failNext;failNext=null;return j(f[0],f[1]);}
  if(path.endsWith('/customer/accounts')&&m==='GET')return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(accts())});
  if(path.endsWith('/customer/accounts')&&m==='POST'){const n=JSON.parse(pd).account_number;return n==='9900000099'?j(409,{ok:false,error:'MASTER_ACCOUNT',message:'This is the FTM master account. It cannot be added as a copy account.'}):j(202,{ok:true,account_id:'acc-N',status:'SETUP_INCOMPLETE'});}
  if(path.endsWith('/history'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,trades:[],page:{offset:0,limit:200,total:0}})});

@@ -72,7 +72,7 @@ module.exports = async function handler(req, res) {
       const r = await within(6000, admin.storage.from(BUCKET).download('avatars/' + m + '.jpg'), 'avatar');
       if (r.error || !r.data) return res.status(404).end();
       const buf = Buffer.from(await r.data.arrayBuffer());
-      res.setHeader('Content-Type', 'image/jpeg'); res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Content-Type', 'image/jpeg'); res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       return res.status(200).end(buf);
     } catch (e) { return res.status(404).end(); }
   }

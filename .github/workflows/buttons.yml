@@ -25,4 +25,5 @@ jobs:
           node .github/tests/community-api.js
           node .github/tests/community-e2e.js http://localhost:8765
           node .github/tests/kyc-e2e.js http://localhost:8765
+          node .github/tests/nav-dots-e2e.js http://localhost:8765
           Z=(Europe/Berlin America/New_York Asia/Kolkata Pacific/Auckland Africa/Lagos Asia/Tokyo); FUZZ_TZ=${Z[$(( $(date +%H) % 6 ))]} node .github/tests/stats-fuzz.js 30 $(( $(date +%j) % 97 + 1 ))
