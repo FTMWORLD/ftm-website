@@ -4,6 +4,28 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — STATISTICS AUDIT: HISTORY PAGES, INITIAL DEPOSIT, DRAWDOWNS (commit ac9a575, API restarted 10:48 Berlin)
+
+Website statistics audit (4 requests) via FTM MACHINE; Gospel's yes for the restart in the engine chat.
+- GET /customer/accounts/:id/stats and GET /customer/master/performance: history[] pages. ?offset=N kept; NEW
+  ?before_deal=<ticket> (stable cursor: send history_paging.next_before_deal) and ?as_of=<ISO> (send page 1's
+  history_paging.as_of). New object history_paging {order, limit, offset, before_deal, cursor_found, as_of, returned,
+  total, total_in_view, has_more, next_before_deal}. 400 BAD_HISTORY_PAGING on a malformed parameter.
+- ONE deal order: time, then the broker's deal ticket. history[] newest first (time desc, ticket desc); figures use
+  the exact reverse. Every existing figure on every account unchanged (compared before / after).
+- NEW initial_deposit, initial_deposit_at, initial_deposit_source (BROKER_STATEMENT | NOT_IN_BROKER_HISTORY |
+  NO_DEPOSIT_IN_STATEMENT | NO_STATEMENT), start_balance_at. Never guessed: null when the broker's history starts
+  later (demo #184: start_balance 11,965.28 at 2026-10-05T17:35:04Z).
+- NEW drawdowns[]: the 5 deepest closed-balance drawdowns {peak_at, trough_at, depth_pct, peak, trough, recovered_at};
+  drawdowns[0].depth_pct = max_drawdown_closed_balance_pct.
+- Definitions confirmed (docs/client-area-stats-api.md): a trade = a position, counted once as soon as it has a closing
+  deal; win = net of all its deals > 0 (cents). fees_and_adjustments = every row not BUY/SELL/BALANCE/CREDIT
+  (DIVIDEND, TAX, ...), never in closed_pl_total. Closed-balance drawdown: BALANCE and CREDIT move the peak;
+  adjustments are P/L readings (one per row) -- differs from the website's guess.
+- Statistics read (sync job): an account is re-read about a minute after a copy closes (reason COPY_CLOSED), so the
+  statement never stays behind a close (#2022 was hours behind this morning).
+- Proof: scripts/verify-stats-audit.js 9/9 over every account, in the gate; regress SAFE TO DEPLOY.
+
 ## 2026-11-10 — ACCOUNTS ROW SHOWS THE NEWEST BALANCE (commit c64c5a8, API restarted 00:48 Berlin)
 
 Website "WRONG MASTER BALANCE" via FTM MACHINE; Gospel's yes for the restart in the engine chat.
