@@ -2209,6 +2209,18 @@ h3.has-tip{cursor:help}
 .cx-sheet .bk-hint,.cx-sheet .pw-hint{margin-top:10px}.cw-nav.first #cwBack{visibility:hidden}
 .cx-sheet #appConnect{flex:1.4;min-height:48px;margin:0}
 .cx-card .cx-open-btn{display:inline-flex}
+.sub-ring-row{display:flex;align-items:center;gap:18px;margin:14px 0 6px}
+.sub-ring-w{position:relative;width:118px;height:118px;flex:none}
+.sub-ring{width:100%;height:100%;transform:rotate(-90deg)}
+.sub-ring circle{fill:none;stroke-width:11}
+.sr-bg{stroke:#eef0f6}.sr-fg{stroke:url(#subGrad);stroke:#D4AF37;stroke-linecap:round;stroke-dasharray:314.16;stroke-dashoffset:314.16;transition:stroke-dashoffset 1s ease}
+.sub-ring-c{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.sub-ring-c b{font-size:26px;font-weight:800;color:#0b1440;line-height:1;font-variant-numeric:tabular-nums}
+.sub-ring-c small{font-size:11.5px;font-weight:700;color:#5b6378;margin-top:4px}
+.sub-meta{display:grid;gap:4px;min-width:0}.sub-meta b{font-size:17px;color:#0b1440}.sub-meta span{font-size:13.5px;color:#5b6378;font-weight:600}
+.sub-line{display:none}
+.sub-actions{margin-top:auto;display:flex!important;flex-direction:row!important;flex-wrap:wrap;gap:10px}.sub-actions .btn{flex:1 1 140px;justify-content:center;text-align:center}.sub-actions .btn[hidden]{display:none}
+@media (max-width:380px){.sub-ring-w{width:96px;height:96px}.sub-ring-c b{font-size:21px}.sub-ring-row{gap:12px}}
 .cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
 .cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
 .cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
@@ -3176,8 +3188,12 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       <div class="app-side">
         <div class="app-card sub-card">
           <h3>Your subscription</h3>
-          <p class="hint" id="ivPlanLine">&mdash;</p>
-          <div class="app-actions"><button class="btn btn-outline btn-sm" type="button" id="pauseTradingBtn">Pause trading</button><button class="btn btn-outline btn-sm" type="button" id="billingBtn">Billing status</button></div>
+          <div class="sub-ring-row">
+            <div class="sub-ring-w"><svg class="sub-ring" viewBox="0 0 120 120" aria-hidden="true"><circle class="sr-bg" cx="60" cy="60" r="50"/><circle class="sr-fg" id="subArc" cx="60" cy="60" r="50"/></svg><div class="sub-ring-c"><b id="subLeft">&mdash;</b><small id="subLeftL">days left</small></div></div>
+            <div class="sub-meta"><b id="subPlan">&mdash;</b><span id="subEnd"></span><span id="subUsed"></span></div>
+          </div>
+          <p class="hint sub-line" id="ivPlanLine">&mdash;</p>
+          <div class="app-actions sub-actions"><a class="btn btn-red btn-sm js-free-plans" href="#pricing" id="subRenew">Renew subscription</a><a class="btn btn-outline btn-sm js-free-plans" href="#pricing" id="subUp">Upgrade plan</a></div>
         </div>
         <div class="app-card op-card">
           <h3>Open positions</h3>
@@ -3579,7 +3595,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
                 <div class="bill-paid"><dt>Receipts</dt><dd>Emailed to you by Stripe</dd></div>
                 <div><dt>Signed in as</dt><dd id="billWho">&mdash;</dd></div>
               </dl>
-              <div class="bill-actions"><a class="btn btn-red btn-sm js-free-plans bill-up" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm js-free-plans bill-plans" href="#pricing">Subscription plans</a><button class="btn btn-outline btn-sm" type="button" id="billChat">Chat with FTM support</button></div>
+              <div class="bill-actions"><a class="btn btn-red btn-sm js-free-plans bill-up" href="#pricing">See the plans</a><a class="btn btn-outline btn-sm js-free-plans bill-plans" href="#pricing">Subscription plans</a><button class="btn btn-outline btn-sm" type="button" id="pauseTradingBtn">Pause trading</button><button class="btn btn-outline btn-sm" type="button" id="billingBtn">Billing status</button></div>
             </div>
           </div>
           <div class="app-card acct-list-card">
@@ -6070,7 +6086,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
       var put=function(status,end){
         var st=tr({ACTIVE:'Active',PAST_DUE:'Payment overdue',CANCELED:'Cancelled',EXPIRED:'Expired',NONE:'Active'}[status]||'Active');
-        F.planFree=false; F.planStatus=status||'ACTIVE'; F.planEnd=end||null; if(F.planBar) F.planBar(); F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); h.classList.remove('plan-free'); } if(F.renderActivate) F.renderActivate();
+        F.planFree=false; F.planStatus=status||'ACTIVE'; F.planEnd=end||null; if(F.planBar) F.planBar(); setTimeout(function(){ if(F.subRing) F.subRing(); },0); F.planLabel=((!status||status==='ACTIVE'||status==='NONE')&&F.planName)?tr(F.planName):st; F.planOn=(!status||status==='ACTIVE'||status==='NONE'); var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel; h.classList.toggle('plan-on',F.planOn); h.classList.remove('plan-free'); } if(F.renderActivate) F.renderActivate();
         var d=end?new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'long',year:'numeric'}):'';
         if(line) line.textContent=(d?tr('Plan status: {}. Paid until {}. Your payment receipts are emailed to you by Stripe.'):tr('Plan status: {}. Your payment receipts are emailed to you by Stripe.')).replace('{}',(F.planName&&F.planOn)?tr(F.planName)+' · '+st:st).replace('{}',d);
       };
@@ -6096,7 +6112,21 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var h=document.getElementById('hdrPlan'); if(h){ h.textContent=F.planLabel||'—'; h.classList.remove('plan-on'); h.classList.toggle('plan-free',F.planFree); }
       var line=document.getElementById('ivPlanLine'); if(line) line.textContent=((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('Subscription details will appear here once your plan is linked to your account.'):'Subscription details will appear here once your plan is linked to your account.');
       F.planStatus=null; if(F.planBar) F.planBar();
-      if(F.renderActivate) F.renderActivate();
+      if(F.renderActivate) F.renderActivate(); if(F.subRing) F.subRing();
+    };
+    F.subRing = function(){
+      var arc=document.getElementById('subArc'); if(!arc) return;
+      var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+      var C=314.16, frac=0, left='\u2014', leftL=tr('days left'), plan=F.planFree?tr('Free account'):(F.planName?tr(F.planName):tr('Auto Trading')), endT='', usedT='';
+      var ren=document.getElementById('subRenew'), up=document.getElementById('subUp');
+      if(F.planLifetime){ frac=1; left='\u221E'; leftL=tr('Lifetime'); endT=tr('Never expires'); }
+      else if(F.planEnd && !F.planFree){ var end=Date.parse(F.planEnd), months=F.planName==='5 Years'?64:13, st=new Date(end); st.setMonth(st.getMonth()-months); var s0=st.getTime(), now=Date.now();
+        frac=Math.max(0,Math.min(1,(now-s0)/(end-s0))); var d=Math.max(0,Math.ceil((end-now)/864e5)); left=String(d); leftL=tr(d===1?'day left':'days left');
+        endT=tr('Paid until {}').replace('{}',new Date(end).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'})); usedT=tr('{}% of your plan used').replace('{}',Math.round(frac*100)); }
+      arc.style.strokeDashoffset=String(C*(1-frac)); arc.style.stroke=(!F.planLifetime && F.planEnd && frac>0.9)?'#E5323E':'#D4AF37';
+      var set=function(id,t){ var e=document.getElementById(id); if(e) e.textContent=t; };
+      set('subLeft',left); set('subLeftL',leftL); set('subPlan',plan); set('subEnd',endT); set('subUsed',usedT);
+      if(ren){ ren.hidden=!!F.planLifetime || !!F.planFree; } if(up){ up.hidden=!!F.planLifetime; up.textContent=tr(F.planFree?'See the plans':'Upgrade plan'); }
     };
 
     F.loadLive = function(){
