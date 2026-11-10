@@ -2513,11 +2513,6 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
   .hx .dx-cash{gap:8px}.hx .dx-cbtn{padding:10px 10px!important;font-size:13.5px!important;gap:6px!important}.hx .hx-bot{padding:10px;border-radius:16px}}
 @media (max-width:380px){.hx-stats{grid-template-columns:1fr 1fr}.hx-stats>#dxInit{grid-column:1/-1}.hx .dx-cash{flex-wrap:wrap}.hx .dx-cash .dx-cbtn{flex:1 1 40%}}
 
-#appView .dx-top{grid-template-columns:1fr!important}
-@media (max-width:560px){#appView .dx-acc{display:none!important}}
-#appView .dx-acc{display:flex;flex-wrap:wrap;align-items:center;gap:12px 22px;padding:14px 20px;border-radius:18px}
-#appView .dx-acc>*{margin:0}#appView .dx-acc .dx-acc-h{order:9;margin-inline-start:auto}#appView .dx-acc .dx-acc-h h3{display:none}
-#appView .dx-acc .dx-acc-row{flex:1 1 280px;min-width:0}
 .hx-dot{right:calc(6/400*100%)}
 @media (max-width:560px){.hx-stat em{white-space:normal;line-height:1.2}}
 
@@ -2540,6 +2535,38 @@ body.op-lock{overflow:hidden}
 .dly-card{position:relative}.dly-hl{fill:rgba(21,42,122,.07)}
 .dly-tip{position:absolute;z-index:5;transform:translateY(-100%);min-width:180px;max-width:260px;background:#0b1440;color:#fff;border-radius:12px;padding:10px 12px;box-shadow:0 16px 36px -16px rgba(11,20,64,.6);display:grid;gap:3px;pointer-events:none;animation:cwIn .12s ease-out}.dly-tip[hidden]{display:none}
 .dly-tip b{font-size:13px;color:#E3B62F}.dly-tip .dly-v{font-size:16px;font-weight:800}.dly-tip .val-up,.dly-tip i.val-up{color:#4ff09a!important}.dly-tip .val-down,.dly-tip i.val-down{color:#ff6b78!important}.dly-tip small{font-size:12px;color:#c8d2ff;font-weight:600}.dly-tip i{font-style:normal;font-weight:800}
+
+.app-title.moved .app-title-ic{display:none}.app-title.moved{display:none!important}.app-crumb.moved{display:none!important}
+.app-bar.has-title{flex-wrap:nowrap}
+.bar-title{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:18px;margin-inline:18px 8px}
+.bar-title .app-title-txt{min-width:0;padding-inline-start:18px;border-inline-start:1px solid rgba(255,255,255,.14)}
+.bar-title .app-title-txt h2{margin:0;font-size:19px!important;line-height:1.2;color:#fff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-title .app-title-txt p{margin:2px 0 0;font-size:12.5px;color:rgba(220,228,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-title .app-title-meta{display:flex!important;margin-left:auto;background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.14)!important;box-shadow:none!important;border-radius:14px;padding:7px 16px!important;gap:0!important;flex:none}
+.bar-title .app-title-meta>div{border-left:1px solid rgba(255,255,255,.14)!important;padding-inline:14px!important}.bar-title .app-title-meta>div:first-child{border-left:0!important;padding-left:0!important}
+.bar-title .app-title-meta span{color:rgba(220,228,255,.62)!important;font-size:10px!important}.bar-title .app-title-meta b{color:#fff!important;font-size:14.5px!important;margin-top:1px!important;white-space:nowrap}.bar-title .app-title-meta b.ok{color:#4ff09a!important}.bar-title .app-title-meta b.val-down,.bar-title .app-title-meta b.dx-st-bad{color:#ff8a94!important}
+#appView .app-content:has(.app-view[data-view="metrics"]:not([hidden])) .bar-title .app-title-meta{display:flex!important}
+@media (max-width:1180px){.bar-title .app-title-txt p{display:none}}
+@media (max-width:980px){.bar-title .app-title-meta>div:nth-child(2){display:none}}
+@media (max-width:860px){
+  .app-bar.has-title{flex-wrap:wrap;position:relative!important}
+  #appView .app-nav,#invView .app-nav{top:0!important}
+  .bar-title{order:3;flex:1 1 100%;margin:4px 0 0;gap:10px;flex-wrap:wrap}
+  .bar-title .app-title-txt{border:0;padding:0;flex:1 1 100%}.bar-title .app-title-txt h2{font-size:18px!important}
+  .bar-title .app-title-meta{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;margin:0;padding:8px 12px!important}
+  .bar-title .app-title-meta>div{padding-inline:10px!important;min-width:0}.bar-title .app-title-meta>div:nth-child(2){display:block}
+  .bar-title .app-title-meta b{font-size:13.5px!important;overflow:hidden;text-overflow:ellipsis}
+}
+
+@media (max-width:860px){.bar-title .app-title-meta b{font-size:12.5px!important;white-space:nowrap!important}.bar-title .app-title-meta span{font-size:9.5px!important}}
+@media (max-width:560px){.hx .dx-tagrow{width:auto!important;flex:0 1 auto!important;margin:0!important}.hx .dx-tagrow .dx-tag{display:none!important}.hx .dx-tagrow .unit-sw{margin:0!important}.hx .unit-sw button{padding:5px 12px!important;font-size:13px!important}.hx-tf{gap:0}.hx-tf button{padding:6px 8px}}
+
+@media (max-width:860px){.bar-title .app-title-meta{grid-template-columns:auto auto minmax(0,1fr)!important}}
+
+.dx-hero.hx{container-type:inline-size;container-name:hx}
+@container hx (max-width:900px){.hx .hx-bot{flex-wrap:wrap}.hx-sep{display:none}.hx-stats{flex:1 1 100%}.hx .dx-cash{flex:1 1 100%}.hx .dx-cash .dx-cbtn{flex:1 1 0;justify-content:center}.hx-stat b{font-size:20px}}
+@container hx (max-width:640px){.hx .hx-mid{grid-template-columns:1fr;min-height:0}.hx .dx-right{min-height:120px;height:130px}.hx .dx-spark:not([hidden]){min-height:120px}}
+@media (max-width:340px){.bar-title .app-title-meta{grid-template-columns:1fr 1fr!important}.bar-title .app-title-meta>div:nth-child(3){grid-column:1/-1;border-left:0!important;padding-left:0!important;margin-top:6px}}
 </style>
 <script>
 (function(){
@@ -9324,7 +9351,7 @@ tick();setInterval(tick,5000);})();
     var mb=function(){ return ''; };
     var fl=function(e){ var cc=String(e.country||e.country_code||(e.is_you&&F().myCountry?F().myCountry():'')||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?'<span class="lb-flag" title="'+esc(cc)+'">'+String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65)+'</span>':''; };
     h+='<div class="lb-podium">'+rows.filter(function(e){ return e.rank!=null; }).slice(0,3).map(function(e,i){
-      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+esc(e.nickname)+fl(e)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+since(e)+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
+      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+esc(e.nickname)+fl(e)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
         '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
     }).join('')+'</div>';
     h+='<div class="app-scroll"><table class="app-trades lb-table"><thead><tr><th>#</th><th>'+esc(t('Nickname'))+'</th><th>'+esc(t('Return'))+'</th><th>'+esc(t('Trades'))+'</th><th>'+esc(t('Wins'))+'</th><th>'+esc(t('Risk profile'))+'</th><th>'+esc(t('Months on FTM'))+'</th></tr></thead><tbody>'+
@@ -10081,6 +10108,12 @@ tick();setInterval(tick,5000);})();
   btn.addEventListener('click',open); $('opMX').addEventListener('click',close); $('opModal').addEventListener('click',function(e){ if(e.target===this) close(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
   setInterval(function(){ if(!$('opModal').hidden) $('opMS').textContent=$('mOpenHint').textContent; if(!$('opModal').hidden&&$('mOpenRows').children.length===0) close(); },1000);
+})();
+</script>
+<script>
+(function(){ ['appView','invView'].forEach(function(id){ var v=document.getElementById(id); if(!v) return; var bar=v.querySelector('.app-bar'), who=bar&&bar.querySelector('.app-who'), tt=v.querySelector('.app-title'); if(!bar||!who||!tt) return;
+  var box=document.createElement('div'); box.className='bar-title'; var txt=tt.querySelector('.app-title-txt'), meta=tt.querySelector('.app-title-meta'); if(txt) box.appendChild(txt); if(meta) box.appendChild(meta);
+  bar.insertBefore(box,who); bar.classList.add('has-title'); tt.classList.add('moved'); var cr=v.querySelector('.app-crumb'); if(cr) cr.classList.add('moved'); });
 })();
 </script>
 </body>
