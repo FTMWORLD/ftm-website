@@ -41,6 +41,7 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   await tab(B,'profile'); await B.fill('#cName','tanaya'); if(await B.getAttribute('#cVisToggle','aria-checked')!=='true') await B.click('#cVisToggle'); await B.click('#cSave'); await B.waitForTimeout(600);
   ok(/already taken/.test(await B.textContent('#cSaved')) && await B.isVisible('#cSaved'),'a taken name is refused with a clear message');
   await B.fill('#cName','Marine'); await B.click('#cSave'); await B.waitForTimeout(700);
+  ok(/Saved/.test(await B.textContent('#cSaved')) && await B.isVisible('#cSaved'),'a second, different customer (Marine) also saves and SEES "Saved."');
   await A.bringToFront(); await tab(A,'discover'); await A.waitForTimeout(1500);
   ok(/Marine/.test(await A.textContent('#cMembers')),'Tanaya sees Marine in Discover');
   await A.click('#cMembers [data-msg]'); await A.waitForTimeout(500);
