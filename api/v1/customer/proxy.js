@@ -24,10 +24,12 @@ const ALLOW = [
   ['GET', '^investment/statements/\\d{4}-\\d{2}$'],
   ['GET', '^leaderboard$'],
   ['GET', '^leaderboard/profile$'],
-  ['PUT', '^leaderboard/profile$']
+  ['PUT', '^leaderboard/profile$'],
+  ['GET', '^market/candles$'],
+  ['GET', '^market/quotes$']
 ].map(([m, re]) => [m, new RegExp(re)]);
 
-const QUERY_KEYS = ['after', 'before', 'limit', 'board'];
+const QUERY_KEYS = ['after', 'before', 'limit', 'board', 'symbol', 'symbols', 'tf'];
 
 module.exports = async function handler(req, res) {
   // vercel.json rewrites /api/v1/customer/<chat|investment|investments|leaderboard>/... here with ?__p=<sub-path>

@@ -53,7 +53,7 @@
   ],
   "rewrites": [
     {
-      "source": "/api/v1/customer/:first(chat|investment|investments|leaderboard)/:rest*",
+      "source": "/api/v1/customer/:first(chat|investment|investments|leaderboard|market)/:rest*",
       "destination": "/api/v1/customer/proxy?__p=:first/:rest*"
     },
     {
