@@ -4,6 +4,21 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — FTM TRADES vs YOUR OWN TRADES: split ON EVERY ACCOUNT (commit 2834c58, API restarted 11:59 Berlin)
+
+Gospel's split (approved in FTM MACHINE's chat; restart yes in the engine chat).
+- GET /customer/accounts/:id/stats (and the master preview): NEW split {ftm, own, basis, rule}; each side closed_pl,
+  pl_pct, trades_closed, wins, losses, breakeven, win_rate_pct, max_drawdown_closed_pct.
+- ftm = positions FTM copied (FTM's copy records; welcome and FTM-test copies included); every position on a master
+  row (basis MASTER_ACCOUNT_ALL_FTM). own = every other BUY/SELL position.
+- ftm.closed_pl + own.closed_pl = closed_pl_total to the cent; fees_and_adjustments (dividends, tax, ...) in neither;
+  a position's swap stays with its side. pl_pct = the same time-weighted function, that side's trade lines only.
+  A side that never traded: pl_pct and max_drawdown_closed_pct null.
+- Community / public figures use split.ftm only. The live leaderboard still ranks the whole account (no rank changes
+  today); switching it waits for Gospel.
+- Live: demo #184 ftm 41 trades -775.67 (-6.95 %), own 138 trades -802.74; #2022 ftm 7 trades +26.69 (+6.36 %).
+- Proof: verify-stats-audit A11 (every account) + A12 (by hand), 12/12; figures-fixtures 7/7; regress SAFE TO DEPLOY.
+
 ## 2026-11-10 — HISTORY = THE STATEMENT FOR EVERY ACCOUNT (commit 1258afe, API restarted 11:13 Berlin)
 
 Website history_gap; Gospel "Yes, build it" and the restart yes in the engine chat.
