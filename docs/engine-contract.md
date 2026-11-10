@@ -4,6 +4,17 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — LEADERBOARD RANKS FTM'S TRADES ONLY (commit 78de18e, switched on 12:12 Berlin, no API restart)
+
+Gospel "Yes, build it" and "Yes, switch it on" in the engine chat.
+- Every board's return_pct = split.ftm of GET /stats: SINCE_CONNECT split.ftm.pl_pct, MONTH / PREVIOUS_MONTH
+  split.ftm.monthly_returns (NEW per side: the same time-weighted function per UTC month). A customer's own manual
+  trades never move a rank. closed_copies / wins were already FTM copies only.
+- Engine switch LEADERBOARD_BASIS=FTM_ONLY (default WHOLE_ACCOUNT), read on every 5-minute rebuild.
+- First FTM_ONLY rebuild 12:12:59: #1 6.36 %, #2 -6.95 % (was -13.19 %, its own trades no longer count); order unchanged.
+- split.ftm.monthly_returns / split.own.monthly_returns appear in GET /stats at the next API restart.
+- Proof: verify-stats-audit A13 (every candidate, rolled back), 13/13; regress SAFE TO DEPLOY.
+
 ## 2026-11-10 — FTM TRADES vs YOUR OWN TRADES: split ON EVERY ACCOUNT (commit 2834c58, API restarted 11:59 Berlin)
 
 Gospel's split (approved in FTM MACHINE's chat; restart yes in the engine chat).
