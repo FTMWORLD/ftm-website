@@ -4,6 +4,13 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — GROUP COPY FOR SMALL ACCOUNTS (commit 6bfd7dc, on since 17:55 Berlin)
+
+- When every piece of one master signal (same symbol and side within 60 s) is too small for an account (minimum lot more
+  than 3x the sized lot), the account gets ONE copy at the broker minimum if the minimum is at most 3x the pieces' sum.
+  It follows the master's SL changes (farthest SL + the buffer) and closes when the master has closed half the signal's
+  volume or more. Bigger accounts unchanged. History rows: copied_by_ftm true, source as usual (FTM-generated event).
+
 ## 2026-11-10 — NICKNAME 2 PER WEEK + FLAG = KYC COUNTRY (commit b47e62a, API restarted 16:57 Berlin)
 
 - PUT /customer/leaderboard/profile: up to 2 nickname changes in any 7 days; the 3rd -> 429 NICKNAME_RATE_LIMIT with
