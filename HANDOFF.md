@@ -571,3 +571,13 @@ Accounts > Account activity > Download statement builds the PDF in the browser w
 
 ## Face ID / fingerprint login (passkeys, 9 Nov 2026)
 api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase user's app_metadata.passkeys (server-only), rpID ftmwealthnation.com. Challenges are signed with a key derived from SUPABASE_SERVICE_ROLE_KEY (3 min). A verified login returns a magic-link token_hash that the browser exchanges with supabase.auth.verifyOtp. Only works on ftmwealthnation.com (not on preview URLs).
+
+## Statistics: rules and the automatic check (10 Nov 2026)
+- Every figure's definition: docs/statistics.md (owner rules + GIPS time-weighted return + NAV-style drawdown).
+- .github/tests/stats-fuzz.js builds accounts of every shape (start balance, deposits, withdrawals, dividends/tax, credit,
+  partial closes, open trades, same-second deals, 2,300-row history with paging, account switching, both history orders)
+  and checks every figure on every view against its own calculation. CI runs 30 new accounts a day (buttons.yml).
+  Run locally: node .github/tests/stats-fuzz.js 40 <seed>. A failure prints the seed; rerun with that seed to reproduce.
+- Any change to a figure: change docs/statistics.md, the website and the checker together.
+- The browser logs history_gap / return_gap / pl_gap / history_partial to /api/v1/client-log when the engine and the
+  website disagree: tell FTM ENGINE (via FTM MACHINE).
