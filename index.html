@@ -2245,6 +2245,7 @@ h3.has-tip{cursor:help}
 .st-i{display:inline-flex;align-items:center;gap:6px;padding-inline-end:32px}.st-i i{width:8px;height:8px;border-radius:50%}.st-i b{color:#0b1440}.st-i em{font-style:normal;font-weight:700}
 @keyframes sessTick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.sess-tick-in{animation:none}}
+.lb-flag{font-size:1.05em;margin-inline-end:2px}
 .lb-since{display:block;font-size:11.5px;font-weight:600;color:#8a90a6;margin-top:2px}.lb-is-master{color:#a07c12!important}
 .lb-master{display:inline-block;margin-inline-start:6px;font-size:10px;font-weight:800;letter-spacing:.06em;color:#0b1440;background:linear-gradient(135deg,#E3B62F,#D4AF37);border-radius:5px;padding:2px 6px;vertical-align:middle}
 .cv-cmp{font:inherit;font-size:12.5px;font-weight:700;color:#0b1440;border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:#fff;margin-inline-start:8px}.cv-cmp[hidden]{display:none}
@@ -8545,13 +8546,14 @@ tick();setInterval(tick,5000);})();
     if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
     var since=function(e){ return e.account_since?' <small class="lb-since">'+esc(t('since {}').replace('{}',new Date(e.account_since).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'})))+'</small>':''; };
     var mb=function(){ return ''; };
+    var fl=function(e){ var cc=String(e.country||e.country_code||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?'<span class="lb-flag" title="'+esc(cc)+'">'+String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65)+'</span> ':''; };
     h+='<div class="lb-podium">'+rows.filter(function(e){ return e.rank!=null; }).slice(0,3).map(function(e,i){
-      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+esc(e.nickname)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+since(e)+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
+      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+fl(e)+esc(e.nickname)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+since(e)+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
         '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
     }).join('')+'</div>';
     h+='<div class="app-scroll"><table class="app-trades lb-table"><thead><tr><th>#</th><th>'+esc(t('Nickname'))+'</th><th>'+esc(t('Return'))+'</th><th>'+esc(t('Trades'))+'</th><th>'+esc(t('Wins'))+'</th><th>'+esc(t('Risk profile'))+'</th><th>'+esc(t('Months on FTM'))+'</th></tr></thead><tbody>'+
       rows.map(function(e){ var r=parseFloat(e.return_pct);
-        return '<tr class="'+(e.is_you?'you':'')+'"><td>'+(e.rank==null?'':esc(e.rank)+'.')+'</td><td><b'+(e.is_master?' class="lb-is-master"':'')+'>'+esc(e.nickname)+'</b>'+mb(e)+since(e)+(e.is_you?'<span class="lb-you-tag">'+esc(t('YOU'))+'</span>':'')+'</td><td class="'+(r>=0?'pl-up':'pl-down')+'">'+esc(pct(e.return_pct))+'</td><td>'+esc(e.closed_copies)+'</td><td>'+esc(e.wins)+'</td><td>'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'—')+'</td><td>'+esc(e.months_on_ftm)+'</td></tr>';
+        return '<tr class="'+(e.is_you?'you':'')+'"><td>'+(e.rank==null?'':esc(e.rank)+'.')+'</td><td>'+fl(e)+'<b'+(e.is_master?' class="lb-is-master"':'')+'>'+esc(e.nickname)+'</b>'+mb(e)+since(e)+(e.is_you?'<span class="lb-you-tag">'+esc(t('YOU'))+'</span>':'')+'</td><td class="'+(r>=0?'pl-up':'pl-down')+'">'+esc(pct(e.return_pct))+'</td><td>'+esc(e.closed_copies)+'</td><td>'+esc(e.wins)+'</td><td>'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'—')+'</td><td>'+esc(e.months_on_ftm)+'</td></tr>';
       }).join('')+'</tbody></table></div>';
     host.innerHTML=h;
   }
