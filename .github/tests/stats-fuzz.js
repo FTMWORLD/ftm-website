@@ -55,7 +55,7 @@ function gen(seed, now){
   const open=[]; if(R()<0.35){ for(let i=ri(1,3);i>0;i--){ const t=Math.max(t0+3*MIN,now-ri(10,60*30)*MIN), id='O'+seed+'_'+i, c=R()<0.6?-c2(R()*5):0, sym=pick(syms), side=pick(['BUY','SELL']), vol=pick([0.01,0.1,1]);
       if(!okT(t)) continue; rows.push({t,type:side,entry:'IN',pos:id,sym,vol,profit:0,commission:c,swap:0,net:c}); open.push({id,sym,side,vol,t,fl:c2((R()-0.5)*Math.max(100,bal)*0.02)}); } }
   rows.sort((a,b)=>a.t-b.t||((a.entry==='IN')?-1:1));
-  return {rows,S0,startMode,t0,now,open};
+  return {rows,S0,startMode,t0,now,open,oldestFirst:seed%3===2};
 }
 
 // ---------- the independent calculation ----------
@@ -89,7 +89,8 @@ function oracle(acc){
 function engine(acc,O){
   const iso=t=>new Date(t).toISOString();
   const history=acc.rows.map((r,i)=>r.entry?{type:r.type,entry:r.entry,position_ref:r.pos,time:iso(r.t),symbol:r.sym,volume:r.vol,price:1,profit:r.profit,commission:r.commission,swap:r.swap,fee:0,net:r.net,ticket:'T'+i}
-                                          :{type:r.type,time:iso(r.t),profit:r.net,commission:0,swap:0,fee:0,net:r.net,ticket:'T'+i}).reverse();
+                                          :{type:r.type,time:iso(r.t),profit:r.net,commission:0,swap:0,fee:0,net:r.net,ticket:'T'+i});
+  if(!acc.oldestFirst) history.reverse();
   return {ok:true,currency:'USD',balance:O.balance,equity:O.equity,floating_pl:O.floating,history,history_total:history.length,deposits_total:O.dep,withdrawals_total:O.wd,credit_total:O.credit,
     fees_and_adjustments:O.adj,closed_pl_total:O.pl,start_balance:acc.S0,start_balance_at:acc.startMode?iso(acc.rows[0].t):null,growth_pct:+O.twr.toFixed(2),
     return_basis:'TIME_WEIGHTED_CLOSED_TRADES_EXCLUDING_DEPOSITS_WITHDRAWALS',trades_closed:O.positions.length,wins:O.wins,losses:O.losses,

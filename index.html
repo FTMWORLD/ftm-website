@@ -5666,7 +5666,7 @@ h3.has-tip{cursor:help}
           };
           return call('/accounts/'+accountId+'/stats?limit=2000').then(function(j){ return (j && !j.pending) ? more(j,0) : j; }).then(function(j){
             if(!j || j.pending) return null;
-            var __acc=accountId, HL=(j.history||[]).length; (j.history||[]).forEach(function(r,i){ r.__s=HL-i; });
+            var __acc=accountId, HL=(j.history||[]).length, tq=function(r){ return Date.parse(r&&(r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at)||'')||0; }, asc=HL>1 && tq(j.history[0])<tq(j.history[HL-1]); (j.history||[]).forEach(function(r,i){ r.__s=asc?i+1:HL-i; });
             var bySeq=function(a,b){ return (a.t-b.t)||((a.seq||0)-(b.seq||0)); };
             var flows=(j.history||[]).filter(function(r){ return String(r.type||r.deal_type||'').toUpperCase()==='BALANCE'; }).map(function(r){
               var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at;
