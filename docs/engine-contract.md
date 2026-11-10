@@ -4,6 +4,23 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — HISTORY = THE STATEMENT FOR EVERY ACCOUNT (commit 1258afe, API restarted 11:13 Berlin)
+
+Website history_gap; Gospel "Yes, build it" and the restart yes in the engine chat.
+- GET /customer/accounts/:id/history of the TRADING account now answers its own statement (source ACCOUNT_HISTORY),
+  like every other account: every closed position, FTM's copies and the customer's own trades. Demo #184: 179 trades
+  (was 41), 41 of them copied by FTM.
+- NEW on every row: copied_by_ftm (true = FTM copied it). ftm_test, welcome_trade, label and closed_by come from the
+  copy record for a copied trade; source per row.
+- symbol = the master's name where the broker's symbol is mapped (US Tech 100 -> USTEC), market = the broker's symbol
+  (upper case, as in the statement); ?symbol= matches either.
+- stats.history_page = the same rows, plus the same envelope (source, last_updated, balance_operations, total, limit,
+  offset; not the legacy items[] alias).
+- A just-closed copy appears after the statement re-read (about a minute after the close). Before an account's first
+  read: the trading account answers its copy records (source FTM_COPY, copied_by_ftm true).
+- Proof: verify-stats-audit A10 over every account (10/10); figures-fixtures 7/7 (the #184 history gap is gone);
+  regress SAFE TO DEPLOY.
+
 ## 2026-11-10 — STATISTICS AUDIT: HISTORY PAGES, INITIAL DEPOSIT, DRAWDOWNS (commit ac9a575, API restarted 10:48 Berlin)
 
 Website statistics audit (4 requests) via FTM MACHINE; Gospel's yes for the restart in the engine chat.
