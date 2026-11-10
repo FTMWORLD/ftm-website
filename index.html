@@ -2593,6 +2593,19 @@ body.op-lock{overflow:hidden}
 #appView .hx-stat em{white-space:normal;line-height:1.15;overflow:visible;text-overflow:clip}
 #appView .hx-stats>#dxInit{flex:1.25 1 0}
 @container hx (max-width:470px){#appView .hx .dx-right,#appView .hx .dx-spark:not([hidden]){height:86px!important}#appView .hx .dx-val{font-size:28px}#appView .dx-hero.hx{gap:8px!important}#appView .hx .dx-cbtn{padding:7px 6px!important}}
+
+#appView .hx-stat{padding:4px 9px;align-content:start;justify-content:start;min-width:0}
+#appView .hx-stat em{white-space:nowrap!important;overflow:hidden;text-overflow:clip;font-size:10px;line-height:1.2}
+#appView .hx-stat b{font-size:14px;line-height:1.2;white-space:nowrap;overflow:hidden}
+#appView .hx-stat small{display:none}
+#appView .hx-stats>#dxInit{flex:1.5 1 0}
+#appView .hx .hx-bot{align-items:center}
+
+.fz-on{cursor:zoom-in;text-decoration:underline dotted rgba(255,255,255,.45);text-underline-offset:3px}
+.fz-sheet{z-index:1500}.fz-card{text-align:center;padding:30px 24px 26px!important;max-width:420px;background:linear-gradient(160deg,#0B1440,#152a7a)!important;color:#fff}
+.fz-card .pk-x{background:rgba(255,255,255,.12);color:#fff}
+.fz-l{display:block;font-size:14px;font-weight:700;color:#c8d2ff}.fz-v{display:block;margin-top:10px;font-size:clamp(28px,8vw,44px);font-weight:800;color:#fff;overflow-wrap:anywhere;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.fz-v.up{color:#4ff09a}.fz-v.dn{color:#ff6b78}#dxInit~* .x{}
+.fz-s{display:block;margin-top:8px;font-size:13px;color:#c8d2ff}.fz-s:empty{display:none}
 </style>
 <script>
 (function(){
@@ -6025,10 +6038,10 @@ body.op-lock{overflow:hidden}
         var own=SP&&SP.own, show=!!(own && +own.trades_closed>0); dxS.hidden=!show; if(!show) return;
         var pc=function(x){ return x.pl_pct==null?'\u2014':((+x.pl_pct>0?'+':'')+(+x.pl_pct).toFixed(2)+'%'); }, cl=function(x){ return +x.pl_pct>0?'up':(+x.pl_pct<0?'dn':''); };
         var det=function(nm,x){ return trx(nm)+': '+((+x.closed_pl>0?'+':'')+cur(+x.closed_pl||0))+' · '+(+x.trades_closed||0)+' '+trx('trades')+(x.win_rate_pct!=null?' · '+trx('Win rate')+' '+(+x.win_rate_pct).toFixed(2)+'%':'')+(x.max_drawdown_closed_pct!=null?' · '+trx('Max drawdown')+' '+(+x.max_drawdown_closed_pct).toFixed(2)+'%':''); };
-        dxS.innerHTML='<div class="hx-stat"><em>'+trx('FTM trades')+'</em><b class="'+cl(SP.ftm)+'">'+pc(SP.ftm)+'</b></div><div class="hx-stat"><em>'+trx('Your own trades')+'</em><b class="'+cl(own)+'">'+pc(own)+'</b></div>';
+        dxS.innerHTML='<div class="hx-stat"><em>'+trx('FTM trades')+'</em><b class="'+cl(SP.ftm)+'">'+pc(SP.ftm)+'</b></div><div class="hx-stat" title="'+trx('Your own trades')+'"><em>'+trx('Own trades')+'</em><b class="'+cl(own)+'">'+pc(own)+'</b></div>';
         dxS.setAttribute('data-tip', det('FTM trades',SP.ftm)+'\n'+det('Your own trades',own)); })();
       var ini=F.initialDeposit(), iniTx=ini?cur(ini.amt)+(ini.t?' \u00B7 '+new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''):'\u2014', iniL=ini&&ini.kind==='start'?'Starting balance':'Initial deposit';
-      var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', ini?cur(ini.amt):'\u2014'); set('dxInitD', iniD); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
+      var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', ini?cur(ini.amt):'\u2014'); set('dxInitD', iniD); var dxI2=document.getElementById('dxInit'); if(dxI2) dxI2.title=iniL+(iniD?' · '+iniD:''); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
       var adjV=(ES.feesAdj||0)+(ES.creditTotal||0), adjW=document.getElementById('mAdjW'); if(adjW) adjW.hidden=!(Math.abs(adjV)>=0.005); set('mAdj', (adjV>0?'+':'')+cur(adjV), tone(adjV));
       set('mDep', cur(m.deposits||0)); set('mWdr', m.withdrawals?('-'+cur(m.withdrawals)):cur(0), m.withdrawals?'down':null); set('mNetDep', cur((m.deposits||0)-(m.withdrawals||0)));
       set('mFees', (m.fees>0.004?'+':'')+cur(m.fees), tone(Math.round(m.fees*100)));
@@ -10149,5 +10162,16 @@ tick();setInterval(tick,5000);})();
   window.addEventListener('resize',align); setInterval(align,1500); document.addEventListener('DOMContentLoaded',align); setTimeout(align,300);
 })();
 </script>
+<script>
+(function(){ function fitStats(){ document.querySelectorAll('.hx-stat em').forEach(function(e){ if(!e.offsetParent) return; e.style.fontSize=''; var f=parseFloat(getComputedStyle(e).fontSize), k=0; while(e.scrollWidth>e.clientWidth&&f>7.5&&k<10){ f-=0.5; e.style.fontSize=f+'px'; k++; } });
+    document.querySelectorAll('.hx-stat b').forEach(function(b){ if(!b.offsetParent) return; b.style.fontSize=''; var fs=parseFloat(getComputedStyle(b).fontSize), f0=fs, n=0; while(b.scrollWidth>b.clientWidth&&fs>8&&n<14){ fs-=0.5; b.style.fontSize=fs+'px'; n++; } b.classList.toggle('fz-on',fs<f0-0.4||b.scrollWidth>b.clientWidth); });
+    var v=document.getElementById('dxVal'); if(v&&v.offsetParent){ var inl=parseFloat(v.style.fontSize||'0'), cs=parseFloat(getComputedStyle(v).fontSize); v.classList.toggle('fz-on',!!v.style.fontSize&&inl<40); } }
+  function zoom(el){ var m=document.getElementById('fzModal'); if(!m) return; var box=el.closest('.hx-stat'), lab=box&&box.querySelector('em')?(box.title||box.querySelector('em').textContent):((window.I18NE&&I18NE.t)?I18NE.t('Total account value'):'Total account value');
+    document.getElementById('fzL').textContent=lab; var vv=document.getElementById('fzV'); vv.textContent=el.textContent; vv.className=el.className.replace('fz-on',''); document.getElementById('fzS').textContent=box&&box.title&&box.title!==lab?box.title:''; m.hidden=false; }
+  document.addEventListener('click',function(e){ var z=e.target.closest('.fz-on'); if(z){ zoom(z); return; } var m=document.getElementById('fzModal'); if(m&&!m.hidden&&(e.target===m||e.target.closest('#fzX'))) m.hidden=true; });
+  document.addEventListener('keydown',function(e){ var m=document.getElementById('fzModal'); if(e.key==='Escape'&&m) m.hidden=true; });
+  setInterval(fitStats,1200); window.addEventListener('resize',fitStats); window.FTM=window.FTM||{}; FTM.fitStats=fitStats; })();
+</script>
+<div class="pk-sheet fz-sheet" id="fzModal" hidden><div class="pk-card fz-card" role="dialog" aria-modal="true" aria-labelledby="fzL"><button type="button" class="cw-x pk-x" id="fzX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><span class="fz-l" id="fzL"></span><b class="fz-v" id="fzV"></b><small class="fz-s" id="fzS"></small></div></div>
 </body>
 </html>

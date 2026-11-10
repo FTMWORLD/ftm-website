@@ -34,6 +34,11 @@ ok(tip.indexOf(Math.abs(info.pl).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',')
 ok(new RegExp(info.trades+' trade').test(tip) && /Worst trade/.test(tip), n+': it shows how many trades and the worst trade');
 const yrs=info.k.slice(0,4)!==await p.evaluate(()=>{ const d=document.getElementById('dailyChart')._d; return d.list[d.list.length-1].slice(0,4); });
 ok(!yrs || /\d{4}/.test(await p.textContent('#dailyFrom')), n+': axis dates show the year when the range spans years');
+await p.evaluate(()=>FTM.showView('metrics')); await p.waitForTimeout(800);
+await p.evaluate(()=>{ document.getElementById('dxInitV').textContent='$10,000,000.00'; FTM.fitStats(); });
+const fz=await p.evaluate(()=>{ const b=document.getElementById('dxInitV'), box=b.closest('.hx-stat'); return {fits:b.scrollWidth<=b.clientWidth+1, boxH:box.getBoundingClientRect().height, shrunk:b.classList.contains('fz-on')}; });
+ok(fz.fits && fz.boxH<60, n+': a $10,000,000.00 starting balance fits its box without stretching it ('+JSON.stringify(fz)+')');
+if(fz.shrunk){ await p.evaluate(()=>document.getElementById('dxInitV').click()); await p.waitForTimeout(200); ok(await p.evaluate(()=>!document.getElementById('fzModal').hidden && /10,000,000\.00/.test(document.getElementById('fzV').textContent)), n+': tapping the shrunk figure shows it large'); await p.evaluate(()=>document.getElementById('fzX').click()); }
 ok(!errs.length, n+': no script errors '+(errs[0]||''));
 await c.close();}
 await b.close(); console.log(fails?'FAILED: '+fails:'DAILY TIP OK'); process.exit(fails?1:0);})();

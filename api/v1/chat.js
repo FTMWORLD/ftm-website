@@ -61,6 +61,7 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Net daily P&L (Calendar): hover over a bar (tap on a phone) to see that day's date, profit or loss in money and %, number of trades and the best and worst trade.
 - Top bar of the client area: the page name with Plan, Balance and Status now sit in the dark bar next to the FTM logo, so the content starts higher.
 - Leaderboard top 3 cards show the risk profile; the date each person started ('since') is shown once, in the list under their name.
+- Very long figures (for example a balance of $10,000,000.00) shrink to fit their box so the page keeps its shape; a dotted underline means you can tap the figure to see it large.
 - Charts: only FTM's markets (Gold, Bitcoin, US Tech 100, USD/JPY, HK50; Boom 1000 listed, not traded yet). Bitcoin moves live now; the other markets go live as soon as FTM's price feed is connected. Your open trades show on the chart at their entry price with the floating profit, in money or %.
 - Compare your result with a market: on the balance chart choose Gold, US Tech 100 or Bitcoin in 'Compare with…'; the chart switches to % and draws that market's move over the same period (real daily prices from FTM's feed).
 - FTM trades vs your own trades: if a customer also trades manually on the account, a line under Total account value shows 'FTM trades' and 'Your own trades' separately (tap for amount, trade count and win rate). Trade history marks FTM's trades with a small FTM badge and can be filtered. Customers with no own trades see no change.
