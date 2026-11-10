@@ -196,6 +196,22 @@
       "http": 409,
       "text": "A close request for this position is already being executed by your terminal."
     },
+    "FEED_NOT_READY": {
+      "http": 503,
+      "text": "Live prices are starting up. The chart fills in within a few seconds."
+    },
+    "NOT_AVAILABLE": {
+      "http": 404,
+      "text": "Live prices for this market are not available yet."
+    },
+    "BAD_MARKET_QUERY": {
+      "http": 400,
+      "text": "This market or chart period is not offered. Choose one of the FTM markets and a period from 1 minute to 1 day."
+    },
+    "RATE_LIMITED": {
+      "http": 429,
+      "text": "Too many requests in a short time. Please wait a moment and try again."
+    },
     "BAD_HISTORY_PAGING": {
       "http": 400,
       "text": "The history page could not be read: offset must be a whole number, before_deal a deal number and as_of a date and time."
@@ -2036,6 +2052,78 @@
         "200": "application/json"
       },
       "errors": []
+    },
+    {
+      "method": "GET",
+      "path": "/customer/market/candles",
+      "auth": "customer",
+      "status": "live",
+      "summary": "10 Nov 2026: live candles for the client-area chart. FTM master prices (IC Markets, BID) from FTM's price-only terminal (investor login, no trading), served from the engine's in-memory cache (never MT5 directly). ?symbol=XAUUSD|BTCUSD|USTEC|USDJPY|HK50|BOOM1000 &tf=1m|5m|15m|1h|4h|1d &limit=1-300 (default 300). candles oldest first, t = bar open (UTC, ISO); the LAST candle is the one still forming. stale true = the feed stopped for > 10 s (keep the last candles, show 'prices delayed'); market_closed true = the feed is live but the market has not ticked for > 5 min. BOOM1000 -> 404 NOT_AVAILABLE (IC Markets has no Boom; never a wrong price). A customer at another broker can see their entry slightly off the line (spread / feed): label the chart 'FTM master prices (IC Markets)'. Logged-in customers only. Rate limit per customer: bursts of 10, refilled 2 per second (limit=3 every 2 s plus quotes fits); over it 429 RATE_LIMITED with Retry-After. Before the feed terminal runs: 503 FEED_NOT_READY (keep the website's own source).",
+      "response": {
+        "200": {
+          "ok": true,
+          "symbol": "XAUUSD",
+          "tf": "1m",
+          "source": "FTM master prices (IC Markets, bid)",
+          "digits": 2,
+          "candles": [
+            {
+              "t": "2026-11-10T12:09:00.000Z",
+              "o": 4000.01,
+              "h": 4001.01,
+              "l": 3999.01,
+              "c": 4000.51
+            }
+          ],
+          "feed_age_sec": 0.4,
+          "last_tick_at": "2026-11-10T12:09:41.120Z",
+          "stale": false,
+          "market_closed": false
+        }
+      },
+      "errors": [
+        "UNAUTHENTICATED",
+        "BAD_MARKET_QUERY",
+        "NOT_AVAILABLE",
+        "FEED_NOT_READY",
+        "RATE_LIMITED"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/customer/market/quotes",
+      "auth": "customer",
+      "status": "live",
+      "summary": "10 Nov 2026: bid / ask per market for the chart header, from the same cache. ?symbols=XAUUSD,BTCUSD,... (default: all five FTM markets, max 20). Each quote has its own ok / error (NOT_AVAILABLE for BOOM1000, FEED_NOT_READY before the feed runs) plus stale / market_closed as in /customer/market/candles. Same rate limit.",
+      "response": {
+        "200": {
+          "ok": true,
+          "source": "FTM master prices (IC Markets, bid)",
+          "quotes": [
+            {
+              "symbol": "XAUUSD",
+              "ok": true,
+              "bid": 4000.0,
+              "ask": 4000.3,
+              "digits": 2,
+              "t": "2026-11-10T12:09:41.120Z",
+              "feed_age_sec": 0.4,
+              "stale": false,
+              "market_closed": false
+            },
+            {
+              "symbol": "BOOM1000",
+              "ok": false,
+              "error": "NOT_AVAILABLE"
+            }
+          ]
+        }
+      },
+      "errors": [
+        "UNAUTHENTICATED",
+        "BAD_MARKET_QUERY",
+        "RATE_LIMITED"
+      ]
     }
   ],
   "planned": [
