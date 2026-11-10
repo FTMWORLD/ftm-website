@@ -7919,7 +7919,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     (function(){ var x0=null; el('lbx').addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true}); el('lbx').addEventListener('touchend',function(e){ if(x0==null) return; var d=e.changedTouches[0].clientX-x0; if(Math.abs(d)>50) lbStep(d<0?1:-1); x0=null; }); })();
     document.addEventListener('keydown',function(e){ if(!el('lbx').hidden){ if(e.key==='Escape') el('lbx').hidden=true; if(e.key==='ArrowRight') lbStep(1); if(e.key==='ArrowLeft') lbStep(-1); } if(e.key==='Escape') closeShare(); });
 
-    (function(){ var id=(location.search.match(/[?&]post=([a-z0-9]{4,24})/)||[])[1]; if(!id) return;
+    (function(){ var id=(location.search.match(/[?&]post=([a-z0-9]{4,24})/)||[])[1]; if(!id) return; var go=function(){
       fetch('/api/v1/community?postjson='+id).then(function(r){ return r.json(); }).then(function(j){ if(!j||!j.post) return; var p=j.post;
         var gal=p.imgs&&p.imgs.length?'<div class="fd-gal n'+Math.min(4,p.imgs.length)+'">'+p.imgs.slice(0,4).map(function(u){ return '<span class="fd-gi"><img src="'+esc(u)+'" alt=""></span>'; }).join('')+'</div>':'';
         el('ppBody').innerHTML='<article class="fd-post'+(p.ftm?' ftm':'')+'"><div class="fd-h">'+(p.ftm?FTMAV:'<span class="avatar">'+esc(initials(p.author))+'</span>')+'<div class="who"><b>'+esc(p.author)+'</b>'+(p.ftm?'<i class="ftm-tick"></i>':'')+'<small>'+esc(ago(p.t))+'</small></div></div>'+(p.text?'<div class="fd-text">'+tagify(p.text)+'</div>':'')+gal+'<div class="fd-stats">'+(p.likes?'<span>&#10084;&#65039; '+p.likes+'</span>':'')+(p.comments?'<span>&#128172; '+p.comments+'</span>':'')+'</div></article>';
@@ -7931,6 +7931,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       el('ppX').addEventListener('click',close); el('ppModal').addEventListener('click',function(e){ if(e.target===this) close(); });
       el('ppJoin').addEventListener('click',function(){ close(); if(F.session&&F.openArea){ F.openArea('auto'); setTimeout(function(){ F.showView('community'); showTab('feed'); },400); } else { var b=document.querySelector('.js-signup'); if(b) b.click(); } });
       el('ppLogin').addEventListener('click',function(){ close(); var b=document.querySelector('.js-login'); if(b) b.click(); });
+      }; if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
     })();
     var pkId=null;
     function closePeek(){ var s=el('cPeek'); if(s&&!s.hidden){ s.hidden=true; pkId=null; } }

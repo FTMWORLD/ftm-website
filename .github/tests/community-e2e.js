@@ -132,8 +132,10 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   await A.click('#fdScopeX'); await A.waitForTimeout(800);
   const pid=await A.getAttribute(first,'data-pid');
   const V=await b.newPage({viewport:{width:390,height:844}}); await V.route('**/api/v1/**',async r=>{ const u=r.request().url(); if(u.includes('postjson=')){ const out=await new Promise(res=>{ const rs={s:200,h:{},setHeader(){},status(c){this.s=c;return this;},end(b){res([this.s,b]);},json(j){res([this.s,j]);}}; H({method:'GET',query:{postjson:u.match(/postjson=([a-z0-9]+)/)[1]},headers:{}},rs); }); return r.fulfill({status:out[0],contentType:'application/json',body:JSON.stringify(out[1])}); } if(u.includes('postimg=')){ const d=files['posts/'+u.match(/postimg=([^&]+)/)[1]+'.jpg']; return d?r.fulfill({status:200,contentType:'image/jpeg',body:d}):r.fulfill({status:404,body:''}); } return r.fulfill({status:200,contentType:'application/json',body:'{}'}); });
+  const verr=[]; V.on('pageerror',e=>verr.push(e.message));
   await V.goto(BASE+'/?post='+pid); await V.waitForTimeout(1500);
   await V.waitForSelector('#ppModal:not([hidden])',{timeout:10000}).catch(()=>{}); ok(await V.isVisible('#ppModal') && /Which market next/.test(await V.textContent('#ppBody')) && await V.isVisible('#ppJoin'),'a shared link opens the post for anyone, with Create a free account');
+  ok(!verr.length,'the shared post page has no script errors '+(verr[0]||''));
   if(process.env.FEED_SHOTS) await V.screenshot({path:process.env.FEED_SHOTS+'/shared_post_phone.png'});
   await V.close();
   if(process.env.FEED_SHOTS){ const S=process.env.FEED_SHOTS; await A.screenshot({path:S+'/feed_laptop.png'}); await A.setViewportSize({width:390,height:844}); await A.waitForTimeout(300); await A.evaluate(()=>document.querySelector('#fdList').scrollIntoView()); await A.screenshot({path:S+'/feed_phone.png'}); await tab(A,'notifs'); await A.waitForTimeout(600); await A.screenshot({path:S+'/notifs_phone.png'}); }
