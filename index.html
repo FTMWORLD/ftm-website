@@ -3204,6 +3204,7 @@ h3.has-tip{cursor:help}
           <div><dt>Deposits</dt><dd id="mDep">&mdash;</dd></div>
           <div><dt>Withdrawals</dt><dd id="mWdr">&mdash;</dd></div>
           <div><dt>Net deposits</dt><dd id="mNetDep">&mdash;</dd></div>
+          <div id="mAdjW" hidden><dt>Dividends, tax &amp; adjustments</dt><dd id="mAdj">&mdash;</dd></div>
           <div><dt>Commission &amp; swap</dt><dd id="mFees">&mdash;</dd></div>
           <div><dt>Total lots</dt><dd id="mLots">&mdash;</dd></div>
         </dl>
@@ -3213,7 +3214,7 @@ h3.has-tip{cursor:help}
         <dl class="mg">
           <div><dt>Expectancy</dt><dd id="mExp">&mdash;</dd></div>
           <div><dt>Standard deviation</dt><dd id="mSD">&mdash;</dd></div>
-          <div><dt>Sharpe ratio</dt><dd id="mSharpe">&mdash;</dd></div>
+          <div data-tip="Yearly return divided by yearly ups and downs, from the account's daily time-weighted returns (needs 30 days). Above 1 is good, above 2 is excellent."><dt>Sharpe ratio</dt><dd id="mSharpe">&mdash;</dd></div>
         </dl>
       </div>
       <div class="app-card">
@@ -5055,15 +5056,16 @@ h3.has-tip{cursor:help}
         ? liveAcct.balance - covered.reduce(function(s,t){return s+t.pl;},0) - flowSum
         : acct.deposits - acct.withdrawals - flowSum;
       var es=F.es(), esComplete=!!(es && (es.historyTotal==null || (es.rows||(es.deals.length+(es.flows||[]).length))>=es.historyTotal*0.98)), useDeals=!!(es && es.deals && es.deals.filter(function(x){return !x.open;}).length>=covered.length && es.deals.length && esComplete);
-      var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
-      if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; }
-      var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt};})).sort(function(a,b){return a.t-b.t;});
-      var gap=0; if(useDeals && es && (es.startBalance!=null || (flows.length && ev.length && ev[0].flow>0))){ var expA=(es.startBalance||0)+(es.feesAdj||0)+(es.creditTotal||0), tol0=Math.max(5, Math.abs(balance)*0.002); if(Math.abs(anchor-expA)>tol0){ gap=anchor-expA; anchor=expA; } }
+      var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open,s:x.seq};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
+      if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; fees=es.deals.reduce(function(a,x){return a+(x.cost||0);},0); }
+      var adjEv=useDeals?(es.adj||[]):[], adjSum=adjEv.reduce(function(a,x){return a+x.amt;},0); if(useDeals) anchor-=adjSum;
+      var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt,s:f.seq};}), adjEv.map(function(x){return {t:x.t,flow:x.amt,adj:true,s:x.seq};})).sort(function(a,b){return (a.t-b.t)||((a.s||0)-(b.s||0));});
+      var gap=0; if(useDeals && es && (es.startBalance!=null || (flows.length && ev.length && ev[0].flow>0))){ var adjIn=adjEv.reduce(function(a,x){return a+(x.kind==='adj'?x.amt:0);},0), crIn=adjSum-adjIn, expA=(es.startBalance||0)+((es.feesAdj||0)-adjIn)+((es.creditTotal||0)-crIn), tol0=Math.max(5, Math.abs(balance)*0.002); if(Math.abs(anchor-expA)>tol0){ gap=anchor-expA; anchor=expA; } }
       var t0=ev.length?Math.min(ev[0].t,covered.length?covered[0].openTime:ev[0].t):Date.now();
       var run = anchor, curve=[{t:t0, v:run}], pnlSeries=[0], peakAdj=[];
       var ddRun=anchor, ddPeak=anchor, ddMaxAbs=0, ddMaxPct=0;
       ev.forEach(function(e){
-        if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push({t:e.t, v:run, flow:e.flow}); return; }
+        if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push(e.adj?{t:e.t, v:run, flow:e.flow, adj:true}:{t:e.t, v:run, flow:e.flow}); return; }
         run+=e.pl; ddRun+=e.pl; curve.push({t:e.t, v:run});
         if(ddRun>ddPeak) ddPeak=ddRun; var dr=ddPeak-ddRun; if(dr>ddMaxAbs){ ddMaxAbs=dr; ddMaxPct=ddPeak>0?dr/ddPeak*100:0; }
       });
@@ -5100,7 +5102,10 @@ h3.has-tip{cursor:help}
       var mean=expectancy, variance=0;
       covered.forEach(function(t){ variance+=Math.pow(t.pl-mean,2); });
       var sd = n>1 ? Math.sqrt(variance/(n-1)) : 0;
-      var sharpe = sd>0 ? mean/sd : 0;
+      var sharpe=null;
+      if(curve.length>1){ var sd0=new Date(curve[1].t); sd0.setHours(0,0,0,0); var nDays=Math.floor((Date.now()-sd0.getTime())/864e5);
+        if(nDays>=30){ var dr=[], f0=1; for(var di=1; di<=nDays+1; di++){ var de=new Date(sd0); de.setDate(de.getDate()+di); var f1=atT(de.getTime())[0]; dr.push(f1/f0-1); f0=f1; }
+          var dm=dr.reduce(function(a,x){return a+x;},0)/dr.length, dv=dr.reduce(function(a,x){return a+(x-dm)*(x-dm);},0)/(dr.length-1); sharpe=dv>0?dm/Math.sqrt(dv)*Math.sqrt(365):null; } }
 
       var yr=new Date().getFullYear(), ySeg=seg(new Date(yr,0,1).getTime(), null);
       var yearPL=ySeg.pl, yearPct=ySeg.pct;
@@ -5156,8 +5161,8 @@ h3.has-tip{cursor:help}
         var agg=[{t:all[0].t,v:all[0].v}], lastK=dayK(all[0].t);
         for(var ai=1;ai<all.length;ai++){
           var pt0=all[ai], k=dayK(pt0.t), tail=agg[agg.length-1];
-          if(k===lastK && agg.length>1){ tail.t=pt0.t; tail.v=pt0.v; if(pt0.flow) tail.flow=(tail.flow||0)+pt0.flow; }
-          else { agg.push({t:pt0.t,v:pt0.v,flow:pt0.flow}); lastK=k; }
+          if(k===lastK && agg.length>1){ tail.t=pt0.t; tail.v=pt0.v; if(pt0.flow&&!pt0.adj) tail.flow=(tail.flow||0)+pt0.flow; }
+          else { agg.push({t:pt0.t,v:pt0.v,flow:pt0.adj?undefined:pt0.flow}); lastK=k; }
         }
         all=agg;
       }
@@ -5183,7 +5188,7 @@ h3.has-tip{cursor:help}
       if(zoomInBtn)zoomInBtn.disabled = zi>=ZOOM_LEVELS.length-1 || curve.length<=2;
       if(zoomOutBtn)zoomOutBtn.disabled = zi<=0;
       while(curve.length>2 && curve[1].flow>0 && curve[0].v<curve[1].v*0.05) curve=curve.slice(1);
-      var tradeChg=[0]; for(var ci=1;ci<curve.length;ci++){ tradeChg.push(tradeChg[ci-1]+(curve[ci].flow?0:curve[ci].v-curve[ci-1].v)); }
+      var tradeChg=[0]; for(var ci=1;ci<curve.length;ci++){ tradeChg.push(tradeChg[ci-1]+(curve[ci].flow&&!curve[ci].adj?0:(curve[ci].adj?0:curve[ci].v-curve[ci-1].v))); }
       F._cvRaw={curve:curve, chg:tradeChg};
       cvHead(curve.length-1);
       m={curve:curve};
@@ -5194,7 +5199,7 @@ h3.has-tip{cursor:help}
       var pctMode = F.curveUnit==='percent';
       var base = m.curve[0].v || 1;
       if(pctMode){
-        m={curve:m.curve.map(function(p,i){ return {t:p.t, v:(i&&F._cvSeg)?F._cvSeg(F._cvFrom,p.t+1).pct:0, flow:p.flow}; })};
+        m={curve:m.curve.map(function(p,i){ return {t:p.t, v:(i&&F._cvSeg)?F._cvSeg(F._cvFrom,p.t+1).pct:0, flow:p.flow, adj:p.adj}; })};
       }
       var vals=m.curve.map(function(p){return p.v;});
       var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
@@ -5238,7 +5243,7 @@ h3.has-tip{cursor:help}
         '<line class="cv-base" x1="0" x2="'+(W-pR+6)+'" y1="'+pts[0][1]+'" y2="'+pts[0][1]+'"/>'+
         '<path id="cvArea" d="'+area+'" fill="url(#curveG)"/>'+
         '<path id="cvPath" pathLength="1" fill="none" stroke="url(#curveL)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" d="'+dpath+'"/>'+
-        m.curve.map(function(p,i){ return p.flow ? '<circle class="cv-flow" cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="5.5" fill="'+(p.flow>0?'#16a34a':'#E5323E')+'"/>' : ''; }).join('')+
+        m.curve.map(function(p,i){ return (p.flow&&!p.adj) ? '<circle class="cv-flow" cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="5.5" fill="'+(p.flow>0?'#16a34a':'#E5323E')+'"/>' : ''; }).join('')+
         '<circle id="cvPulse" cx="'+last[0]+'" cy="'+last[1]+'" r="4"/>'+
         '<circle id="cvEnd" cx="'+last[0]+'" cy="'+last[1]+'" r="4.5"/>'+
         '<line id="cvLine" x1="0" y1="'+pT+'" x2="0" y2="'+yB+'" visibility="hidden"/>'+
@@ -5278,7 +5283,7 @@ h3.has-tip{cursor:help}
         var time=new Date(pt.t).toLocaleTimeString((window.FTM_LOCALE||'en-GB'),{hour:'2-digit',minute:'2-digit'});
         var prev=best>0?c.data[best-1].v:pt.v, chg=pt.v-prev;
         tip.innerHTML='<span>'+date+' \u00B7 '+time+'</span><b>'+fmtV(pt.v)+'</b>'+
-          (pt.flow?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur0(Math.abs(pt.flow))+'</span>':best>0&&chg!==0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'\u25B2 +':'\u25BC ')+fmtV(chg)+'</span>':'');
+          ((pt.flow&&!pt.adj)?'<span style="color:'+(pt.flow>0?'#8fe0b4':'#ff9aa2')+'">'+(window.I18NE&&I18NE.t?I18NE.t(pt.flow>0?'Deposited':'Withdrawn'):(pt.flow>0?'Deposited':'Withdrawn'))+' '+cur0(Math.abs(pt.flow))+'</span>':best>0&&chg!==0?'<span style="color:'+(chg>=0?'#8fe0b4':'#ff9aa2')+'">'+(chg>=0?'\u25B2 +':'\u25BC ')+fmtV(chg)+'</span>':'');
         tip.hidden=false;
         var px=p[0]/(c.W||600)*r.width, py=p[1]/(c.H||190)*r.height;
         var tw=tip.offsetWidth, left=Math.max(tw/2+4, Math.min(r.width-tw/2-4, px));
@@ -5348,11 +5353,13 @@ h3.has-tip{cursor:help}
         if(outs.length>C.filter(function(t){return t.closeTime;}).length){
           var ins={}; es.deals.forEach(function(x){ if(x.open && x.pos) ins[x.pos]=x; });
           var byRef={}; C.forEach(function(t){ if(t.positionRef) byRef[String(t.positionRef)]=t; });
-          var used={}, out=outs.map(function(x){
+          var grp={}, outs2=[]; outs.forEach(function(x){ if(!x.pos){ outs2.push(x); return; } var g=grp[x.pos]; if(!g){ g=grp[x.pos]=Object.assign({},x); outs2.push(g); } else { g.pl+=x.pl; g.cost=(g.cost||0)+(x.cost||0); if(x.lots!=null) g.lots=(g.lots||0)+x.lots; if(x.t>g.t){ g.t=x.t; if(x.price!=null) g.price=x.price; } } });
+          outs=outs2;
+          var used={}, inUsed={}, out=outs.map(function(x){
             var t=(x.pos&&byRef[String(x.pos)]) || C.filter(function(c){ return !used[c.closeTime+'|'+c.symbol] && c.closeTime && Math.abs(c.closeTime-x.t)<3000 && (!x.symbol||c.symbol===x.symbol); })[0];
             if(t){ used[t.closeTime+'|'+t.symbol]=1; return t; }
-            var o=x.pos&&ins[x.pos];
-            return {symbol:x.symbol, dir:x.side==='SELL'?'BUY':(x.side==='BUY'?'SELL':x.side), lots:x.lots, openTime:o?o.t:x.t, closeTime:x.t, open:o&&o.price!=null?o.price:null, close:x.price!=null?x.price:null, pl:x.pl+(o?o.pl:0), commission:o?o.pl:null, swap:null, label:null, positionRef:x.pos||null, fromEngine:true};
+            var o=x.pos&&ins[x.pos], oFee=(o&&!inUsed[x.pos])?o.pl:0; if(o) inUsed[x.pos]=1;
+            return {symbol:x.symbol, dir:x.side==='SELL'?'BUY':(x.side==='BUY'?'SELL':x.side), lots:x.lots, openTime:o?o.t:x.t, closeTime:x.t, open:o&&o.price!=null?o.price:null, close:x.price!=null?x.price:null, pl:x.pl+oFee, commission:o?oFee:null, swap:null, label:null, positionRef:x.pos||null, fromEngine:true};
           });
           C=out;
         }
@@ -5447,7 +5454,10 @@ h3.has-tip{cursor:help}
 
       set('mGainAbs', m.deposits>0 ? ('on '+cur0(m.deposits)+' deposited') : ('on '+cur0(m.anchor)+' starting balance'));
       var netV=ES.closedPl!=null?ES.closedPl:m.netPL; set('mNet', (netV>=0?'+':'')+cur(netV), tone(netV));
-      var avG=document.getElementById('appView'); if(avG){ var had=avG._gapLogged; if(m.gap&&!had){ avG._gapLogged=1; try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'history_gap', reason:String(Math.round(m.gap)), live:true, at:new Date().toISOString()})); }catch(e){} } }
+      var avG=document.getElementById('appView'); if(avG){ var had=avG._gapLogged; if(m.gap&&!had){ avG._gapLogged=1; try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'history_gap', reason:String(Math.round(m.gap)), live:true, at:new Date().toISOString()})); }catch(e){} } 
+        var lg=function(ev,why){ var key='_lg_'+ev; if(avG[key]) return; avG[key]=1; try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:ev, reason:why, live:true, at:new Date().toISOString()})); }catch(e){} };
+        if(ES.growthPct!=null && isFinite(m.gainPct) && Math.abs(ES.growthPct-m.gainPct)>0.011) lg('return_gap','site '+m.gainPct.toFixed(2)+' engine '+ES.growthPct.toFixed(2));
+        if(ES.closedPl!=null && ES.deals && Math.abs(ES.closedPl-m.netPL)>0.011) lg('pl_gap','site '+m.netPL.toFixed(2)+' engine '+ES.closedPl.toFixed(2)); }
       set('mCount', String(ES.tradesClosed!=null?ES.tradesClosed:m.count));
       set('mStreakDays', String(m.bestDays));
       set('mStreakTrades', String(m.bestTrades));
@@ -5471,13 +5481,14 @@ h3.has-tip{cursor:help}
 
       var ini=F.initialDeposit(), iniTx=ini?cur(ini.amt)+(ini.t?' \u00B7 '+new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''):'\u2014', iniL=ini&&ini.kind==='start'?'Starting balance':'Initial deposit';
       var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', iniTx); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
+      var adjV=(ES.feesAdj||0)+(ES.creditTotal||0), adjW=document.getElementById('mAdjW'); if(adjW) adjW.hidden=!(Math.abs(adjV)>=0.005); set('mAdj', (adjV>0?'+':'')+cur(adjV), tone(adjV));
       set('mDep', cur(m.deposits||0)); set('mWdr', m.withdrawals?('-'+cur(m.withdrawals)):cur(0), m.withdrawals?'down':null); set('mNetDep', cur((m.deposits||0)-(m.withdrawals||0)));
       set('mFees', cur(-Math.abs(m.fees)), m.fees?'down':null);
       set('mLots', m.lots.toFixed(2));
 
       set('mExp', (m.expectancy>=0?'+':'')+cur(m.expectancy), tone(m.expectancy));
       set('mSD', cur(m.sd));
-      set('mSharpe', m.sharpe.toFixed(2), tone(m.sharpe));
+      set('mSharpe', m.sharpe==null?'\u2014':m.sharpe.toFixed(2), m.sharpe==null?null:tone(m.sharpe));
 
       set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(2)+'%');
       set('mPF', m.profitFactor.toFixed(2), m.profitFactor>=1?'up':'down');
@@ -5644,19 +5655,26 @@ h3.has-tip{cursor:help}
         fetchStats: function(accountId){
           return call('/accounts/'+accountId+'/stats?limit=2000').then(function(j){
             if(!j || j.pending) return null;
-            var __acc=accountId;
+            var __acc=accountId, HL=(j.history||[]).length; (j.history||[]).forEach(function(r,i){ r.__s=HL-i; });
+            var bySeq=function(a,b){ return (a.t-b.t)||((a.seq||0)-(b.seq||0)); };
             var flows=(j.history||[]).filter(function(r){ return String(r.type||r.deal_type||'').toUpperCase()==='BALANCE'; }).map(function(r){
               var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at;
               var amt=num(r.net!=null?r.net:(r.profit!=null?r.profit:(r.amount!=null?r.amount:r.net_profit)));
-              return {t:t?Date.parse(t):null, amt:amt};
-            }).filter(function(f){ return f.t && f.amt; }).sort(function(a,b){return a.t-b.t;});
+              return {t:t?Date.parse(t):null, amt:amt, seq:r.__s};
+            }).filter(function(f){ return f.t && f.amt; }).sort(bySeq);
             var tOf=function(r){ var t=r.time||r.closed_at||r.executed_at||r.at||r.timestamp||r.date||r.opened_at; return t?Date.parse(t):null; };
-            var NT={BALANCE:1,CREDIT:1,CHARGE:1,CORRECTION:1,BONUS:1,COMMISSION:1};
-            var deals=(j.history||[]).filter(function(r){ return !NT[String(r.type||r.deal_type||'').toUpperCase()]; }).map(function(r){
+            var kindOf=function(r){ var T=String(r.type||r.deal_type||'').toUpperCase().replace(/^DEAL_TYPE_/,'');
+              if(T==='BALANCE') return 'flow'; if(T==='CREDIT') return 'credit';
+              if(/^(CHARGE|CORRECTION|BONUS|COMMISSION|INTEREST|DIVIDEND|TAX|FEE|ADJUST|AGENT)/.test(T)) return 'adj';
+              return 'trade'; };
+            var rowAmt=function(r){ return num(r.net!=null?r.net:(r.profit!=null?r.profit:(r.amount!=null?r.amount:r.net_profit))); };
+            var adj=(j.history||[]).filter(function(r){ var k=kindOf(r); return k==='adj'||k==='credit'; }).map(function(r){ return {t:tOf(r), amt:rowAmt(r), kind:kindOf(r), type:String(r.type||r.deal_type||'').toUpperCase().replace(/^DEAL_TYPE_/,''), seq:r.__s}; })
+              .filter(function(x){ return x.t && x.amt; }).sort(bySeq);
+            var deals=(j.history||[]).filter(function(r){ return kindOf(r)==='trade'; }).map(function(r){
               var pl=num(r.net!=null?r.net:(r.net_profit!=null?r.net_profit:r.profit)); if(pl!=null && r.net==null && r.net_profit==null){ pl+= (num(r.commission)||0)+(num(r.swap)||0)+(num(r.fee)||0); }
-              return {t:tOf(r), pl:pl, open:String(r.entry||'').toUpperCase()==='IN', symbol:r.symbol||null, side:String(r.type||r.deal_type||'').toUpperCase(), lots:num(r.volume), ticket:r.ticket||null, pos:r.position_ref||null, price:r.price!=null?px(r.price):null};
-            }).filter(function(x){ return x.t && x.pl!=null && x.pl!==0; }).sort(function(a,b){return a.t-b.t;});
-            return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, historyTotal:num(j.history_total),
+              return {t:tOf(r), seq:r.__s, pl:pl, cost:(num(r.commission)||0)+(num(r.swap)||0)+(num(r.fee)||0), open:String(r.entry||'').toUpperCase()==='IN', symbol:r.symbol||null, side:String(r.type||r.deal_type||'').toUpperCase(), lots:num(r.volume), ticket:r.ticket||null, pos:r.position_ref||null, price:r.price!=null?px(r.price):null};
+            }).filter(function(x){ return x.t && x.pl!=null; }).sort(bySeq);
+            return { deposits:num(j.deposits_total), withdrawals:num(j.withdrawals_total), flows:flows, deals:deals, adj:adj, historyTotal:num(j.history_total),
                      maxDDPct:num(j.max_drawdown_pct), growthPct:num(j.growth_pct), startBalance:num(j.start_balance), startBalanceAt:j.start_balance_at||null, initialDeposit:num(j.initial_deposit), initialDepositAt:j.initial_deposit_at||null, firstAt:(j.history||[]).reduce(function(a,r){ var t=tOf(r); return t&&(a==null||t<a)?t:a; },null),
                      closedPl:num(j.closed_pl_total), tradesClosed:num(j.trades_closed), wins:num(j.wins), losses:num(j.losses), winRatePct:num(j.win_rate_pct), source:j.data_source||null,
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
@@ -6326,11 +6344,15 @@ h3.has-tip{cursor:help}
       function ret(k){ return ord[k].map(function(key){ var b=bounds(k,key), a=b[0].getTime(), z=b[1].getTime(), sg=m.seg(a,z); return {k:key,r:sg.pct,pl:sg.pl,s:m.balAt(a),e:m.balAt(z),n:G[k][key].n}; }); }
       var Y=ret('y'), M=ret('m'), W=ret('w'), D=ret('d');
 
-      el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
+      var CVy=m.curve||[], hasAdj=CVy.some(function(p){return p.adj;});
+      var inY=function(y,f){ var a=new Date(+y.k,0,1).getTime(), z=new Date(+y.k+1,0,1).getTime(), t=0; CVy.forEach(function(p){ if(p.t>=a&&p.t<z&&f(p)) t+=p.flow; }); return t; };
+      var sg2=function(n){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),2); };
+      el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>Net deposits</th><th>Profit</th>'+(hasAdj?'<th>Dividends, tax &amp; adjustments</th>':'')+'<th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
           var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,0)+'</td><td>'+money(y.e,0)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="'+(b.r<0?'pl-down':'pl-up')+'">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="'+(w.r<0?'pl-down':'pl-up')+'">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
-         :'<tr><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>')+'</tbody>';
+          var nd=inY(y,function(p){return p.flow&&!p.adj;}), aj=inY(y,function(p){return p.adj;});
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,2)+'</td><td>'+sg2(nd)+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'">'+sg2(y.pl)+'</td>'+(hasAdj?'<td>'+sg2(aj)+'</td>':'')+'<td>'+money(y.e,2)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="'+(b.r<0?'pl-down':'pl-up')+'">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="'+(w.r<0?'pl-down':'pl-up')+'">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
+         :'<tr>'+new Array(hasAdj?11:10).join('<td>&mdash;</td>')+'</tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       var yrs=has?Y.map(function(y){return y.k;}).reverse():[String(new Date().getFullYear())];
@@ -6709,7 +6731,8 @@ h3.has-tip{cursor:help}
       SESSIONS.forEach(function(s){ stats[s.name]={pl:0,n:0,w:0}; });
       F.data.closed.forEach(function(t){
         var h=new Date(sessMode==='open'?t.openTime:t.closeTime).getUTCHours();
-        SESSIONS.forEach(function(s){ if(inSession(h,s)){ var x=stats[s.name]; x.n++; if(t.pl!=null){ x.pl+=t.pl; if(t.pl>0)x.w++; } } });
+        var own=null, age=99; SESSIONS.forEach(function(s){ if(inSession(h,s)){ var a=(h-s.from+24)%24; if(a<age){ age=a; own=s; } } });
+        if(own){ var x=stats[own.name]; x.n++; if(t.pl!=null){ x.pl+=t.pl; if(t.pl>0)x.w++; } }
       });
       var best=null;
       SESSIONS.forEach(function(s){ if(!best||stats[s.name].pl>stats[best].pl)best=s.name; });
@@ -8702,7 +8725,8 @@ tick();setInterval(tick,5000);})();
     var best=null, worst=null; Object.keys(months).forEach(function(k){ k=+k; var a=new Date(Math.floor(k/12),k%12,1), b=new Date(Math.floor(k/12),k%12+1,1), sg=m.seg(T(a),T(b)); sg.d=a; if(!best||sg.pct>best.pct) best=sg; if(!worst||sg.pct<worst.pct) worst=sg; });
     var ml=function(d){ return d.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'short',year:'numeric'}); };
     if(best) cells.push(['Best month',best,ml(best.d)]); if(worst) cells.push(['Worst month',worst,ml(worst.d)]);
-    box.innerHTML=cells.map(function(c){ var g=c[1], k=g.pct>0?'up':(g.pct<0?'dn':''); return '<div class="fs-c"><span>'+tr(c[0])+'</span><b class="'+k+'">'+(g.pct>0?'+':'')+g.pct.toFixed(2)+'%</b><small>'+(c[2]?c[2]:sgn(g.pl,2))+'</small></div>'; }).join('');
+    var born=(m.anchor>0.005)?-Infinity:((m.curve&&m.curve.length>1)?m.curve[1].t:Infinity); cells[1].push(null,T(new Date(y,mo,1)));
+    box.innerHTML=cells.map(function(c){ var g=c[1], k=g.pct>0?'up':(g.pct<0?'dn':''); if(c[3]!=null && c[3]<=born) return '<div class="fs-c"><span>'+tr(c[0])+'</span><b>\u2014</b><small>\u2014</small></div>'; return '<div class="fs-c"><span>'+tr(c[0])+'</span><b class="'+k+'">'+(g.pct>0?'+':'')+g.pct.toFixed(2)+'%</b><small>'+(c[2]?c[2]:sgn(g.pl,2))+'</small></div>'; }).join('');
     card.hidden=false;
   }
   var alKind='all', AL0=5, alShow=AL0;
@@ -8750,10 +8774,10 @@ tick();setInterval(tick,5000);})();
     function events(){
       var d=F.data||{}, es=F.es&&F.es(), ev=[];
       var useE=!!(es && es.deals && es.deals.length && (es.historyTotal==null || (es.rows||0)>=es.historyTotal*0.98));
-      if(useE) es.deals.forEach(function(x){ ev.push({t:x.t,k:x.open?'fee':'trade',amt:x.pl,sym:x.symbol,side:x.side,lots:x.lots}); });
+      if(useE){ es.deals.forEach(function(x){ ev.push({t:x.t,s:x.seq,k:x.open?'fee':'trade',amt:x.pl,sym:x.symbol,side:x.side,lots:x.lots,pos:x.pos}); }); (es.adj||[]).forEach(function(x){ ev.push({t:x.t,s:x.seq,k:'adj',amt:x.amt,type:x.type}); }); }
       else (d.closed||[]).forEach(function(t){ if(t.closeTime&&t.pl!=null) ev.push({t:t.closeTime,k:'trade',amt:t.pl,sym:t.symbol,side:String(t.dir||'').toUpperCase(),lots:t.lots,lab:t.label}); });
-      (F.flows?F.flows():[]).forEach(function(f){ ev.push({t:f.t,k:f.amt>0?'in':'out',amt:f.amt}); });
-      ev.sort(function(a,b){return a.t-b.t;});
+      (F.flows?F.flows():[]).forEach(function(f){ ev.push({t:f.t,s:f.seq,k:f.amt>0?'in':'out',amt:f.amt}); });
+      ev.sort(function(a,b){return (a.t-b.t)||((a.s||0)-(b.s||0));});
       var m=F.metrics?F.metrics():null, run=m?m.balance:0;
       for(var i=ev.length-1;i>=0;i--){ ev[i].after=run; run-=ev[i].amt; }
       return {ev:ev, start:run};
@@ -8771,24 +8795,25 @@ tick();setInterval(tick,5000);})();
       else if(v!=='all'){ var y=+v.slice(0,4), mo=+v.slice(5,7)-1; a=new Date(y,mo,1).getTime(); b=new Date(y,mo+1,1).getTime(); label=new Date(y,mo,1).toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}); }
       var rows=E.filter(function(e){return e.t>=a&&e.t<b;}), before=E.filter(function(e){return e.t<a;});
       var open=before.length?before[before.length-1].after:all.start, close=rows.length?rows[rows.length-1].after:open;
-      var dep=0,wd=0,res=0,nT=0,nW=0; rows.forEach(function(e){ if(e.k==='in')dep+=e.amt; else if(e.k==='out')wd+=-e.amt; else { res+=e.amt; if(e.k==='trade'){ nT++; if(e.amt>0)nW++; } } });
+      var dep=0,wd=0,res=0,adjT=0,nT=0,nW=0,pRes={},pKeys=[]; rows.forEach(function(e,ix){ if(e.k==='in')dep+=e.amt; else if(e.k==='out')wd+=-e.amt; else if(e.k==='adj') adjT+=e.amt; else { res+=e.amt; var pk=e.pos||('#'+ix); if(pRes[pk]===undefined){ pRes[pk]={v:0,c:false}; pKeys.push(pk); } pRes[pk].v+=e.amt; if(e.k==='trade') pRes[pk].c=true; } });
+      pKeys.forEach(function(pk){ if(!pRes[pk].c) return; nT++; if(pRes[pk].v>0.004) nW++; });
       var va=(F.viewedAccount&&F.viewedAccount())||{}, cur=(F.data&&F.data.account&&F.data.account.currency)||'';
       var M=function(n){ return money(n,2); }, S=function(n){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),2); };
       var fd=function(t){ return new Date(t).toLocaleString((window.FTM_LOCALE||undefined),{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
-      var det=function(e){ if(e.k==='in') return tr('Deposited'); if(e.k==='out') return tr('Withdrawn'); if(e.k==='fee') return tr('Commission')+(e.sym?' · '+e.sym:''); return (e.sym||'')+' · '+(e.side==='SELL'?tr('Sell'):tr('Buy'))+(e.lots!=null?' · '+e.lots.toFixed(2):'')+(e.lab?' · '+tr(e.lab):''); };
+      var det=function(e){ if(e.k==='adj'){ var T=String(e.type||''); return tr(/^DIVIDEND/.test(T)?'Dividend':(T==='TAX'?'Tax':(T==='CREDIT'?'Credit':(/^COMMISSION/.test(T)?'Commission':(T==='INTEREST'?'Interest':'Adjustment'))))); } if(e.k==='in') return tr('Deposited'); if(e.k==='out') return tr('Withdrawn'); if(e.k==='fee') return tr('Commission')+(e.sym?' · '+e.sym:''); return (e.sym||'')+' · '+(e.side==='SELL'?tr('Sell'):tr('Buy'))+(e.lots!=null?' · '+e.lots.toFixed(2):'')+(e.lab?' · '+tr(e.lab):''); };
       var ref='FTM-'+String(va.accountId||va.number||'').replace(/[^A-Za-z0-9]/g,'').slice(0,8).toUpperCase()+'-'+(v==='all'?'ALL':v.replace('-',''))+'-'+rows.length;
       var dir=document.documentElement.getAttribute('dir')||'ltr', lang=document.documentElement.getAttribute('lang')||'en';
       var css='@page{size:A4;margin:14mm}*{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#0B1440;font-size:11.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}'+
         '.hd{background:#0B1440;color:#fff;border-radius:14px;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px}.lg{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;letter-spacing:-.02em}.lg img{width:36px;height:36px;border-radius:9px}'+
         '.hd h1{margin:0;font-size:18px;color:#E3B62F;font-weight:800}.hd p{margin:4px 0 0;color:rgba(255,255,255,.75);font-size:11px}.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}'+
         '.meta div{border:1px solid #e3e6f0;border-radius:10px;padding:9px 12px}.meta span,.sum span{display:block;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7393}.meta b{display:block;margin-top:3px;font-size:12px}'+
-        '.sum{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid #e3e6f0;border-radius:12px;overflow:hidden;margin-bottom:18px}.sum div{padding:12px;border-inline-end:1px solid #e3e6f0}.sum div:last-child{border:0;background:#fbf6e4}.sum b{display:block;margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}'+
+        '.sum{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:0;border:1px solid #e3e6f0;border-radius:12px;overflow:hidden;margin-bottom:18px}.sum div{padding:12px;border-inline-end:1px solid #e3e6f0}.sum div:last-child{border:0;background:#fbf6e4}.sum b{display:block;margin-top:4px;font-size:14px;font-variant-numeric:tabular-nums}'+
         'table{width:100%;border-collapse:collapse}th{text-align:start;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#6b7393;border-bottom:2px solid #0B1440;padding:7px 6px}td{padding:7px 6px;border-bottom:1px solid #eceef5;font-variant-numeric:tabular-nums}tr{break-inside:avoid}'+
         '.sh{font-size:13px;margin:6px 0 8px;color:#0B1440}.bm{margin-bottom:18px}.bm tr.tt td{font-weight:800;border-top:2px solid #0B1440}.n{text-align:end;white-space:nowrap}.up{color:#15803d}.dn{color:#c81e2b}.ft{margin-top:18px;padding-top:10px;border-top:2px solid #D4AF37;display:flex;justify-content:space-between;gap:12px;color:#6b7393;font-size:10px}.motto{display:none}@media print{@page{margin:14mm 14mm 18mm}.motto{display:block;position:fixed;left:-14mm;right:-14mm;bottom:-18mm;height:10mm;line-height:10mm;background:#0b1640;color:#D4AF37;text-align:center;font-weight:700;font-size:10pt}}';
       var h='<!doctype html><html lang="'+esc(lang)+'" dir="'+esc(dir)+'"><head><meta charset="utf-8"><title>'+esc(tr('Account statement')+' · '+label)+'</title><style>'+css+'</style></head><body>'+
         '<div class="hd"><div class="lg"><img src="'+(location.protocol.indexOf('http')===0?location.origin:'https://www.ftmwealthnation.com')+'/email-logo.png" alt="">FTM</div><div style="text-align:end"><h1>'+esc(tr('Account statement'))+'</h1><p>'+esc(label)+'</p></div></div>'+
         '<div class="meta"><div><span>'+esc(tr('Client'))+'</span><b>'+esc((F.session&&(F.session.name||F.session.email))||'\u2014')+'</b></div><div><span>'+esc(tr('Client ID'))+'</span><b>'+esc(F._cid||'\u2014')+'</b></div><div><span>'+esc(tr('Account'))+'</span><b>'+esc((va.name||'')+' '+(va.number||''))+'</b></div><div><span>'+esc(tr('Currency'))+'</span><b>'+esc(cur)+'</b></div><div><span>'+esc(tr('Generated'))+'</span><b>'+esc(fd(Date.now()))+'</b></div><div><span>'+esc(tr('Reference'))+'</span><b>'+esc(ref)+'</b></div></div>'+
-        '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div><div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
+        '<div class="sum"><div><span>'+esc(tr('Opening balance'))+'</span><b>'+M(open)+'</b></div><div><span>'+esc(tr('Deposits'))+'</span><b class="up">'+S(dep)+'</b></div><div><span>'+esc(tr('Withdrawals'))+'</span><b class="dn">'+S(-wd)+'</b></div><div><span>'+esc(tr('Trading result'))+'</span><b class="'+(res>0?'up':(res<0?'dn':''))+'">'+S(res)+'</b></div>'+(Math.abs(adjT)>=0.005?'<div><span>'+esc(tr('Dividends, tax & adjustments'))+'</span><b class="'+(adjT>0?'up':'dn')+'">'+S(adjT)+'</b></div>':'')+'<div><span>'+esc(tr('Closing balance'))+'</span><b>'+M(close)+'</b></div></div>'+
         (function(){ var by={}, ks=[]; rows.forEach(function(e){ if(e.k!=='trade'&&e.k!=='fee') return; var k=e.sym||'—'; if(!by[k]){ by[k]={n:0,amt:0}; ks.push(k); } by[k].amt+=e.amt; if(e.k==='trade') by[k].n++; });
           if(!ks.length) return ''; ks.sort(function(x,y){ return by[y].amt-by[x].amt; }); var tot=ks.reduce(function(a,k){return a+by[k].amt;},0);
           return '<h2 class="sh">'+esc(tr('By market'))+'</h2><table class="bm"><thead><tr><th>'+esc(tr('Market'))+'</th><th class="n">'+esc(tr('Trades'))+'</th><th class="n">'+esc(tr('Amount'))+'</th></tr></thead><tbody>'+

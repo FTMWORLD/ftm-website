@@ -1,0 +1,190 @@
+// Every statistic on every view, checked against an independent calculation, on many generated accounts.
+// The generator makes accounts of every shape: opened inside the history (first deposit) or before it (start_balance),
+// extra deposits and withdrawals, dividends and tax, broker credit, entry commissions, swaps, partial closes, trades across
+// the turn of the year, today, 7 and 30 days ago. The FAKE engine below answers like the real one (docs/engine-contract.md).
+// Definitions (docs/statistics.md):
+//   balance  = start_balance + deposits - withdrawals + closed P/L + adjustments + credit
+//   profit   = sum of every trade deal's net result (profit + commission + swap + fee); cash moves never count
+//   %        = time-weighted: each trade deal's net / the balance just before it, chained; cash moves never count
+//   period   = [from, to) in the customer's local time
+// Run: node .github/tests/stats-fuzz.js [accounts=24] [seed=1]   (needs the site on http://localhost:8765)
+process.env.TZ = 'Europe/Berlin';
+const {chromium}=(()=>{try{return require('playwright');}catch(e){return require('/opt/node-tools/node_modules/playwright');}})();
+const N=+(process.argv[2]||24), SEED=+(process.argv[3]||1), BASE='http://localhost:8765';
+const D=864e5, H=36e5, MIN=6e4;
+
+function rng(seed){ let s=seed>>>0||1; return ()=>{ s^=s<<13; s>>>=0; s^=s>>>17; s^=s<<5; s>>>=0; return s/4294967296; }; }
+const c2=x=>Math.round(x*100)/100;
+
+function gen(seed, now){
+  const R=rng(seed*2654435761), pick=a=>a[Math.floor(R()*a.length)], ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+  const span=pick([3,12,45,95,200,420]), t0=now-span*D;
+  const startMode=R()<0.3, A0=pick([500,1000,5000,11965.28,100000]);
+  const avoid=[now-7*D,now-30*D,now-365*D, new Date(new Date(now).getFullYear(),0,1).getTime()];
+  const okT=t=>avoid.every(b=>Math.abs(t-b)>10*MIN)&&t<now-2*MIN&&t>t0+2*MIN;
+  const T=()=>{ for(;;){ const t=Math.round(t0+R()*(now-t0)); if(okT(t)) return t; } };
+  const ev=[];
+  if(!startMode) ev.push({t:t0+MIN,k:'dep',amt:A0});
+  const nT=ri(3,span<10?12:90), syms=['XAUUSD','US500','BTCUSD','USTEC','EURUSD'];
+  for(let i=0;i<nT;i++){ const tc=T(); let to=tc-ri(5,60*48)*MIN; if(to<t0+2*MIN) to=t0+2*MIN; if(!okT(to)) to=tc;
+    ev.push({t:tc,k:'pos',to,sym:pick(syms),side:pick(['BUY','SELL']),vol:pick([0.01,0.1,0.5,1,2]),r:(R()-0.47)*pick([0.004,0.01,0.03,0.06]),
+      cIn:R()<0.6?-c2(R()*7):0,cOut:R()<0.6?-c2(R()*7):0,sw:R()<0.4?c2((R()-0.6)*4):0,part:R()<0.1,id:'P'+seed+'_'+i}); }
+  for(let i=ri(0,3);i>0;i--) ev.push({t:T(),k:'dep',amt:pick([100,250,1000,5000,20000])});
+  for(let i=ri(0,2);i>0;i--) ev.push({t:T(),k:'wd',f:0.05+R()*0.3});
+  for(let i=ri(0,3);i>0;i--) ev.push({t:T(),k:'adj',type:pick(['DIVIDEND','TAX','INTEREST']),amt:0});
+  if(R()<0.15) ev.push({t:T(),k:'credit',amt:pick([50,200])});
+  ev.sort((a,b)=>a.t-b.t);
+  // walk once to give every amount a value that keeps the balance positive
+  const hist=[]; let bal=startMode?A0:0; const S0=startMode?A0:0;
+  const rows=[];
+  ev.forEach(e=>{
+    if(e.k==='dep'){ bal=c2(bal+e.amt); rows.push({t:e.t,type:'BALANCE',net:e.amt}); }
+    else if(e.k==='wd'){ const a=c2(Math.max(0,bal)*e.f); if(a>=1){ bal=c2(bal-a); rows.push({t:e.t,type:'BALANCE',net:-a}); } }
+    else if(e.k==='adj'){ const a=c2((e.type==='TAX'?-1:1)*Math.max(0.5,bal*0.0004)); bal=c2(bal+a); rows.push({t:e.t,type:e.type,net:a}); }
+    else if(e.k==='credit'){ bal=c2(bal+e.amt); rows.push({t:e.t,type:'CREDIT',net:e.amt}); }
+    else if(e.k==='pos'){
+      if(bal<=50){ return; }
+      let p=c2(bal*e.r); if(bal+p+e.cIn+e.cOut+e.sw<bal*0.5) p=c2(Math.abs(p)); const ptot=p;
+      const close=e.side==='BUY'?'SELL':'BUY';
+      rows.push({t:e.to,type:e.side,entry:'IN',pos:e.id,sym:e.sym,vol:e.vol,profit:0,commission:e.cIn,swap:0,net:e.cIn});
+      if(e.part){ const p1=c2(p/2); rows.push({t:e.t-MIN,type:close,entry:'OUT',pos:e.id,sym:e.sym,vol:c2(e.vol/2),profit:p1,commission:0,swap:0,net:p1}); p=c2(p-p1); }
+      rows.push({t:e.t,type:close,entry:'OUT',pos:e.id,sym:e.sym,vol:e.part?c2(e.vol-c2(e.vol/2)):e.vol,profit:p,commission:e.cOut,swap:e.sw,net:c2(p+e.cOut+e.sw)});
+      bal=c2(bal+e.cIn+ptot+e.cOut+e.sw);
+    }
+  });
+  rows.sort((a,b)=>a.t-b.t||((a.entry==='IN')?-1:1));
+  return {rows,S0,startMode,t0,now};
+}
+
+// ---------- the independent calculation ----------
+function oracle(acc){
+  const {rows,S0}=acc; let B=S0, F=1; const deals=[];
+  let peak=B, peakAt=rows.length?rows[0].t:acc.t0, ddRun=B, ddPeak=B, ddMax=0;
+  const pts=[]; let dep=0,wd=0,adj=0,cr=0,pl=0,costs=0;
+  rows.forEach(r=>{
+    const isTrade=!!r.entry;
+    if(isTrade){ const before=B; B=c2(B+r.net); if(r.net!==0&&before>0) F*=1+r.net/before; pl+=r.net; costs+=(r.commission||0)+(r.swap||0);
+      deals.push({t:r.t,net:r.net,before}); ddRun+=r.net; if(ddRun>ddPeak) ddPeak=ddRun; const dr=ddPeak-ddRun; if(ddPeak>0) ddMax=Math.max(ddMax,dr/ddPeak*100); }
+    else { B=c2(B+r.net); ddRun+=r.net; ddPeak+=r.net; if(r.type==='BALANCE'){ if(r.net>0) dep+=r.net; else wd-=r.net; } else if(r.type==='CREDIT') cr+=r.net; else adj+=r.net; }
+    if(B>peak){ peak=B; peakAt=r.t; }
+    pts.push({t:r.t,B});
+  });
+  const seg=(a,b)=>{ let f=1,p=0; deals.forEach(d=>{ if((a==null||d.t>=a)&&(b==null||d.t<b)){ if(d.net!==0&&d.before>0) f*=1+d.net/d.before; p+=d.net; } }); return {pl:c2(p),pct:(f-1)*100}; };
+  const balAt=t=>{ let b=S0; rows.forEach(r=>{ if(r.t<t) b=c2(b+r.net); }); return b; };
+  // positions (a position = its opening deal + every closing deal)
+  const P={}; rows.forEach(r=>{ if(!r.entry) return; const x=P[r.pos]=P[r.pos]||{net:0,close:0,lots:0,sym:r.sym}; x.net+=r.net; if(r.entry==='OUT'){ x.close=Math.max(x.close,r.t); x.lots+=r.vol; } });
+  const pos=Object.values(P).filter(x=>x.close);
+  const outs=rows.filter(r=>r.entry==='OUT');
+  const wins=pos.filter(x=>c2(x.net)>0).length;
+  const first=rows.filter(r=>r.type==='BALANCE'&&r.net>0)[0];
+  return {balance:c2(B),pl:c2(pl),twr:(F-1)*100,seg,balAt,dep:c2(dep),wd:c2(wd),adj:c2(adj),credit:c2(cr),costs:c2(costs),peak:c2(peak),peakAt,dd:ddMax,
+    trades:outs.length,positions:pos,wins,losses:pos.length-wins,lots:c2(outs.reduce((a,r)=>a+r.vol,0)),
+    init:acc.startMode?{amt:S0,label:'Starting balance'}:(first?{amt:first.net,label:'Initial deposit'}:null)};
+}
+
+// ---------- the fake engine ----------
+function engine(acc,O){
+  const iso=t=>new Date(t).toISOString();
+  const history=acc.rows.map((r,i)=>r.entry?{type:r.type,entry:r.entry,position_ref:r.pos,time:iso(r.t),symbol:r.sym,volume:r.vol,price:1,profit:r.profit,commission:r.commission,swap:r.swap,fee:0,net:r.net,ticket:'T'+i}
+                                          :{type:r.type,time:iso(r.t),profit:r.net,commission:0,swap:0,fee:0,net:r.net,ticket:'T'+i}).reverse();
+  return {ok:true,currency:'USD',balance:O.balance,equity:O.balance,history,history_total:history.length,deposits_total:O.dep,withdrawals_total:O.wd,credit_total:O.credit,
+    fees_and_adjustments:O.adj,closed_pl_total:O.pl,start_balance:acc.S0,start_balance_at:acc.startMode?iso(acc.rows[0].t):null,growth_pct:+O.twr.toFixed(2),
+    return_basis:'TIME_WEIGHTED_CLOSED_TRADES_EXCLUDING_DEPOSITS_WITHDRAWALS',trades_closed:O.positions.length,wins:O.wins,losses:O.losses,
+    win_rate_pct:O.positions.length?+(O.wins/O.positions.length*100).toFixed(2):0,peak_balance:O.peak,peak_balance_at:iso(O.peakAt),
+    max_drawdown_pct:+O.dd.toFixed(2),max_drawdown_basis:'EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS',max_drawdown_closed_balance_pct:+O.dd.toFixed(2)};
+}
+
+const num=s=>{ if(s==null) return NaN; const t=String(s).replace(/[−–]/g,'-').replace(/[^0-9.\-]/g,''); return t===''||t==='-'?NaN:parseFloat(t); };
+if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>{
+  const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})});
+  const fails=[]; let checks=0;
+  for(let k=0;k<N;k++){
+    const seed=SEED*1000+k, now=Date.now(), acc=gen(seed,now), O=oracle(acc), ST=engine(acc,O);
+    const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:'Europe/Berlin',locale:'en-GB'}); const p=await ctx.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
+    await p.route('**/i18n/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
+    const beacons=[];
+    await p.route('**/api/v1/**',r=>{const u=r.request().url();
+      if(u.includes('client-log')){ beacons.push(r.request().postData()||''); return r.fulfill({status:204,body:''}); }
+      if(u.includes('/stats'))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(ST)});
+      if(u.includes('/history'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"trades":[],"page":{"offset":0,"limit":200,"total":0}}'});
+      if(u.includes('/positions'))return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'});
+      if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
+      if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[{account_id:'f7a00000-0000-4000-8000-'+String(100000000000+seed),account_number:'5'+seed,preview:true,view_only:true,currency:'USD',balance:String(O.balance),equity:String(O.balance),display_status:'PAUSED',deposits:String(O.dep),withdrawals:String(O.wd)}]})});
+      return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
+    await p.goto(BASE+'/');await p.waitForTimeout(700);
+    await p.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fz@ftm.com',products:[],name:'Fz'};});
+    await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(1800);
+    const V=await p.evaluate(()=>{const g=i=>((document.getElementById(i)||{}).textContent||'').replace(/\s+/g,' ').trim();const q=s=>[...document.querySelectorAll(s)].map(e=>e.textContent.replace(/\s+/g,' ').trim());
+      const st=(()=>{ try{ FTM._stFill&&FTM._stFill(); const s=document.getElementById('stPeriod'); s.value='all'; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent]); }catch(e){ return 'ERR '+e.message; } })();
+      return {now:Date.now(),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
+        count:g('mCount'),win:g('mWin'),cv:g('cvChg'),pnl:[...document.querySelectorAll('#dxPnl .pp-t')].map(e=>[e.querySelector('.pp-l').textContent,e.querySelector('.pp-v').textContent,e.querySelector('.pp-c').textContent]),
+        fs:[...document.querySelectorAll('#fsGrid .fs-c')].map(e=>[e.querySelector('span').textContent,e.querySelector('b').textContent,e.querySelector('small').textContent]),
+        months:[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent+'|'+((c.querySelector('small')||{}).textContent||''))]),
+        years:q('#pxYears tbody tr').map(x=>x),yearCells:[...document.querySelectorAll('#pxYears tbody tr')].map(tr=>[...tr.children].map(td=>td.textContent.trim())),
+        yearHead:[...document.querySelectorAll('#pxYears thead th')].map(x=>x.textContent.trim()),
+        dd1:[...document.querySelectorAll('#pxDD tbody tr')].map(tr=>tr.children[2]&&tr.children[2].textContent),
+        cal:[g('calTitle'),g('calTrades'),g('calWins'),g('calNet'),g('calPct')],
+        sess:[...document.querySelectorAll('#sessTable tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[3].textContent]),
+        sym:[...document.querySelectorAll('#perfSymbols tbody tr')].map(tr=>[tr.children[1].textContent,tr.children[4].textContent]),
+        st};});
+    const tag='#'+seed+(acc.startMode?' (start balance)':'')+' ', ok=(c,m)=>{checks++; if(!c) fails.push(tag+m);};
+    const eq=(shown,want,tol,m)=>ok(Math.abs(num(shown)-want)<=tol, m+': shown '+shown+', expected '+(+want).toFixed(2));
+    const nowP=V.now, sod=new Date(nowP); sod.setHours(0,0,0,0); const y=new Date(nowP).getFullYear(), mo=new Date(nowP).getMonth();
+    eq(V.net,O.pl,0.005,'Net P/L = sum of closed trade deals');
+    eq(V.gain,O.twr,0.0051,'Gain = time-weighted return');
+    eq(V.year,O.seg(new Date(y,0,1).getTime(),null).pct,0.0051,'Profit this year % (time-weighted from 1 Jan)');
+    eq(V.bal,O.balance,0.5,'Balance');
+    ok(V.high.startsWith('$'+O.peak.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})), 'Highest balance = engine peak '+O.peak+': shown '+V.high);
+    eq(V.dd,-O.dd,0.0051,'Max drawdown tile = engine closed-balance drawdown');
+    if(O.init) ok(V.init.startsWith(O.init.label+'|$'+O.init.amt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})),'Initial deposit: shown '+V.init+', expected '+O.init.label+' '+O.init.amt);
+    { const A=c2(O.adj+O.credit); if(Math.abs(A)>=0.005) eq(V.adjRow,A,0.005,'Dividends, tax & adjustments'); else ok(V.adjRow==null,'no adjustments row when there are none'); }
+    { const f=acc.rows[0]; const d0=new Date(f.t); d0.setHours(0,0,0,0); const nd=Math.floor((nowP-d0.getTime())/D);
+      if(nd<30) ok(V.sharpe==='—','Sharpe needs 30 days: shown '+V.sharpe);
+      else { const r=[]; let prev=d0.getTime(); for(let i=1;i<=nd+1;i++){ const e=new Date(d0); e.setDate(e.getDate()+i); r.push(O.seg(prev,e.getTime()).pct/100); prev=e.getTime(); }
+        const mu=r.reduce((a,x)=>a+x,0)/r.length, v=r.reduce((a,x)=>a+(x-mu)**2,0)/(r.length-1), sh=v>0?mu/Math.sqrt(v)*Math.sqrt(365):null;
+        if(sh==null) ok(V.sharpe==='—','Sharpe with no variation: shown '+V.sharpe); else eq(V.sharpe,sh,0.0051,'Sharpe ratio (daily time-weighted returns, x sqrt 365)'); } }
+    eq(V.dep,O.dep,0.005,'Deposits'); eq(V.wdr,-O.wd,0.005,'Withdrawals');
+    eq(V.fees,O.costs,0.005,'Commission & swap = sum over every trade deal');
+    eq(V.lots,O.lots,0.005,'Total lots = closed volume');
+    eq(V.count,O.positions.length,0,'Trade count');
+    const cvm=V.cv.match(/^([+-]?)\$([\d,.]+)\s*\(([-+]?[\d.]+)%\)/); ok(!!cvm,'chart header readable: '+V.cv);
+    if(cvm){ eq((cvm[1]==='-'?'-':'')+cvm[2],O.pl,0.005,'Chart header money (All) = Net P/L'); eq(cvm[3],O.twr,0.0051,'Chart header % (All) = Gain'); }
+    const PER={'Today':sod.getTime(),'7 days':nowP-7*D,'30 days':nowP-30*D,'All time':null};
+    V.pnl.forEach(([l,v,c])=>{ const sg=O.seg(PER[l],null); eq(v,sg.pl,0.5001,'Profit by period '+l+' money'); eq(c,sg.pct,0.0051,'Profit by period '+l+' %'); });
+    const firstT=acc.rows.length?acc.rows[0].t:nowP;
+    const FSP={'This month':[new Date(y,mo,1),null],'Last month':[new Date(y,mo-1,1),new Date(y,mo,1)],'YTD':[new Date(y,0,1),null],'1Y':[new Date(y-1,mo,new Date(nowP).getDate()),null],'All time':[null,null]};
+    V.fs.forEach(([l,v,s])=>{ const r=FSP[l]; if(!r) return; const a=r[0]&&r[0].getTime(), z=r[1]&&r[1].getTime();
+      if(z!=null && z<=firstT && !acc.startMode){ ok(/—|-$/.test(v.trim())||v.trim()==='—','Factsheet '+l+': the account did not exist yet, expected —, shown '+v); return; }
+      const sg=O.seg(a,z); eq(v,sg.pct,0.0051,'Factsheet '+l+' %'); eq(s,sg.pl,0.005,'Factsheet '+l+' money'); });
+    const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    V.months.forEach(([yr,cells])=>{ cells.forEach((c,i)=>{ const [v,sm]=c.split('|'); if(v==='-') return; const a=i<12?new Date(+yr,i,1):new Date(+yr,0,1), z=i<12?new Date(+yr,i+1,1):new Date(+yr+1,0,1);
+      const sg=O.seg(a.getTime(),z.getTime()); eq(v,sg.pl,0.5001,'Month by month '+yr+' '+(MN[i]||'Total')+' money');
+      const n=O.positions.filter(x=>x.close>=a.getTime()&&x.close<z.getTime()).length; eq(sm,n,0,'Month by month '+yr+' '+(MN[i]||'Total')+' trades'); }); });
+    const yi=n=>V.yearHead.indexOf(n);
+    V.yearCells.forEach(c=>{ const yr=+c[0]; if(!yr) return; const a=new Date(yr,0,1).getTime(), z=new Date(yr+1,0,1).getTime(), sg=O.seg(a,z);
+      eq(c[yi('Return')],sg.pct,0.0051,'Year '+yr+' return');
+      eq(c[yi('Start')],O.balAt(a),0.005,'Year '+yr+' start balance');
+      eq(c[yi('End')],O.balAt(z),0.005,'Year '+yr+' end balance');
+      { const nums=['Start','Net deposits','Profit','Dividends, tax & adjustments'].map(h=>yi(h)>=0?num(c[yi(h)]):0); ok(Math.abs(nums.reduce((x,v)=>x+v,0)-num(c[yi('End')]))<=0.011,'Year '+yr+' adds up: start + net deposits + profit + adjustments = end ('+c.join(' | ')+')'); }
+      if(yi('Profit')>=0) eq(c[yi('Profit')],sg.pl,0.005,'Year '+yr+' profit');
+      if(yi('Net deposits')>=0){ let nd=0; acc.rows.forEach(r=>{ if(r.type==='BALANCE'&&r.t>=a&&r.t<z) nd+=r.net; }); eq(c[yi('Net deposits')],nd,0.005,'Year '+yr+' net deposits'); } });
+    if(V.dd1.length){ const deep=Math.max(...V.dd1.map(x=>Math.abs(num(x)))); eq(deep,O.dd,0.0051,'Deepest drawdown in the list = Max drawdown'); }
+    { const ct=V.cal[0]; const d0=new Date(Date.parse('1 '+ct)); if(!isNaN(d0)){ const a=new Date(d0.getFullYear(),d0.getMonth(),1).getTime(), z=new Date(d0.getFullYear(),d0.getMonth()+1,1).getTime(), sg=O.seg(a,z), ps=O.positions.filter(x=>x.close>=a&&x.close<z);
+      eq(V.cal[1],ps.length,0,'Calendar '+ct+' trades'); eq(V.cal[2],ps.filter(x=>c2(x.net)>0).length,0,'Calendar '+ct+' wins');
+      if(ps.length){ eq(V.cal[3],sg.pl,0.005,'Calendar '+ct+' net'); eq(V.cal[4],sg.pct,0.0051,'Calendar '+ct+' %'); } } }
+    if(V.sess.length){ const sp=V.sess.reduce((a,r)=>a+num(r[0]),0), sn=V.sess.reduce((a,r)=>a+num(r[1]),0); eq(sp,O.pl,0.05,'Sessions add up to Net P/L'); eq(sn,O.positions.length,0,'Sessions add up to the trade count'); }
+    if(V.sym.length){ const sp=V.sym.reduce((a,r)=>a+num(r[1]),0), sn=V.sym.reduce((a,r)=>a+num(r[0]),0); eq(sp,O.pl,V.sym.length*0.5+0.01,'Markets add up to Net P/L'); eq(sn,O.positions.length,0,'Markets add up to the trade count'); }
+    if(Array.isArray(V.st)){ const S=Object.fromEntries(V.st); eq(S['Opening balance'],acc.S0,0.005,'Statement opening balance'); eq(S['Closing balance'],O.balance,0.005,'Statement closing balance');
+      eq(S['Deposits'],O.dep,0.005,'Statement deposits'); eq(S['Withdrawals'],-O.wd,0.005,'Statement withdrawals'); eq(S['Trading result'],O.pl,0.005,'Statement trading result'); }
+    else ok(false,'statement: '+V.st);
+    ok(!beacons.some(x=>/history_gap|return_gap|pl_gap/.test(x)),'website and engine agree (no gap reported): '+beacons.join(' '));
+    ok(!errs.length,'no script errors '+(errs[0]||''));
+    await ctx.close();
+    process.stdout.write('.');
+  }
+  await b.close();
+  console.log('\n'+checks+' checks on '+N+' accounts');
+  fails.forEach(f=>console.log('FAIL  '+f));
+  console.log(fails.length?('FAILED: '+fails.length):'ALL STATISTICS OK'); process.exit(fails.length?1:0);
+})();

@@ -21,3 +21,4 @@ jobs:
           sleep 2
           node .github/tests/buttons.js http://localhost:8765
           node .github/tests/figures.js http://localhost:8765
+          node .github/tests/stats-fuzz.js 30 $(( $(date +%j) % 97 + 1 ))

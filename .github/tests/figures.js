@@ -46,7 +46,7 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
     const nav=v=>document.querySelector('#appView .app-nav-item[data-view="'+v+'"]').click();
     const yr=g('mYear'); const all=[...document.querySelectorAll('#dxPnl .pp-t')].map(x=>x.textContent);
     F.redrawAllViews&&F.redrawAllViews(); F.renderPerf&&0;
-    return {yr, allTime:all[3]||'', perfTotal:(document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||'', pxYear:(document.querySelector('#pxYears tbody tr td:nth-child(4)')||{}).textContent||''};});
+    return {yr, allTime:all[3]||'', perfTotal:(document.querySelector('#perfYears .perf-cell.ytd b')||{}).textContent||'', pxYear:(()=>{const h=[...document.querySelectorAll('#pxYears thead th')].map(x=>x.textContent.trim()).indexOf('Return');const td=document.querySelectorAll('#pxYears tbody tr:first-child td')[h];return td?td.textContent:'';})()};});
   ok(/8\.06%/.test(same.yr), label+': profit this year matches the gain (got '+same.yr+')');
   ok(/8\.06%/.test(same.allTime)&&/\+\$23|\+\$22/.test(same.allTime), label+': profit by period, all time = +22.53 and +8.06% (got '+same.allTime+')');
   ok(/8\.06%/.test(same.pxYear), label+': year-by-year return matches (got '+same.pxYear+')');
