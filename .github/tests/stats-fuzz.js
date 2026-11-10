@@ -8,7 +8,7 @@
 //   %        = time-weighted: each trade deal's net / the balance just before it, chained; cash moves never count
 //   period   = [from, to) in the customer's local time
 // Run: node .github/tests/stats-fuzz.js [accounts=24] [seed=1]   (needs the site on http://localhost:8765)
-process.env.TZ = 'Europe/Berlin';
+const ZONE = process.env.FUZZ_TZ || 'Europe/Berlin'; process.env.TZ = ZONE;
 const {chromium}=(()=>{try{return require('playwright');}catch(e){return require('/opt/node-tools/node_modules/playwright');}})();
 const N=+(process.argv[2]||24), SEED=+(process.argv[3]||1), BASE='http://localhost:8765';
 const D=864e5, H=36e5, MIN=6e4;
@@ -106,7 +106,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     const seed=SEED*1000+k, now=Date.now(), acc=gen(seed,now), O=oracle(acc), ST=engine(acc,O);
     // every second account is first opened on another account (a customer's own), then switched to: no figure may leak across
     const sw=seed%2===1, OID='f7a00000-0000-4000-8000-0000000000d1', acc2=sw?gen(seed+77777,now):null, O2=sw?oracle(acc2):null, ST2=sw?engine(acc2,O2):null;
-    const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:'Europe/Berlin',locale:'en-GB'}); const p=await ctx.newPage(); const errs=[], navs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('framenavigated',f=>{ if(f===p.mainFrame()) navs.push(f.url()); }); one.ctx=ctx; one.navs=navs;
+    const ctx=await b.newContext({viewport:{width:1280,height:900},timezoneId:ZONE,locale:'en-GB'}); const p=await ctx.newPage(); const errs=[], navs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('framenavigated',f=>{ if(f===p.mainFrame()) navs.push(f.url()); }); one.ctx=ctx; one.navs=navs;
     await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
     await p.route('**/i18n/**',r=>r.fulfill({status:200,contentType:'application/json',body:'{}'}));
     const beacons=[];
@@ -251,7 +251,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     }
   }
   await b.close();
-  console.log('\n'+checks+' checks on '+N+' accounts');
+  console.log('\n'+checks+' checks on '+N+' accounts ('+ZONE+')');
   fails.forEach(f=>console.log('FAIL  '+f));
   console.log(fails.length?('FAILED: '+fails.length):'ALL STATISTICS OK'); process.exit(fails.length?1:0);
 })();
