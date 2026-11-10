@@ -67,6 +67,7 @@ function oracle(acc){
     const isTrade=!!r.entry;
     if(isTrade){ const before=B; B=c2(B+r.net); if(r.net!==0&&before>0) F*=1+r.net/before; pl+=r.net; costs+=(r.commission||0)+(r.swap||0);
       deals.push({t:r.t,net:r.net,before}); ddRun+=r.net; if(ddRun>ddPeak) ddPeak=ddRun; const dr=ddPeak-ddRun; if(ddPeak>0) ddMax=Math.max(ddMax,dr/ddPeak*100); }
+    else if(r.type!=='BALANCE' && r.type!=='CREDIT'){ B=c2(B+r.net); adj+=r.net; ddRun+=r.net; if(ddRun>ddPeak) ddPeak=ddRun; const da=ddPeak-ddRun; if(ddPeak>0) ddMax=Math.max(ddMax,da/ddPeak*100); }
     else { B=c2(B+r.net); ddRun+=r.net; ddPeak+=r.net; if(r.type==='BALANCE'){ if(r.net>0) dep+=r.net; else wd-=r.net; } else if(r.type==='CREDIT') cr+=r.net; else adj+=r.net; }
     if(B>peak){ peak=B; peakAt=r.t; }
     pts.push({t:r.t,B});
@@ -226,7 +227,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       const M0=d0.getMonth(), Y0=d0.getFullYear(); let wk=[], wks=[]; const dayCells={};
       V.calCells.forEach(c=>{ if(c[0]==='W'){ wks.push(c); return; } if(c[0]==='off') return; if(c[1]) dayCells[+c[0]]=c; });
       for(let dd=1; dd<=new Date(Y0,M0+1,0).getDate(); dd++){ const a1=new Date(Y0,M0,dd).getTime(), z1=new Date(Y0,M0,dd+1).getTime(), s1=O.seg(a1,z1);
-        const has=acc.rows.some(r=>r.entry&&r.net!==0&&r.t>=a1&&r.t<z1);
+        const has=acc.rows.some(r=>r.entry&&r.net!==0&&r.t>=a1&&r.t<z1)||O.positions.some(x=>x.close>=a1&&x.close<z1);
         if(!has){ ok(!dayCells[dd],'Calendar '+dd+' '+ct+': no trading, no cell (shown '+(dayCells[dd]||[]).join(' ')+')'); continue; }
         const c=dayCells[dd]; ok(!!c,'Calendar '+dd+' '+ct+': trading but no cell'); if(!c) continue;
         if(!/K/.test(c[1])) eq(c[1],s1.pl,Math.abs(s1.pl)>=1000?0.5001:0.005,'Calendar day '+dd+' '+ct+' money'); eq(c[2],s1.pct,0.0051,'Calendar day '+dd+' '+ct+' %'); }

@@ -32,7 +32,7 @@ balance = start_balance + deposits - withdrawals + closed P/L + fees_and_adjustm
 | Period [from, to) | customer's local time; Today, 7 days, 30 days, this month, last month, YTD, 1Y, years, months, weeks, days | same `seg` |
 | Period before the account existed | shown as — (not 0.00 %) | |
 | Highest balance | highest balance the account reached, with date | engine `peak_balance` |
-| Max drawdown | closed balance deal by deal; cash moves, adjustments and credit move the running peak by the same amount (same as NAV-per-unit drawdown in funds) | engine `max_drawdown_closed_balance_pct`; the drawdown list uses the same rule, so its deepest entry equals it |
+| Max drawdown | closed balance deal by deal; deposits, withdrawals and credit move the running peak by the same amount; dividends, tax and other adjustments count as P/L readings (engine rule, 10 Nov) (same as NAV-per-unit drawdown in funds) | engine `max_drawdown_closed_balance_pct`; the drawdown list is the engine's `drawdowns[]` when sent, else the same rule |
 | Trade | one position (opening + every closing deal), closed at its last closing deal; result = sum of its deals | |
 | Trade count, wins, win rate | positions | engine `trades_closed`, `wins`, `win_rate_pct` |
 | Commission & swap | sum of commission + swap + fee over every trade deal | engine history |

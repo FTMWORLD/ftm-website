@@ -5144,13 +5144,14 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var plEvents=useDeals ? es.deals.map(function(x){return {t:x.t,pl:x.pl,open:x.open,s:x.seq};}) : covered.map(function(t){return {t:t.closeTime,pl:t.pl};});
       if(useDeals){ var dealSum=es.deals.reduce(function(a,x){return a+x.pl;},0); anchor += covered.reduce(function(s,t){return s+t.pl;},0) - dealSum; netPL=dealSum; fees=es.deals.reduce(function(a,x){return a+(x.cost||0);},0); }
       var adjEv=useDeals?(es.adj||[]):[], adjSum=adjEv.reduce(function(a,x){return a+x.amt;},0); if(useDeals) anchor-=adjSum;
-      var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt,s:f.seq};}), adjEv.map(function(x){return {t:x.t,flow:x.amt,adj:true,s:x.seq};})).sort(function(a,b){return (a.t-b.t)||((a.s||0)-(b.s||0));});
+      var ev=plEvents.concat(flows.map(function(f){return {t:f.t,flow:f.amt,s:f.seq};}), adjEv.map(function(x){return {t:x.t,flow:x.amt,adj:true,cr:x.kind==='credit',s:x.seq};})).sort(function(a,b){return (a.t-b.t)||((a.s||0)-(b.s||0));});
       var gap=0; if(useDeals && es && (es.startBalance!=null || (flows.length && ev.length && ev[0].flow>0))){ var adjIn=adjEv.reduce(function(a,x){return a+(x.kind==='adj'?x.amt:0);},0), crIn=adjSum-adjIn, expA=(es.startBalance||0)+((es.feesAdj||0)-adjIn)+((es.creditTotal||0)-crIn), tol0=Math.max(5, Math.abs(balance)*0.002); if(Math.abs(anchor-expA)>tol0){ gap=anchor-expA; anchor=expA; } }
       var t0=ev.length?Math.min(ev[0].t,covered.length?covered[0].openTime:ev[0].t):Date.now();
       var run = anchor, curve=[{t:t0, v:run}], pnlSeries=[0], peakAdj=[];
       var ddRun=anchor, ddPeak=anchor, ddMaxAbs=0, ddMaxPct=0;
       ev.forEach(function(e){
-        if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push(e.adj?{t:e.t, v:run, flow:e.flow, adj:true}:{t:e.t, v:run, flow:e.flow}); return; }
+        if(e.flow && e.adj && !e.cr){ run+=e.flow; ddRun+=e.flow; curve.push({t:e.t, v:run, flow:e.flow, adj:true}); if(ddRun>ddPeak) ddPeak=ddRun; var da=ddPeak-ddRun; if(da>ddMaxAbs){ ddMaxAbs=da; ddMaxPct=ddPeak>0?da/ddPeak*100:0; } return; }
+        if(e.flow){ run+=e.flow; ddRun+=e.flow; ddPeak+=e.flow; curve.push(e.adj?{t:e.t, v:run, flow:e.flow, adj:true, cr:true}:{t:e.t, v:run, flow:e.flow}); return; }
         run+=e.pl; ddRun+=e.pl; curve.push({t:e.t, v:run});
         if(ddRun>ddPeak) ddPeak=ddRun; var dr=ddPeak-ddRun; if(dr>ddMaxAbs){ ddMaxAbs=dr; ddMaxPct=ddPeak>0?dr/ddPeak*100:0; }
       });
@@ -5691,7 +5692,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       }
       function mapExecution(e){
         return {
-          symbol: e.market || e.symbol || null,
+          symbol: e.symbol || e.market || null, market: e.market || null,
+          copiedByFtm: e.copied_by_ftm===true ? true : (e.copied_by_ftm===false ? false : null),
           dir: e.side || null,
           lots: num(e.volume),
           openTime: e.opened_at ? Date.parse(e.opened_at) : null,
@@ -5788,7 +5790,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
                      ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc, feesAdj:num(j.fees_and_adjustments), creditTotal:num(j.credit_total),
-                     riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
+                     split:(j.split&&typeof j.split==='object')?j.split:null, drawdowns:Array.isArray(j.drawdowns)?j.drawdowns:null, initialDepositSource:j.initial_deposit_source||null, riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
           });
         },
         fetchPositions: function(accountId){
@@ -6501,11 +6503,12 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       el('pxHold').innerHTML=bars(hb.map(function(b){return {l:b[2],n:tr.filter(function(x){return x.h>=b[0]&&x.h<b[1];}).length};}));
 
       var eps=[], pk=0, pkT=0, cur=null, CV=m.curve||[];
-      CV.forEach(function(p,i){ if(i===0){ pk=p.v; pkT=p.t; return; } if(p.flow){ pk+=p.flow; if(p.v>pk){ pk=p.v; pkT=p.t; } return; } var b=p.v;
+      CV.forEach(function(p,i){ if(i===0){ pk=p.v; pkT=p.t; return; } if(p.flow && (!p.adj || p.cr)){ pk+=p.flow; if(p.v>pk){ pk=p.v; pkT=p.t; } return; } var b=p.v;
         if(b>=pk){ if(cur){cur.rec=p.t;eps.push(cur);cur=null;} pk=b; pkT=p.t; }
         else { var dd=pk>0?(pk-b)/pk*100:0; if(!cur)cur={pk:pkT,dd:0}; if(dd>cur.dd){cur.dd=dd;cur.lo=p.t;} } });
       if(cur)eps.push(cur);
       eps=eps.filter(function(e){return e.dd>=0.01&&e.lo;});
+      var ESd=F.es&&F.es(); if(ESd && ESd.drawdowns && ESd.drawdowns.length) eps=ESd.drawdowns.map(function(d){ return {pk:Date.parse(d.peak_at), lo:Date.parse(d.trough_at), dd:+d.depth_pct, rec:d.recovered_at?Date.parse(d.recovered_at):null}; }).filter(function(e){ return isFinite(e.dd)&&e.lo; });
       eps.sort(function(a,b){return b.dd-a.dd;});
       el('pxDD').innerHTML='<thead><tr><th>From the high on</th><th>Lowest point</th><th>Depth</th><th>Back to the high</th></tr></thead><tbody>'+
         (has&&eps.length?eps.slice(0,5).map(function(e){return '<tr><td>'+dS(e.pk)+'</td><td>'+dS(e.lo)+'</td><td class="pl-down">−'+e.dd.toFixed(2)+'%</td><td>'+(e.rec?dS(e.rec):'Not yet')+'</td></tr>';}).join('')
