@@ -968,6 +968,12 @@
           "equity": 10400,
           "floating_pl": -50,
           "closed_pl_total": 450,
+          "split": {
+            "ftm": { "closed_pl": 450, "pl_pct": 4.5, "trades_closed": 3, "wins": 2, "losses": 1, "breakeven": 0, "win_rate_pct": 66.67, "max_drawdown_closed_pct": 1.2 },
+            "own": { "closed_pl": 0, "pl_pct": null, "trades_closed": 0, "wins": 0, "losses": 0, "breakeven": 0, "win_rate_pct": null, "max_drawdown_closed_pct": null },
+            "basis": "COPIED_BY_FTM_POSITIONS | MASTER_ACCOUNT_ALL_FTM",
+            "rule": "per position (net of all its deals); ftm.closed_pl + own.closed_pl = closed_pl_total; fees_and_adjustments in neither; pl_pct time-weighted over that side only"
+          },
           "deposits_total": 10000,
           "withdrawals_total": 0,
           "growth_pct": 4.5,
