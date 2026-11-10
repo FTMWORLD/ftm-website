@@ -642,7 +642,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .lb-table tr.you td{background:#EEF2FF}
   .lb-table td:first-child{font-weight:800;color:var(--muted);width:46px}
   .lb-you-tag{background:var(--blue);color:#fff;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:middle}
-  .lbl-you{display:grid;gap:10px;border:1px solid var(--line);border-radius:16px;padding:16px;margin:4px 0 20px;background:linear-gradient(135deg,#F4F6FC,#fff)}
+  .lbl-you{border:1px solid var(--line);border-radius:14px;margin:4px 0 16px;background:linear-gradient(135deg,#F4F6FC,#fff)}.lbl-you.lbl-flat{padding:12px 16px}
+  .lbl-you>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;cursor:pointer;flex-wrap:wrap}.lbl-you>summary::-webkit-details-marker{display:none}
+  .lbl-sum{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:13.5px;min-width:0}.lbl-sum b{font-size:14px;color:var(--ink)}.lbl-you b.big{font-size:17px}
+  .lbl-edit{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#152a7a;white-space:nowrap}.lbl-edit::after{content:'';width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+  .lbl-you[open] .lbl-edit::after{transform:rotate(-135deg) translateY(-2px)}
+  .lbl-body{display:grid;gap:10px;padding:2px 14px 14px;border-top:1px solid var(--line);padding-top:12px;animation:cwIn .18s ease-out}
   .lbl-you b.big{font-size:20px;color:var(--ink)}
   .lbl-you .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
   .lbl-you input[type=text]{flex:1 1 180px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit}
@@ -7745,6 +7750,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       function badge(done){ var live=LIVE()&&F.kycOn; document.querySelectorAll('.app-nav-item[data-view="kyc"]').forEach(function(n){ n.hidden=!F.kycOn; }); el('kycDot').hidden=!!done; el('kycOk').hidden=!done;
         var ban=el('kycBan'), last=0; try{ last=+localStorage.getItem('ftm_kyc_ban')||0; }catch(e){}
         if(ban) ban.hidden=!(live&&K.loaded&&!done&&Date.now()-last>7*864e5); }
+      F.myCountry=function(){ return (K.p&&K.p.country)||(typeof P!=='undefined'&&P.country)||''; };
       function fill(p){ K.p=p||{}; K.sel={goal:K.p.goal||null,experience:K.p.experience||null,drawdown_comfort:K.p.drawdown_comfort!=null?String(K.p.drawdown_comfort):null};
         if(document.activeElement!==el('kycName')) el('kycName').value=K.p.full_name||(F.session&&F.session.name)||'';
         el('kycCountry').value=K.p.country?String(K.p.country).toUpperCase():''; paint(); }
@@ -8902,16 +8908,17 @@ tick();setInterval(tick,5000);})();
   function why(e,fb){ var f=F(); return f.why?f.why(e,fb):t(fb); }
   function youCard(j){
     var y=j.you||{}, p=profile||{}, rules=(p.rules)||{};
-    var h='<div class="lbl-you">';
-    if(!y.has_account){ h+='<b>'+esc(t('Connect a trading account to take part in the leaderboard.'))+'</b>'; return h+'</div>'; }
-    if(y.opted_in && y.rank){ h+='<span>'+esc(t('Your place'))+'</span><b class="big">#'+esc(y.rank)+' · '+esc(pct(y.return_pct))+'</b>'; }
-    else if(y.opted_in){ h+='<b>'+esc(t('You are in the community. You appear here after 3 closed trades in this period.'))+'</b>'; }
-    else if(y.qualified && y.would_rank){ h+='<b>'+esc(t('You would be number {} on this board.').replace('{}',y.would_rank))+'</b>'; }
-    else { h+='<b>'+esc(t('You are not shown on the leaderboard.'))+'</b>'; }
+    if(!y.has_account){ return '<div class="lbl-you lbl-flat"><b>'+esc(t('Connect a trading account to take part in the leaderboard.'))+'</b></div>'; }
+    var sum;
+    if(y.opted_in && y.rank){ sum='<span>'+esc(t('Your place'))+'</span> <b class="big">#'+esc(y.rank)+' · '+esc(pct(y.return_pct))+'</b>'; }
+    else if(y.opted_in){ sum='<b>'+esc(t('You are in the community. You appear here after 3 closed trades in this period.'))+'</b>'; }
+    else if(y.qualified && y.would_rank){ sum='<b>'+esc(t('You would be number {} on this board.').replace('{}',y.would_rank))+'</b>'; }
+    else { sum='<b>'+esc(t('You are not shown on the leaderboard.'))+'</b>'; }
+    var h='<details class="lbl-you" id="lblYou"'+(F()._lbYouOpen?' open':'')+'><summary><span class="lbl-sum">'+sum+'</span><span class="lbl-edit">'+esc(t('Name and visibility'))+'</span></summary><div class="lbl-body">';
     h+='<div class="row"><label class="sw"><input type="checkbox" id="lblOpt"'+(p.opted_in?' checked':'')+'> '+esc(t('Show me in the community'))+'</label></div>';
     h+='<div class="row"><input type="text" id="lblNick" maxlength="24" autocomplete="off" placeholder="'+esc(t('Nickname'))+'" value="'+esc(p.nickname||'')+'"><button type="button" class="btn btn-dark btn-sm" id="lblSave">'+esc(t('Save'))+'</button></div>';
     h+='<p class="hint">'+esc(t('3 to 24 letters, digits, _ or -. Only your nickname and your return in % are shown, never your name, balance or account number.'))+'</p>';
-    h+='<p class="lbl-msg" id="lblMsg" hidden></p></div>';
+    h+='<p class="lbl-msg" id="lblMsg" hidden></p></div></details>';
     return h;
   }
   function render(j){
@@ -8922,7 +8929,7 @@ tick();setInterval(tick,5000);})();
     if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
     var since=function(e){ return e.account_since?' <small class="lb-since">'+esc(t('since {}').replace('{}',new Date(e.account_since).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'})))+'</small>':''; };
     var mb=function(){ return ''; };
-    var fl=function(e){ var cc=String(e.country||e.country_code||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?'<span class="lb-flag" title="'+esc(cc)+'">'+String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65)+'</span>':''; };
+    var fl=function(e){ var cc=String(e.country||e.country_code||(e.is_you&&F().myCountry?F().myCountry():'')||'').toUpperCase(); return /^[A-Z]{2}$/.test(cc)?'<span class="lb-flag" title="'+esc(cc)+'">'+String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65)+'</span>':''; };
     h+='<div class="lb-podium">'+rows.filter(function(e){ return e.rank!=null; }).slice(0,3).map(function(e,i){
       return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name'+(e.is_master?' lb-is-master':'')+'">'+esc(e.nickname)+fl(e)+mb(e)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+since(e)+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
         '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
@@ -8948,6 +8955,7 @@ tick();setInterval(tick,5000);})();
   host.addEventListener('click',function(e){
     var b=e.target.closest('#lblTabs button'); if(b){ board=b.dataset.b; last=null; load(); return; }
     if(e.target.id==='lblSave'||e.target.id==='lblOpt') save();
+    if(e.target.closest('#lblYou>summary')) setTimeout(function(){ var d=document.getElementById('lblYou'); F()._lbYouOpen=!!(d&&d.open); },0);
   });
   function save(){
     var opt=document.getElementById('lblOpt'), nick=document.getElementById('lblNick'), msg=document.getElementById('lblMsg');

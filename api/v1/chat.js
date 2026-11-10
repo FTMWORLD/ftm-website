@@ -49,6 +49,8 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Green dot in the menu: a section has something new since you last opened it (a closed trade on Dashboard, Performance, Calendar, Sessions; a new message or follower in Community; a leaderboard change). Opening the section clears it.
 - Country: in My profile and Know Your Customer you can type the country name to find it instead of scrolling.
 - Community photos no longer flicker: the page only redraws when something changed.
+- Leaderboard: "Your place" is a slim bar above the board; tap "Name and visibility" to open it and change your nickname or hide yourself.
+- Flag missing beside your nickname on the leaderboard: set your country in Know Your Customer (or My profile); your own row shows it at once, and the board shows it to everyone after its next update.
 - Charts: only FTM's markets (Gold, Bitcoin, US Tech 100, USD/JPY, HK50; Boom 1000 listed, not traded yet). Bitcoin moves live now; the other markets go live as soon as FTM's price feed is connected. Your open trades show on the chart at their entry price with the floating profit, in money or %.
 - Compare your result with a market: on the balance chart choose Gold, US Tech 100 or Bitcoin in 'Compare with…'; the chart switches to % and draws that market's move over the same period (real daily prices from FTM's feed).
 - FTM trades vs your own trades: if a customer also trades manually on the account, a line under Total account value shows 'FTM trades' and 'Your own trades' separately (tap for amount, trade count and win rate). Trade history marks FTM's trades with a small FTM badge and can be filtered. Customers with no own trades see no change.
