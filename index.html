@@ -2245,6 +2245,7 @@ h3.has-tip{cursor:help}
 .st-i{display:inline-flex;align-items:center;gap:6px}.st-i i{width:8px;height:8px;border-radius:50%}.st-i b{color:#0b1440}.st-i em{font-style:normal;font-weight:700}
 @keyframes sessTick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.sess-tick-in{animation:none}}
+.lb-master{display:inline-block;margin-inline-start:6px;font-size:10px;font-weight:800;letter-spacing:.06em;color:#0b1440;background:linear-gradient(135deg,#E3B62F,#D4AF37);border-radius:5px;padding:2px 6px;vertical-align:middle}
 .cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
 .cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
 .cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
@@ -8524,12 +8525,12 @@ tick();setInterval(tick,5000);})();
     h+=youCard(j);
     if(!rows.length){ h+='<div class="lbl-empty">'+esc(t('No one is on this board yet. A customer appears after {} closed trades in the period.').replace('{}',(j.rules&&j.rules.min_closed_copies)||3))+'</div>'; host.innerHTML=h; return; }
     h+='<div class="lb-podium">'+rows.slice(0,3).map(function(e,i){
-      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name">'+esc(e.nickname)+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
+      return '<div class="lb-card r'+(i+1)+(e.is_you?' you':'')+'"><div class="lb-top"><span class="lb-medal">'+medals[i]+'</span><div><div class="lb-name">'+esc(e.nickname)+(e.is_master?' <span class="lb-master">FTM MASTER</span>':'')+'</div><div class="lb-country">'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'')+'</div></div><span class="lb-rank">'+esc(e.rank)+'</span></div>'+
         '<div class="lb-stats"><div'+(parseFloat(e.return_pct)>=0?' class="g"':'')+'><span>'+esc(t('Return'))+'</span><b'+(parseFloat(e.return_pct)<0?' style="color:var(--red-dark)"':'')+'>'+esc(pct(e.return_pct))+'</b></div><div><span>'+esc(t('Trades'))+'</span><b>'+esc(e.closed_copies)+'</b></div><div><span>'+esc(t('Wins'))+'</span><b>'+esc(e.wins)+'</b></div></div></div>';
     }).join('')+'</div>';
     h+='<div class="app-scroll"><table class="app-trades lb-table"><thead><tr><th>#</th><th>'+esc(t('Nickname'))+'</th><th>'+esc(t('Return'))+'</th><th>'+esc(t('Trades'))+'</th><th>'+esc(t('Wins'))+'</th><th>'+esc(t('Risk profile'))+'</th><th>'+esc(t('Months on FTM'))+'</th></tr></thead><tbody>'+
       rows.map(function(e){ var r=parseFloat(e.return_pct);
-        return '<tr class="'+(e.is_you?'you':'')+'"><td>'+esc(e.rank)+'.</td><td><b>'+esc(e.nickname)+'</b>'+(e.is_you?'<span class="lb-you-tag">'+esc(t('YOU'))+'</span>':'')+'</td><td class="'+(r>=0?'pl-up':'pl-down')+'">'+esc(pct(e.return_pct))+'</td><td>'+esc(e.closed_copies)+'</td><td>'+esc(e.wins)+'</td><td>'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'—')+'</td><td>'+esc(e.months_on_ftm)+'</td></tr>';
+        return '<tr class="'+(e.is_you?'you':'')+'"><td>'+esc(e.rank)+'.</td><td><b>'+esc(e.nickname)+'</b>'+(e.is_master?'<span class="lb-master">FTM MASTER</span>':'')+(e.is_you?'<span class="lb-you-tag">'+esc(t('YOU'))+'</span>':'')+'</td><td class="'+(r>=0?'pl-up':'pl-down')+'">'+esc(pct(e.return_pct))+'</td><td>'+esc(e.closed_copies)+'</td><td>'+esc(e.wins)+'</td><td>'+esc(e.risk_tier?t(TIER[e.risk_tier]||e.risk_tier):'—')+'</td><td>'+esc(e.months_on_ftm)+'</td></tr>';
       }).join('')+'</tbody></table></div>';
     host.innerHTML=h;
   }
