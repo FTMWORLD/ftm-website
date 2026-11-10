@@ -111,7 +111,7 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {gain:g('mGain'),year:g('mYear'),net:g('mNet')};});
   ok(/-5\.15%/.test(v.gain)&&/-5\.15%/.test(v.year), 'balance disagrees: gain and profit this year come from the trade history = -5.15% (got '+v.gain+' / '+v.year+')');
   ok(/-\$5,154\.34/.test(v.net), 'balance disagrees: net P/L is the engine closed P/L -5,154.34 (got '+v.net+')');
-  const iv=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {row:g('mInitL')+' '+g('mInit')+' · '+g('mInitD'),hero:g('dxInitL')+' '+g('dxInitV'),shown:!document.getElementById('dxInit').hidden};});
+  const iv=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {row:g('mInitL')+' '+g('mInit')+' · '+g('mInitD'),hero:g('dxInitL')+' '+g('dxInitV')+' · '+g('dxInitD'),shown:!document.getElementById('dxInit').hidden};});
   ok(/^Initial deposit \$100,000\.00 · /.test(iv.row)&&iv.shown&&iv.hero===iv.row, 'initial deposit: first deposit 100,000.00 with its date, in Capital flows and under the account value (got '+iv.row+' / '+iv.hero+')');
   ok(!errs.length, 'balance disagrees: no script errors '+(errs[0]||''));
   await p.close();
