@@ -2232,6 +2232,10 @@ h3.has-tip{cursor:help}
 .ck-pt,.ck-tot{display:inline-flex;gap:6px;align-items:baseline;padding:5px 10px;border-radius:10px;background:#f6f7fb;font-weight:600;color:#0b1440}.ck-pt em,.ck-tot em{font-style:normal;font-weight:800}.ck-pt.up em,.ck-tot.up em{color:#15803d}.ck-pt.dn em,.ck-tot.dn em{color:#c81e2b}.ck-tot{background:#0b1440;color:#fff}.ck-tot.up em{color:#8fe0b4}.ck-tot.dn em{color:#ff9aa2}
 .ck-wrap{position:relative}.ck-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;margin:0;font-size:14px;font-weight:600;color:#5b6378;background:linear-gradient(180deg,#fbfcff,#f4f6fb);border-radius:14px}.ck-empty[hidden]{display:none}
 .ck-pulse{animation:ckp 1.4s ease-in-out infinite}@keyframes ckp{0%,100%{opacity:1}50%{opacity:.35}}
+.dist-hours{display:grid;grid-template-columns:repeat(24,1fr);margin-top:6px;font-size:11px;color:#8a90a6;font-variant-numeric:tabular-nums;text-align:center}
+.dist-hours span.on{color:#0b1440;font-weight:800}
+.dist-info{margin:10px 0 0;font-size:13.5px;color:#5b6378;min-height:20px}.dist-info b{color:#0b1440}
+@media (max-width:560px){.dist-hours{font-size:10.5px}.dist-hours span:not(.k){visibility:hidden}}
 .cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
 .cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
 .cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
@@ -3376,7 +3380,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
             <span class="app-label">Trade distribution by hour</span>
             <p class="hint" style="margin-top:6px">Profit and loss grouped by the hour a trade closed.</p>
             <svg class="dist-chart" id="distChart" viewBox="0 0 600 190" preserveAspectRatio="none" aria-hidden="true"></svg>
-            <div class="app-legend"><span>00:00</span><span>23:00</span></div>
+            <div class="dist-hours" id="distHours"></div>
+            <p class="dist-info" id="distInfo"></p>
           </div>
         </div>
       </section>
@@ -6378,9 +6383,14 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         el('dailyFrom').textContent=fmt(list[0]); el('dailyTo').textContent=fmt(list[list.length-1]);
       }
 
-      var up=new Array(24).fill(0), dn=new Array(24).fill(0);
-      F.data.closed.forEach(function(t){ var h=new Date(t.closeTime).getHours();
+      var up=new Array(24).fill(0), dn=new Array(24).fill(0), cnt=new Array(24).fill(0);
+      F.data.closed.forEach(function(t){ var h=new Date(t.closeTime).getHours(); cnt[h]++;
         if(t.pl>=0)up[h]+=t.pl; else dn[h]+=Math.abs(t.pl); });
+      var hh=function(h){ return (h<10?'0':'')+h+':00'; }, trd=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+      el('distHours').innerHTML=up.map(function(v,i){ return '<span class="'+(cnt[i]?'on':'')+(i%3===0?' k':'')+'">'+((cnt[i]||i%3===0)?(i<10?'0':'')+i:'')+'</span>'; }).join('');
+      var dInfo=function(i){ var net=up[i]-dn[i]; el('distInfo').innerHTML=cnt[i]?('<b>'+hh(i)+'–'+hh((i+1)%24)+'</b> · '+cnt[i]+' '+trd(cnt[i]===1?'trade':'trades')+' · <span class="'+(net>=0?'val-up':'val-down')+'">'+(net>=0?'+':'-')+money(Math.abs(net),2)+'</span>'):(hh(i)+'–'+hh((i+1)%24)+' · '+trd('No trades')); };
+      var best=-1; for(var bi=0;bi<24;bi++){ if(cnt[bi] && (best<0 || up[bi]-dn[bi]>up[best]-dn[best])) best=bi; } if(best>=0) dInfo(best); else el('distInfo').textContent='';
+      var dsv=el('distChart'); if(!dsv._hb){ dsv._hb=1; var pick=function(e){ var r=dsv.getBoundingClientRect(); var i=Math.max(0,Math.min(23,Math.floor((e.clientX-r.left)/r.width*24))); dInfo(i); }; dsv.addEventListener('mousemove',pick); dsv.addEventListener('click',pick); dsv.style.cursor='pointer'; }
       var mx=1; for(var i=0;i<24;i++){ mx=Math.max(mx,up[i],dn[i]); }
       var dsvg=el('distChart'), DW=600, DH=190, dmid=DH/2, dbw=DW/24;
       dsvg.innerHTML='<line x1="0" y1="'+dmid+'" x2="'+DW+'" y2="'+dmid+'" stroke="rgba(11,20,64,.14)" stroke-width="1"/>'+
