@@ -4,7 +4,7 @@ const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB'
 const paid={'00000000-0000-4000-8000-00000000000a':['auto'],'00000000-0000-4000-8000-00000000000b':['auto']};
 const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}})},
   from:()=>({select:()=>({eq:(c,id)=>({maybeSingle:async()=>({data:{products:paid[id]||[]}})})})}),
-  storage:{getBucket:async()=>({error:null}),createBucket:async()=>({}),from:()=>({download:async p=>files[p]?{data:{text:async()=>files[p]}}:{error:{message:'nf'}},upload:async(p,b)=>{files[p]=b.toString();return {};}})}})};
+  storage:{getBucket:async()=>({error:null}),createBucket:async()=>({}),from:()=>({download:async p=>files[p]?{data:{text:async()=>files[p].toString(),arrayBuffer:async()=>{ const b=Buffer.isBuffer(files[p])?files[p]:Buffer.from(files[p]); return b.buffer.slice(b.byteOffset,b.byteOffset+b.length); }}}:{error:{message:'nf'}},upload:async(p,b)=>{files[p]=/\.jpg$/.test(p)?Buffer.from(b):b.toString();return {};}})}})};
 Module._load=function(r,...a){ if(r==='@supabase/supabase-js') return fake; return orig.call(this,r,...a); };
 process.env.SUPABASE_SERVICE_ROLE_KEY='x';
 const h=require(require('path').join(__dirname,'../../api/v1/community.js'));
@@ -27,11 +27,30 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   r=await call('tokB',{action:'threads'}); ok(r[1].threads.length===1&&r[1].threads[0].unread&&r[1].threads[0].last==='Hello Marine!','Marine sees the new message as unread');
   r=await call('tokB',{action:'messages',mid:mA}); ok(r[1].messages.length===1&&r[1].messages[0].from==='them','Marine opens the conversation');
   r=await call('tokB',{action:'threads'}); ok(!r[1].threads[0].unread,'opening marks it read');
-  r=await call('tokB',{action:'send',mid:mA,text:'Hi Tanaya'}); r=await call('tokA',{action:'messages',mid:mB}); ok(r[1].messages.map(x=>x.from).join()==='me,them','Tanaya sees the reply in order');
+  r=await call('tokB',{action:'send',mid:mA,text:'Hi Tanaya'}); r=await call('tokA',{action:'messages',mid:mB});
+  ok(!!r[1].seen_at,'Tanaya sees that Marine has read her message (Seen)'); ok(r[1].messages.map(x=>x.from).join()==='me,them','Tanaya sees the reply in order');
+  { const t0=r[1].messages[1].t, mine=r[1].messages[0].t;
+    r=await call('tokA',{action:'send',mid:mB,text:'😀📈 great 🚀'}); ok(r[0]===200&&r[1].message.text==='😀📈 great 🚀','emojis are sent and kept exactly');
+    r=await call('tokA',{action:'react',mid:mB,t:t0,e:'❤️'}); ok(r[0]===200&&r[1].message.reactions.me==='❤️','Tanaya reacts with a heart');
+    r=await call('tokB',{action:'messages',mid:mA}); ok(r[1].messages.find(x=>x.t===t0).reactions.them==='❤️','Marine sees the heart on her message');
+    r=await call('tokA',{action:'react',mid:mB,t:t0,e:'<b>'}); ok(r[1].error==='INVALID','only the offered reactions are accepted');
+    r=await call('tokB',{action:'send',mid:mA,text:'Thanks!',reply:mine}); ok(r[1].message.reply&&r[1].message.reply.from==='them'&&/Hello Marine/.test(r[1].message.reply.text),'Marine replies to a specific message (quoted)');
+    r=await call('tokA',{action:'typing',mid:mB}); r=await call('tokB',{action:'messages',mid:mA}); ok(r[1].typing===true,'Marine sees "typing…" while Tanaya writes');
+    r=await call('tokA',{action:'unsend',mid:mB,t:t0}); ok(r[1].error==='NOT_YOURS','nobody can remove someone else\'s message');
+    r=await call('tokB',{action:'unsend',mid:mA,t:t0}); ok(r[0]===200&&r[1].message.removed,'Marine removes her own message');
+    r=await call('tokA',{action:'messages',mid:mB}); const rm=r[1].messages.find(x=>x.t===t0); ok(rm.removed&&rm.text===''&&!rm.reactions,'the removed message is gone for both');
+    r=await call('tokA',{action:'profile',mid:mB}); ok(r[0]===200&&r[1].member.nickname==='Marine'&&'followers' in r[1].member,'tapping Marine in the chat opens her profile'); }
   r=await call('tokF',{action:'save',nickname:'FreeUser',visible:true}); r=await call('tokF',{action:'members'}); ok(r[1].members.length===2,'a free member can browse');
   r=await call('tokF',{action:'send',mid:mA,text:'hey'}); ok(r[0]===403&&r[1].error==='READ_ONLY','a free member cannot send messages');
   r=await call('tokB',{action:'block',mid:mA}); r=await call('tokA',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Marine'),'after Marine blocks Tanaya, they no longer see each other');
   r=await call('tokA',{action:'send',mid:mB,text:'still there?'}); ok(r[0]===404,'and Tanaya cannot message her');
+  { const jpg='data:image/jpeg;base64,'+Buffer.from([0xFF,0xD8,0xFF,0xE0,1,2,3,4,0xFF,0xD9]).toString('base64');
+    r=await call('tokB',{action:'avatar',image:jpg}); ok(r[0]===200&&r[1].av,'Marine uploads a profile picture');
+    r=await call('tokB',{action:'avatar',image:'data:image/png;base64,AAAA'}); ok(r[1].error==='IMAGE_INVALID','only real JPEG pictures are accepted');
+    const mB2=(await call('tokF',{action:'members'}))[1].members.find(m=>m.nickname==='Marine'); ok(mB2&&mB2.av,'other members see that Marine has a picture');
+    const g=await new Promise(res=>{ const rs={s:200,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},end(b){res([this.s,this.h,b]);},json(j){res([this.s,{},j]);}}; h({method:'GET',query:{avatar:mB2.mid},headers:{}},rs); });
+    ok(g[0]===200&&g[1]['Content-Type']==='image/jpeg'&&g[2]&&g[2][0]===0xFF,'the picture is served as an image'); }
+  r=await call('tokF',{action:'members'}); ok(r[1].members.every(m=>m.seen),'members show when they were last active');
   r=await call('tokA',{action:'save',nickname:'Tanaya',visible:false}); r=await call('tokF',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Tanaya'),'a hidden profile disappears from Discover');
   r=await call('bad',{action:'me'}); ok(r[0]===401,'no login, no access');
   console.log(fails?'FAILED: '+fails:'COMMUNITY OK'); process.exit(fails?1:0);

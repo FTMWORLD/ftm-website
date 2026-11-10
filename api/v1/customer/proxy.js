@@ -25,6 +25,8 @@ const ALLOW = [
   ['GET', '^leaderboard$'],
   ['GET', '^leaderboard/profile$'],
   ['PUT', '^leaderboard/profile$'],
+  ['GET', '^kyc-profile$'],
+  ['PUT', '^kyc-profile$'],
   ['GET', '^market/candles$'],
   ['GET', '^market/quotes$']
 ].map(([m, re]) => [m, new RegExp(re)]);

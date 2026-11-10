@@ -587,3 +587,17 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
   Storage bucket "community" (created on first use with the service role key). Members are addressed by an opaque id.
 - The page polls every 4 s while Community is open. Tests: .github/tests/community-api.js and community-e2e.js.
 - FTM ENGINE's Community (verified figures, phases A/B/C) will replace this; move profiles (nickname, bio, visible) over.
+- 10 Nov: chat has emojis (picker, Recent saved in the browser), reactions (8 fixed emojis, toggle), reply-to quotes, remove own
+  message, typing signal (typing/<pair>.json, shown 7 s), day separators and times; tapping a person opens a profile card
+  (action "profile"). Tests cover all of it.
+
+## Know Your Customer (10 Nov 2026)
+- Menu item at the bottom of the client menu, gold "Verify your KYC" badge until FTM ENGINE says kyc_completed, then a check.
+- Engine: GET/PUT /customer/kyc-profile (proxy ALLOW + vercel rewrite). Country is shared with the leaderboard flag.
+- NOT LIVE until Gospel approves the screenshot: F.kycOn is false unless the URL has ?kyc=1. To go live set F.kycOn=true
+  (index.html, KYC block) and add this Ask-here line to api/v1/chat.js TROUBLESHOOTING:
+  - Know Your Customer (KYC): the last item of the menu. Five optional questions (name, country, goal, experience, how big a temporary drop you could live with), about one minute; nothing is blocked if you skip it. No ID documents or selfies. The gold "Verify your KYC" badge turns into a check mark once all five are saved; answers can be changed any time. The matching risk profile is a hint only and never changes your settings.
+- Dashboard banner "Complete your KYC" at most once a week (localStorage ftm_kyc_ban). Test: .github/tests/kyc-e2e.js.
+
+## Wording rule (owner, 10 Nov 2026)
+- FTM is for everyone: say "people" or "members", never "traders", for FTM customers.

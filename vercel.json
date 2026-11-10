@@ -53,11 +53,11 @@
   ],
   "rewrites": [
     {
-      "source": "/api/v1/customer/:first(chat|investment|investments|leaderboard|market)/:rest*",
+      "source": "/api/v1/customer/:first(chat|investment|investments|leaderboard|market|kyc-profile)/:rest*",
       "destination": "/api/v1/customer/proxy?__p=:first/:rest*"
     },
     {
-      "source": "/api/v1/customer/:first(chat|investment|leaderboard)",
+      "source": "/api/v1/customer/:first(chat|investment|leaderboard|kyc-profile)",
       "destination": "/api/v1/customer/proxy?__p=:first"
     }
   ]
