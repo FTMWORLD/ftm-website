@@ -87,3 +87,9 @@ After 20, start again at 1 and look for what changed.
 - A true minus sign (−) in all figures.
 - Merge the four statistics cards into one "Full statistics" card (folded on phone).
 - Show open positions right under the hero when there are any.
+
+### 10 Nov 2026: Interactive Brokers, Coinbase
+- Interactive Brokers (PortfolioAnalyst): better than FTM: compares the account with up to 3 benchmarks (S&P 500 total return, world indices), toggles time-weighted vs money-weighted return, GIPS-style method, downloadable reports. FTM better: one-tap, phone-first, live trades on the chart, plain language, every figure checked automatically.
+  Ideas: (1) compare the balance % with a market on the same chart (BUILT 10 Nov: Gold / US Tech 100 / Bitcoin, real daily prices from FTM's feed); (2) a money-weighted return next to the time-weighted one, explained in one line; (3) a quarterly PDF report with benchmarks.
+- Coinbase: better than FTM: one big balance with a time-frame graph, per-asset "Portfolio %", net invested vs return explained simply. FTM better: true time-weighted %, drawdown, risk level, trade-by-trade history, sessions and calendar.
+  Ideas: (1) "net invested" (deposits - withdrawals) shown beside total return on the blue card; (2) per-market share of the balance (by market card already shows trade share).
