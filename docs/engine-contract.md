@@ -4,6 +4,13 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — NICKNAME 2 PER WEEK + FLAG = KYC COUNTRY (commit b47e62a, API restarted 16:57 Berlin)
+
+- PUT /customer/leaderboard/profile: up to 2 nickname changes in any 7 days; the 3rd -> 429 NICKNAME_RATE_LIMIT with
+  next_change_at (ISO; next_allowed_at kept as an alias). Profile rules: nickname_change_days 7, nickname_changes_per_window 2.
+- Leaderboard country = the customer's KYC country ONLY (PUT /customer/kyc-profile), shown at once. A country sent to
+  /customer/leaderboard/profile is ignored (the Community country is the website's own).
+
 ## 2026-11-10 — COPY STOP LOSS = EMERGENCY STOP A LITTLE BEYOND THE MASTER'S (commit c3c2fa7, on for all accounts 15:00 Berlin)
 
 - Every copy's broker SL = the master's SL +/- min(max(3x spread, 5 % of the SL distance), 10 %): at most 1.1x the planned
