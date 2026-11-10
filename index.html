@@ -2238,6 +2238,13 @@ h3.has-tip{cursor:help}
 .dist-hours span.on{color:#0b1440;font-weight:800}
 .dist-info{margin:10px 0 0;font-size:13.5px;color:#5b6378;min-height:20px}.dist-info b{color:#0b1440}
 @media (max-width:560px){.dist-hours{font-size:10.5px}.dist-hours span:not(.k){visibility:hidden}}
+.sess-cols{align-items:stretch}.sess-cols #sessMode{align-self:flex-start}.sess-cols>.app-card{display:flex;flex-direction:column}
+.sess-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.sess-facts div{background:#f6f7fb;border-radius:12px;padding:10px 12px;display:grid;gap:3px;min-width:0}.sess-facts span{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6b7393}.sess-facts b{font-size:14.5px;color:#0b1440}
+.sess-tick{margin-top:auto;padding-top:16px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.sess-tick-in{display:inline-flex;gap:28px;white-space:nowrap;animation:sessTick 28s linear infinite;padding:10px 0;font-size:13.5px;color:#5b6378}.sess-tick:hover .sess-tick-in{animation-play-state:paused}
+.st-i{display:inline-flex;align-items:center;gap:6px}.st-i i{width:8px;height:8px;border-radius:50%}.st-i b{color:#0b1440}.st-i em{font-style:normal;font-weight:700}
+@keyframes sessTick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.sess-tick-in{animation:none}}
 .cx-steps{list-style:none;margin:14px 0 4px;padding:0;display:grid;gap:8px}
 .cx-steps li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#0b1440}
 .cx-steps b{width:24px;height:24px;border-radius:50%;background:#fbf6e4;color:#8a6d12;display:grid;place-items:center;font-size:12px;flex:none}
@@ -3636,7 +3643,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 
       <section class="app-view" data-view="sessions" hidden>
         <div class="app-main">
-          <div class="app-cols">
+          <div class="app-cols sess-cols">
             <div class="app-card">
               <span class="app-label">Session clock</span>
               <b class="sess-clock" id="sessClock">&mdash;</b>
@@ -3649,6 +3656,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
               <b class="app-big" id="sessBest">&mdash;</b>
               <div class="tf" id="sessMode"><button class="is-on" data-mode="open">Entry</button><button data-mode="close">Exit</button></div>
               <div class="sess-bars" id="sessBars"></div>
+              <div class="sess-facts" id="sessFacts"></div>
+              <div class="sess-tick" aria-hidden="true"><div class="sess-tick-in" id="sessTicker"></div></div>
             </div>
           </div>
           <div class="app-card">
@@ -6906,6 +6915,11 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var best=null;
       SESSIONS.forEach(function(s){ if(!best||stats[s.name].pl>stats[best].pl)best=s.name; });
       el('sessBest').textContent='Best: '+best+' · '+signed(stats[best].pl,2);
+      var trs=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+      var most=null, wr=null; SESSIONS.forEach(function(s){ var x=stats[s.name]; if(!most||x.n>stats[most].n) most=s.name; if(x.n && (!wr || x.w/x.n>stats[wr].w/stats[wr].n)) wr=s.name; });
+      el('sessFacts').innerHTML='<div><span>'+trs('Most trades')+'</span><b>'+most+' · '+stats[most].n+'</b></div><div><span>'+trs('Best win rate')+'</span><b>'+(wr?wr+' · '+(stats[wr].w/stats[wr].n*100).toFixed(2)+'%':'\u2014')+'</b></div>';
+      var items=SESSIONS.map(function(s){ var x=stats[s.name]; return '<span class="st-i"><i style="background:'+s.colour+'"></i><b>'+s.name+'</b> '+x.n+' '+trs(x.n===1?'trade':'trades')+' · <em class="'+(x.pl>=0?'val-up':'val-down')+'">'+signed(x.pl,2)+'</em>'+(x.n?' · '+trs('Win rate')+' '+(x.w/x.n*100).toFixed(2)+'%':'')+'</span>'; }).join('');
+      el('sessTicker').innerHTML=items+items;
       el('sessBest').className='app-big '+(stats[best].pl>=0?'val-up':'val-down');
 
       var mx=1; SESSIONS.forEach(function(s){ mx=Math.max(mx,Math.abs(stats[s.name].pl)); });
