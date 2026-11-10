@@ -69,3 +69,4 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Country flag (owner instruction, 10 November 2026)
 - The country flag always comes after the name, never before (leaderboard, community, chat, profiles).
+- The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.

@@ -58,7 +58,24 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
     r=await call('tokB',{action:'notifs'}); ok(r[1].items.some(n=>n.kind==='ftm'),'members are notified of FTM posts');
     r=await call('tokB',{action:'feed',scope:'ftm'}); ok(r[1].posts.length===1&&r[1].posts[0].author.ftm,'filter: FTM posts only');
     r=await call('tokF',{action:'post',text:'hello'}); ok(r[1].error==='PROFILE_FIRST'||r[1].error==='READ_ONLY','free members can read but not post');
-    r=await call('tokA',{action:'delpost',id:pid}); r=await call('tokB',{action:'feed',scope:'all'}); ok(!r[1].posts.some(p=>p.id===pid),'Tanaya deletes her own post'); }
+    r=await call('tokA',{action:'delpost',id:pid}); r=await call('tokB',{action:'feed',scope:'all'}); ok(!r[1].posts.some(p=>p.id===pid),'Tanaya deletes her own post');
+    r=await call('tokA',{action:'post',text:'Which market next? #gold #FTM',images:[jpg,jpg,jpg],poll:{options:['Gold','Bitcoin','US Tech 100']}}); ok(r[0]===200&&r[1].post.imgs.length===3&&r[1].post.poll.options.length===3&&r[1].post.tags.join()==='gold,ftm','a post with 3 photos, a poll and hashtags');
+    const p2=r[1].post.id;
+    r=await call('tokB',{action:'vote',id:p2,i:1}); ok(r[1].post.poll.total===1&&r[1].post.poll.mine===1,'Marine votes Bitcoin');
+    r=await call('tokB',{action:'vote',id:p2,i:0}); ok(r[1].post.poll.options[0].votes===1&&r[1].post.poll.options[1].votes===0,'changing the vote moves it (one vote per person)');
+    r=await call('tokB',{action:'feed',scope:'#gold'}); ok(r[1].posts.length===1&&r[1].posts[0].id===p2,'tapping #gold shows posts with that tag');
+    r=await call('tokB',{action:'trending'}); ok(r[1].tags.indexOf('gold')!==-1,'#gold is trending');
+    r=await call('tokB',{action:'bookmark',id:p2}); ok(r[1].saved===true,'Marine saves the post');
+    r=await call('tokB',{action:'feed',scope:'saved'}); ok(r[1].posts.length===1&&r[1].posts[0].saved,'Saved shows it');
+    r=await call('tokA',{action:'edit',id:p2,text:'Which market next? #gold'}); ok(r[1].post.edited&&r[1].post.tags.join()==='gold','Tanaya edits her post (marked edited)');
+    r=await call('tokB',{action:'edit',id:p2,text:'hacked'}); ok(r[1].error==='NOT_YOURS','nobody can edit someone else\'s post');
+    r=await call('tokB',{action:'comment',id:p2,text:'Gold for sure'}); const cid=r[1].post.comments[0].id;
+    r=await call('tokA',{action:'clike',id:p2,cid}); ok(r[1].post.comments[0].likes===1&&r[1].post.comments[0].liked,'comments can be liked');
+    r=await call('tokB',{action:'members'}); ok(r[1].members.find(m=>m.nickname==='Tanaya').posts>=1,'members show how many posts they have');
+    const pub=await new Promise(res=>{ const rs={s:200,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},end(b){res([this.s,this.h,b]);},json(j){res([this.s,{},j]);}}; h({method:'GET',query:{postjson:p2},headers:{}},rs); });
+    ok(pub[0]===200&&pub[2].post.author==='Tanaya'&&pub[2].post.imgs.length===3&&!JSON.stringify(pub[2]).match(/0000/),'a shared post opens publicly (nickname only, no private data)');
+    const sh=await new Promise(res=>{ const rs={s:200,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},end(b){res([this.s,this.h,b]);},json(j){res([this.s,{},j]);}}; h({method:'GET',query:{share:p2},headers:{}},rs); });
+    ok(sh[0]===200&&/og:image" content="https:\/\/[^"]*postimg=/.test(sh[2])&&/og:title" content="Tanaya · FTM Community"/.test(sh[2]),'the share link has a preview image and title for WhatsApp, Facebook and others'); }
   r=await call('tokF',{action:'save',nickname:'FreeUser',visible:true}); r=await call('tokF',{action:'members'}); ok(r[1].members.length===2,'a free member can browse');
   r=await call('tokF',{action:'send',mid:mA,text:'hey'}); ok(r[0]===403&&r[1].error==='READ_ONLY','a free member cannot send messages');
   r=await call('tokB',{action:'block',mid:mA}); r=await call('tokA',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Marine'),'after Marine blocks Tanaya, they no longer see each other');

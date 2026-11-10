@@ -12,6 +12,8 @@
      feed {scope:all|following|ftm|<mid>, before?}   posts, newest first (pinned FTM posts on top)
      post {text, image?}         new post (paid members and FTM); like {id}; comment {id, text}; delpost {id}; delcomment {id, cid}; pin {id} (FTM)
      notifs {read?}              likes, comments, new followers and FTM posts for me
+     post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
+     GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
    FTM staff = a login on @ftmwealthnation.com or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
    Data lives in a private Supabase Storage bucket "community" (JSON files), reachable only through this function.
    Members are addressed by an opaque id (mid), never by their login id or email. */
@@ -35,6 +37,8 @@ function outMsg(x, me) { const o = { from: x.f === me ? 'me' : 'them', text: x.d
 const postsSent = new Map();
 function isStaff(user) { const e = String((user && user.email) || '').toLowerCase(); const L = String(process.env.FTM_COMMUNITY_ADMINS || '').toLowerCase().split(',').map(x => x.trim()).filter(Boolean); return !!e && (/@ftmwealthnation\.com$/.test(e) || L.indexOf(e) !== -1); }
 function cleanLong(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u0000-\u0009\u000b-\u001f<>]/g, ' ').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()).slice(0, n).join(''); }
+function postImgs(x) { const n = x.imgs || (x.img ? 1 : 0), v = x.img || ''; const L = []; for (let i = 0; i < n; i++) L.push('/api/v1/community?postimg=' + x.id + (i ? '_' + i : '') + '&v=' + v); return L; }
+function tagsOf(t) { const m = String(t || '').match(/#[\p{L}\p{N}_]{2,30}/gu) || []; return Array.from(new Set(m.map(x => x.slice(1).toLowerCase()))); }
 function pair(a, b) { return a < b ? a + '__' + b : b + '__' + a; }
 
 function store(admin) {
@@ -84,7 +88,7 @@ module.exports = async function handler(req, res) {
     } catch (e) { return res.status(404).end(); }
   }
   if (req.method === 'GET' && req.query && req.query.postimg) {
-    const id = String(req.query.postimg).replace(/[^a-z0-9]/g, '').slice(0, 24);
+    const id = String(req.query.postimg).replace(/[^a-z0-9_]/g, '').slice(0, 28);
     try {
       const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
       const r = await within(6000, admin.storage.from(BUCKET).download('posts/' + id + '.jpg'), 'postimg');
@@ -93,6 +97,30 @@ module.exports = async function handler(req, res) {
       res.setHeader('Content-Type', 'image/jpeg'); res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       return res.status(200).end(buf);
     } catch (e) { return res.status(404).end(); }
+  }
+  if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
+    const id = String(req.query.postjson || req.query.share).replace(/[^a-z0-9]/g, '').slice(0, 24);
+    let x = null, nick = '';
+    try {
+      const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY), S = store(admin);
+      const P = await S.read('posts.json', { posts: [] }); x = P.posts.filter(p => p.id === id)[0] || null;
+      if (x && !x.ftm) { const idx = await S.read('index.json', { members: {} }); const m = idx.members[x.a]; if (!m) x = null; else nick = m.nickname; }
+    } catch (e) { x = null; }
+    const SITE = String(process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
+    const imgs = x ? postImgs(x).map(u => SITE + u) : [];
+    if (req.query.postjson) {
+      res.setHeader('Cache-Control', 'public, max-age=60');
+      if (!x) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      return res.status(200).json({ ok: true, post: { id: x.id, author: x.ftm ? 'FTM' : nick, ftm: !!x.ftm, text: x.x, imgs, t: x.t, likes: (x.lk || []).length, comments: (x.c || []).length } });
+    }
+    const h = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const title = x ? (x.ftm ? 'FTM' : nick) + ' · FTM Community' : 'FTM Community', desc = x ? Array.from(x.x || '').slice(0, 200).join('') : 'Invest today, secure tomorrow.';
+    const img = imgs[0] || SITE + '/email-logo.png', url = SITE + '/p/' + id;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(x ? 200 : 404).end('<!doctype html><html><head><meta charset="utf-8"><title>' + h(title) + '</title><meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<meta property="og:type" content="article"><meta property="og:site_name" content="FTM"><meta property="og:title" content="' + h(title) + '"><meta property="og:description" content="' + h(desc) + '"><meta property="og:image" content="' + h(img) + '"><meta property="og:url" content="' + h(url) + '">' +
+      '<meta name="twitter:card" content="' + (imgs[0] ? 'summary_large_image' : 'summary') + '"><meta name="twitter:title" content="' + h(title) + '"><meta name="twitter:description" content="' + h(desc) + '"><meta name="twitter:image" content="' + h(img) + '">' +
+      '<link rel="canonical" href="' + h(url) + '"><meta http-equiv="refresh" content="0;url=' + h(SITE + '/?post=' + id) + '"><style>body{margin:0;background:#0b1440}</style></head><body><a href="' + h(SITE + '/?post=' + id) + '" style="color:#D4AF37;font:16px sans-serif;display:block;padding:24px">FTM</a></body></html>');
   }
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   let body = req.body || {};
@@ -115,7 +143,9 @@ module.exports = async function handler(req, res) {
     const hidden = new Set(blocks.concat(blockedBy));
     const followers = m => Object.keys(soc.follows).filter(k => (soc.follows[k] || []).indexOf(m) !== -1 && !hidden.has(k)).length;
     const followingOf = m => (soc.follows[m] || []).filter(k => idx.members[k] && !hidden.has(k)).length;
-    const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m) }; };
+    let postsCache = null; const postCount = m => { return (postsCache || []).filter(x => x.a === m && !x.ftm).length; };
+    if (action === 'members' || action === 'profile') postsCache = (await S.read('posts.json', { posts: [] })).posts;
+    const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m), posts: postCount(m) }; };
     const notify = async (m, n) => { if (!m || m === me) return; const p = 'notif/' + m + '.json', nb = await S.read(p, { items: [], read: '' }); n.t = new Date().toISOString(); nb.items = nb.items.filter(z => !(z.k === n.k && z.by === n.by && z.post === n.post && n.k !== 'comment')); nb.items.push(n); if (nb.items.length > 100) nb.items = nb.items.slice(-100); await S.write(p, nb); };
     const okTarget = m => m && m !== me && idx.members[m] && idx.members[m].visible && !hidden.has(m);
 
@@ -246,23 +276,37 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, member: pub(m) });
     }
 
-    if (['feed', 'post', 'like', 'comment', 'delpost', 'delcomment', 'pin', 'notifs'].indexOf(action) !== -1) {
+    if (['feed', 'post', 'like', 'comment', 'delpost', 'delcomment', 'pin', 'notifs', 'vote', 'bookmark', 'edit', 'clike', 'trending'].indexOf(action) !== -1) {
       const staff = isStaff(user);
       const P = await S.read('posts.json', { posts: [] });
       const who = m => { const x = idx.members[m] || {}; return { mid: m, nickname: x.nickname || '', av: x.av || null, country: x.country || '', sub: !!x.sub }; };
-      const outPost = x => ({ id: x.id, author: x.ftm ? { mid: x.a, nickname: 'FTM', ftm: true } : who(x.a), text: x.x, img: x.img ? '/api/v1/community?postimg=' + x.id + '&v=' + x.img : null, t: x.t,
+      const saves = (soc.saves && soc.saves[me]) || [];
+      const outPost = x => ({ id: x.id, author: x.ftm ? { mid: x.a, nickname: 'FTM', ftm: true } : who(x.a), text: x.x, imgs: postImgs(x), img: postImgs(x)[0] || null, t: x.t, edited: !!x.ed, saved: saves.indexOf(x.id) !== -1, tags: tagsOf(x.x),
+        poll: x.poll ? { options: x.poll.o.map(o => ({ text: o.t, votes: o.v.length })), total: x.poll.o.reduce((n, o) => n + o.v.length, 0), mine: x.poll.o.findIndex(o => o.v.indexOf(me) !== -1) } : null,
         likes: (x.lk || []).filter(m => !hidden.has(m)).length, liked: (x.lk || []).indexOf(me) !== -1, pinned: !!x.pin, mine: x.a === me, can_delete: x.a === me || staff,
-        comments: (x.c || []).filter(c => !hidden.has(c.a)).map(c => ({ id: c.id, author: c.ftm ? { mid: c.a, nickname: 'FTM', ftm: true } : who(c.a), text: c.x, t: c.t, mine: c.a === me, can_delete: c.a === me || x.a === me || staff })) });
+        comments: (x.c || []).filter(c => !hidden.has(c.a)).map(c => ({ id: c.id, author: c.ftm ? { mid: c.a, nickname: 'FTM', ftm: true } : who(c.a), text: c.x, t: c.t, mine: c.a === me, likes: (c.lk || []).length, liked: (c.lk || []).indexOf(me) !== -1, can_delete: c.a === me || x.a === me || staff })) });
       const find = id => P.posts.filter(x => x.id === String(id || ''))[0];
       if (action === 'feed') {
         const sc = String(body.scope || 'all'), fol = new Set(follows);
         let L = P.posts.filter(x => !hidden.has(x.a) && (x.ftm || idx.members[x.a]));
         if (sc === 'following') L = L.filter(x => x.ftm || x.a === me || fol.has(x.a));
         else if (sc === 'ftm') L = L.filter(x => x.ftm);
+        else if (sc === 'saved') L = L.filter(x => saves.indexOf(x.id) !== -1);
+        else if (sc.charAt(0) === '#') { const tg = sc.slice(1).toLowerCase(); L = L.filter(x => tagsOf(x.x).indexOf(tg) !== -1); }
         else if (sc !== 'all') L = L.filter(x => x.a === sc && !x.ftm);
         if (body.before) L = L.filter(x => x.t < String(body.before));
         L.sort((a, b) => ((b.pin ? 1 : 0) - (a.pin ? 1 : 0)) || String(b.t).localeCompare(String(a.t)));
         return res.status(200).json({ ok: true, staff, posts: L.slice(0, 30).map(outPost), more: L.length > 30 });
+      }
+      if (action === 'trending') {
+        const since = new Date(Date.now() - 14 * 864e5).toISOString(), cnt = {};
+        P.posts.filter(x => x.t > since && !hidden.has(x.a)).forEach(x => tagsOf(x.x).forEach(t => { cnt[t] = (cnt[t] || 0) + 1 + (x.lk || []).length * 0.2; }));
+        return res.status(200).json({ ok: true, tags: Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).slice(0, 8) });
+      }
+      if (action === 'bookmark') {
+        const id = String(body.id || ''); if (!find(id)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        soc.saves = soc.saves || {}; const L = (soc.saves[me] || []).filter(z => z !== id), on = L.length === (soc.saves[me] || []).length; if (on) L.push(id); soc.saves[me] = L.slice(-300);
+        await S.write('social.json', soc); return res.status(200).json({ ok: true, saved: on });
       }
       if (action === 'notifs') {
         const nb = await S.read('notif/' + me + '.json', { items: [], read: '' }), prev = nb.read || '';
@@ -274,19 +318,24 @@ module.exports = async function handler(req, res) {
       }
       if (!staff && (!mine || !mine.nickname)) return res.status(400).json({ ok: false, error: 'PROFILE_FIRST' });
       if (action === 'post') {
-        const text = cleanLong(body.text, 2000), img = String(body.image || '');
-        if (!text && !img) return res.status(400).json({ ok: false, error: 'EMPTY' });
+        const text = cleanLong(body.text, 2000), images = (Array.isArray(body.images) ? body.images : (body.image ? [body.image] : [])).slice(0, 4).map(String);
+        const pollIn = body.poll && Array.isArray(body.poll.options) ? body.poll.options.map(o => clean(o, 80)).filter(Boolean).slice(0, 4) : null;
+        if (pollIn && pollIn.length < 2) return res.status(400).json({ ok: false, error: 'POLL_INVALID' });
+        if (!text && !images.length) return res.status(400).json({ ok: false, error: 'EMPTY' });
         if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
-        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        if (!staff && (LINKS.test(text) || SELLING.test(text) || (pollIn && pollIn.some(o => LINKS.test(o))))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
         const now = Date.now(), hits = (postsSent.get(me) || []).filter(t => now - t < 864e5); if (!staff && hits.length >= 20) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
         const id = now.toString(36) + crypto.randomBytes(3).toString('hex'), x = { id, a: me, x: text, t: new Date().toISOString(), lk: [], c: [] };
         if (staff) x.ftm = true;
-        if (img) {
+        const bufs = [];
+        for (const img of images) {
           const mm = img.match(/^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/); if (!mm) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
           const buf = Buffer.from(mm[1], 'base64'); if (buf.length > 700000 || buf[0] !== 0xFF || buf[1] !== 0xD8) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
-          const r = await within(8000, admin.storage.from(BUCKET).upload('posts/' + id + '.jpg', buf, { upsert: true, contentType: 'image/jpeg', cacheControl: '31536000' }), 'post image'); if (r.error) throw new Error('POSTIMG: ' + r.error.message);
-          x.img = now.toString(36);
+          bufs.push(buf);
         }
+        for (let i = 0; i < bufs.length; i++) { const r = await within(8000, admin.storage.from(BUCKET).upload('posts/' + id + (i ? '_' + i : '') + '.jpg', bufs[i], { upsert: true, contentType: 'image/jpeg', cacheControl: '31536000' }), 'post image'); if (r.error) throw new Error('POSTIMG: ' + r.error.message); }
+        if (bufs.length) { x.img = now.toString(36); x.imgs = bufs.length; }
+        if (pollIn) x.poll = { o: pollIn.map(t => ({ t, v: [] })) };
         hits.push(now); postsSent.set(me, hits);
         P.posts.push(x); if (P.posts.length > 600) P.posts = P.posts.filter(p => p.pin).concat(P.posts.filter(p => !p.pin).slice(-580));
         await S.write('posts.json', P);
@@ -298,6 +347,23 @@ module.exports = async function handler(req, res) {
         x.lk = x.lk || []; const on = x.lk.indexOf(me) === -1; x.lk = x.lk.filter(m => m !== me); if (on) x.lk.push(me);
         await S.write('posts.json', P); if (on && x.a !== me && !x.ftm) await notify(x.a, { k: 'like', by: me, post: x.id });
         return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'vote') {
+        if (!x.poll) return res.status(400).json({ ok: false, error: 'INVALID' }); const i = +body.i;
+        const had = x.poll.o.findIndex(o => o.v.indexOf(me) !== -1); x.poll.o.forEach(o => { o.v = o.v.filter(m => m !== me); });
+        if (x.poll.o[i] && had !== i) x.poll.o[i].v.push(me);
+        await S.write('posts.json', P); return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'edit') {
+        if (x.a !== me && !staff) return res.status(403).json({ ok: false, error: 'NOT_YOURS' });
+        const text = cleanLong(body.text, 2000); if (!text && !x.img) return res.status(400).json({ ok: false, error: 'EMPTY' });
+        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        x.x = text; x.ed = new Date().toISOString(); await S.write('posts.json', P); return res.status(200).json({ ok: true, post: outPost(x) });
+      }
+      if (action === 'clike') {
+        const c = (x.c || []).filter(z => z.id === String(body.cid || ''))[0]; if (!c) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        c.lk = c.lk || []; const on = c.lk.indexOf(me) === -1; c.lk = c.lk.filter(m => m !== me); if (on) c.lk.push(me);
+        await S.write('posts.json', P); return res.status(200).json({ ok: true, post: outPost(x) });
       }
       if (action === 'comment') {
         const text = cleanLong(body.text, 600); if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });

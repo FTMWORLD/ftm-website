@@ -59,6 +59,10 @@
     {
       "source": "/api/v1/customer/:first(chat|investment|leaderboard|kyc-profile)",
       "destination": "/api/v1/customer/proxy?__p=:first"
+    },
+    {
+      "source": "/p/:id",
+      "destination": "/api/v1/community?share=:id"
     }
   ]
 }
