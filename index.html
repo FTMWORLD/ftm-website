@@ -5121,7 +5121,7 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
     }
     function tone(n){ return n>0?'up':(n<0?'down':null); }
 
-    F.splitOn = (function(){ try{ if(/[?&]preview=split\b/.test(location.search)) localStorage.setItem('ftm_preview_split','1'); return localStorage.getItem('ftm_preview_split')==='1'; }catch(e){ return /[?&]preview=split\b/.test(location.search); } })();
+    F.splitOn = true;
     F.es = function(){ var es=F.data&&F.data.engineStats; if(!es) return null; var va=F.viewedAccount&&F.viewedAccount(); if(es.accountId && va && va.accountId && es.accountId!==va.accountId) return null; return es; };
     F.initialDeposit = function(){ var es=F.es(); if(!es) return null;
       if(es.initialDeposit!=null && es.initialDeposit>0) return {amt:es.initialDeposit, t:es.initialDepositAt?Date.parse(es.initialDepositAt):null, kind:'deposit'};
