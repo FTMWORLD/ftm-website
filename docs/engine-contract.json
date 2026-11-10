@@ -700,7 +700,7 @@
       "path": "/customer/accounts/:account_id/history",
       "auth": "customer",
       "status": "live",
-      "summary": "Closed trades, newest first, with a summary, in ONE shape for every connected account (trades[], page.total). The trading account: FTM's copies. An account without a copy terminal (paused, connected-not-trading, view-only): its own closed trades from the read-only statistics sync once it has read the account (plus balance_operations), the master records before that for a view-only row. Query ?limit=50 (1-200) &offset=0 &symbol=XAUUSD. net_profit = realized + commission + swap (null when a component is unknown). (One shape for every account: from the next API restart.)",
+      "summary": "Closed trades, newest first, with a summary, in ONE shape for every connected account (trades[], page.total). 10 Nov 2026: EVERY account, the trading one included, answers its own STATEMENT (source ACCOUNT_HISTORY: every closed position, FTM's copies and the customer's own trades, from the read-only statistics sync; re-read about a minute after each copy closes) -- the same rows as GET /stats history_page; each row has copied_by_ftm (true = FTM copied it; ftm_test / welcome_trade / label / closed_by from the copy record). symbol = the master's name where the broker's symbol is mapped (market = the broker's symbol); ?symbol= matches either. Before the first read: the trading account its copy records (source FTM_COPY, copied_by_ftm true), a view-only row the master records. Query ?limit=50 (1-200) &offset=0 &symbol=XAUUSD. net_profit = realized + commission + swap (null when a component is unknown). (One shape for every account: from the next API restart.)",
       "response": {
         "200": {
           "ok": true,
@@ -753,9 +753,14 @@
               "swap": "0.00",
               "net_profit": "99.00",
               "partial_closes": 0,
-              "closing_deal_ref": "9876"
+              "closing_deal_ref": "9876",
+              "copied_by_ftm": true,
+              "welcome_trade": false,
+              "label": null,
+              "source": "ACCOUNT_HISTORY"
             }
-          ]
+          ],
+          "source": "ACCOUNT_HISTORY | FTM_COPY (trading account not read yet) | FTM master records (view-only row not read yet)"
         }
       },
       "errors": [
