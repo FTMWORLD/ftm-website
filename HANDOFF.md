@@ -605,3 +605,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
   served by GET ?postimg=; notifications notif/<mid>.json (likes, comments, follows) plus FTM posts computed from posts.json.
 - FTM staff = login on @ftmwealthnation.com or listed in env FTM_COMMUNITY_ADMINS; staff posts show as "FTM" with a gold tick and can pin/delete anything.
 - Tests: community-api.js (feed rules), community-e2e.js (two browsers: post with photo, double-tap like, comment, notifications).
+
+## Leaderboard nickname and flag (engine a11c68a, 10 Nov 2026 16:57)
+- Nickname: 2 changes in any 7 days; a 3rd gets 429 NICKNAME_RATE_LIMIT with next_change_at; the website shows
+  "You can change your nickname twice in 7 days. Next change: <date>" (test: buttons.js "Nickname third change in a week").
+- Leaderboard flag = KYC country only (PUT /customer/kyc-profile). Country sent to /leaderboard/profile is ignored.
+  Community country is separate and stays in api/v1/community.js.

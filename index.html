@@ -9244,7 +9244,10 @@ tick();setInterval(tick,5000);})();
     F().remote.api('/leaderboard/profile',{method:'PUT',body:body}).then(function(j){
       profile=j.profile||profile; msg.className='lbl-msg ok'; msg.textContent=t(body.opted_in?'Saved. You appear on the board at its next update.':'Saved. You are no longer shown on the board.');
       setTimeout(function(){ last=null; load(); },1500);
-    }).catch(function(e){ opt.checked=!!(profile&&profile.opted_in); msg.className='lbl-msg bad'; msg.textContent=why(e,'Your choice could not be saved. Please try again.'); });
+    }).catch(function(e){ opt.checked=!!(profile&&profile.opted_in); msg.className='lbl-msg bad';
+      if(e&&(e.code==='NICKNAME_RATE_LIMIT'||(e.status===429&&/NICKNAME/.test(e.code||'')))){ var nx=e.body&&(e.body.next_change_at||e.body.next_allowed_at), d=''; try{ if(nx) d=new Date(nx).toLocaleString((window.FTM_LOCALE||undefined),{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }catch(x){}
+        msg.textContent=t('You can change your nickname twice in 7 days.')+(d?' '+t('Next change:')+' '+d:''); return; }
+      msg.textContent=why(e,'Your choice could not be saved. Please try again.'); });
   }
   document.addEventListener('click',function(e){ if(e.target.closest('.app-nav-item[data-view="board"]')) setTimeout(load,30); });
   setInterval(function(){
