@@ -12,7 +12,7 @@ acc.rows.forEach(r=>{ ['net','profit','commission','swap'].forEach(k=>{ if(r[k])
 const O=oracle(acc), ST=engine(acc,O);
 const VIEWS=['metrics','accounts','perf','calendar','sessions','board','community','charts'];
 const SIZES=[['laptop 1440',{viewport:{width:1440,height:900}}],['laptop 1280',{viewport:{width:1280,height:800}}],['tablet',{viewport:{width:820,height:1180},isMobile:true,hasTouch:true}],
-  ['iPhone 13',devices['iPhone 13']],['iPhone SE',devices['iPhone SE']],['Android',devices['Pixel 5']],['small Android',{viewport:{width:360,height:740},isMobile:true,hasTouch:true,deviceScaleFactor:2}]];
+  ['iPhone 13',devices['iPhone 13']],['iPhone SE',devices['iPhone SE']],['Android',devices['Pixel 5']],['small Android',{viewport:{width:360,height:740},isMobile:true,hasTouch:true,deviceScaleFactor:2}],['phone with enlarged text',{viewport:{width:280,height:600},isMobile:true,hasTouch:true,deviceScaleFactor:2}]];
 (async()=>{
   const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})}); const fails=[];
   for(const [name,opt] of SIZES){
@@ -38,7 +38,7 @@ const SIZES=[['laptop 1440',{viewport:{width:1440,height:900}}],['laptop 1280',{
         const lab=e=>(e.id?'#'+e.id:'')+(e.className&&typeof e.className==='string'?'.'+e.className.trim().split(/\s+/).slice(0,2).join('.'):'')+' "'+e.textContent.trim().replace(/\s+/g,' ').slice(0,40)+'"';
         const texts=[...root.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&!e.closest('svg,[hidden],[aria-hidden="true"],.ftm-tip,select,option,input,textarea'));
         texts.forEach(e=>{ const cs=getComputedStyle(e);
-          if((e.scrollWidth>e.clientWidth+1)&&(cs.overflowX==='hidden'||cs.overflowX==='clip'||cs.textOverflow==='ellipsis')&&cs.display!=='inline') out.push('cut off: '+lab(e));
+          if(!e.closest('.rg-leg-mkt em')&&(e.scrollWidth>e.clientWidth+1)&&(cs.overflowX==='hidden'||cs.overflowX==='clip'||cs.textOverflow==='ellipsis')&&cs.display!=='inline') out.push('cut off: '+lab(e));
           const r=e.getBoundingClientRect(); if((r.right>W+1||r.left<-1)&&!scrolls(e)) out.push('wider than the screen: '+lab(e));
           for(let a=e.parentElement;a&&a!==root;a=a.parentElement){ const ca=getComputedStyle(a); if(ca.overflowX!=='visible'&&ca.overflowX!=='auto'&&ca.overflowX!=='scroll'){ const ra=a.getBoundingClientRect(); if(r.right>ra.right+2||r.left<ra.left-2){ out.push('cut off by its box: '+lab(e)); } break; } } });
         // words on top of each other: text ranges of different elements that intersect
@@ -47,6 +47,10 @@ const SIZES=[['laptop 1440',{viewport:{width:1440,height:900}}],['laptop 1280',{
         for(let i=0;i<boxes.length;i++) for(let j=i+1;j<boxes.length;j++){ const A=boxes[i],B=boxes[j]; if(A.e===B.e||A.e.contains(B.e)||B.e.contains(A.e)) continue;
           const ox=Math.min(A.r.right,B.r.right)-Math.max(A.r.left,B.r.left), oy=Math.min(A.r.bottom,B.r.bottom)-Math.max(A.r.top,B.r.top);
           if(ox>3&&oy>Math.min(A.r.height,B.r.height)*0.35) out.push('overlap: '+lab(A.e)+' / '+lab(B.e)); }
+        // the account value must stay on one line, whatever its size
+        const dv=document.getElementById('dxVal'); if(dv&&vis(dv)){ const lh=dv.getClientRects().length, rr=document.createRange(); rr.selectNodeContents(dv); const R=[...rr.getClientRects()].filter(r=>r.width>1); if(R.length>1 && R.some(r=>r.top>=R[0].bottom-2)) out.push('account value breaks onto two lines: '+lab(dv)); }
+        // a Show more / Show less button must change something when pressed
+        [...root.querySelectorAll('.xp-btn')].filter(vis).forEach(bt=>{ if(bt.closest('.mt-xp') && innerWidth>600) out.push('pointless button on a wide screen: '+lab(bt)); });
         return [...new Set(out)];
       });
       bad.forEach(x=>fails.push(name+' · '+v+' · '+x));

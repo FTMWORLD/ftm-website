@@ -339,7 +339,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .dx-val{font-size:clamp(30px,4.2vw,44px);letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.05;overflow-wrap:anywhere}
   .mg-d{display:block;font-size:11.5px;font-weight:600;color:#5b6378;margin-top:2px}
   .mg-d:empty{display:none}
-  .dx-val .dx-c{font-size:.5em;letter-spacing:0;opacity:.85;margin-inline-start:1px}
+  .dx-val .dx-c{font-size:.5em;letter-spacing:0;opacity:.85;margin-inline-start:1px;display:inline-block;white-space:nowrap}
+  #appView .dx-val{white-space:nowrap;overflow-wrap:normal;word-break:keep-all;display:block;max-width:100%}
   .dx-init{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:13.5px;color:rgba(255,255,255,.72)}
   .dx-init em{font-style:normal}
   .dx-init b{color:#E3B62F;font-weight:700;font-variant-numeric:tabular-nums}
@@ -571,6 +572,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     .app-scroll table.app-trades tr{border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:8px;background:#fff}
     .app-scroll table.app-trades td{display:flex;justify-content:space-between;gap:12px;border:0!important;padding:6px 0!important;text-align:right;white-space:normal}
     .app-scroll table.app-trades td::before{content:attr(data-label);color:var(--muted);font-size:12px;font-weight:600;text-align:left}
+    .app-scroll table.app-trades td{flex-wrap:wrap;align-items:center;row-gap:6px}.app-scroll table.app-trades td>*{min-width:0}
     .app-scroll table.app-trades td:empty{display:none}
   }
   .unit-sw{display:inline-flex;margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
@@ -2024,7 +2026,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 @media (max-width:900px){.rk-card{grid-template-columns:1fr;gap:16px}.rk-l{grid-template-columns:auto 1fr;align-items:center;column-gap:16px}.rk-l .app-label{grid-column:1/-1}.rk-vs{justify-self:end}}
 .pp-card{margin-top:0}
 .cv-card .cv-legend{display:none}
-.mt-xp{display:none}
+#appView .mt-xp{display:none}
 @media (max-width:600px){
   #appView .metrics:not(.mt-open)>*:nth-child(n+2){display:none}
   #appView .mt-xp{display:flex;border-top:0;margin-top:-6px}
@@ -2069,6 +2071,14 @@ table[hidden]{display:none}
 @keyframes ppGrow{from{transform:scaleX(0)}}
 @media (max-width:900px){.pp-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
 @media (max-width:560px){.pp-t{padding:13px 14px 14px}.pp-v{font-size:20px}.pp-head{margin-bottom:12px}}
+@media (max-width:360px){
+  #appView .pp-t{padding:12px 10px 12px}#appView .pp-v{font-size:clamp(14px,5.4vw,19px)}#appView .pp-c{font-size:11.5px;padding:3px 6px}
+  #appView .dx-tagrow{flex-wrap:wrap!important;row-gap:8px}#appView .dx-hero{padding:18px 16px}
+  #appView .rk-l{grid-template-columns:1fr!important}#appView .rk-l .rk-sub{align-self:start;margin:0}
+  #appView .app-label{letter-spacing:.04em;white-space:normal}
+  #appView .acct-menu-btn{flex:none}
+  #appView .acct-table .conn{white-space:normal;text-align:center}
+}
 .xp-row{display:flex;justify-content:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(11,20,64,.07)}
 .xp-row[hidden],.xp-btn[hidden]{display:none!important}
 .xp-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(11,20,64,.14);background:#fff;color:var(--ink);font:inherit;font-size:13.5px;font-weight:700;padding:9px 18px;border-radius:99px;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
@@ -3241,7 +3251,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
           <div><dt>Max equity drawdown</dt><dd id="mDDeq">&mdash;</dd></div>
           <div><dt>Current equity</dt><dd id="mEq2">&mdash;</dd></div>
           <div><dt>Current balance</dt><dd id="mBal2">&mdash;</dd></div>
-          <div><dt>Highest balance</dt><dd id="mHigh">&mdash;</dd></div>
+          <div><dt>Highest balance</dt><dd><span id="mHigh">&mdash;</span><small class="mg-d" id="mHighD"></small></dd></div>
+          <div data-tip="Net profit divided by the largest drop from a high, in money. Above 1 means the account has earned back more than its worst drop."><dt>Recovery factor</dt><dd id="mRecov">&mdash;</dd></div>
         </dl>
       </div>
       <div class="app-card">
@@ -3262,15 +3273,22 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
           <div><dt>Expectancy</dt><dd id="mExp">&mdash;</dd></div>
           <div><dt>Standard deviation</dt><dd id="mSD">&mdash;</dd></div>
           <div data-tip="Yearly return divided by yearly ups and downs, from the account's daily time-weighted returns (needs 30 days). Above 1 is good, above 2 is excellent."><dt>Sharpe ratio</dt><dd id="mSharpe">&mdash;</dd></div>
+          <div data-tip="Like the Sharpe ratio, but only the down days count as risk (needs 30 days). Higher is better."><dt>Sortino ratio</dt><dd id="mSortino">&mdash;</dd></div>
+          <div data-tip="The gain so far, expressed per year (time-weighted, shown after 90 days)."><dt>Annual return</dt><dd id="mAnnual">&mdash;</dd></div>
+          <div><dt>Profit factor</dt><dd id="mPF">&mdash;</dd></div>
+          <div><dt>Avg win / avg loss</dt><dd id="mAvg">&mdash;</dd></div>
         </dl>
       </div>
       <div class="app-card">
         <h4 class="mg-title">Trade stats</h4>
         <dl class="mg">
           <div><dt>Win rate</dt><dd id="mWin">&mdash;</dd></div>
-          <div><dt>Profit factor</dt><dd id="mPF">&mdash;</dd></div>
-          <div><dt>Avg win / avg loss</dt><dd id="mAvg">&mdash;</dd></div>
           <div><dt>Avg trade duration</dt><dd id="mDur">&mdash;</dd></div>
+          <div><dt>Best trade</dt><dd id="mBestT">&mdash;</dd></div>
+          <div><dt>Worst trade</dt><dd id="mWorstT">&mdash;</dd></div>
+          <div><dt>Longest win / loss run</dt><dd id="mRuns">&mdash;</dd></div>
+          <div><dt>Long / short trades</dt><dd id="mLS">&mdash;</dd></div>
+          <div><dt>Long / short won</dt><dd id="mLSw">&mdash;</dd></div>
         </dl>
       </div>
     </div>
@@ -5149,10 +5167,12 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       var mean=expectancy, variance=0;
       covered.forEach(function(t){ variance+=Math.pow(t.pl-mean,2); });
       var sd = n>1 ? Math.sqrt(variance/(n-1)) : 0;
-      var sharpe=null;
+      var sharpe=null, sortino=null, annual=null;
       if(curve.length>1){ var sd0=new Date(curve[1].t); sd0.setHours(0,0,0,0); var nDays=Math.floor((Date.now()-sd0.getTime())/864e5);
         if(nDays>=30){ var dr=[], f0=1; for(var di=1; di<=nDays+1; di++){ var de=new Date(sd0); de.setDate(de.getDate()+di); var f1=atT(de.getTime())[0]; dr.push(f1/f0-1); f0=f1; }
-          var dm=dr.reduce(function(a,x){return a+x;},0)/dr.length, dv=dr.reduce(function(a,x){return a+(x-dm)*(x-dm);},0)/(dr.length-1); sharpe=dv>0?dm/Math.sqrt(dv)*Math.sqrt(365):null; } }
+          var dm=dr.reduce(function(a,x){return a+x;},0)/dr.length, dv=dr.reduce(function(a,x){return a+(x-dm)*(x-dm);},0)/(dr.length-1); sharpe=dv>0?dm/Math.sqrt(dv)*Math.sqrt(365):null;
+          var dd2=dr.reduce(function(a,x){return a+(x<0?x*x:0);},0)/dr.length; sortino=dd2>0?dm/Math.sqrt(dd2)*Math.sqrt(365):null; }
+        if(nDays>=90) annual=(Math.pow(1+gainPct/100,365/nDays)-1)*100; }
 
       var yr=new Date().getFullYear(), ySeg=seg(new Date(yr,0,1).getTime(), null);
       var yearPL=ySeg.pl, yearPct=ySeg.pct;
@@ -5179,7 +5199,11 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         netPL:netPL, gainPct:gainPct, absPct:absPct, balance:balance, equity:equity,
         floating:floating, highest:Math.max.apply(null,balSeries), ddBal:ddBal, ddEq:ddEq,
         deposits:acct.deposits, withdrawals:acct.withdrawals, anchor:anchor, fees:fees, lots:lots,
-        expectancy:expectancy, sd:sd, sharpe:sharpe,
+        expectancy:expectancy, sd:sd, sharpe:sharpe, sortino:sortino, annual:annual,
+        tradeX:(function(){ var P=covered.slice().sort(function(a,b){return a.closeTime-b.closeTime;}), bw=null, ww=null, rw=0, rl=0, mw=0, ml=0, L=0, Lw=0, S=0, Sw=0;
+          P.forEach(function(t){ if(bw===null||t.pl>bw) bw=t.pl; if(ww===null||t.pl<ww) ww=t.pl; if(t.pl>0.004){ rw++; rl=0; if(rw>mw) mw=rw; } else if(t.pl<-0.004){ rl++; rw=0; if(rl>ml) ml=rl; }
+            var d=String(t.dir||'').toUpperCase(); if(d==='BUY'){ L++; if(t.pl>0.004) Lw++; } else if(d==='SELL'){ S++; if(t.pl>0.004) Sw++; } });
+          return {best:bw, worst:ww, winRun:mw, lossRun:ml, longs:L, longWon:Lw, shorts:S, shortWon:Sw}; })(),
         count:closed.length, coveredCount:covered.length, curveIncomplete:curveIncomplete, curveStart:curveStart,
         winRate: n?(wins/n*100):0, profitFactor: grossLoss>0?(grossProfit/grossLoss):null,
         avgWin: wins?grossProfit/wins:0, avgLoss: losses?grossLoss/losses:0,
@@ -5525,7 +5549,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       }
       set('mEq2', cur(m.equity));
       set('mBal2', cur(m.balance));
-      set('mHigh', ES.peakBalance!=null ? cur(ES.peakBalance)+(ES.peakBalanceAt?' \u00B7 '+new Date(ES.peakBalanceAt).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):'') : '\u2014');
+      var hiD=(ES.peakBalance!=null&&ES.peakBalanceAt)?new Date(ES.peakBalanceAt).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):'';
+      set('mHigh', ES.peakBalance!=null ? cur(ES.peakBalance) : '\u2014'); set('mHighD', hiD);
 
       var ini=F.initialDeposit(), iniTx=ini?cur(ini.amt)+(ini.t?' \u00B7 '+new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''):'\u2014', iniL=ini&&ini.kind==='start'?'Starting balance':'Initial deposit';
       var iniD=ini&&ini.t?new Date(ini.t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}):''; set('mInit', ini?cur(ini.amt):'\u2014'); set('mInitD', iniD); set('mInitL', iniL); set('dxInitV', iniTx); set('dxInitL', iniL); var dxI=document.getElementById('dxInit'); if(dxI) dxI.hidden=!ini;
@@ -5537,6 +5562,13 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
       set('mExp', (m.expectancy>=0?'+':'')+cur(m.expectancy), tone(m.expectancy));
       set('mSD', cur(m.sd));
       set('mSharpe', m.sharpe==null?'\u2014':m.sharpe.toFixed(2), m.sharpe==null?null:tone(m.sharpe));
+      set('mSortino', m.sortino==null?'\u2014':m.sortino.toFixed(2), m.sortino==null?null:tone(m.sortino));
+      set('mAnnual', m.annual==null?'\u2014':(m.annual>0?'+':'')+m.annual.toFixed(2)+'%', m.annual==null?null:tone(m.annual));
+      var ddM=(ES.ddClosed&&ES.ddClosed.peak!=null&&ES.ddClosed.trough!=null)?(+ES.ddClosed.peak-+ES.ddClosed.trough):null, netR=ES.closedPl!=null?ES.closedPl:m.netPL;
+      set('mRecov', ddM>0.004?(netR/ddM).toFixed(2):'\u2014', ddM>0.004?tone(netR):null);
+      var TX=m.tradeX||{}; set('mBestT', TX.best==null?'\u2014':(TX.best>0?'+':'')+cur(TX.best), TX.best==null?null:tone(TX.best)); set('mWorstT', TX.worst==null?'\u2014':(TX.worst>0?'+':'')+cur(TX.worst), TX.worst==null?null:tone(TX.worst));
+      set('mRuns', (TX.winRun||0)+' / '+(TX.lossRun||0)); set('mLS', (TX.longs||0)+' / '+(TX.shorts||0));
+      set('mLSw', (TX.longs?(TX.longWon/TX.longs*100).toFixed(2)+'%':'\u2014')+' / '+(TX.shorts?(TX.shortWon/TX.shorts*100).toFixed(2)+'%':'\u2014'));
 
       set('mWin', (ES.winRatePct!=null?ES.winRatePct:m.winRate).toFixed(2)+'%');
       set('mPF', m.profitFactor==null?'\u2014':m.profitFactor.toFixed(2), m.profitFactor==null?null:(m.profitFactor>=1?'up':'down'));
@@ -6176,6 +6208,8 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
         if(g0 && window.ResizeObserver) new ResizeObserver(function(){ fitCal(g0); }).observe(g0);
         else window.addEventListener('resize',function(){ if(g0) fitCal(g0); }); }
       function cellText(amt,pc){
+        var gw=(document.getElementById('calGrid')||{}).clientWidth||0;
+        if(gw && gw/8<50){ var A=Math.abs(amt), s0=amt<0?'-':'+', na=A>=1000?s0+(A/1000).toFixed(A>=10000?0:1)+'K':s0+Math.round(A), np=(pc>=0?'+':'')+pc.toFixed(1)+'%'; return pctPrimary?[np,na,np,na]:[na,np,na,np]; }
         var big=Math.abs(amt)>=1000, a=Math.abs(amt)>=100000?((amt>=0?'+':'-')+F.moneyIn(Math.round(Math.abs(amt)/1000),0,F.data.account.currency)+'K'):signed(amt,big?0:2), p=(pc>=0?'+':'')+pc.toFixed(2)+'%';
         var sh=Math.abs(amt)>=1000?((amt>=0?'+':'-')+F.moneyIn(Math.abs(amt)/1000,1,F.data.account.currency)+'K'):a;
         return pctPrimary ? [p,a,p,sh] : [a,p,sh,p];
@@ -8064,7 +8098,9 @@ tick();setInterval(tick,5000);})();
     var sm=document.querySelector('.sb-user small'); if(sm&&window.FTM&&FTM.session&&FTM.session.email) sm.textContent=FTM.session.email;
     var bal=tx('mEquity'); if(!bal||bal==='\u2014') bal=tx('hdrBal'); $('dxBal').textContent=bal;
     (function(el){ var tgt=null; try{ tgt=FTM.metrics().equity; }catch(e){}
-      var fin=function(){ var mm=String(bal).match(/^(.*?)([.,]\d{2})(\D*)$/); if(mm){ el.textContent=''; el.appendChild(document.createTextNode(mm[1])); var c=document.createElement('small'); c.className='dx-c'; c.textContent=mm[2]+mm[3]; el.appendChild(c); } else el.textContent=bal; };
+      var fit=function(){ el.style.fontSize=''; var pe=el.parentElement; if(!pe) return; var cs=getComputedStyle(pe), w=pe.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0); if(!(w>0)) return; var rg=document.createRange(), tw=function(){ rg.selectNodeContents(el); return rg.getBoundingClientRect().width; }; var fs=parseFloat(getComputedStyle(el).fontSize)||44; for(var k=0;k<16 && tw()>w+0.5;k++){ fs*=0.94; el.style.fontSize=fs.toFixed(1)+'px'; } };
+      if(!window.__dxFitOn){ window.__dxFitOn=1; window.addEventListener('resize',function(){ if(window.__dxFit) window.__dxFit(); }); } window.__dxFit=fit;
+      var fin=function(){ var mm=String(bal).match(/^(.*?)([.,]\d{2})(\D*)$/); if(mm){ el.textContent=''; el.appendChild(document.createTextNode(mm[1])); var c=document.createElement('small'); c.className='dx-c'; c.textContent=mm[2]+mm[3]; el.appendChild(c); } else el.textContent=bal; fit(); };
       if(tgt==null||!isFinite(tgt)||!bal||bal==='\u2014'||matchMedia('(prefers-reduced-motion:reduce)').matches){ fin(); el._v=tgt; return; }
       if(el._t===tgt && el.textContent===bal) return; var from=(el._v!=null&&isFinite(el._v))?el._v:0; el._t=tgt; el._v=tgt;
       if(Math.abs(tgt-from)<0.5){ fin(); return; }
@@ -8653,7 +8689,7 @@ tick();setInterval(tick,5000);})();
       var esc2=function(x){ return String(x).replace(/[<&"]/g,function(c){return {'<':'&lt;','&':'&amp;','"':'&quot;'}[c];}); };
       $('rgMktLeg').innerHTML=L.map(function(x,i){ return '<span title="'+esc2(x.k)+' '+fl[i]+'%"><i class="dot" style="background:'+x.c+'"></i><em>'+esc2(x.k)+'</em><b>'+fl[i]+'%</b></span>'; }).join(''); }
     var m=F.metrics?F.metrics():null;
-    if(m){ if($('rgPF')) $('rgPF').textContent=m.profitFactor?m.profitFactor.toFixed(2):'—'; if($('kpHigh')) $('kpHigh').textContent=$('mHigh')?$('mHigh').textContent:'—'; }
+    if(m){ if($('rgPF')) $('rgPF').textContent=m.profitFactor?m.profitFactor.toFixed(2):'—'; if($('kpHigh')) $('kpHigh').textContent=$('mHigh')?$('mHigh').textContent+($('mHighD')&&$('mHighD').textContent?' \u00B7 '+$('mHighD').textContent:''):'—'; }
     var app=$('appView'); if(app){ var A=(d.accounts||[]).filter(function(a){return !a.isMaster;}); app.classList.toggle('has-acct', A.length>0);
       var v=F.viewedAccount&&F.viewedAccount(), mn=$('masterNote'); if(mn) mn.hidden=!(app.classList.contains('free') && v && v.isMaster); }
   }

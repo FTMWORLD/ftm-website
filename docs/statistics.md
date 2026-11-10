@@ -40,6 +40,10 @@ balance = start_balance + deposits - withdrawals + closed P/L + fees_and_adjustm
 | Sessions | each trade belongs to exactly one session (the one that opened most recently at that hour, UTC), so sessions add up to the total | |
 | Year table | Start + Net deposits + Profit (+ Dividends, tax & adjustments) = End, to the cent | |
 | Sharpe ratio | mean / standard deviation of daily time-weighted returns, x sqrt(365), risk-free 0; — before 30 days | |
+| Sortino ratio | mean daily time-weighted return / downside deviation (sqrt of the mean of squared negative days), x sqrt(365); — before 30 days | |
+| Annual return | (1 + gain)^(365 / days) - 1, from the first event; — before 90 days | |
+| Recovery factor | net P/L / largest closed-balance drop in money (engine max_drawdown_closed_balance peak - trough) | engine |
+| Best / worst trade, longest win / loss run, long / short | positions (net of all deals), ordered by closing time; long = opened with BUY | |
 | Statement | Opening + Deposits - Withdrawals + Trading result (+ Dividends, tax & adjustments) = Closing | |
 | Equity, floating P/L | balance + open trades' floating P/L | engine accounts row |
 | Account activity | every closed trade, deposit, withdrawal, adjustment and the opening commission of trades still open: the list adds up to the balance change | |

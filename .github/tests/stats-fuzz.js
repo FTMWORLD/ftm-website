@@ -74,7 +74,7 @@ function oracle(acc){
   const seg=(a,b)=>{ let f=1,p=0; deals.forEach(d=>{ if((a==null||d.t>=a)&&(b==null||d.t<b)){ if(d.net!==0&&d.before>0) f*=1+d.net/d.before; p+=d.net; } }); return {pl:c2(p),pct:(f-1)*100}; };
   const balAt=t=>{ let b=S0; rows.forEach(r=>{ if(r.t<t) b=c2(b+r.net); }); return b; };
   // positions (a position = its opening deal + every closing deal)
-  const P={}; rows.forEach(r=>{ if(!r.entry) return; const x=P[r.pos]=P[r.pos]||{net:0,close:0,open:null,lots:0,sym:r.sym}; x.net+=r.net; if(r.entry==='IN') x.open=r.t; if(r.entry==='OUT'){ x.close=Math.max(x.close,r.t); x.lots+=r.vol; } });
+  const P={}; rows.forEach(r=>{ if(!r.entry) return; const x=P[r.pos]=P[r.pos]||{net:0,close:0,open:null,lots:0,sym:r.sym}; x.net+=r.net; if(r.entry==='IN'){ x.open=r.t; x.dir=r.type; } if(r.entry==='OUT'){ x.close=Math.max(x.close,r.t); x.lots+=r.vol; } });
   const pos=Object.values(P).filter(x=>x.close);
   const outs=rows.filter(r=>r.entry==='OUT');
   const wins=pos.filter(x=>c2(x.net)>0).length;
@@ -125,7 +125,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
     const V=await p.evaluate(()=>{const g=i=>((document.getElementById(i)||{}).textContent||'').replace(/\s+/g,' ').trim();const q=s=>[...document.querySelectorAll(s)].map(e=>e.textContent.replace(/\s+/g,' ').trim());
       const st=(()=>{ try{ FTM._stFill&&FTM._stFill(); const s=document.getElementById('stPeriod'); s.value='all'; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return [...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent]); }catch(e){ return 'ERR '+e.message; } })();
       const fx=id=>Object.fromEntries([...document.querySelectorAll('#'+id+' > div')].map(d=>[d.querySelector('dt').textContent,d.querySelector('dd').textContent]));
-      return {cvNow:g('cvNow'),eqT:g('mEquity'),flT:g('mFloat'),dx:g('dxVal'),lv:document.getElementById('lvStrip').hidden?0:document.querySelectorAll('#lvList .lv-c').length,now:Date.now(),pf:g('mPF'),avg:g('mAvg'),exp:g('mExp'),sd:g('mSD'),stD:g('mStreakDays'),stT:g('mStreakTrades'),best:fx('pxBest'),worst:fx('pxWorst'),weeks:fx('pxWeeks'),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
+      return {bestT:g('mBestT'),worstT:g('mWorstT'),runs:g('mRuns'),ls:g('mLS'),lsw:g('mLSw'),sortino:g('mSortino'),annual:g('mAnnual'),recov:g('mRecov'),cvNow:g('cvNow'),eqT:g('mEquity'),flT:g('mFloat'),dx:g('dxVal'),lv:document.getElementById('lvStrip').hidden?0:document.querySelectorAll('#lvList .lv-c').length,now:Date.now(),pf:g('mPF'),avg:g('mAvg'),exp:g('mExp'),sd:g('mSD'),stD:g('mStreakDays'),stT:g('mStreakTrades'),best:fx('pxBest'),worst:fx('pxWorst'),weeks:fx('pxWeeks'),sharpe:g('mSharpe'),adjRow:document.getElementById('mAdjW').hidden?null:g('mAdj'),net:g('mNet'),gain:g('mGain'),year:g('mYear'),bal:g('mBalance'),high:g('mHigh'),dd:g('mDDtile'),init:g('mInitL')+'|'+g('mInit'),dep:g('mDep'),wdr:g('mWdr'),fees:g('mFees'),lots:g('mLots'),
         count:g('mCount'),win:g('mWin'),cv:g('cvChg'),pnl:[...document.querySelectorAll('#dxPnl .pp-t')].map(e=>[e.querySelector('.pp-l').textContent,e.querySelector('.pp-v').textContent,e.querySelector('.pp-c').textContent]),
         fs:[...document.querySelectorAll('#fsGrid .fs-c')].map(e=>[e.querySelector('span').textContent,e.querySelector('b').textContent,e.querySelector('small').textContent]),
         months:[...document.querySelectorAll('#perfYears .perf-row')].slice(1).map(r=>[r.querySelector('.yr').textContent,[...r.querySelectorAll('.perf-cell')].map(c=>c.querySelector('b').textContent+'|'+((c.querySelector('small')||{}).textContent||''))]),
@@ -163,7 +163,9 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       if(nd<30) ok(V.sharpe==='—','Sharpe needs 30 days: shown '+V.sharpe);
       else { const r=[]; let prev=d0.getTime(); for(let i=1;i<=nd+1;i++){ const e=new Date(d0); e.setDate(e.getDate()+i); r.push(O.seg(prev,e.getTime()).pct/100); prev=e.getTime(); }
         const mu=r.reduce((a,x)=>a+x,0)/r.length, v=r.reduce((a,x)=>a+(x-mu)**2,0)/(r.length-1), sh=v>0?mu/Math.sqrt(v)*Math.sqrt(365):null;
-        if(sh==null) ok(V.sharpe==='—','Sharpe with no variation: shown '+V.sharpe); else eq(V.sharpe,sh,0.0051,'Sharpe ratio (daily time-weighted returns, x sqrt 365)'); } }
+        if(sh==null) ok(V.sharpe==='—','Sharpe with no variation: shown '+V.sharpe); else eq(V.sharpe,sh,0.0051,'Sharpe ratio (daily time-weighted returns, x sqrt 365)');
+        const dn=r.reduce((a,x)=>a+(x<0?x*x:0),0)/r.length, so=dn>0?mu/Math.sqrt(dn)*Math.sqrt(365):null; if(so==null) ok(V.sortino==='—','Sortino with no down day: '+V.sortino); else eq(V.sortino,so,0.0051,'Sortino ratio');
+        if(nd>=90) eq(V.annual,(Math.pow(1+O.twr/100,365/nd)-1)*100,0.0051,'Annual return'); else ok(V.annual==='—','Annual return needs 90 days: '+V.annual); } }
     { const PS=O.positions.slice().sort((x,y)=>x.close-y.close), nets=PS.map(x=>c2(x.net)), n=nets.length;
       const gp=nets.filter(x=>x>0).reduce((a,x)=>a+x,0), gl=-nets.filter(x=>x<0).reduce((a,x)=>a+x,0), w=nets.filter(x=>x>0).length, l=nets.filter(x=>x<0).length;
       if(gl>0) eq(V.pf,gp/gl,0.0051,'Profit factor'); else ok(V.pf==='—','Profit factor with no losing trade is a dash: shown '+V.pf);
@@ -173,6 +175,11 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       let run=0,bestT=0; nets.forEach(x=>{ if(x>0){ run++; bestT=Math.max(bestT,run); } else if(x<0) run=0; }); eq(V.stT,bestT,0,'Best winning streak (trades)');
       const dk=t=>{ const d=new Date(t); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }; const day={},ord=[]; PS.forEach(x=>{ const k=dk(x.close); if(day[k]===undefined){ day[k]=0; ord.push(k); } day[k]+=x.net; });
       let rd=0,bestD=0; ord.forEach(k=>{ const v=c2(day[k]); if(v>0){ rd++; bestD=Math.max(bestD,rd); } else if(v<0) rd=0; }); eq(V.stD,bestD,0,'Best winning streak (days)');
+      eq(V.bestT,Math.max(...nets),0.0051,'Best trade'); eq(V.worstT,Math.min(...nets),0.0051,'Worst trade');
+      { let a=0,b=0,mw=0,ml=0; nets.forEach(x=>{ if(x>0){a++;b=0;mw=Math.max(mw,a);} else if(x<0){b++;a=0;ml=Math.max(ml,b);} }); ok(V.runs===mw+' / '+ml,'Longest win / loss run: shown '+V.runs+', expected '+mw+' / '+ml); }
+      { const Lp=PS.filter(x=>x.dir==='BUY'), Sp=PS.filter(x=>x.dir==='SELL'); ok(V.ls===Lp.length+' / '+Sp.length,'Long / short trades: shown '+V.ls+', expected '+Lp.length+' / '+Sp.length);
+        const pc=a=>a.length?(a.filter(x=>c2(x.net)>0).length/a.length*100).toFixed(2)+'%':'—'; ok(V.lsw===pc(Lp)+' / '+pc(Sp),'Long / short won: shown '+V.lsw+', expected '+pc(Lp)+' / '+pc(Sp)); }
+      { const ddm=null; }
       const tp=PS.map(x=>x.net/O.balAt(x.open!=null?x.open:x.close)*100);
       if(V.best['Best trade']) eq(V.best['Best trade'],Math.max(...tp),0.0051,'Best trade %');
       if(V.worst['Worst trade']) eq(V.worst['Worst trade'],Math.min(...tp),0.0051,'Worst trade %');
