@@ -4,6 +4,29 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-10 — COPY STOP LOSS = EMERGENCY STOP A LITTLE BEYOND THE MASTER'S (commit c3c2fa7, on for all accounts 15:00 Berlin)
+
+- Every copy's broker SL = the master's SL +/- min(max(3x spread, 5 % of the SL distance), 10 %): at most 1.1x the planned
+  loss. The exit still follows the master's CLOSE. Gospel's yes after the replay (8 of 184 copies were stopped by their own
+  broker's price while the master was not; the buffer would have avoided all 8). No change to the website's data.
+
+## 2026-11-10 — OPTIONAL KYC PROFILE (commit 27ddad6, migration 042, API restarted 14:47 Berlin)
+
+- NEW GET / PUT /customer/kyc-profile: {full_name, country, goal GROW_SAVINGS|MONTHLY_INCOME|LONG_TERM|TRY_FIRST,
+  experience NONE|SOME|EXPERIENCED, drawdown_comfort 10|25|35, completed_at, kyc_completed, suggested_tier,
+  full_name_saved}. PUT takes any subset; null clears a field; 422 VALIDATION_FAILED on a bad value or unknown field.
+- full_name is pre-filled from the sign-up name while none is saved (full_name_saved false); completed_at needs all five
+  saved. country = the leaderboard flag value (saving either updates both). suggested_tier is a hint only.
+- GET /customer/me: NEW kyc_completed (bool) for the menu badge. Customer-only; nothing public; nothing blocked.
+- Proof: verify-kyc 5/5 in the gate; regress SAFE TO DEPLOY.
+
+## 2026-11-10 — LEADERBOARD: MASTER PROFILE + COUNTRY FLAG (commit a83a5a6, API restarted 14:27 Berlin)
+
+- FTM MASTER row: risk_tier from the master EA's own trading style (newest "Multiplier: style" line of its charts; BALANCED
+  today), follows any change; country "DE".
+- country (ISO 3166-1 alpha-2) on every row: the customer's own setting, PUT /customer/leaderboard/profile
+  {"country": "DE"} (null removes it; two letters only); GET profile returns it. null = no flag. Never inferred.
+
 ## 2026-11-10 — LEADERBOARD: TRADING ACCOUNT ONLY + FTM MASTER ROW (commit 9608fbf, API restarted 14:07 Berlin)
 
 - A customer's row = the account FTM MACHINE trades on now (trading_status ACTIVE); a switch moves the row at the next
