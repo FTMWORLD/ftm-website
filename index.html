@@ -2677,6 +2677,45 @@ body.op-lock{overflow:hidden}
   .app-bar.has-title .um-btn{width:38px;height:38px}
 }
 @media (max-width:370px){.app-bar.has-title>.logo{font-size:0;gap:0}.app-bar.has-title>.logo .mark{font-size:initial}.app-bar.has-title .prod-switch button{padding:6px 9px;font-size:11.5px}}
+
+@media (max-width:700px){
+  .app-scroll table.app-trades tbody tr.cx{position:relative;cursor:pointer;padding-right:44px!important;-webkit-tap-highlight-color:transparent}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(n+4){display:none!important}
+  .app-scroll table.app-trades tbody tr.cx::after{content:'';position:absolute;top:16px;right:16px;width:9px;height:9px;border-right:2px solid #8a90a6;border-bottom:2px solid #8a90a6;transform:rotate(45deg);transition:transform .2s}
+  .app-scroll table.app-trades tbody tr.cx.open::after{transform:rotate(-135deg);top:20px}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td{padding:3px 0!important}
+  .app-scroll table.app-trades tbody tr.cx td:first-child{font-weight:800}
+}
+
+@media (max-width:700px){
+  .app-scroll table.app-trades tbody tr.cx:not(.open){display:flex!important;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:2px;padding:12px 44px 12px 14px!important}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td{display:inline-block!important;width:auto!important;padding:0!important;text-align:left!important;background:none!important}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td::before{display:none!important}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:first-child{flex:1 1 100%;font-size:15px}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:first-child *{display:inline}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:first-child small,.app-scroll table.app-trades tbody tr.cx:not(.open) td:first-child .acct-sub{display:none!important}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(2),.app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(3){font-size:13px;color:#5b6378;font-weight:600}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(3)::before{display:inline!important;content:'\00B7';margin-right:8px;color:#b4b9c9}
+  .app-scroll table.app-trades tbody tr.cx:not(.open)::after{top:50%;margin-top:-7px}
+}
+
+@media (max-width:700px){
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:first-child .acct-kind{display:none!important}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(2)::before,.app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(3)::before{display:inline!important;content:attr(data-label)!important;font-size:11.5px;color:#8a90a6;font-weight:600;margin-right:5px}
+  .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(3){padding-left:10px!important;border-left:1px solid #e3e6f0!important}
+}
+
+@media (max-width:700px){
+  .app-scroll table.lb-table tbody tr.cx:not(.open) td:first-child{flex:0 0 auto;font-size:15px}
+  .app-scroll table.lb-table tbody tr.cx:not(.open) td:nth-child(2){flex:1 1 auto;font-size:15px;font-weight:800;color:#0b1440}
+  .app-scroll table.lb-table tbody tr.cx:not(.open) td:nth-child(2)::before{display:none!important}
+  .app-scroll table.lb-table tbody tr.cx:not(.open) td:nth-child(3){flex:1 1 100%;border-left:0!important;padding-left:0!important}
+  .app-scroll table.lb-table tbody tr.cx:not(.open) td:nth-child(3)::before{content:attr(data-label)!important}
+}
+
+@media (max-width:700px){#lbLive .lb-table tbody tr:nth-child(-n+3){display:none!important}}
+
+@media (max-width:700px){.app-scroll table.app-trades tbody tr.cx:not(.open) td.pl-up,.app-scroll table.app-trades tbody tr.cx:not(.open) td.val-up{color:#1f8a5b!important}.app-scroll table.app-trades tbody tr.cx:not(.open) td.pl-down,.app-scroll table.app-trades tbody tr.cx:not(.open) td.val-down{color:#c81e2b!important}}
 </style>
 <script>
 (function(){
@@ -10268,6 +10307,14 @@ tick();setInterval(tick,5000);})();
   wrap.addEventListener('touchstart',function(e){ lastT=Date.now(); show(e.touches[0].clientX); },{passive:true}); wrap.addEventListener('touchmove',function(e){ lastT=Date.now(); show(e.touches[0].clientX); },{passive:true});
   document.addEventListener('touchstart',function(e){ if(!wrap.contains(e.target)) hide(); },{passive:true});
   wrap.style.cursor='crosshair';
+})();
+</script>
+<script>
+(function(){ var mq=matchMedia('(max-width:700px)'), openK=new Set();
+  function key(tr){ var t=tr.closest('table'), c=tr.cells; return (t&&t.id||t&&t.className||'')+'|'+(c[0]?c[0].textContent:'')+'|'+(c[1]?c[1].textContent:''); }
+  function mark(){ if(!mq.matches) return; document.querySelectorAll('.app-scroll table.app-trades tbody tr').forEach(function(tr){ if(tr.cells.length<=3||tr.classList.contains('th-row')) return; if(!tr.classList.contains('cx')) tr.classList.add('cx'); var k=key(tr); tr.classList.toggle('open',openK.has(k)); tr.setAttribute('aria-expanded',openK.has(k)?'true':'false'); }); }
+  document.addEventListener('click',function(e){ if(!mq.matches) return; var tr=e.target.closest('.app-scroll table.app-trades tbody tr.cx'); if(!tr) return; if(e.target.closest('button,a,input,select,label,[data-menu],[data-peek],.acct-menu')) return; var k=key(tr); if(openK.has(k)) openK.delete(k); else openK.add(k); tr.classList.toggle('open'); tr.setAttribute('aria-expanded',tr.classList.contains('open')?'true':'false'); });
+  setInterval(mark,800); if(window.MutationObserver) new MutationObserver(function(){ clearTimeout(mark._t); mark._t=setTimeout(mark,30); }).observe(document.body,{childList:true,subtree:true}); mark();
 })();
 </script>
 </body>
