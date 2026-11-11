@@ -5804,7 +5804,7 @@ body.op-lock{overflow:hidden}
       var cT=[], cF=[], cP=[], fac=1, cum=0;
       for(var ci=1; ci<curve.length; ci++){ var cp=curve[ci], cq=curve[ci-1]; if(!cp.flow){ var cd=cp.v-cq.v; if(cq.v>0) fac*=(1+cd/cq.v); cum+=cd; } cT.push(cp.t); cF.push(fac); cP.push(cum); }
       var atT=function(t){ var lo=0, hi=cT.length; while(lo<hi){ var mid=(lo+hi)>>1; if(cT[mid]<t) lo=mid+1; else hi=mid; } return lo ? [cF[lo-1],cP[lo-1]] : [1,0]; };
-      var seg=function(a,b){ var A=atT(a==null?-Infinity:a), B=atT(b==null?Infinity:b); return {pl:B[1]-A[1], pct:(B[0]/A[0]-1)*100}; };
+      var z9=function(x){ return Math.abs(x)<1e-9?0:x; }, seg=function(a,b){ var A=atT(a==null?-Infinity:a), B=atT(b==null?Infinity:b); return {pl:z9(B[1]-A[1]), pct:z9((B[0]/A[0]-1)*100)}; };
       var balAtT=function(t){ var lo=0, hi=curve.length; while(lo<hi){ var mid=(lo+hi)>>1; if(curve[mid].t<t) lo=mid+1; else hi=mid; } return lo ? curve[lo-1].v : curve[0].v; };
       var gainPct=seg(null,null).pct;
 
