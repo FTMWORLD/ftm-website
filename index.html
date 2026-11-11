@@ -233,6 +233,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .auth-close:hover{background:#e6e9f2}
   .auth-panel h2{font-size:28px}
   .auth-sub{color:var(--muted);font-size:15px;margin-bottom:4px}
+  .btn.is-busy{position:relative;color:transparent!important;pointer-events:none}.btn.is-busy::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:suSpin .7s linear infinite}@keyframes suSpin{to{transform:rotate(360deg)}}
+  #suResend{margin-top:6px}
   .auth-note{background:#FFF7E0;border-left:4px solid var(--gold);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.45;color:#5a4a12}
   .auth-panel label{font-size:13px;font-weight:700;color:var(--ink);margin-top:6px}
   .auth-panel input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg-3)}
@@ -3544,6 +3546,8 @@ body.op-lock{overflow:hidden}
       <p class="su-msg"><b id="suSentTo" data-noi18n></b></p>
       <p class="su-msg">Click it to create your password and log in.</p>
       <a class="btn btn-red" id="suOpenMail" href="#" target="_blank" rel="noopener" hidden>Open my email</a>
+      <p class="su-msg" id="suState" hidden></p>
+      <button type="button" class="btn btn-outline btn-sm" id="suResend" hidden>Send the link again</button>
       <p class="auth-agree-note">No email after a minute? Check your spam folder.</p>
     </div>
     <p class="auth-foot">Already have an account? <a href="#" id="signupToLogin">Log in</a></p>
@@ -9209,31 +9213,37 @@ tick();setInterval(tick,5000);})();
       return '';
     }
     function msg(f,t,ok){var m=f.querySelector('.nmsg,.su-msg');m.textContent=t;m.className=(m.classList.contains('su-msg')?'su-msg ':'nmsg ')+(ok?'ok':'bad');m.hidden=false;}
+    var T=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
+    function sendLink(mail){
+      var st=document.getElementById('suState'), rs=document.getElementById('suResend');
+      st.className='su-msg'; st.textContent=T('Sending your link…'); st.hidden=false; rs.hidden=true;
+      return FTM.auth.sendSignup(mail).then(function(){ st.className='su-msg ok'; st.textContent=T('Sent. It can take up to a minute to arrive.'); setTimeout(function(){ rs.hidden=false; },30000); })
+        .catch(function(err){ st.className='su-msg bad'; st.textContent=T(err&&err.status===429?'Too many attempts. Please wait a minute, then send again.':'We could not send the email. Please send it again.'); rs.hidden=false; });
+    }
+    var rsb=document.getElementById('suResend'); if(rsb) rsb.addEventListener('click',function(){ var m=document.getElementById('suSentTo').textContent; if(m&&window.FTM&&FTM.auth) sendLink(m); });
     document.querySelectorAll('form.js-news').forEach(function(f){
       f.addEventListener('submit',function(e){
         e.preventDefault();
         var mail=f.querySelector('input[type=email]').value.trim().toLowerCase(), ck=f.querySelector('input[type=checkbox]'), b=f.querySelector('button[type=submit]');
-        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return msg(f,'Enter a valid email address.',false);
-        if(!ck.checked)return msg(f,'Tick the box to agree to receive FTM emails.',false);
-        b.disabled=true;
-        fetch('/api/v1/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,consent:true,source:f.getAttribute('data-source')})})
-          .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return r.ok&&j.ok;});})
-          .then(function(ok){b.disabled=false;
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return msg(f,T('Enter a valid email address.'),false);
+        if(!ck.checked)return msg(f,T('Tick the box to agree to receive FTM emails.'),false);
+        var isSignup=f.getAttribute('data-source')==='signup', sub=fetch('/api/v1/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,consent:true,source:f.getAttribute('data-source')})})
+          .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return r.ok&&j.ok;});}).catch(function(){ return false; });
+        try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}
+        if(isSignup && window.FTM&&FTM.auth&&FTM.auth.ready()){
+          f.reset(); var mm=f.querySelector('.su-msg'); if(mm) mm.hidden=true; f.hidden=true;
+          var sent=document.getElementById('suSent'); document.getElementById('suSentTo').textContent=mail; sent.hidden=false;
+          var web=mailWeb(mail), om=document.getElementById('suOpenMail'); om.hidden=!web; if(web)om.href=web;
+          var em=document.getElementById('authEmail'); if(em) em.value=mail;
+          sendLink(mail); return;
+        }
+        b.disabled=true; b.classList.add('is-busy');
+        sub.then(function(ok){ b.disabled=false; b.classList.remove('is-busy');
             if(ok){f.reset();
-              if(f.getAttribute('data-source')==='signup'){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError');
-
-                if(window.FTM&&FTM.auth&&FTM.auth.ready()){
-
-                  show(true); f.hidden=true;
-                  var sent=document.getElementById('suSent'); document.getElementById('suSentTo').textContent=mail; sent.hidden=false;
-                  var web=mailWeb(mail), om=document.getElementById('suOpenMail'); om.hidden=!web; if(web)om.href=web;
-                  FTM.auth.sendSignup(mail).catch(function(){});
-                }
-                else if(ae){ae.textContent='Your free account is ready. Log in to open your client area.';ae.hidden=false;ae.classList.add('ok');} }
-              else msg(f,'You are subscribed. Thank you.',true);
-              try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}}
-            else msg(f,'Something went wrong. Please try again later.',false);})
-          .catch(function(){b.disabled=false;msg(f,'Something went wrong. Please try again later.',false);});
+              if(isSignup){ show(false); var em=document.getElementById('authEmail'); if(em){em.value=mail;} var ae=document.getElementById('authError');
+                if(ae){ae.textContent=T('Your free account is ready. Log in to open your client area.');ae.hidden=false;ae.classList.add('ok');} }
+              else msg(f,T('You are subscribed. Thank you.'),true); }
+            else msg(f,T('Something went wrong. Please try again later.'),false);});
       });
     });
     var lp=document.querySelector('#authOverlay .auth-form:not(#signupPane)')||document.querySelectorAll('.auth-form')[0], sp=document.getElementById('signupPane');
