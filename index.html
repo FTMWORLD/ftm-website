@@ -43,7 +43,7 @@ document.addEventListener('visibilitychange',function(){
 addEventListener('pagehide',function(){ try{ if(ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} });
 document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.app-home,#invHome,#appHome'); if(t){ try{ localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(x){} } },true);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="/vendor/supabase-2.119.0.min.js"></script>
 <style>
   :root{
     --red:#E5323E; --red-dark:#C4262F; --red-soft:#FF6B74;

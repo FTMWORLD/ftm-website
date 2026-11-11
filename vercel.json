@@ -64,5 +64,16 @@
       "source": "/p/:id",
       "destination": "/api/v1/community?share=:id"
     }
+  ],
+  "headers": [
+    {
+      "source": "/vendor/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
   ]
 }
