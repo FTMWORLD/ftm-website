@@ -67,6 +67,9 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Dashboard title shows your first name (from Know Your Customer, or your sign-up name) instead of the account number. To change it, update your full name in Know Your Customer.
 - On phones every list (accounts, leaderboard from number 4, markets, trades and others) shows the key details in a slim row; tap the row (arrow on the right) to see everything else.
 - Performance summary: This week (since Monday), This month, Last month, YTD, 1Y, All time, Best and Worst month, all time-weighted from your closed trades.
+- Performance summary boxes: tap any period (This week, This month, YTD...) to open its statistics: trades, win rate, profit factor, best/worst trade and day, and a daily chart.
+- Leaderboard: the period (This month, Last month, Since joining) is chosen from the drop-down at the right of the Leaderboard title. On phones, the arrow on the Your place line opens Name and visibility.
+- Community: every subscriber is visible by default with a member_ nickname; change it, or switch off Show me in the community, in My profile.
 - Account menu (top right): shows a green FTM MACHINE ACTIVATED when your account is trading (red Activate FTM MACHINE if not yet). Ask here, Chat with FTM support and Email support are under Customer support. Subscription plans only appear if you have no plan.
 - Charts: only FTM's markets (Gold, Bitcoin, US Tech 100, USD/JPY, HK50; Boom 1000 listed, not traded yet). Bitcoin moves live now; the other markets go live as soon as FTM's price feed is connected. Your open trades show on the chart at their entry price with the floating profit, in money or %.
 - Compare your result with a market: on the balance chart choose Gold, US Tech 100 or Bitcoin in 'Compare with…'; the chart switches to % and draws that market's move over the same period (real daily prices from FTM's feed).

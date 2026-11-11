@@ -11,7 +11,8 @@ const h=require(require('path').join(__dirname,'../../api/v1/community.js'));
 const call=(tok,body)=>new Promise(res=>{ const r={s:0,status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,null]);}}; h({method:'POST',headers:{authorization:'Bearer '+tok},body},r); });
 let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails++; };
 (async()=>{
-  let r=await call('tokA',{action:'me'}); ok(r[1].profile.nickname===''&&r[1].profile.visible===false,'new member starts with an empty, hidden profile');
+  let r=await call('tokA',{action:'me'}); ok(/^member_[0-9a-f]{4}$/.test(r[1].profile.nickname)&&r[1].profile.visible===true,'a new subscriber is visible in the community by default (auto nickname '+r[1].profile.nickname+')');
+  r=await call('tokF',{action:'me'}); ok(r[1].profile.nickname===''&&r[1].profile.visible===false,'a free account gets no community profile');
   r=await call('tokA',{action:'save',nickname:'Tanaya',bio:'Hi all',country:'de',visible:true}); ok(r[0]===200,'Tanaya saves her profile');
   r=await call('tokB',{action:'save',nickname:'tanaya',visible:true}); ok(r[0]===409&&r[1].error==='NICKNAME_TAKEN','nickname is unique (any case)');
   r=await call('tokB',{action:'save',nickname:'FTM-TRADES',visible:true}); ok(r[1].error==='NICKNAME_RESERVED','FTM names are reserved');
@@ -27,6 +28,10 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   r=await call('tokB',{action:'threads'}); ok(r[1].threads.length===1&&r[1].threads[0].unread&&r[1].threads[0].last==='Hello Marine!','Marine sees the new message as unread');
   r=await call('tokB',{action:'messages',mid:mA}); ok(r[1].messages.length===1&&r[1].messages[0].from==='them','Marine opens the conversation');
   r=await call('tokB',{action:'threads'}); ok(!r[1].threads[0].unread,'opening marks it read');
+  { const idx=JSON.parse(files['index.json'].toString()); const kB=Object.keys(idx.members).find(k=>idx.members[k].nickname==='Marine'); delete idx.members[kB].vis_set; idx.members[kB].visible=false; files['index.json']=Buffer.from(JSON.stringify(idx)); }
+  r=await call('tokB',{action:'me'}); ok(r[1].profile.visible===true,'an older profile left hidden by the old default becomes visible');
+  r=await call('tokB',{action:'save',nickname:'Marine',bio:'Gold fan',visible:false}); r=await call('tokB',{action:'me'}); ok(r[1].profile.visible===false,'a member who switches it off stays hidden');
+  r=await call('tokB',{action:'save',nickname:'Marine',bio:'Gold fan',visible:true});
   r=await call('tokB',{action:'send',mid:mA,text:'Hi Tanaya'}); r=await call('tokA',{action:'messages',mid:mB});
   ok(!!r[1].seen_at,'Tanaya sees that Marine has read her message (Seen)'); ok(r[1].messages.map(x=>x.from).join()==='me,them','Tanaya sees the reply in order');
   { const t0=r[1].messages[1].t, mine=r[1].messages[0].t;

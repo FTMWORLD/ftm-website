@@ -34,7 +34,7 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   const b=await chromium.launch({...(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{})});
   const A=await open(b,'tokA','Tanaya');
   await tab(A,'profile'); await A.waitForTimeout(300);
-  const nm=await A.inputValue('#cName'); ok(nm==='','a new member sees an empty name, not someone else\'s (got "'+nm+'")');
+  const nm=await A.inputValue('#cName'); ok(/^member_[0-9a-f]{4}$/.test(nm),'a new member gets their own default nickname, visible by default, never someone else\'s (got "'+nm+'")');
   await A.fill('#cName','Tanaya'); await A.fill('#cBio','Gold and indices'); await A.click('#cCountrySelQ'); await A.keyboard.type('germ'); await A.waitForTimeout(150); ok(/Germany/.test(await A.textContent('.cc-list .cc-o.on')),'typing in Country finds it (also by its own-language name: "Deut")'); await A.keyboard.press('Enter'); ok(await A.evaluate(()=>document.getElementById('cCountrySel').value)==='DE' && /Germany/.test(await A.inputValue('#cCountrySelQ')),'the chosen country is set and shown with its flag'); if(await A.getAttribute('#cVisToggle','aria-checked')!=='true') await A.click('#cVisToggle'); await A.click('#cSave'); await A.waitForTimeout(700);
   ok(/Saved/.test(await A.textContent('#cSaved')) && await A.isVisible('#cSaved'),'Tanaya saves her profile and SEES "Saved."');
   const B=await open(b,'tokB','Marine');

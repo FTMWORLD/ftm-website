@@ -1,7 +1,7 @@
 /* POST /api/v1/community {action, ...}: the FTM Community (interim, until FTM ENGINE's Community goes live).
    Every call needs the customer's Supabase access token (Authorization: Bearer ...).
      me                          my profile (empty until I save one) and whether I may post
-     save   {nickname,bio,country,visible}
+     save   {nickname,bio,country,visible}   every subscriber is visible by default (auto profile member_xxxx); a save records their own choice (vis_set)
      members                     visible members (not me, nobody I blocked or who blocked me)
      follow / unfollow {mid}     block / unblock {mid}     report {mid, reason}
      threads                     my conversations (last message, unread)
@@ -134,7 +134,7 @@ module.exports = async function handler(req, res) {
     const me = midOf(user.id);
     const idx = await S.read('index.json', { members: {} });
     const soc = await S.read('social.json', { follows: {}, blocks: {} });
-    const mine = idx.members[me] || null;
+    let mine = idx.members[me] || null;
     const pres = await S.read('presence.json', {});
     const nowIso = new Date().toISOString();
     if (mine && (!pres[me] || Date.parse(nowIso) - Date.parse(pres[me]) > 60000)) { pres[me] = nowIso; S.write('presence.json', pres).catch(() => {}); }
@@ -151,7 +151,14 @@ module.exports = async function handler(req, res) {
 
     if (action === 'me') {
       const paid = await isPaid(admin, user.id);
-      if (mine && !!mine.sub !== paid) { mine.sub = paid; await S.write('index.json', idx); }
+      let dirty = false;
+      if (paid && !mine) {
+        const used = new Set(Object.keys(idx.members).map(k => String(idx.members[k].nickname).toLowerCase()));
+        let nick = 'member_' + me.slice(0, 4); for (let i = 1; used.has(nick.toLowerCase()) && i < 12; i++) nick = 'member_' + me.slice(i, i + 4 + Math.floor(i / 4));
+        mine = idx.members[me] = { since: nowIso, nickname: nick, bio: '', country: '', visible: true, auto: true, updated: nowIso }; dirty = true;
+      } else if (paid && mine && !mine.visible && !mine.vis_set) { mine.visible = true; dirty = true; }
+      if (mine && !!mine.sub !== paid) { mine.sub = paid; dirty = true; }
+      if (dirty) await S.write('index.json', idx);
       const nb = await S.read('notif/' + me + '.json', { items: [], read: '' });
       const ftmNew = (await S.read('posts.json', { posts: [] })).posts.filter(x => x.ftm && x.a !== me && x.t > (nb.read || '') && x.t > (mine && mine.since || '')).length;
       return res.status(200).json({ ok: true, mid: me, paid, staff: isStaff(user), notif_unread: nb.items.filter(x => x.t > (nb.read || '')).length + ftmNew,
@@ -166,7 +173,7 @@ module.exports = async function handler(req, res) {
       const taken = Object.keys(idx.members).some(k => k !== me && String(idx.members[k].nickname).toLowerCase() === nick.toLowerCase());
       if (taken) return res.status(409).json({ ok: false, error: 'NICKNAME_TAKEN' });
       if (LINKS.test(bio) || SELLING.test(bio)) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
-      idx.members[me] = Object.assign({}, mine || { since: new Date().toISOString() }, { nickname: nick, bio, country, visible, updated: new Date().toISOString() });
+      idx.members[me] = Object.assign({}, mine || { since: new Date().toISOString() }, { nickname: nick, bio, country, visible, vis_set: true, auto: false, updated: new Date().toISOString() });
       await S.write('index.json', idx);
       return res.status(200).json({ ok: true, profile: { nickname: nick, bio, country, visible, since: idx.members[me].since } });
     }
