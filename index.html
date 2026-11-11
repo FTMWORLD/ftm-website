@@ -9994,7 +9994,7 @@ tick();setInterval(tick,5000);})();
     var best=null, worst=null; Object.keys(months).forEach(function(k){ k=+k; var a=new Date(Math.floor(k/12),k%12,1), b=new Date(Math.floor(k/12),k%12+1,1), sg=m.seg(T(a),T(b)); sg.d=a; if(!best||sg.pct>best.pct) best=sg; if(!worst||sg.pct<worst.pct) worst=sg; });
     var ml=function(d){ return d.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'short',year:'numeric'}); };
     if(best) cells.push(['Best month',best,ml(best.d)]); if(worst) cells.push(['Worst month',worst,ml(worst.d)]);
-    var born=(m.anchor>0.005)?-Infinity:((m.curve&&m.curve.length>1)?m.curve[1].t:Infinity); cells[1].push(null,T(new Date(y,mo,1)));
+    var born=(m.anchor>0.005)?-Infinity:((m.curve&&m.curve.length>1)?m.curve[1].t:Infinity); cells[1].push(null,T(new Date(y,mo,1))); cells.unshift(['This week',m.seg(T(new Date(y,mo,n.getDate()-((n.getDay()+6)%7))),null)]);
     box.innerHTML=cells.map(function(c){ var g=c[1], k=g.pct>0?'up':(g.pct<0?'dn':''); if(c[3]!=null && c[3]<=born) return '<div class="fs-c"><span>'+tr(c[0])+'</span><b>\u2014</b><small>\u2014</small></div>'; return '<div class="fs-c"><span>'+tr(c[0])+'</span><b class="'+k+'">'+(g.pct>0?'+':'')+g.pct.toFixed(2)+'%</b><small>'+(c[2]?c[2]:sgn(g.pl,2))+'</small></div>'; }).join('');
     card.hidden=false;
   }

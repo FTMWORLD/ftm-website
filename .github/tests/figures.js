@@ -56,6 +56,8 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   ok(/22\.53/.test(cvh)&&/8\.06%/.test(cvh), label+': balance chart header (All) = all-time profit +22.53 / +8.06% (got '+cvh+')');
   const fsAll=await p.evaluate(()=>{const c=[...document.querySelectorAll('#fsGrid .fs-c')].find(x=>/all time/i.test(x.textContent));return c?c.textContent:'';});
   ok(/8\.06%/.test(fsAll), label+': performance summary, all time matches (got '+fsAll+')');
+  const fsW=await p.evaluate(()=>{const C=[...document.querySelectorAll('#fsGrid .fs-c')];const w=C.find(x=>/this week/i.test(x.textContent));if(!w)return 'missing';const n=new Date(),s=new Date(n.getFullYear(),n.getMonth(),n.getDate()-((n.getDay()+6)%7)).getTime(),g=FTM.metrics().seg(s,null);return (C.indexOf(w)===0&&C.length%2===0&&w.querySelector('b').textContent===(g.pct>0?'+':'')+g.pct.toFixed(2)+'%')?'ok':'bad '+C.length+' '+w.textContent;});
+  ok(fsW==='ok', label+': performance summary starts with This week (shared time-weighted %, even grid) (got '+fsW+')');
   if(stats===full && !preview){ const rk=await p.evaluate(()=>[document.getElementById('rkScore').textContent,document.getElementById('rkVs').textContent,document.getElementById('rkRange').textContent]);
    ok(/1\.03%/.test(rk[0]) && /Below/.test(rk[1]) && /20\D{1,4}40%/.test(rk[2]), label+': risk level = engine drawdown against the Balanced band 20-40% (got '+rk.join(' | ')+')'); }
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
