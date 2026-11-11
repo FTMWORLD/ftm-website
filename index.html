@@ -3536,8 +3536,7 @@ body.op-lock{overflow:hidden}
     <form class="js-news" data-source="signup" novalidate>
       <label for="suEmail">Email</label>
       <input type="email" id="suEmail" placeholder="you@example.com" required>
-      <label class="su-ck"><input type="checkbox" required> <span>I agree to receive FTM emails. I can unsubscribe at any time.</span></label>
-      <p class="auth-agree-note">By using FTM you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.</p>
+      <p class="auth-agree-note">By creating an account you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including FTM emails. You can unsubscribe at any time.</p>
       <p class="su-msg" hidden></p>
       <button type="submit" class="btn btn-red">Create free account</button>
     </form>
@@ -3580,7 +3579,7 @@ body.op-lock{overflow:hidden}
     </nav>
     <div class="app-content">
       <div class="plan-bar" id="planBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><p id="planBarTxt"></p><a class="btn btn-sm js-free-plans" href="#pricing">See the plans</a></div>
-      <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> Subscribe to link your trading account and let FTM MACHINE trade for you.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
+      <div class="free-bar" id="freeBar" hidden><span class="fb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><p><b>Free account.</b> You are viewing the FTM master account. Subscribe and FTM MACHINE trades your own account the same way.</p><a class="btn btn-red btn-sm js-free-plans" href="#pricing">Upgrade</a></div>
       <div class="nodata-bar" id="noDataBar" hidden><b>Trade history for this account is still loading.</b> FTM is reading it from your broker. The statistics appear here as soon as it arrives.</div>
       <div class="np-panel" id="noprodA" hidden>
         <span class="np-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span>
@@ -8965,7 +8964,9 @@ body.op-lock{overflow:hidden}
       e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e2){}
       var t=document.getElementById((this&&this.hasAttribute&&this.hasAttribute('data-go-invest'))?'invest':'pricing')||document.getElementById('pricing'); document.documentElement.style.scrollBehavior='auto';
-      window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); document.documentElement.style.scrollBehavior='';
+      var stop=false, quit=function(){ stop=true; }, go=function(){ if(stop) return; document.documentElement.style.scrollBehavior='auto'; window.scrollTo(0,t.getBoundingClientRect().top+window.scrollY-70); document.documentElement.style.scrollBehavior=''; };
+      go(); requestAnimationFrame(go); [120,300,600,1000,1600].forEach(function(ms){ setTimeout(go,ms); }); setTimeout(function(){ window.removeEventListener('wheel',quit); window.removeEventListener('touchstart',quit); },1700);
+      window.addEventListener('wheel',quit,{passive:true,once:true}); window.addEventListener('touchstart',quit,{passive:true,once:true});
     }
     document.querySelectorAll('.js-free-plans,[data-go-invest]').forEach(function(a){ a.addEventListener('click',toPlans); });
     ['appConnect','acctAdd'].forEach(function(id){
@@ -9226,7 +9227,7 @@ tick();setInterval(tick,5000);})();
         e.preventDefault();
         var mail=f.querySelector('input[type=email]').value.trim().toLowerCase(), ck=f.querySelector('input[type=checkbox]'), b=f.querySelector('button[type=submit]');
         if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return msg(f,T('Enter a valid email address.'),false);
-        if(!ck.checked)return msg(f,T('Tick the box to agree to receive FTM emails.'),false);
+        if(ck&&!ck.checked)return msg(f,T('Tick the box to agree to receive FTM emails.'),false);
         var isSignup=f.getAttribute('data-source')==='signup', sub=fetch('/api/v1/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,consent:true,source:f.getAttribute('data-source')})})
           .then(function(r){return r.json().catch(function(){return{};}).then(function(j){return r.ok&&j.ok;});}).catch(function(){ return false; });
         try{window.va&&window.va('event',{name:'Signup',data:{source:f.getAttribute('data-source')}});}catch(x){}
@@ -9325,7 +9326,7 @@ tick();setInterval(tick,5000);})();
     $('dxAcct').textContent=tx('crumbAcct'); $('dxPlan').textContent=tx('hdrPlan'); $('dxPlan').classList.toggle('plan-on',$('hdrPlan').classList.contains('plan-on')); $('dxPlan').classList.toggle('plan-free',$('hdrPlan').classList.contains('plan-free')); $('dxSt').textContent=tx('hdrStatus'); var hs=$('hdrStatus'); $('dxSt').classList.toggle('dx-st-bad',!!(hs&&hs.classList.contains('val-down'))); $('dxSt').classList.toggle('dx-st-wait',!!(hs&&hs.classList.contains('val-wait')));
     $('dxGoT').textContent=free()?'Upgrade':'Accounts';
     var fl=$('dxFloat'), fv=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount(), fp=fv&&fv.floating;
-    if(fl){ fl.hidden=!(fp!=null&&!free()); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
+    if(fl){ fl.hidden=!(fp!=null); if(fp!=null){ var ft=tx('mFloat'); fl.textContent=ft; fl.className='dx-float '+(fp>=0?'up':'down'); } }
     var sp=$('dxSpark'), C=((window.FTM&&FTM.data&&FTM.data.closed)||[]).filter(function(t){return t.closeTime&&t.pl!=null;}).sort(function(a,b){return a.closeTime-b.closeTime;});
     var vacc=window.FTM&&FTM.viewedAccount&&FTM.viewedAccount();
     var showSp=!!vacc || C.length>1; $('dxGo').hidden=!free(); sp.toggleAttribute('hidden',!showSp);
@@ -9396,7 +9397,7 @@ tick();setInterval(tick,5000);})();
     document.addEventListener('keydown',function(e){if(e.key==='Escape')shut()});
     var ai=m.querySelector('.um-ai');if(ai)ai.addEventListener('click',function(){var t=document.querySelector('#appView:not([hidden]) .js-app-ai');if(t){t.click();return}
       var f=document.getElementById('floatSupport'),tg=document.getElementById('fsToggle'),p=document.getElementById('fsPanel');if(f)f.classList.add('over-app');setTimeout(function(){if(tg&&p&&p.hidden)tg.click();setTimeout(function(){var a=document.getElementById('fsAi');if(a)a.click()},30)},0)});
-    var act=m.querySelector('.um-act');if(act)act.addEventListener('click',function(){var n=document.querySelector('#appView .app-nav-item[data-view="metrics"]');if(n)n.click();setTimeout(function(){var app=document.getElementById('appView');var free=app&&app.classList.contains('free');var t=free?document.getElementById('freeBar'):document.getElementById('appBroker');if(t){var card=t.closest('.app-card')||t;card.scrollIntoView({behavior:'smooth',block:'center'});if(!free)setTimeout(function(){t.focus({preventScroll:true});},450);}},80)});
+    var act=m.querySelector('.um-act');if(act)act.addEventListener('click',function(){if(act.classList.contains('um-actd'))return;var av0=document.getElementById('appView');if(av0&&(av0.classList.contains('free')||av0.classList.contains('lapsed'))){var um=act.closest('.um');if(um){var bt=um.querySelector('.um-btn');if(bt&&bt.getAttribute('aria-expanded')==='true')bt.click();}var u=document.querySelector('.js-free-plans');if(u)u.click();return;}var n=document.querySelector('#appView .app-nav-item[data-view="metrics"]');if(n)n.click();setTimeout(function(){var app=document.getElementById('appView');var free=app&&app.classList.contains('free');var t=free?document.getElementById('freeBar'):document.getElementById('appBroker');if(t){var card=t.closest('.app-card')||t;card.scrollIntoView({behavior:'smooth',block:'center'});if(!free)setTimeout(function(){t.focus({preventScroll:true});},450);}},80)});
     var h=m.querySelector('.um-home');if(h)h.addEventListener('click',function(){var o=document.getElementById('appHome')||document.getElementById('invHome');if(o)o.click()});
   });
 })();
@@ -9929,7 +9930,7 @@ tick();setInterval(tick,5000);})();
     var m=F.metrics?F.metrics():null;
     if(m){ if($('rgPF')) $('rgPF').textContent=m.profitFactor?m.profitFactor.toFixed(2):'—'; if($('kpHigh')) $('kpHigh').textContent=$('mHigh')?$('mHigh').textContent+($('mHighD')&&$('mHighD').textContent?' \u00B7 '+$('mHighD').textContent:''):'—'; }
     var app=$('appView'); if(app){ var A=(d.accounts||[]).filter(function(a){return !a.isMaster;}); app.classList.toggle('has-acct', A.length>0);
-      var v=F.viewedAccount&&F.viewedAccount(), mn=$('masterNote'); if(mn) mn.hidden=!(app.classList.contains('free') && v && v.isMaster); }
+      var v=F.viewedAccount&&F.viewedAccount(), mn=$('masterNote'); if(mn) mn.hidden=true; }
   }
   var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ draw(); }catch(e){} return r; };
   document.addEventListener('click',function(e){

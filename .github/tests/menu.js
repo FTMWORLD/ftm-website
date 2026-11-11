@@ -32,6 +32,11 @@ r=await p.evaluate(()=>[...document.querySelectorAll('#acctA .um-sub .um-i')].fi
 await p.evaluate(()=>{ FTM.data.accounts.forEach(a=>a.active=false); FTM.planFree=true; }); await p.waitForTimeout(1800);
 r=await p.evaluate(()=>({red:!!document.querySelector('#acctA .um-act'), home:!!document.querySelector('#acctA a.um-home:not([hidden])')}));
 ok(r.red && r.home, n+': a customer without FTM MACHINE sees red Activate FTM MACHINE and Subscription plans');
+await p.evaluate(()=>{ document.getElementById('appView').classList.add('free'); }); await p.waitForTimeout(300);
+if(!(await p.isVisible('#acctA .um-act'))){ await p.click('#appView .um-btn'); await p.waitForTimeout(300); }
+await p.click('#acctA .um-act'); await p.waitForTimeout(1900);
+r=await p.evaluate(()=>{ const pr=document.getElementById('pricing').getBoundingClientRect(); return {app:document.getElementById('appView').hidden, top:Math.round(pr.top), y:Math.round(scrollY)}; });
+ok(r.app && r.top>-50 && r.top<200, n+': a free account tapping Activate FTM MACHINE lands on the plans to subscribe (app hidden '+r.app+', plans at '+r.top+'px, scrollY '+r.y+')');
 ok(!errs.length, n+': no script errors '+(errs[0]||''));
 await c.close();}
 await b.close(); console.log(fails?'FAILED: '+fails:'MENU OK'); process.exit(fails?1:0);})();

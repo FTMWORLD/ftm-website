@@ -13,7 +13,8 @@ for(const [n,opt] of [['laptop',{viewport:{width:1280,height:900}}],['phone',dev
   await p.goto(BASE+'/',{waitUntil:'domcontentloaded'}); await p.waitForTimeout(1200);
   await p.evaluate(()=>{ FTM.auth.ready=()=>true; });
   const open=async()=>{ await p.evaluate(()=>{ const a=document.querySelector('.js-signup'); a.click(); }); await p.waitForSelector('#suEmail',{state:'visible'}); };
-  await open(); await p.fill('#suEmail','new.member@example.com'); await p.check('#signupPane .su-ck input');
+  await open(); await p.fill('#suEmail','new.member@example.com');
+  ok(!(await p.$('#signupPane input[type=checkbox]')) && /including FTM emails/.test(await p.textContent('#signupPane .auth-agree-note')), n+': no checkbox; agreeing to the Terms (including FTM emails) is stated under the email');
   const t0=Date.now(); await p.click('#signupPane button[type=submit]'); await p.waitForSelector('#suSent',{state:'visible',timeout:5000}).catch(()=>{}); const dt=Date.now()-t0;
   ok(dt<1000, n+': "Check your email" shows at once ('+dt+' ms), not after the newsletter service');
   await p.waitForTimeout(700);
@@ -23,7 +24,7 @@ for(const [n,opt] of [['laptop',{viewport:{width:1280,height:900}}],['phone',dev
   ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth), n+': nothing wider than the screen');
   // failure: the person is told, and can send again
   await p.evaluate(()=>{ document.getElementById('authOverlay').hidden=true; }); mailMode='fail';
-  await open(); await p.fill('#suEmail','second@example.com'); await p.check('#signupPane .su-ck input'); await p.click('#signupPane button[type=submit]'); await p.waitForTimeout(900);
+  await open(); await p.fill('#suEmail','second@example.com'); await p.click('#signupPane button[type=submit]'); await p.waitForTimeout(900);
   st=await p.evaluate(()=>[document.getElementById('suState').textContent, !document.getElementById('suResend').hidden]);
   ok(/could not send/i.test(st[0]) && st[1], n+': a failed email is shown with "Send the link again" ('+st[0]+')');
   mailMode='ok'; await p.click('#suResend'); await p.waitForTimeout(700);
