@@ -226,7 +226,7 @@ module.exports = async function handler(req, res) {
       const inbox = await S.read('inbox/' + me + '.json', { threads: {} });
       if (inbox.threads[m] && inbox.threads[m].from !== me && (!inbox.threads[m].read || inbox.threads[m].read < inbox.threads[m].t)) { inbox.threads[m].read = new Date().toISOString(); await S.write('inbox/' + me + '.json', inbox); }
       const theirs = await S.read('inbox/' + m + '.json', { threads: {} }), tr = theirs.threads[me] || {};
-      const ty = await S.read('typing/' + pair(me, m) + '.json', {}), lastTheirs = th.msgs.filter(x => x.f === m).map(x => x.t).pop() || '', typing = !!(ty[m] && ty[m] > lastTheirs && Date.now() - Date.parse(ty[m]) < 7000);
+      const ty = await S.read('typing/' + pair(me, m) + '.json', {}), lastTheirs = th.msgs.filter(x => x.f === m).map(x => x.t).pop() || '', typing = !!(ty[m] && ty[m] >= lastTheirs && Date.now() - Date.parse(ty[m]) < 7000);
       return res.status(200).json({ ok: true, nickname: idx.members[m].nickname, av: idx.members[m].av || null, seen_at: tr.read || null, online: pres[m] || null, typing, messages: th.msgs.map(x => outMsg(x, me)) });
     }
 
