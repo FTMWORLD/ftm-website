@@ -9574,6 +9574,7 @@ tick();setInterval(tick,5000);})();
     else { sum='<b>'+esc(t('You are not shown on the leaderboard.'))+'</b>'; }
     var h='<details class="lbl-you" id="lblYou"'+(F()._lbYouOpen?' open':'')+'><summary><span class="lbl-sum">'+sum+'</span><span class="lbl-edit">'+esc(t('Name and visibility'))+'</span></summary><div class="lbl-body">';
     h+='<div class="row"><label class="sw"><input type="checkbox" id="lblOpt"'+(p.opted_in?' checked':'')+'> '+esc(t('Show me on the leaderboard'))+'</label></div>';
+    if(p.opted_in && p.opted_in_source==='DEFAULT') h+='<p class="hint lbl-def">'+esc(t('You are shown by default. Switch off anytime.'))+'</p>';
     h+='<div class="row"><input type="text" id="lblNick" maxlength="24" autocomplete="off" placeholder="'+esc(t('Nickname'))+'" value="'+esc(p.nickname||'')+'"><button type="button" class="btn btn-dark btn-sm" id="lblSave">'+esc(t('Save'))+'</button></div>';
     h+='<p class="hint">'+esc(t('3 to 24 letters, digits, _ or -. Only your nickname and your return in % are shown, never your name, balance or account number.'))+'</p>';
     h+='<p class="lbl-msg" id="lblMsg" hidden></p></div></details>';
