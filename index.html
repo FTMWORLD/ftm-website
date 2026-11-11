@@ -2665,6 +2665,8 @@ body.op-lock{overflow:hidden}
 .hx-hd{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid #fff;transform:translate(-50%,-50%);pointer-events:none;box-shadow:0 0 0 4px rgba(255,255,255,.15)}
 
 .rg-mid{pointer-events:none}.rg-donut circle[data-tip],#calGauge path[data-tip],#mSpark rect[data-tip]{cursor:help}
+
+.pt-name{color:#E3B62F}
 </style>
 <script>
 (function(){
@@ -7552,7 +7554,8 @@ body.op-lock{overflow:hidden}
       document.getElementById('crumbView').textContent=meta.t;
 
       document.getElementById('crumbAcct').textContent= lead ? (lead.name+' '+lead.number) : 'No account';
-      document.getElementById('pageTitle').textContent = name==='metrics' ? ('Account metrics '+(lead?lead.number:'')) : meta.t;
+      var ptEl=document.getElementById('pageTitle'), ptNm=(function(){ var n=(F.myName&&F.myName())||(F.session&&F.session.name)||''; n=String(n).trim().split(/\s+/)[0]||''; if(!n&&F.session&&F.session.email) n=String(F.session.email).split('@')[0]; return n?n.charAt(0).toUpperCase()+n.slice(1):''; })();
+      if(name==='metrics'){ var ptT=(window.I18NE&&I18NE.t?I18NE.t('Account metrics'):'Account metrics'), ptH=ptNm?ptT+' <span class="pt-name"></span>':ptT+' '+(lead?lead.number:''); if(ptEl._h!==ptH+ptNm){ ptEl._h=ptH+ptNm; ptEl.innerHTML=ptH; var sp=ptEl.querySelector('.pt-name'); if(sp) sp.textContent=ptNm; } ptEl.title=lead?String(lead.name||'')+' '+lead.number:''; } else { ptEl._h=''; ptEl.textContent=meta.t; ptEl.title=''; }
       document.getElementById('pageSub').textContent = (lead && on && lead!==on && name==='metrics') ? 'Viewing statistics of {}. FTM MACHINE keeps trading on {}.'.replace('{}',lead.name+' '+lead.number).replace('{}',on.name+' '+on.number) : ((lead && !on && name==='metrics' && (F.data.accounts||[]).length) ? 'View only. FTM MACHINE is not trading on any of your accounts.' : meta.s);
       var ic=document.getElementById('pageIcon');
       var src=document.querySelector('.app-nav-item[data-view="'+name+'"] svg');
@@ -8258,6 +8261,7 @@ body.op-lock{overflow:hidden}
         var ban=el('kycBan'), last=0; try{ last=+localStorage.getItem('ftm_kyc_ban')||0; }catch(e){}
         if(ban) ban.hidden=!(live&&K.loaded&&!done&&Date.now()-last>7*864e5); }
       F.myCountry=function(){ return (K.p&&K.p.country)||''; };
+      F.myName=function(){ return (K.p&&K.p.full_name_saved&&K.p.full_name)||(K.p&&K.p.full_name)||''; };
       function fill(p){ K.p=p||{}; K.sel={goal:K.p.goal||null,experience:K.p.experience||null,drawdown_comfort:K.p.drawdown_comfort!=null?String(K.p.drawdown_comfort):null};
         if(document.activeElement!==el('kycName')) el('kycName').value=K.p.full_name||(F.session&&F.session.name)||'';
         el('kycCountry').value=K.p.country?String(K.p.country).toUpperCase():''; paint(); }

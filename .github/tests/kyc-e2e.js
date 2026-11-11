@@ -34,6 +34,7 @@ async function open(b,vp,E,dflt){
   for(const [label,vp] of [['laptop',{width:1280,height:900}],['phone',{width:390,height:844}]]){
     const E=engine(), p=await open(b,vp,E);
     const nav='#appView .app-nav-item[data-view="kyc"]';
+    await p.evaluate(()=>FTM.showView('metrics')); await p.waitForTimeout(400); const pt=await p.textContent('#pageTitle'); ok(/Account metrics\s+Tanaya/.test(pt) && !/1001/.test(pt), label+': the dashboard title greets the customer by name, not account number ('+pt+')');
     ok(await p.evaluate(n=>{ const all=[...document.querySelectorAll('#appView .app-nav-item')]; return all[all.length-1]===document.querySelector(n); },nav),label+': "Know Your Customer (KYC)" is the last item of the menu');
     ok(await p.isVisible('#kycDot') && !(await p.isVisible('#kycOk')),label+': gold "Verify your KYC" badge shows until it is done');
     ok(await p.isVisible('#kycBan'),label+': dashboard shows the slim "Complete your KYC" banner');
