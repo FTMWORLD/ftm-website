@@ -101,6 +101,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   body{text-wrap:pretty}
   h1,h2,h3,h4{text-wrap:balance}
   @media (max-width:760px){.side-mobile{margin:0 0 24px!important;padding:12px 0!important;max-width:100%}}
+  @media (max-width:760px){.top{position:static}.side-mobile{top:0!important}section[id]{scroll-margin-top:72px}}
 </style>
 </head>
 <body>
@@ -134,7 +135,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <a href="#s6" data-s="s6">6. How long we keep it</a>
       <a href="#s7" data-s="s7">7. How we protect it</a>
       <a href="#s8" data-s="s8">8. Cookies and browser storage</a>
-      <a href="#s9" data-s="s9">9. Community features</a>
+      <a href="#s9" data-s="s9">9. Leaderboard and Community</a>
       <a href="#s10" data-s="s10">10. Your rights</a>
       <a href="#s11" data-s="s11">11. Children</a>
       <a href="#s12" data-s="s12">12. Changes to this policy</a>
@@ -144,7 +145,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
 
   <div class="wrap">
     <h1>Privacy Policy</h1>
-    <p class="meta">Follow The Market Ltd. ("FTM", "we", "us", "our") — Last updated: <span class="todo">[date]</span>. This policy explains what personal data we handle when you use ftmwealthnation.com, FTM MACHINE and the FTM Investment Programme, why, and what rights you have.</p>
+    <p class="meta">Follow The Market Ltd. ("FTM", "we", "us", "our") — Last updated: 11 November 2026. This policy explains what personal data we handle when you use ftmwealthnation.com, FTM MACHINE and the FTM Investment Programme, why, and what rights you have.</p>
 
     <div class="callout"><b>In short:</b> we collect only what we need to create your account, take payment, connect your trading account and run the service. We do not sell personal data, and this site uses no advertising or analytics trackers. Details are below.</div>
 
@@ -159,6 +160,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <tr><td>Trading-account data</td><td>The MT5 account number, broker server and master trading password you enter in the connect form, and the risk profile you pick. The password is used only to log in to your trading account and place trades as you have instructed. <span class="todo">[Confirm with the engine team how it is stored and protected]</span></td><td>You</td></tr>
       <tr><td>Trading activity</td><td>Account balance, equity, open positions, trade history and status, reported by the trading terminal connected to your account</td><td>Your trading account</td></tr>
       <tr><td>Identity checks</td><td>Where we are required or choose to verify identity or screen against sanctions lists: details you provide for that purpose</td><td>You, and screening services</td></tr>
+      <tr><td>Leaderboard and Community</td><td>Your nickname, your Leaderboard and Community settings, and what you post or send in the Community</td><td>You, and FTM (a neutral default nickname until you choose one)</td></tr>
+      <tr><td>KYC profile</td><td>If you fill it in: full name, country, main goal, trading experience and how large a temporary drop you could accept</td><td>You</td></tr>
       <tr><td>Support messages</td><td>The content of emails or chats you send us, and our replies</td><td>You</td></tr>
       <tr><td>Technical data</td><td>IP address, browser type and the time of requests, kept in server logs for security and reliability</td><td>Your browser</td></tr>
     </table></section>
@@ -171,7 +174,8 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <li><b>To meet legal duties</b> — identity verification, anti-money-laundering and sanctions checks where required. <i>Legal basis: legal obligation (Art. 6(1)(c)).</i></li>
       <li><b>To keep the service secure and prevent fraud or abuse</b>, and to fix faults. <i>Legal basis: our legitimate interests (Art. 6(1)(f)).</i></li>
       <li><b>To answer your questions</b> and give support. <i>Legal basis: contract, or legitimate interests.</i></li>
-      <li><b>Marketing messages</b>, only if you have agreed to them, which you can withdraw at any time. <i>Legal basis: consent (Art. 6(1)(a)).</i></li>
+      <li><b>To show you on the Leaderboard and in the Community</b> under your nickname (on by default; you can switch it off at any time). <i>Legal basis: our legitimate interests (Art. 6(1)(f)), with a simple opt-out.</i></li>
+      <li><b>FTM news and offers by email</b>, as agreed when you create an account (Terms, Section 15). Every such email has an unsubscribe link. <i>Legal basis: consent (Art. 6(1)(a)).</i></li>
     </ul></section>
 
     <section id="s4"><h2>4. Who we share it with</h2>
@@ -185,6 +189,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
       <tr><td>Your broker (for example Deriv)</td><td>Executing trades on your own trading account</td></tr>
       <tr><td><span class="todo">[Hosting provider of the trading-engine servers]</span></td><td>Running the systems that connect to your trading account</td></tr>
     </table>
+    <p>We never share your personal data with other members, except your nickname, your FTM figures (return in %, trades, win rate, risk profile) and your KYC country flag, as described in the Terms (Section 10).</p>
     <p>We may also disclose data where the law requires it, for example to courts, regulators or law-enforcement authorities.</p></section>
 
     <section id="s5"><h2>5. Transfers outside the EEA</h2>
@@ -205,11 +210,11 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     </ul>
     <p>The site also loads the Inter typeface from <b>Google Fonts</b> and a script library from the <b>jsDelivr</b> content network. Your browser contacts those services directly when the page loads, so they receive your IP address. <span class="todo">[Counsel to confirm whether these should be self-hosted]</span></p></section>
 
-    <section id="s9"><h2>9. Community features</h2>
-    <p>If you choose to take part in the FTM community, other members may see the display name, country and short description you choose, and your standing on the leaderboard. You control this with the "Show me in the community" switch in your profile; turning it off hides you. You can also block and report other members.</p></section>
+    <section id="s9"><h2>9. Leaderboard and Community</h2>
+    <p>You are shown on the Leaderboard and in the Community by default, under a nickname. Other logged-in members may see your nickname, your FTM figures (return in %, number of trades, win rate, risk profile), your country flag from your KYC profile, and what you choose to post or write. Your real name, email, broker, account number and money amounts are never shown. You can switch off your Leaderboard and Community visibility at any time in your profile, and you can block and report other members.</p></section>
 
     <section id="s10"><h2>10. Your rights</h2>
-    <p>Under the GDPR and the Nigeria Data Protection Act you have the right to: access your data; have it corrected; have it erased; restrict its use; receive it in a portable format; object to processing based on our legitimate interests; and withdraw consent at any time where we rely on it. To use any of these rights, email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>. We may need to confirm your identity first, and some data we must keep to meet legal obligations.</p></section>
+    <p>Under the GDPR and the Nigeria Data Protection Act you have the right to: access your data; have it corrected; have it erased; restrict its use; receive it in a portable format; object to processing based on our legitimate interests; and withdraw consent at any time where we rely on it. To use any of these rights, email <a href="mailto:ftmwebnation@gmail.com">ftmwebnation@gmail.com</a>. You can also ask FTM to delete your data, within the limits of the law. We may need to confirm your identity first, and some data we must keep to meet legal obligations.</p></section>
 
     <section id="s11"><h2>11. Children</h2>
     <p>The services are for people aged 18 or over. We do not knowingly collect data from anyone under 18; if you believe we have, contact us and we will delete it.</p></section>
@@ -260,7 +265,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   (function(){
     var side=document.getElementById('side'), mobile=document.getElementById('sideMobile');
     if(!side||!mobile)return;
-    mobile.innerHTML = side.innerHTML.replace(/side-label|side-group/g,'');
+    mobile.innerHTML = [].map.call(side.querySelectorAll('a'),function(a){ return a.outerHTML; }).join('');
     var allLinks=[].slice.call(document.querySelectorAll('.side a, .side-mobile a'));
     var sections=[].slice.call(document.querySelectorAll('section[id]'));
     function setActive(id){

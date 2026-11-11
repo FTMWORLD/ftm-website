@@ -618,3 +618,8 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Performance summary tiles are buttons; `F.fsPop(cell)` opens period statistics.
 - Community: every subscriber gets a visible auto profile (member_xxxx) on first `me`; old hidden profiles without `vis_set` become visible once; any save records the member's own choice. Leaderboard default-on needs FTM ENGINE (note sent via owner).
 - Phone chat: `.chat-card.in-chat` toggles list/chat; `.chat-back` returns to the list.
+
+## 11 Nov 2026 (evening): Terms and Privacy update (approved by Gospel)
+- Terms: new sections 10-15 (Leaderboard & Community, results, copy trading, KYC profile, live charts, emails); old 10-24 renumbered 16-30; homepage footer links moved to #s16/#s18/#s19 (all languages). Risk summary added to section 5. No broker named (master account only). Money amounts never shown to other members.
+- Privacy: data table (Leaderboard/Community, KYC profile), legal bases (visibility by default = legitimate interest with opt-out; news emails = consent via Terms 15), sharing with members, deletion right.
+- Both pages are English-only (the 49-language engine runs on the main site only). Phone fixes: section menu is one scrolling row, top bar no longer sticky on phones. Test: .github/tests/legal-pages.js.
