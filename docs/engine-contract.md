@@ -4,6 +4,14 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-11 — LEADERBOARD ON BY DEFAULT (commit de61fa4, API restarted 12:19 Berlin)
+
+- Every customer is on the leaderboard by default (opted_in true) unless they switch it off themselves; a customer who
+  switched it off is never switched back on. No nickname yet -> a default "member_" + 4 characters (keyed hash; never
+  the name, email, account number or Client ID); replacing it the first time does not count as one of the 2 changes per
+  7 days. GET /customer/leaderboard/profile: opted_in true, the default nickname, NEW opted_in_source DEFAULT | CUSTOMER.
+- The flag still comes from the KYC country only.
+
 ## 2026-11-10 — GROUP COPY FOR SMALL ACCOUNTS (commit 6bfd7dc, on since 17:55 Berlin)
 
 - When every piece of one master signal (same symbol and side within 60 s) is too small for an account (minimum lot more
