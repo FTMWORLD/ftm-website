@@ -2716,6 +2716,10 @@ body.op-lock{overflow:hidden}
 @media (max-width:700px){#lbLive .lb-table tbody tr:nth-child(-n+3){display:none!important}}
 
 @media (max-width:700px){.app-scroll table.app-trades tbody tr.cx:not(.open) td.pl-up,.app-scroll table.app-trades tbody tr.cx:not(.open) td.val-up{color:#1f8a5b!important}.app-scroll table.app-trades tbody tr.cx:not(.open) td.pl-down,.app-scroll table.app-trades tbody tr.cx:not(.open) td.val-down{color:#c81e2b!important}}
+
+.um-actd{display:flex!important;align-items:center;gap:8px;color:#fff!important;background:#16a34a!important;margin:2px 0 6px;font-weight:800!important}.um-actd::before{content:'';width:16px;height:16px;flex:none;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E") center/11px no-repeat}
+.um-sup{display:flex!important;align-items:center;justify-content:space-between}.um-chev{width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;margin-right:4px}.um-sup[aria-expanded="true"] .um-chev{transform:rotate(-135deg)}
+.um-sub{margin:0 0 4px 12px;padding-left:8px;border-left:2px solid #e3e6f0}.um-sub[hidden]{display:none}.um-sub .um-i{font-size:13.5px;padding:8px 10px}
 </style>
 <script>
 (function(){
@@ -10315,6 +10319,21 @@ tick();setInterval(tick,5000);})();
   function mark(){ if(!mq.matches) return; document.querySelectorAll('.app-scroll table.app-trades tbody tr').forEach(function(tr){ if(tr.cells.length<=3||tr.classList.contains('th-row')) return; if(!tr.classList.contains('cx')) tr.classList.add('cx'); var k=key(tr); tr.classList.toggle('open',openK.has(k)); tr.setAttribute('aria-expanded',openK.has(k)?'true':'false'); }); }
   document.addEventListener('click',function(e){ if(!mq.matches) return; var tr=e.target.closest('.app-scroll table.app-trades tbody tr.cx'); if(!tr) return; if(e.target.closest('button,a,input,select,label,[data-menu],[data-peek],.acct-menu')) return; var k=key(tr); if(openK.has(k)) openK.delete(k); else openK.add(k); tr.classList.toggle('open'); tr.setAttribute('aria-expanded',tr.classList.contains('open')?'true':'false'); });
   setInterval(mark,800); if(window.MutationObserver) new MutationObserver(function(){ clearTimeout(mark._t); mark._t=setTimeout(mark,30); }).observe(document.body,{childList:true,subtree:true}); mark();
+})();
+</script>
+<script>
+(function(){ var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
+  document.querySelectorAll('.um-menu,[id^="acct"]').forEach(function(){});
+  var menus=[]; document.querySelectorAll('.um-ai').forEach(function(ai){ var m=ai.parentNode; if(menus.indexOf(m)===-1) menus.push(m); });
+  menus.forEach(function(m){ var ai=m.querySelector('.um-ai'), live=m.querySelector('.um-live'), mail=m.querySelector('a[href^="mailto:"].um-i'); if(!ai||m.querySelector('.um-sup')) return;
+    var sup=document.createElement('button'); sup.type='button'; sup.className='um-i um-sup'; sup.setAttribute('aria-expanded','false'); sup.innerHTML='<span>'+tr('Customer support')+'</span><i class="um-chev"></i>';
+    var box=document.createElement('div'); box.className='um-sub'; box.hidden=true; m.insertBefore(sup,ai); m.insertBefore(box,ai); [ai,live,mail].forEach(function(x){ if(x) box.appendChild(x); });
+    sup.addEventListener('click',function(e){ e.stopPropagation(); box.hidden=!box.hidden; sup.setAttribute('aria-expanded',box.hidden?'false':'true'); }); });
+  function sync(){ var F=window.FTM; if(!F||!F.data) return; var A=F.data.accounts||[], on=A.some(function(a){ return a.active&&!a.isMaster&&!a.isPreview; }), paid=!F.planFree&&!!F.planStatus&&!/CANCEL|EXPIRED|UNPAID/i.test(F.planStatus||'');
+    document.querySelectorAll('.um-act,.um-actd').forEach(function(b){ if(on){ if(!b.classList.contains('um-actd')){ b.classList.remove('um-act'); b.classList.add('um-actd'); b.textContent=tr('FTM MACHINE ACTIVATED'); } } else if(b.classList.contains('um-actd')){ b.classList.remove('um-actd'); b.classList.add('um-act'); b.textContent=tr('Activate FTM MACHINE'); } });
+    document.querySelectorAll('a.um-home').forEach(function(a){ a.hidden=paid; }); }
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.um-actd'); if(!b) return; e.preventDefault(); e.stopPropagation(); var F=window.FTM; if(F&&F.showView) F.showView('accounts'); document.querySelectorAll('.um-btn[aria-expanded="true"]').forEach(function(x){ x.click(); }); },true);
+  setInterval(sync,1500); setTimeout(sync,400);
 })();
 </script>
 </body>
