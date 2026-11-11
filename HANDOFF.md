@@ -611,3 +611,10 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
   "You can change your nickname twice in 7 days. Next change: <date>" (test: buttons.js "Nickname third change in a week").
 - Leaderboard flag = KYC country only (PUT /customer/kyc-profile). Country sent to /leaderboard/profile is ignored.
   Community country is separate and stays in api/v1/community.js.
+
+## 11 Nov 2026: currency drop-down, calendar phone line, chat back button, visible by default
+- Display currency: `F.dispCcy` (localStorage `ftm_ccy`), rates from `/api/v1/fx` (open.er-api, fallback frankfurter, cached 1h). `F.moneyIn` converts every amount; `F.toDisp(n)` for compact cells. Every €/% switch (`.unit-sw [data-unit=amount]`, `.tf [data-u=amount]`) gets a caret (`.ccy-car`) that opens `#ccyPop`. The account currency itself is unchanged.
+- Calendar ≤700px: Trades/Wins hidden, Net P&L + Percent + switch on one line. Day pop-up has `#dayNet` (sum of the day's closed trades + shared seg %).
+- Performance summary tiles are buttons; `F.fsPop(cell)` opens period statistics.
+- Community: every subscriber gets a visible auto profile (member_xxxx) on first `me`; old hidden profiles without `vis_set` become visible once; any save records the member's own choice. Leaderboard default-on needs FTM ENGINE (note sent via owner).
+- Phone chat: `.chat-card.in-chat` toggles list/chat; `.chat-back` returns to the list.
