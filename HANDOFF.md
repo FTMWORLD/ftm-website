@@ -629,3 +629,8 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Face ID (passkeys): options are pre-fetched (FTM.pk.prepLogin / prepRegister) so navigator.credentials.get/create runs straight from the tap (Safari needs this). Laptops without a platform authenticator still show the button (the browser offers "use a phone" with a QR code). Test: .github/tests/passkey-e2e.js (virtual authenticator + real @simplewebauthn/server).
 - New subscriber with no own account: #appView.onboard + #obCard (3 steps, opens F.cxWizard); zero tiles hidden. F._acctsKnown marks that the engine answered. Connecting accounts get their own subtitle. Test: onboarding-e2e.js.
 - Phone speed: #cvPulse runs 3 times only (SVG transform animation re-laid out the page every frame); box-shadow pulses (blink, kycP, grPulse) replaced by opacity/transform; cards off screen get .is-off (animations paused); feature reels rest 12 s after coming into view (.is-rest), wake on touch/hover. Test: perf-idle.js (re-layouts and style work while idle).
+
+## 12 Nov 2026: Account progress chart
+- Dashboard chart renamed "Account progress". Gold = balance (closed trades), thin blue = equity, red/green pill on the chart = engine floating P/L; equity row with floating chip above the balance.
+- Full equity history needs the engine (note sent: GET /customer/accounts/:id/equity-history). The chart already draws `FTM.data.equityHist` ([{t,v}]) when filled; wire the loader once the endpoint is live.
+- Test: .github/tests/figures.js ("Account progress chart shows equity").

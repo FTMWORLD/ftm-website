@@ -64,6 +64,13 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
       const C=FTM.data.closed.map(t=>+new Date(t.closeTime)).filter(Boolean), g=FTM.metrics().seg(Math.min(...C),null), want=2500*(1+g.pct/100);
       const got=parseFloat(document.getElementById('wiVal').textContent.replace(/[^0-9.\-]/g,'')); return Math.abs(got-want)<0.011?'ok':'got '+got+' want '+want.toFixed(2); },preview);
     ok(wi==='ok', label+': "What if you had joined" shows only to free members and uses the shared time-weighted % (got '+wi+')'); }
+  { const cv=await p.evaluate(()=>{ const h=document.querySelector('.cv-card .cv-title h3'), r=document.getElementById('cvEq'), va=FTM.viewedAccount&&FTM.viewedAccount();
+      if(!h||h.textContent.trim()!=='Account progress') return 'title '+(h&&h.textContent);
+      if(!va||va.equity==null) return 'ok';
+      if(r.hidden) return 'equity row hidden'; if(!document.querySelector('#mCurve .cv-eqline')) return 'no equity line'; if(!document.querySelector('#mCurve .cv-eqpill')) return 'no floating pill on the chart';
+      const want=Math.abs(va.floating!=null?+va.floating:(+va.equity-+va.balance)), got=parseFloat(document.getElementById('cvEqF').textContent.replace(/\(.*$/,'').replace(/[^0-9.]/g,''));
+      return Math.abs(got-want)<0.011?'ok':'floating got '+got+' want '+want; });
+    ok(cv==='ok', label+': Account progress chart shows equity (row, thin line) and the engine floating amount (got '+cv+')'); }
   if(preview){ const fl=await p.evaluate(()=>{const e=document.getElementById('dxFloat');return e&&!e.hidden?e.textContent:'hidden';}); ok(/floating/.test(fl), label+': a free account viewing the FTM Master statistics sees the floating figure on the dashboard (got '+fl+')'); }
   const fsP=await p.evaluate(()=>{const b=[...document.querySelectorAll('#fsGrid button.fs-c')].find(x=>/all time/i.test(x.textContent));if(!b)return 'no button';b.click();const sh=document.getElementById('fsPop');if(!sh||sh.hidden)return 'no pop-up';const dd=[...sh.querySelectorAll('.fsp-grid div')].find(d=>/^trades$/i.test(d.querySelector('dt').textContent));const n=FTM.data.closed.filter(t=>t.closeTime).length,pc=sh.querySelector('.fsp-big b').textContent,want=b.querySelector('b').textContent,tips=sh.querySelectorAll('.fsp-bars i[data-tip]').length;sh.click();return (dd&&+dd.querySelector('dd').textContent===n&&pc===want&&tips>0&&sh.hidden)?'ok':'bad '+(dd&&dd.textContent)+' n='+n+' '+pc+'/'+want+' tips='+tips;});
   ok(fsP==='ok', label+': tapping a period opens its statistics pop-up (same %, every closed trade, daily bars with details) (got '+fsP+')');

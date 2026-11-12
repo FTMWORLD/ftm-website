@@ -694,6 +694,20 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 .wi-out em{font-style:normal;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}.wi-out em.up{color:#4ade80}.wi-out em.dn{color:#ff8a93}
 .wi-go{flex:none}
 @media (max-width:600px){.wi-out{flex-direction:column;align-items:stretch}.wi-go{width:100%;justify-content:center}.wi-row{gap:10px}}
+
+.cv-eq{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:6px 0 2px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cv-eq[hidden]{display:none}
+.cv-eq span{font-weight:700;letter-spacing:.02em}
+.cv-eq b{color:#152a7a;font-weight:800}
+.cv-eq em{font-style:normal;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(11,20,64,.06)}.cv-eq em.up{color:#15803d;background:rgba(22,163,74,.1)}.cv-eq em.dn{color:#c81e2b;background:rgba(229,50,62,.1)}
+#mCurve .cv-eqline{fill:none;stroke:#2547d0;stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round;opacity:.9}
+#mCurve .cv-balx{stroke:#D4AF37;stroke-width:1.6;stroke-dasharray:3 4;opacity:.8}
+#mCurve .cv-eqdot{fill:#fff;stroke:#2547d0;stroke-width:2}
+#mCurve .cv-eqpill rect{fill:#eef2ff;stroke:#2547d0;stroke-width:1}#mCurve .cv-eqpill text{font-size:10.5px;font-weight:800;fill:#2547d0;font-variant-numeric:tabular-nums}#mCurve .cv-eqpill.dn rect{fill:#fff1f2;stroke:#E5323E}#mCurve .cv-eqpill.dn text{fill:#c81e2b}#mCurve .cv-eqpill.up rect{fill:#f0fdf4;stroke:#16a34a}#mCurve .cv-eqpill.up text{fill:#15803d}
+.cv-key{display:flex;gap:16px;justify-content:center;margin-top:8px;font-size:12px;font-weight:700;color:var(--muted)}
+.cv-key[hidden]{display:none}
+.cv-key i{display:inline-block;width:18px;height:0;vertical-align:middle;margin-right:6px}
+.cv-key .k-bal i{border-top:3px solid #D4AF37;border-radius:2px}.cv-key .k-eq i{border-top:2px solid #2547d0}
   .lb-head{display:flex;gap:14px;align-items:flex-start}
   .lb-head>div:not(.lb-pick){flex:1 1 auto;min-width:0}
   #lbTabs,#lblTabs{display:none!important}
@@ -3755,7 +3769,7 @@ body.op-lock{overflow:hidden}
       <div class="app-card cv-card">
         <div class="app-status" id="mStatus"><i></i>FTM MACHINE is running</div>
         <div class="cv-head">
-        <div class="cv-title"><h3 class="has-tip" data-tip="Balance after every closed trade. Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account balance</h3><div class="cv-now"><b id="cvNow">&mdash;</b><span id="cvChg"></span></div></div>
+        <div class="cv-title"><h3 class="has-tip" data-tip="Gold line: balance after every closed trade. Thin blue line: equity, which includes open trades. Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account progress</h3><div class="cv-eq" id="cvEq" hidden><span>Equity</span><b id="cvEqV">&mdash;</b><em id="cvEqF"></em></div><div class="cv-now"><b id="cvNow">&mdash;</b><span id="cvChg"></span></div></div>
         <div class="cv-controls">
           <div class="tf" id="curveTF"><button data-r="1">1M</button><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="ytd">YTD</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div>
           <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div><select id="cvCmp" class="cv-cmp" aria-label="Compare with" hidden><option value="">Compare with…</option><option value="XAUUSD">Gold</option><option value="USTEC">US Tech 100</option><option value="BTCUSD">Bitcoin</option></select>
@@ -3766,7 +3780,7 @@ body.op-lock{overflow:hidden}
         </div>
         </div>
         <div class="cv-wrap"><svg class="app-chart" id="mCurve" viewBox="0 0 600 190" aria-hidden="true"></svg><div class="cv-yaxis" id="cvYAxis"></div><div class="cv-tip" id="cvTip" hidden></div></div>
-        <div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
+        <div class="cv-key" id="cvKey" hidden><span class="k-bal"><i></i>Balance</span><span class="k-eq"><i></i>Equity</span></div><div class="app-legend cv-legend"><span id="mCurveFrom">&mdash;</span><span class="cv-read" id="mCurveHover">Hover or touch the chart for an exact date</span><span id="mCurveTo">&mdash;</span></div>
       </div>
 
       </div>
@@ -5999,6 +6013,8 @@ body.op-lock{overflow:hidden}
       var pT=16, pB=26, pL=4, pR=W<420?44:58;
 
       var pctMode = F.curveUnit==='percent';
+      var vaEq=F.viewedAccount&&F.viewedAccount(), eqNow=(!pctMode && vaEq && vaEq.equity!=null && isFinite(+vaEq.equity) && +vaEq.equity>0)?+vaEq.equity:null, tNow=Date.now();
+      var eqHist=(eqNow!=null && F.data && Array.isArray(F.data.equityHist))?F.data.equityHist.filter(function(e){ return e && e.t>=m.curve[0].t && isFinite(e.v); }):[];
       var base = m.curve[0].v || 1;
       if(pctMode){
         m={curve:m.curve.map(function(p,i){ return {t:p.t, v:(i&&F._cvSeg)?F._cvSeg(F._cvFrom,p.t+1).pct:0, flow:p.flow, adj:p.adj}; })};
@@ -6007,13 +6023,13 @@ body.op-lock{overflow:hidden}
       if(pctMode && F.cmpSym && F._bench && F._bench[F.cmpSym] && m.curve.length>1){ var BC=F._bench[F.cmpSym], c0=m.curve[0].t, c1=m.curve[m.curve.length-1].t, base=null, bp=[];
         BC.forEach(function(k){ if(k.t<=c0) base=k.c; }); if(base==null && BC.length && BC[0].t<=c1) base=BC[0].o;
         if(base){ bp.push({t:c0,v:0}); BC.forEach(function(k){ if(k.t>c0 && k.t<=c1) bp.push({t:k.t,v:(k.c/base-1)*100}); }); if(bp.length>1) bench=bp; } }
-      var vals=m.curve.map(function(p){return p.v;}).concat(bench?bench.map(function(p){return p.v;}):[]);
+      var vals=m.curve.map(function(p){return p.v;}).concat(bench?bench.map(function(p){return p.v;}):[]); if(!pctMode && eqNow!=null && !(F.curveZoomLevel>0)){ vals.push(eqNow); eqHist.forEach(function(e){ vals.push(e.v); }); }
       var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
       if(hi===lo){ hi+=Math.abs(hi)*0.01||1; lo-=Math.abs(lo)*0.01||1; }
       var rawStep=(hi-lo)/3, mag=Math.pow(10,Math.floor(Math.log10(rawStep))), nrm=rawStep/mag;
       var step=(nrm<=1?1:nrm<=2?2:nrm<=2.5?2.5:nrm<=5?5:10)*mag;
       var gLo=Math.floor(lo/step)*step, gHi=Math.ceil(hi/step)*step; if(gHi===gLo) gHi=gLo+step;
-      var t0=m.curve[0].t, t1=m.curve[m.curve.length-1].t, tSpan=(t1-t0)||1;
+      var t0=m.curve[0].t, t1=m.curve[m.curve.length-1].t; if(eqNow!=null && tNow>t1 && !(F.curveZoomLevel>0)) t1=tNow; var tSpan=(t1-t0)||1;
       var X=function(t){ return pL+(m.curve.length>1?(t-t0)/tSpan:0)*(W-pL-pR); };
       var Y=function(v){ return pT+(1-(v-gLo)/(gHi-gLo))*(H-pT-pB); };
       var pts=m.curve.map(function(p){ return [Math.round(X(p.t)*10)/10, Math.round(Y(p.v)*10)/10]; });
@@ -6051,11 +6067,24 @@ body.op-lock{overflow:hidden}
         (bench?('<polyline class="cv-bench" fill="none" stroke="#152a7a" stroke-width="1.8" stroke-dasharray="5 4" opacity=".75" points="'+bench.map(function(p){ return X(p.t).toFixed(1)+','+Y(p.v).toFixed(1); }).join(' ')+'"/>'+'<text class="cv-bench-l" x="'+(X(bench[bench.length-1].t)-4).toFixed(1)+'" y="'+(Y(bench[bench.length-1].v)-8).toFixed(1)+'" text-anchor="end">'+((window.I18NE&&I18NE.t)?I18NE.t(F.cmpName):F.cmpName)+' '+(bench[bench.length-1].v>=0?'+':'')+bench[bench.length-1].v.toFixed(2)+'%</text>'):'')+
         '<path id="cvPath" pathLength="1" fill="none" stroke="url(#curveL)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" d="'+dpath+'"/>'+
         m.curve.map(function(p,i){ return (p.flow&&!p.adj) ? '<circle class="cv-flow" cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="5.5" fill="'+(p.flow>0?'#16a34a':'#E5323E')+'"/>' : ''; }).join('')+
+        (function(){ if(eqNow==null || F.curveZoomLevel>0) return ''; var xe=X(t1), ye=Y(eqNow), out='';
+          if(xe-last[0]>1) out+='<line class="cv-balx" x1="'+last[0]+'" y1="'+last[1]+'" x2="'+xe.toFixed(1)+'" y2="'+last[1]+'"/>';
+          var ep=eqHist.map(function(e){ return [X(e.t).toFixed(1),Y(e.v).toFixed(1)]; }); if(!ep.length) ep=[[last[0],last[1]]]; ep.push([xe.toFixed(1),ye.toFixed(1)]);
+          out+='<polyline class="cv-eqline" points="'+ep.map(function(q){ return q.join(','); }).join(' ')+'"/>';
+          var fl=(vaEq&&vaEq.floating!=null&&isFinite(+vaEq.floating))?+vaEq.floating:eqNow-m.curve[m.curve.length-1].v;
+          out+='<circle class="cv-eqdot" cx="'+xe.toFixed(1)+'" cy="'+ye.toFixed(1)+'" r="3.6"/>';
+          var ptx=(fl>0?'+':(fl<0?'-':''))+cur(Math.abs(fl)).replace(/^-/,''), pw=ptx.length*6.4+16, px=Math.max(2,xe-12-pw), py=ye+(ye<pT+26?10:-26);
+          out+='<g class="cv-eqpill '+(fl>0?'up':(fl<0?'dn':''))+'"><rect x="'+px.toFixed(1)+'" y="'+py.toFixed(1)+'" width="'+pw.toFixed(1)+'" height="18" rx="9"/><text x="'+(px+pw/2).toFixed(1)+'" y="'+(py+12.5).toFixed(1)+'" text-anchor="middle">'+ptx+'</text></g>';
+          return out; })()+
         '<circle id="cvPulse" cx="'+last[0]+'" cy="'+last[1]+'" r="4"/>'+
         '<circle id="cvEnd" cx="'+last[0]+'" cy="'+last[1]+'" r="4.5"/>'+
         '<line id="cvLine" x1="0" y1="'+pT+'" x2="0" y2="'+yB+'" visibility="hidden"/>'+
         '<circle id="cvDot" r="5.5" visibility="hidden"/>';
       svg.setAttribute('data-trend',up?'up':'down');
+      (function(){ var row=document.getElementById('cvEq'), key=document.getElementById('cvKey'); if(!row) return; var show=eqNow!=null; row.hidden=!show; if(key) key.hidden=!(show && !(F.curveZoomLevel>0)); if(!show) return;
+        var bal=(vaEq&&vaEq.balance!=null&&isFinite(+vaEq.balance))?+vaEq.balance:m.curve[m.curve.length-1].v, fl=(vaEq&&vaEq.floating!=null&&isFinite(+vaEq.floating))?+vaEq.floating:eqNow-bal;
+        document.getElementById('cvEqV').textContent=cur(eqNow); var fe=document.getElementById('cvEqF'), fp=bal>0?fl/bal*100:0;
+        fe.textContent=(fl>0?'+':(fl<0?'-':''))+cur(Math.abs(fl)).replace(/^-/,'')+' ('+(fp>0?'+':'')+fp.toFixed(2)+'%) '+(window.I18NE&&I18NE.t?I18NE.t('floating'):'floating'); fe.className=fl>0?'up':(fl<0?'dn':''); })();
       var yax=document.getElementById('cvYAxis'); if(yax) yax.innerHTML='';
       var fmt=function(ts){ return new Date(ts).toLocaleDateString((window.FTM_LOCALE||'en-GB'),{month:'short',year:'numeric'}); };
       set('mCurveFrom', fmt(m.curve[0].t));

@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Balance chart did not show open trades: the Dashboard chart is now called Account progress. The gold line is the balance (closed trades); a thin blue line shows equity (including open trades), and the floating profit or loss is shown above the balance and on the chart.
 - Master (IC Markets) balance showed an old figure (99,606) instead of the real 94,855.93: the engine kept an old reading for paused accounts. Fixed by FTM engine for every account (newest reading always used). The website also checks start balance + deposits - withdrawals + closed trades + fees/dividends/tax + credit, so profit and % stay right even if a reported balance is late.
 - Where is my initial deposit: the first money paid into the account, with its date, is shown under Total account value on the Dashboard and at the top of Capital flows. If FTM's records of an account start after it was opened, it shows the Starting balance on the first day FTM has on record.
 - Commission & swap looked too small: only the opening commission was counted. Fixed: it is now the sum of commission, swap and fees on every trade deal.
