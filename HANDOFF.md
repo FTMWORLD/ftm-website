@@ -656,3 +656,10 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Website: status re-check no longer stops after 15 min (2 s / 5 s / 20 s); setup step 3 and the account row show minutes waiting and any engine status; after 10 min an honest message, and client-log ev connect_stuck emails the support inbox once (server limits: 1 per account per 6 h, 20 a day). Connecting accounts are no longer labelled "View only" in the account picker.
 - Engine note sent (scratchpad to-ftm-engine-connect-stuck-101875056.txt): validate the account, root cause, always send a reason, add validation_started_at / validation_attempts.
 - Test: .github/tests/connect-wait.js.
+
+## 12 Nov 2026: Brevo paused sending ("account under review")
+- Every FTM email goes through Brevo, including account emails (api/_lib/passwordEmail.js: paid/free create-password, login code, reset) and alerts.
+- Fallback: when Brevo refuses, passwordEmail.js sends the same flow through Supabase's mailer (resetPasswordForEmail with the setpw redirect; signInWithOtp for login). Logged as email_fallback. If Supabase also uses Brevo SMTP as custom SMTP, set Supabase back to its default mailer or another SMTP until Brevo is restored.
+- Abuse protection on /api/v1/auth-email: hidden honeypot field (website), max 8 emails per sender IP per hour, max 300 per hour per instance.
+- Likely triggers to check in Brevo (Transactional logs): bursts of welcome emails to unknown addresses, bounces, and marketing campaigns to the sign-up list (every sign-up is added with consent via the Terms).
+- Test: .github/tests/email-fallback.js.

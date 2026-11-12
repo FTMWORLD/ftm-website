@@ -26,6 +26,7 @@ jobs:
           node .github/tests/fx-api.js
           node .github/tests/scripts-pinned.js
           node .github/tests/no-promises.js
+          node .github/tests/email-fallback.js
           node .github/tests/community-e2e.js http://localhost:8765
           node .github/tests/kyc-e2e.js http://localhost:8765
           node .github/tests/nav-dots-e2e.js http://localhost:8765

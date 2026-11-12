@@ -80,6 +80,18 @@ async function send(email, subject, htmlContent) {
   if (!r.ok) throw new Error('Brevo ' + r.status + ' ' + (await r.text()).slice(0, 200));
 }
 
+// When Brevo refuses to send (for example while Brevo reviews the account), the same secure link is sent
+// through Supabase's own mailer instead, so nobody is left without their email. Logged as email_fallback.
+async function sendOrFallback(admin, email, subject, htmlContent, fallback) {
+  try { await send(email, subject, htmlContent); return 'brevo'; }
+  catch (e) {
+    console.error('email_fallback', subject.slice(0, 40), e.message.slice(0, 160));
+    const r = await fallback();
+    if (r && r.error) throw new Error('Brevo failed (' + e.message.slice(0, 80) + ') and Supabase fallback failed (' + r.error.message + ')');
+    return 'supabase';
+  }
+}
+
 // Paid or free "create your password" email (creates the account if needed). Returns { userId, kind }.
 async function sendPasswordEmail(admin, email, opts) {
   opts = opts || {};
@@ -88,8 +100,10 @@ async function sendPasswordEmail(admin, email, opts) {
   if (!m.link) throw new Error('no link from Supabase');
   const kind = opts.fresh ? 'fresh' : (free ? 'free' : 'paid');
   const subject = opts.fresh ? 'Your new FTM password link' : free ? 'Welcome to FTM: create your password' : 'Welcome to FTM: create your password';
-  await send(email, subject, html(kind, { link: m.link, name: opts.name, product: opts.product, free }));
-  return { userId: m.userId, kind: m.kind };
+  const redirectTo = SITE() + '/?setpw=1' + (free ? '&free=1' : '') + '&e=' + encodeURIComponent(email);
+  const via = await sendOrFallback(admin, email, subject, html(kind, { link: m.link, name: opts.name, product: opts.product, free }),
+    () => admin.auth.resetPasswordForEmail(email, { redirectTo }));
+  return { userId: m.userId, kind: m.kind, via };
 }
 
 // 6-digit login code + one-tap link. Creates a free account first when the email is new (as before).
@@ -101,14 +115,16 @@ async function sendLoginEmail(admin, email, opts) {
     r = await link(admin, 'magiclink', email, SITE() + '/?login=1');
   }
   if (r.error) throw new Error(r.error.message);
-  await send(email, 'Your FTM login code: ' + r.otp, html('login', { link: r.link, otp: r.otp, name: opts.name }));
+  await sendOrFallback(admin, email, 'Your FTM login code: ' + r.otp, html('login', { link: r.link, otp: r.otp, name: opts.name }),
+    () => admin.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: SITE() + '/?login=1' } }));
 }
 
 async function sendResetEmail(admin, email, opts) {
   opts = opts || {};
   const r = await link(admin, 'recovery', email, SITE() + '/');
   if (r.error) throw new Error(r.error.message);
-  await send(email, 'Reset your FTM password', html('reset', { link: r.link, name: opts.name }));
+  await sendOrFallback(admin, email, 'Reset your FTM password', html('reset', { link: r.link, name: opts.name }),
+    () => admin.auth.resetPasswordForEmail(email, { redirectTo: SITE() + '/' }));
 }
 
 module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html };

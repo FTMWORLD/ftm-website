@@ -256,6 +256,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .app-tile b,.app-big,.app-pl b,.streaks b,.wd-avail b{overflow-wrap:normal}
   #appView .app-tile,#appView .app-card,#appView .kp-grid>*,#appView .rg-grid>*{min-width:0}
   .running-pl,.al-amt,#ratioLossV,#ratioWinV{white-space:nowrap}
+  .hp-f{position:absolute!important;left:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none}
   .fz-nw{white-space:nowrap!important;overflow-wrap:normal!important;word-break:keep-all!important}
 
   .app-bar{position:sticky;top:0;z-index:3;background:linear-gradient(180deg,#0D1747,var(--ink));color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 28px;flex-wrap:wrap;box-shadow:0 1px 0 rgba(255,255,255,.06),0 12px 28px -14px rgba(0,0,0,.5)}
@@ -3615,7 +3616,7 @@ body.op-lock{overflow:hidden}
     <p class="auth-sub">Free, no card needed. Get FTM updates by email and auto trade or invest whenever you are ready.</p>
     <form class="js-news" data-source="signup" novalidate>
       <label for="suEmail">Email</label>
-      <input type="email" id="suEmail" placeholder="you@example.com" required>
+      <input type="email" id="suEmail" placeholder="you@example.com" required><input type="text" name="website" class="hp-f" tabindex="-1" autocomplete="off" aria-hidden="true">
       <p class="auth-agree-note">By creating an account you agree to our <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including FTM emails. You can unsubscribe at any time.</p>
       <p class="su-msg" hidden></p>
       <button type="submit" class="btn btn-red">Create free account</button>
@@ -9434,7 +9435,8 @@ tick();setInterval(tick,5000);})();
     document.querySelectorAll('form.js-news').forEach(function(f){
       f.addEventListener('submit',function(e){
         e.preventDefault();
-        var mail=f.querySelector('input[type=email]').value.trim().toLowerCase(), ck=f.querySelector('input[type=checkbox]'), b=f.querySelector('button[type=submit]');
+        var mail=f.querySelector('input[type=email]').value.trim().toLowerCase(), ck=f.querySelector('input[type=checkbox]'), b=f.querySelector('button[type=submit]'), hp=f.querySelector('.hp-f');
+        if(hp && hp.value){ f.reset(); return msg(f,T('You are subscribed. Thank you.'),true); }
         if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return msg(f,T('Enter a valid email address.'),false);
         if(ck&&!ck.checked)return msg(f,T('Tick the box to agree to receive FTM emails.'),false);
         var isSignup=f.getAttribute('data-source')==='signup', sub=fetch('/api/v1/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,consent:true,source:f.getAttribute('data-source')})})

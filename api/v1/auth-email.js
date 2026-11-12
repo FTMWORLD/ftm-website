@@ -8,6 +8,8 @@ const { createClient } = require('@supabase/supabase-js');
 const { sendPasswordEmail, sendLoginEmail, sendResetEmail } = require('../_lib/passwordEmail');
 
 const recent = new Map(); // best-effort limit on a warm instance: 5 per email per hour
+const perIp = new Map();  // and 8 per sender (IP) per hour, so the form cannot be used to email strangers in bulk
+let hourKey = '', hourCount = 0; // and at most 300 account emails per hour per instance
 
 async function findUser(admin, email) {
   for (let page = 1; page <= 20; page++) {
@@ -29,9 +31,15 @@ module.exports = async function handler(req, res) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ ok: false, error: 'INVALID_EMAIL' });
   if (!/^(signup|login|reset)$/.test(mode)) return res.status(400).json({ ok: false, error: 'INVALID_MODE' });
 
+  if (body.website) return res.status(200).json({ ok: true }); // hidden field only bots fill in
   const now = Date.now(), hits = (recent.get(email) || []).filter(t => now - t < 3600000);
   if (hits.length >= 5) return res.status(200).json({ ok: true });
-  hits.push(now); recent.set(email, hits);
+  const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  const ipHits = (perIp.get(ip) || []).filter(t => now - t < 3600000);
+  if (ipHits.length >= 8) { console.error('auth-email: sender limit', ip.slice(0, 20)); return res.status(429).json({ ok: false, error: 'TOO_MANY' }); }
+  const hk = new Date().toISOString().slice(0, 13); if (hk !== hourKey) { hourKey = hk; hourCount = 0; }
+  if (++hourCount > 300) { console.error('auth-email: hourly cap reached'); return res.status(429).json({ ok: false, error: 'TOO_MANY' }); }
+  hits.push(now); recent.set(email, hits); ipHits.push(now); perIp.set(ip, ipHits);
 
   try {
     const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
