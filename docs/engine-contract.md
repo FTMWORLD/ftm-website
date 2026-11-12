@@ -4,6 +4,17 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-12 — EA 3.7 + RISK BUDGET FOR SMALL ACCOUNTS (commit 7d5ad81 + this one, API restarted 13:29 Berlin)
+
+- FTM MACHINE 3.7 runs on the master (13:19) and on the prop account (13:01). New strategy "Range Breakout" (magic 34686,
+  code FTMM-RBO-34686, US Tech 100 only, master only; off on prop accounts). It appears in strategy lists like any other;
+  nothing to change on the website.
+- RISK BUDGET is ON for every account (migration 043, .env COPY_RISK_BUDGET=ON; kill switch: OFF + API restart). A signal
+  skipped for the minimum lot adds its sized lot to the account's saved amount for that market (cap 2 x the minimum lot);
+  when the minimum lot <= 3 x the saved amount, that signal is copied at the minimum lot. Such a copy has
+  planning_reason RISK_BUDGET_TAKE_...; every step is a line in ftm.copy_risk_budget_uses (ADD / TAKE).
+  No API field changed. Replay of account #2022: 4 of 23 skipped signals would have been taken.
+
 ## 2026-11-11 — LEADERBOARD ON BY DEFAULT (commit de61fa4, API restarted 12:19 Berlin)
 
 - Every customer is on the leaderboard by default (opted_in true) unless they switch it off themselves; a customer who
