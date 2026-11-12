@@ -77,3 +77,9 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Charts explain themselves (owner instruction, 10 November 2026)
 - Every chart, bar, pie or drawing in the client area shows its details on hover (tap on phones): date, money, %, trades. New charts must do the same (data-tip on each part, or a crosshair), and get a check in .github/tests/charts-hover.js.
+
+## No refunds, no guarantees (owner instruction, 12 November 2026)
+- Subscriptions are not refundable. FTM makes no satisfaction guarantee or "promise" of any kind. This is final and is not to be argued or discussed, on the site, in Ask here, or in proposals.
+
+## Reminders for the owner
+- Translate terms.html and privacy.html into all 49 languages when the owner has more credits (owner asked on 12 Nov 2026 to be reminded; English only until then).
