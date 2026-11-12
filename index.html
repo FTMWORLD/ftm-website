@@ -5740,9 +5740,10 @@ body.op-lock{overflow:hidden}
         window.FTM.remote.connectAccount(srv, n, pwVal, tier).then(function(r){
           var T=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
           msg.hidden=false; msg.className='hint'; msg.style.color='#1f8a5b';
-          var tick0=Date.now(), tickT=setInterval(function(){ if(btn._cxDone){ clearInterval(tickT); return; } msg.textContent=T('Account added. FTM is checking it with your broker… ({}s)').replace('{}',Math.round((Date.now()-tick0)/1000)); },1000);
-          msg.textContent=T('Account added. FTM is checking it with your broker… ({}s)').replace('{}','0'); btn._cxDone=false;
-          var toDash=function(note){ btn._cxDone=true; clearInterval(tickT); btn.disabled=false; var W=window.FTM.cxWizard; if(W&&W.close) W.close(); var nv=document.querySelector('#appView .app-nav-item[data-view="metrics"]'); if(nv) nv.click(); if(note) toast(T(note)); };
+          var tickT=0; btn._cxDone=false; btn._cxClosed=false;
+          msg.textContent=T('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.');
+          var toDash=function(note){ if(!btn._cxClosed){ btn._cxClosed=true; btn.disabled=false; var W=window.FTM.cxWizard; if(W&&W.close) W.close(); var nv=document.querySelector('#appView .app-nav-item[data-view="metrics"]'); if(nv) nv.click(); } if(note) toast(T(note)); };
+          setTimeout(function(){ if(!btn._cxDone) toDash(null); },1400);
 
           try{
             var FT=window.FTM;
@@ -5769,13 +5770,12 @@ body.op-lock{overflow:hidden}
                 if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED' && a.statusReason!=='NO_NODE_ASSIGNED'){
                   var good = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE'||st==='MAINTENANCE';
                   if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); if(FT.renderActivate)FT.renderActivate(); });
-                  if(good){ btn._cxDone=true; clearInterval(tickT); msg.style.color='#1f8a5b'; msg.textContent=T('Account connected.'); setTimeout(function(){ toDash('Account connected. FTM MACHINE starts trading on it.'); },1200); }
-                  else { btn._cxDone=true; clearInterval(tickT); btn.disabled=false; msg.style.color='#E5323E'; msg.textContent=T(FT.reasonText?FT.reasonText(a):'Connection needs attention. Open Accounts to see why.'); }
+                  if(good){ btn._cxDone=true; msg.style.color='#1f8a5b'; msg.textContent=T('Account connected.'); setTimeout(function(){ toDash('Account connected. FTM MACHINE starts trading on it.'); },btn._cxClosed?0:900); }
+                  else { btn._cxDone=true; btn.disabled=false; var why=T(FT.reasonText?FT.reasonText(a):'Connection needs attention. Open Accounts to see why.'); msg.style.color='#E5323E'; msg.textContent=why; if(btn._cxClosed){ toast(why); var na=document.querySelector('#appView .app-nav-item[data-view="accounts"]'); if(na) na.click(); } }
                   return;
                 }
-                if(Date.now()-t0c<60000) setTimeout(poll, (sig && lpFail<2) ? 150 : 2000);
-                else toDash('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.');
-              }).catch(function(){ if(btn._cxDone) return; if(Date.now()-t0c<60000) setTimeout(poll,2000); else toDash('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.'); });
+                if(Date.now()-t0c<10*60000) setTimeout(poll, (sig && lpFail<2) ? 150 : (Date.now()-t0c<60000?2000:5000));
+              }).catch(function(){ if(btn._cxDone) return; if(Date.now()-t0c<10*60000) setTimeout(poll,3000); });
             })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){ blocked('API_'+String((e&&e.code)||(e&&e.status)||'ERR').slice(0,40));
