@@ -550,7 +550,7 @@
       "path": "/customer/accounts",
       "auth": "customer",
       "status": "live",
-      "summary": "Every connected account of the customer (removed ones are gone). Key the texts on display_status / status_reason; everything else is information. Every row also carries deposits / withdrawals (balance operations read by the statistics sync, so Gain % never counts a deposit as profit), last_synced_at (the sync) and last_reported_at (the terminal heartbeat, else the sync, else the master records). For an account without a copy terminal the balance / equity / floating fields hold what the sync read. (deposits / withdrawals / last_synced_at: from the next API restart.) 9 Nov 2026 LONG-POLL for the connect screen: ?wait_for=<account_id>&since=<that account's status_signature>&wait=<0-25 s> holds the request until that account's status changes (or the wait ends) and then answers exactly as without it; header X-FTM-Wait: changed | timeout. Every GET also sends an ETag: send If-None-Match to get 304 when nothing changed.",
+      "summary": "Every connected account of the customer (removed ones are gone). Key the texts on display_status / status_reason; everything else is information. Every row also carries deposits / withdrawals (balance operations read by the statistics sync, so Gain % never counts a deposit as profit), last_synced_at (the sync) and last_reported_at (the terminal heartbeat, else the sync, else the master records). For an account without a copy terminal the balance / equity / floating fields hold what the sync read. (deposits / withdrawals / last_synced_at: from the next API restart.) 9 Nov 2026 LONG-POLL for the connect screen: ?wait_for=<account_id>&since=<that account's status_signature>&wait=<0-25 s> holds the request until that account's status changes (or the wait ends) and then answers exactly as without it; header X-FTM-Wait: changed | timeout. Every GET also sends an ETag: send If-None-Match to get 304 when nothing changed. NEW 12 Nov 2026, only while an account waits to be checked (status_reason NEVER_VALIDATED / VALIDATION_PENDING), null otherwise: validation_started_at (when the first check of the current login details began, null = not started), validation_attempts (checks started), validation_waiting_seconds (since the login details were entered), validation_delay_reason (null under 2 minutes, then CHECK_NOT_STARTED | CHECK_RUNNING | BROKER_UNREACHABLE) and validation_delay_text (plain words to show next to 'Connecting'). In every one of these cases the engine repeats the check by itself (a check without a broker answer after 2 minutes); the customer has nothing to do. A refusal by the broker still arrives as status_reason ACTION_REQUIRED with validation_reason, as before.",
       "response": {
         "200": {
           "ok": true,
@@ -574,6 +574,11 @@
               "account_number": "202459643",
               "display_status": "ACTIVE",
               "status_reason": "OK",
+              "validation_started_at": null,
+              "validation_attempts": null,
+              "validation_waiting_seconds": null,
+              "validation_delay_reason": null,
+              "validation_delay_text": null,
               "validation_reason": null,
               "last_validated_at": "2026-09-28T06:33:33.324Z",
               "can_retry_password": false,
