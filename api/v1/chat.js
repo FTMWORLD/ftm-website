@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Account progress: after using Compare with (Gold, Bitcoin...) and going back, the equity (floating) part disappeared because the chart stayed in %. Now clearing Compare returns to the view you had, and equity also shows in % mode.
 - Account progress on phones: the currency/% switch, Compare and the zoom -/+ buttons were on two lines and the All tab could be cut off. Now they sit on one line (currency and % left, Compare middle, -/+ right) and every period tab fits.
 - Face ID login on a phone showed an extra 'Continue' sheet before the face or fingerprint scan: the site now names the passkey saved on that device, so the tap goes straight to Face ID or fingerprint (after the first login on that device). The passkey is also offered above the keyboard in the email field for one-tap login.
 - Balance chart did not show open trades: the Dashboard chart is called Account progress. The gold line is the balance (closed trades); the equity line (including open trades) is green when open trades are in profit and red when in loss. Hover or tap either line to see the amount, the floating profit or loss and the balance.

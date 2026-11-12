@@ -6034,17 +6034,19 @@ body.op-lock{overflow:hidden}
       var pT=16, pB=26, pL=4, pR=W<420?44:58;
 
       var pctMode = F.curveUnit==='percent';
-      var vaEq=F.viewedAccount&&F.viewedAccount(), eqNow=(!pctMode && vaEq && vaEq.equity!=null && isFinite(+vaEq.equity) && +vaEq.equity>0)?+vaEq.equity:null, tNow=Date.now();
-      var eqHist=(eqNow!=null && F.data && Array.isArray(F.data.equityHist))?F.data.equityHist.filter(function(e){ return e && e.t>=m.curve[0].t && isFinite(e.v); }):[];
+      var vaEq=F.viewedAccount&&F.viewedAccount(), eqAmt=(vaEq && vaEq.equity!=null && isFinite(+vaEq.equity) && +vaEq.equity>0)?+vaEq.equity:null, eqNow=eqAmt, tNow=Date.now();
+      var balAmt=m.curve[m.curve.length-1].v, flAmt=eqAmt==null?null:((vaEq.floating!=null&&isFinite(+vaEq.floating))?+vaEq.floating:eqAmt-balAmt);
+      var eqHist=(eqNow!=null && !pctMode && F.data && Array.isArray(F.data.equityHist))?F.data.equityHist.filter(function(e){ return e && e.t>=m.curve[0].t && isFinite(e.v); }):[];
       var base = m.curve[0].v || 1;
       if(pctMode){
         m={curve:m.curve.map(function(p,i){ return {t:p.t, v:(i&&F._cvSeg)?F._cvSeg(F._cvFrom,p.t+1).pct:0, flow:p.flow, adj:p.adj}; })};
+        if(eqAmt!=null && balAmt>0){ var lp=m.curve[m.curve.length-1].v; eqNow=((1+lp/100)*(1+flAmt/balAmt)-1)*100; } else eqNow=null;
       }
       var bench=null;
       if(pctMode && F.cmpSym && F._bench && F._bench[F.cmpSym] && m.curve.length>1){ var BC=F._bench[F.cmpSym], c0=m.curve[0].t, c1=m.curve[m.curve.length-1].t, base=null, bp=[];
         BC.forEach(function(k){ if(k.t<=c0) base=k.c; }); if(base==null && BC.length && BC[0].t<=c1) base=BC[0].o;
         if(base){ bp.push({t:c0,v:0}); BC.forEach(function(k){ if(k.t>c0 && k.t<=c1) bp.push({t:k.t,v:(k.c/base-1)*100}); }); if(bp.length>1) bench=bp; } }
-      var vals=m.curve.map(function(p){return p.v;}).concat(bench?bench.map(function(p){return p.v;}):[]); if(!pctMode && eqNow!=null && !(F.curveZoomLevel>0)){ vals.push(eqNow); eqHist.forEach(function(e){ vals.push(e.v); }); }
+      var vals=m.curve.map(function(p){return p.v;}).concat(bench?bench.map(function(p){return p.v;}):[]); if(eqNow!=null && !(F.curveZoomLevel>0)){ vals.push(eqNow); eqHist.forEach(function(e){ vals.push(e.v); }); }
       var lo=Math.min.apply(null,vals), hi=Math.max.apply(null,vals);
       if(hi===lo){ hi+=Math.abs(hi)*0.01||1; lo-=Math.abs(lo)*0.01||1; }
       var rawStep=(hi-lo)/3, mag=Math.pow(10,Math.floor(Math.log10(rawStep))), nrm=rawStep/mag;
@@ -6092,7 +6094,7 @@ body.op-lock{overflow:hidden}
         '<path id="cvPath" pathLength="1" fill="none" stroke="url(#curveL)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" d="'+dpath+'"/>'+
         m.curve.map(function(p,i){ return (p.flow&&!p.adj) ? '<circle class="cv-flow" cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="5.5" fill="'+(p.flow>0?'#16a34a':'#E5323E')+'"/>' : ''; }).join('')+
         (function(){ F._cvEq=null; if(!eqOn) return ''; var xe=X(tNow), ye=Y(eqNow), lx=last[0], ly=last[1], out='';
-          var fl=(vaEq&&vaEq.floating!=null&&isFinite(+vaEq.floating))?+vaEq.floating:eqNow-m.curve[m.curve.length-1].v, tone=fl>0.004?'up':(fl<-0.004?'dn':'flat');
+          var fl=flAmt, tone=fl>0.004?'up':(fl<-0.004?'dn':'flat');
           var eh=eqHist.filter(function(e){ return e.t<tNow; }).map(function(e){ return [X(e.t),Y(e.v)]; });
           var ed, ep;
           if(eh.length){ ep=eh.concat([[xe,ye]]); ed='M'+ep.map(function(q){ return q[0].toFixed(1)+' '+q[1].toFixed(1); }).join(' L '); }
@@ -6103,7 +6105,7 @@ body.op-lock{overflow:hidden}
           out+='<line class="cv-balx" x1="'+lx+'" y1="'+ly+'" x2="'+xe.toFixed(1)+'" y2="'+ly+'"/>';
           out+='<path class="cv-eqline '+tone+'" d="'+ed+'"/>';
           out+='<circle class="cv-eqhalo '+tone+'" cx="'+xe.toFixed(1)+'" cy="'+ye.toFixed(1)+'" r="9"/><circle class="cv-eqdot '+tone+'" cx="'+xe.toFixed(1)+'" cy="'+ye.toFixed(1)+'" r="4"/>';
-          F._cvEq={x0:lx, x:xe, y:ye, v:eqNow, fl:fl, bal:m.curve[m.curve.length-1].v, t:tNow, tone:tone};
+          F._cvEq={x0:lx, x:xe, y:ye, v:eqNow, amt:eqAmt, pct:pctMode, fl:fl, bal:balAmt, t:tNow, tone:tone};
           return out; })()+
         '<circle id="cvPulse" cx="'+last[0]+'" cy="'+last[1]+'" r="4"/>'+
         '<circle id="cvEnd" cx="'+last[0]+'" cy="'+last[1]+'" r="4.5"/>'+
@@ -6139,11 +6141,11 @@ body.op-lock{overflow:hidden}
           var l0=document.getElementById('cvLine'), d0=document.getElementById('cvDot'), T=function(k){ return window.I18NE&&I18NE.t?I18NE.t(k):k; };
           l0.setAttribute('x1',E.x); l0.setAttribute('x2',E.x); l0.setAttribute('visibility','visible'); d0.setAttribute('cx',E.x); d0.setAttribute('cy',E.y); d0.setAttribute('visibility','visible'); d0.style.stroke=E.tone==='dn'?'#E5323E':(E.tone==='up'?'#16a34a':''); 
           var dt=new Date(E.t), dS=dt.toLocaleDateString((window.FTM_LOCALE||'en-GB'),{weekday:'short',day:'numeric',month:'short',year:'numeric'})+' \u00B7 '+dt.toLocaleTimeString((window.FTM_LOCALE||'en-GB'),{hour:'2-digit',minute:'2-digit'}), fp=E.bal>0?E.fl/E.bal*100:0;
-          tip.innerHTML='<span>'+dS+'</span><span>'+T('Equity')+'</span><b>'+cur(E.v)+'</b><span style="color:'+(E.fl>0?'#8fe0b4':(E.fl<0?'#ff9aa2':'#cfd5ea'))+'">'+T('Floating')+' '+(E.fl>0?'+':(E.fl<0?'-':''))+cur(Math.abs(E.fl)).replace(/^-/,'')+' ('+(fp>0?'+':'')+fp.toFixed(2)+'%)</span><span>'+T('Balance')+' '+cur(E.bal)+'</span>';
+          tip.innerHTML='<span>'+dS+'</span><span>'+T('Equity')+'</span><b>'+(E.pct?(E.v>=0?'+':'')+E.v.toFixed(2)+'% \u00B7 ':'')+cur(E.amt)+'</b><span style="color:'+(E.fl>0?'#8fe0b4':(E.fl<0?'#ff9aa2':'#cfd5ea'))+'">'+T('Floating')+' '+(E.fl>0?'+':(E.fl<0?'-':''))+cur(Math.abs(E.fl)).replace(/^-/,'')+' ('+(fp>0?'+':'')+fp.toFixed(2)+'%)</span><span>'+T('Balance')+' '+cur(E.bal)+'</span>';
           tip.className='cv-tip eq'; tip.hidden=false;
           var ex=E.x/(c.W||600)*r.width, ey=E.y/(c.H||190)*r.height, tw2=tip.offsetWidth;
           tip.style.left=Math.max(tw2/2+4, Math.min(r.width-tw2/2-4, ex))+'px'; tip.style.top=ey+'px';
-          var hv0=document.getElementById('mCurveHover'); if(hv0){ hv0.textContent=T('Equity')+' \u00B7 '+cur(E.v); hv0.className='cv-read'; }
+          var hv0=document.getElementById('mCurveHover'); if(hv0){ hv0.textContent=T('Equity')+' \u00B7 '+cur(E.amt); hv0.className='cv-read'; }
           return; }
         tip.className='cv-tip'; var dR=document.getElementById('cvDot'); if(dR) dR.style.stroke='';
         var best=0,bd=1e9;
@@ -6190,7 +6192,8 @@ body.op-lock{overflow:hidden}
         (function(){ var mq=window.matchMedia('(max-width:600px)'), lab=function(){ var o=cmp.options[0], t=mq.matches?'Compare':'Compare with\u2026'; if(o.textContent!==t) o.textContent=t; }; lab(); if(mq.addEventListener) mq.addEventListener('change',lab); })();
         setInterval(function(){ var ok=!!(F.remote&&F.remote.ready&&F.remote.ready()&&F.session&&F.remote.api); cmp.hidden=!ok; },2000);
         cmp.addEventListener('change',function(){ var sym=cmp.value; F.cmpSym=sym||null; F.cmpName=sym?cmp.options[cmp.selectedIndex].text:''; 
-          if(!sym){ F.render(); return; }
+          if(!sym){ var back=F._unitBeforeCmp; F._unitBeforeCmp=null; var ub=back&&back!==(F.curveUnit||'amount')&&unitTF&&unitTF.querySelector('[data-u="'+back+'"]'); if(ub) ub.click(); else F.render(); return; }
+          if(F._unitBeforeCmp==null) F._unitBeforeCmp=F.curveUnit||'amount';
           if(F.curveUnit!=='percent'){ var pb=unitTF&&unitTF.querySelector('[data-u="percent"]'); if(pb) pb.click(); }
           F._bench=F._bench||{}; F._benchAt=F._benchAt||{};
           if(F._bench[sym] && Date.now()-F._benchAt[sym]<600000){ F.render(); return; }
