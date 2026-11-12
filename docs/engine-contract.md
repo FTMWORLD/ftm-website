@@ -4,7 +4,20 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-12 (evening, 2) — CONNECTION CHECKER LOOKS EVERY MINUTE (WAS EVERY SECOND MINUTE) + FASTER TERMINAL START PREPARED (this commit; checker live 18:58 Berlin)
+## 2026-11-12 (evening, 3) — FASTER TERMINAL START IN PLACE, SWITCH STILL OFF (this commit; files live 20:07 Berlin)
+
+- WEBSITE: nothing to change.
+- The three protected job files for the faster start of a customer's own terminal (src/services/terminal-ops.js,
+  scripts/provision-account.js, scripts/relaunch-terminals.js) were put in place at 20:07 with the owner's click
+  (hash-checked, all three or none; backups kept). The switch FTM_TERMINAL_SESSION is NOT set: OFF, so every account
+  behaves exactly as before. Checked after the swap: dry runs of the set-up job and the relauncher as before, the jobs'
+  own runs without errors.
+- Proof scripts/verify-terminal-session.js (24/0 on the live files) is now part of the deploy gate.
+- NEXT: one proof with the switch ON on a demo account (needs the demo account saved by the owner with the desktop
+  shortcut "SAVE FTM E2E DEMO ACCOUNT"), then the switch goes ON for every new and restarted customer terminal.
+- Deploy gate: RESULT SAFE TO DEPLOY (20:16 Berlin).
+
+## 2026-11-12 (evening, 2) — CONNECTION CHECKER LOOKS EVERY MINUTE (WAS EVERY SECOND MINUTE) + FASTER TERMINAL START PREPARED (commit cf90580; checker live 18:58 Berlin)
 
 - WEBSITE: nothing to change. One correction that goes live with the next API restart: the "FTM master account" preview
   entry of GET /customer/accounts will carry the five validation_* keys too (always null), so every entry of the list
