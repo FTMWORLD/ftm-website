@@ -634,3 +634,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Dashboard chart "Account progress": gold = balance; equity line + light fill green (floating profit) or red (floating loss), in its own "now" zone at the right (min 10% laptop, 16% phone). No fixed amounts: hover/tap shows equity, floating and balance. Owner rejected the fixed floating pill and row (12 Nov).
 - Full equity history needs the engine (note sent: GET /customer/accounts/:id/equity-history). The chart already draws `FTM.data.equityHist` ([{t,v}]) when filled; wire the loader once the endpoint is live.
 - Test: .github/tests/figures.js ("Account progress chart shows equity").
+
+## 12 Nov 2026: Face ID straight to the scan
+- Owner: phone showed an extra "Continue" sheet before Face ID. That sheet is the OS account picker shown when allowCredentials is empty.
+- Fix: the device remembers its own credential id (localStorage ftm_pk_id, saved on Turn on and on every passkey login) and the tap sends allowCredentials=[that id, transports internal]. If that fails with NotAllowedError, the next tap falls back to the picker (pickAll).
+- Also conditional mediation (passkey offered above the keyboard in the email field, autocomplete="username webauthn"); aborted before the button's request and when the login window closes.
+- Test: .github/tests/passkey-e2e.js (the test holds conditional requests pending like a real person, because Chromium's virtual authenticator auto-accepts them).
