@@ -5202,26 +5202,31 @@ body.op-lock{overflow:hidden}
       }
       function token(){ return (window.FTM.auth&&window.FTM.auth.getAccessToken) ? Promise.resolve(window.FTM.auth.getAccessToken()) : Promise.reject(new Error('NO_AUTH')); }
       function mark(on){ try{ if(on) localStorage.setItem('ftm_pk_on','1'); else localStorage.removeItem('ftm_pk_on'); }catch(e){} }
+      var FRESH=120000, regPre=null, logPre=null;
+      function pubCreate(o){ return {challenge:a2b(o.challenge), rp:o.rp, user:{id:a2b(o.user.id), name:o.user.name, displayName:o.user.displayName}, pubKeyCredParams:o.pubKeyCredParams, timeout:o.timeout, attestation:o.attestation||'none', authenticatorSelection:o.authenticatorSelection,
+              excludeCredentials:(o.excludeCredentials||[]).map(function(x){ return {id:a2b(x.id), type:'public-key', transports:x.transports}; })}; }
+      function pubGet(o){ return {challenge:a2b(o.challenge), rpId:o.rpId, timeout:o.timeout, userVerification:o.userVerification||'required', allowCredentials:[]}; }
+      function prepRegister(){ if(regPre && regPre.j && Date.now()-regPre.at<FRESH) return Promise.resolve(regPre);
+        return token().then(function(t){ return post({action:'register-options'},t).then(function(j){ regPre={j:j,t:t,at:Date.now()}; return regPre; }); }); }
+      function prepLogin(){ if(logPre && logPre.j && Date.now()-logPre.at<FRESH) return Promise.resolve(logPre);
+        return post({action:'login-options'}).then(function(j){ logPre={j:j,at:Date.now()}; return logPre; }); }
+      function doRegister(p){ regPre=null; return navigator.credentials.create({publicKey:pubCreate(p.j.options)}).then(function(c){ return post({action:'register-verify', state:p.j.state, response:cred(c)},p.t); }); }
+      function doLogin(p){ logPre=null; return navigator.credentials.get({publicKey:pubGet(p.j.options)}).then(function(c){ return post({action:'login-verify', state:p.j.state, response:cred(c)}); }); }
       function register(){
-        return token().then(function(t){
-          return post({action:'register-options'},t).then(function(j){
-            var o=j.options;
-            var pub={challenge:a2b(o.challenge), rp:o.rp, user:{id:a2b(o.user.id), name:o.user.name, displayName:o.user.displayName}, pubKeyCredParams:o.pubKeyCredParams, timeout:o.timeout, attestation:o.attestation||'none', authenticatorSelection:o.authenticatorSelection,
-              excludeCredentials:(o.excludeCredentials||[]).map(function(x){ return {id:a2b(x.id), type:'public-key', transports:x.transports}; })};
-            return navigator.credentials.create({publicKey:pub}).then(function(c){ return post({action:'register-verify', state:j.state, response:cred(c)},t); });
-          });
-        }).then(function(r){ mark(true); return r; }, function(e){ if(e && e.name==='InvalidStateError'){ mark(true); return {ok:true, already:true}; } throw e; });
+        var p=(regPre && regPre.j && Date.now()-regPre.at<FRESH) ? regPre : null;
+        return (p ? doRegister(p) : prepRegister().then(doRegister))
+          .then(function(r){ mark(true); setTimeout(function(){ prepRegister().catch(function(){}); },0); return r; }, function(e){ if(e && e.name==='InvalidStateError'){ mark(true); return {ok:true, already:true}; } throw e; });
       }
       function login(){
-        return post({action:'login-options'}).then(function(j){
-          var o=j.options;
-          return navigator.credentials.get({publicKey:{challenge:a2b(o.challenge), rpId:o.rpId, timeout:o.timeout, userVerification:o.userVerification||'required', allowCredentials:[]}})
-            .then(function(c){ return post({action:'login-verify', state:j.state, response:cred(c)}); });
-        }).then(function(r){ return window.FTM.auth.verifyTokenHash(r.token_hash); }).then(function(r){ mark(true); return r; });
+        var p=(logPre && logPre.j && Date.now()-logPre.at<FRESH) ? logPre : null;
+        return (p ? doLogin(p) : prepLogin().then(doLogin))
+          .then(function(r){ return window.FTM.auth.verifyTokenHash(r.token_hash); }).then(function(r){ mark(true); return r; })
+          .catch(function(e){ setTimeout(function(){ prepLogin().catch(function(){}); },0); throw e; });
       }
+      function anySupport(){ return !!(window.PublicKeyCredential && navigator.credentials && /(^|\.)ftmwealthnation\.com$/.test(location.hostname)); }
       function status(){ return token().then(function(t){ return post({action:'status'},t); }); }
       function off(){ return token().then(function(t){ return post({action:'remove-all'},t); }).then(function(r){ mark(false); return r; }); }
-      return {supported:supported, register:register, login:login, status:status, off:off, isOn:function(){ try{ return localStorage.getItem('ftm_pk_on')==='1'; }catch(e){ return false; } }};
+      return {supported:supported, anySupport:anySupport, prepLogin:prepLogin, prepRegister:prepRegister, register:register, login:login, status:status, off:off, isOn:function(){ try{ return localStorage.getItem('ftm_pk_on')==='1'; }catch(e){ return false; } }};
     })();
 
     document.querySelectorAll('.js-login').forEach(function(b){b.addEventListener('click',function(e){
@@ -5433,12 +5438,13 @@ body.op-lock{overflow:hidden}
         var row=document.getElementById('authPkRow'), b=document.getElementById('authPk'); if(!row||!b||!window.FTM.pk) return;
         var sync=function(){ var pr=document.getElementById('authPassRow'), orow=document.getElementById('authOtpRow'), er=document.getElementById('authEmailRow');
           var loginMode=!!(pr && !pr.hidden && orow && orow.hidden && er && !er.hidden);
-          window.FTM.pk.supported().then(function(ok){ row.hidden=!(ok && loginMode); }); };
+          var show=window.FTM.pk.anySupport() && loginMode; row.hidden=!show; if(show) window.FTM.pk.prepLogin().catch(function(){}); };
         sync(); new MutationObserver(sync).observe(document.getElementById('authForm'),{attributes:true,subtree:true,attributeFilter:['hidden']});
         b.addEventListener('click',function(){
           b.disabled=true; var er2=document.getElementById('authError'); if(er2) er2.hidden=true;
           window.FTM.pk.login().then(function(r){ b.disabled=false; enter(r.email,r.products,false,r.name); })
-            .catch(function(e2){ b.disabled=false; if(e2 && e2.name==='NotAllowedError') return; fail('Face ID login did not work. Log in with your email instead.'); });
+            .catch(function(e2){ b.disabled=false; var c=e2&&(e2.code||e2.name);
+              fail(c==='UNKNOWN_PASSKEY'?'This device has no FTM Face ID yet. Log in with your email once, then turn on Face ID in the menu.':(c==='NotAllowedError'?'Face ID was cancelled or timed out. Tap the button to try again.':'Face ID login did not work. Log in with your email instead.')); });
         });
       })();
 
@@ -10289,10 +10295,10 @@ tick();setInterval(tick,5000);})();
   (function(){
     var P=window.FTM&&window.FTM.pk, T=$('pkToast'); if(!P||!T) return;
     var msg=$('pkMsg'), yes=$('pkYes'), no=$('pkNo'), offB=$('pkOff'), offered=false;
-    function show(m,mode){ msg.textContent=tr(m); yes.hidden=mode!=='offer'; no.hidden=false; no.textContent=tr(mode==='offer'?'Not now':'Close'); offB.hidden=mode!=='on'; T.hidden=false; requestAnimationFrame(function(){ T.classList.add('in'); }); }
+    function show(m,mode){ if(mode==='offer') P.prepRegister().catch(function(){}); msg.textContent=tr(m); yes.hidden=mode!=='offer'; no.hidden=false; no.textContent=tr(mode==='offer'?'Not now':'Close'); offB.hidden=mode!=='on'; T.hidden=false; requestAnimationFrame(function(){ T.classList.add('in'); }); }
     function hide(){ T.classList.remove('in'); setTimeout(function(){ T.hidden=true; },250); }
     no.addEventListener('click',function(){ if(!yes.hidden){ try{ localStorage.setItem('ftm_pk_no',String(Date.now())); }catch(e){} } hide(); });
-    yes.addEventListener('click',function(){ yes.disabled=true; P.register().then(function(){ yes.disabled=false; show('Face ID login is on for this device.','done'); setTimeout(hide,3500); menu(); }).catch(function(e){ yes.disabled=false; if(e&&e.name==='NotAllowedError'){ hide(); return; } show('Face ID login did not work. Log in with your email instead.','done'); }); });
+    yes.addEventListener('click',function(){ yes.disabled=true; P.register().then(function(){ yes.disabled=false; show('Face ID login is on for this device.','done'); setTimeout(hide,3500); menu(); }).catch(function(e){ yes.disabled=false; if(e&&e.name==='NotAllowedError'){ show('Face ID was cancelled. Tap Turn on to try again.','offer'); return; } show('Face ID could not be turned on. Please try again.','offer'); }); });
     offB.addEventListener('click',function(){ offB.disabled=true; P.off().then(function(){ offB.disabled=false; show('Face ID login is off.','done'); setTimeout(hide,3000); menu(); }).catch(function(){ offB.disabled=false; hide(); }); });
     function menu(){ P.supported().then(function(ok){ document.querySelectorAll('.um-pk').forEach(function(b){ b.hidden=!ok; b.classList.toggle('is-on',P.isOn()); }); }); }
     document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.um-pk'); if(!b) return; if(P.isOn()) show('Face ID login is on for this device.','on'); else show('Log in faster next time with Face ID or your fingerprint.','offer'); });

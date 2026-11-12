@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install browser
-        run: npm i --no-save playwright@1.56.1 && (for i in 1 2; do npx playwright install --with-deps chromium && exit 0; echo "browser install with system packages failed, retrying in 30s"; sleep 30; done; echo "Ubuntu package servers unreachable, installing the browser alone"; npx playwright install chromium)
+        run: npm i --no-save playwright@1.56.1 @simplewebauthn/server@13.3.3 && (for i in 1 2; do npx playwright install --with-deps chromium && exit 0; echo "browser install with system packages failed, retrying in 30s"; sleep 30; done; echo "Ubuntu package servers unreachable, installing the browser alone"; npx playwright install chromium)
       - name: Click every client-area button
         run: |
           python3 -m http.server 8765 >/dev/null 2>&1 &
@@ -35,6 +35,7 @@ jobs:
           node .github/tests/compact-lists.js http://localhost:8765
           node .github/tests/menu.js http://localhost:8765
           node .github/tests/signup-e2e.js http://localhost:8765
+          node .github/tests/passkey-e2e.js
           node .github/tests/legal-pages.js http://localhost:8765
           Z=(Europe/Berlin America/New_York Asia/Kolkata Pacific/Auckland Africa/Lagos Asia/Tokyo); FUZZ_TZ=${Z[$(( $(date +%H) % 6 ))]} node .github/tests/stats-fuzz.js 30 $(( $(date +%j) % 97 + 1 ))
           node .github/tests/stats-fuzz.js 4 5
