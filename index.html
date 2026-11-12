@@ -2567,6 +2567,12 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .cv-head .cv-controls .cv-zoom-btns{margin-top:0}
 .cv-head>*{min-width:0;max-width:100%}.cv-head .cv-controls{row-gap:8px}.cv-head .cv-controls .tf{max-width:100%;flex-wrap:wrap}
 #appView .app-view[data-view="metrics"] #mCurve{height:340px}
+@media (max-width:600px){.cv-head .cv-controls{width:100%;flex-wrap:wrap;column-gap:6px;row-gap:8px}.cv-head .cv-controls #curveTF{flex:1 0 100%}
+.cv-head .cv-controls #curveUnit{flex:0 0 auto;flex-wrap:nowrap;padding:3px;gap:2px}.cv-head .cv-controls #curveUnit button{padding:5px 8px;font-size:12.5px}
+.cv-head .cv-controls #cvCmp{flex:1 1 0;min-width:0;width:0;margin:0;height:36px;padding:0 24px 0 10px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;letter-spacing:-.01em;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b1440' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center}
+.cv-head .cv-controls #curveTF{display:flex;width:100%}.cv-head .cv-controls #curveTF button{flex:1 1 auto;padding:6px 4px;min-width:0}
+.cv-head .cv-controls .cv-zoom-btns{flex:0 0 auto;margin:0 0 0 auto;padding:3px}.cv-head .cv-controls .cv-zoom-btn{width:26px;height:26px;font-size:14px}}
+@media (max-width:360px){.cv-head .cv-controls{column-gap:4px}.cv-head .cv-controls #curveUnit button{padding:5px 6px}.cv-head .cv-controls #cvCmp{padding:0 8px;background-image:none;text-align:center;text-align-last:center;letter-spacing:-.02em}.cv-head .cv-controls .cv-zoom-btns{gap:2px;padding:2px}.cv-head .cv-controls .cv-zoom-btn{width:24px;height:24px}}
 @media (max-width:600px){#appView .app-view[data-view="metrics"] #mCurve{height:230px}#cvNow{font-size:27px!important}#cvChg{font-size:13px!important}.cv-head{margin-bottom:10px}}
 .op-list thead{display:none}
 .op-list,.op-list tbody{display:block;width:100%}
@@ -6181,6 +6187,7 @@ body.op-lock{overflow:hidden}
       });
       var cmp=document.getElementById('cvCmp');
       if(cmp){
+        (function(){ var mq=window.matchMedia('(max-width:600px)'), lab=function(){ var o=cmp.options[0], t=mq.matches?'Compare':'Compare with\u2026'; if(o.textContent!==t) o.textContent=t; }; lab(); if(mq.addEventListener) mq.addEventListener('change',lab); })();
         setInterval(function(){ var ok=!!(F.remote&&F.remote.ready&&F.remote.ready()&&F.session&&F.remote.api); cmp.hidden=!ok; },2000);
         cmp.addEventListener('change',function(){ var sym=cmp.value; F.cmpSym=sym||null; F.cmpName=sym?cmp.options[cmp.selectedIndex].text:''; 
           if(!sym){ F.render(); return; }

@@ -32,6 +32,7 @@ jobs:
           node .github/tests/daily-tip.js http://localhost:8765
           node .github/tests/renew.js http://localhost:8765
           node .github/tests/charts-hover.js http://localhost:8765
+          node .github/tests/chart-controls.js http://localhost:8765
           node .github/tests/compact-lists.js http://localhost:8765
           node .github/tests/menu.js http://localhost:8765
           node .github/tests/signup-e2e.js http://localhost:8765
