@@ -678,6 +678,22 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   #appView .m-fold:not(.m-open){padding-top:16px!important;padding-bottom:16px!important}
   #appView .m-fold:not(.m-open)>*:not(h3){display:none!important}
 }
+
+.wi-card{position:relative;overflow:hidden;border:1px solid rgba(212,175,55,.45);background:linear-gradient(160deg,#fff 0,#FBF7EA 100%)}
+.wi-card[hidden]{display:none}
+.wi-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0B1440;background:#E3B62F;border-radius:99px;padding:3px 10px;margin-bottom:8px}
+.wi-head h3{margin:0 0 4px}
+.wi-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:14px 0}
+.wi-amt{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--ink)}
+.wi-amt span{font-size:13px;color:var(--muted)}
+.wi-amt input{width:120px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;font:inherit;font-weight:800;font-size:16px;color:var(--ink);background:#fff}
+.wi-amt input:focus{outline:none;border-color:#E3B62F}
+.wi-out{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:14px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,#0B1440,#152a7a);color:#fff}
+.wi-out span{display:block;font-size:12.5px;color:rgba(255,255,255,.72)}
+.wi-out b{display:block;font-size:clamp(26px,5vw,34px);font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px}
+.wi-out em{font-style:normal;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}.wi-out em.up{color:#4ade80}.wi-out em.dn{color:#ff8a93}
+.wi-go{flex:none}
+@media (max-width:600px){.wi-out{flex-direction:column;align-items:stretch}.wi-go{width:100%;justify-content:center}.wi-row{gap:10px}}
   .lb-head{display:flex;gap:14px;align-items:flex-start}
   .lb-head>div:not(.lb-pick){flex:1 1 auto;min-width:0}
   #lbTabs,#lblTabs{display:none!important}
@@ -3672,6 +3688,12 @@ body.op-lock{overflow:hidden}
           <i class="hx-sep" aria-hidden="true"></i>
           <div class="dx-cash"><a class="dx-cbtn hx-dep" id="dxDeposit" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Deposit</a><a class="dx-cbtn" id="dxWithdraw" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>Withdraw</a><button type="button" class="dx-cbtn" id="dxPause" hidden><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg><span id="dxPauseT">Pause trading</span></button></div>
         </div>
+      </div>
+      <div class="app-card wi-card" id="wiCard" hidden>
+        <div class="wi-head"><span class="wi-badge">What if</span><h3>If you had joined FTM MACHINE…</h3><p class="hint">Calculated from the FTM master account's real closed trades, time-weighted.</p></div>
+        <div class="wi-row"><label class="wi-amt"><span>Starting with</span><input type="number" id="wiAmt" min="10" step="10" value="1000" inputmode="decimal"><b id="wiCcy"></b></label>
+          <div class="tf wi-tf" id="wiTf"><button type="button" data-m="1">1M</button><button type="button" data-m="3">3M</button><button type="button" data-m="6">6M</button><button type="button" data-m="12">1Y</button><button type="button" data-m="0" class="is-on">Start</button></div></div>
+        <div class="wi-out"><div><span id="wiSince">—</span><b id="wiVal">—</b><em id="wiPct"></em></div><a class="btn btn-red js-free-plans wi-go" href="#pricing">Start FTM MACHINE</a></div>
       </div>
       <div class="dx-acc">
         <div class="dx-acc-h"><h3>My accounts</h3><button type="button" class="dx-link" data-go="accounts">View all</button></div>
@@ -10622,6 +10644,29 @@ tick();setInterval(tick,5000);})();
     });
   }
   setup(); setTimeout(setup,1500);
+})();
+</script>
+<script>
+(function(){
+  var F=window.FTM=window.FTM||{}, $=function(i){ return document.getElementById(i); }, card=$('wiCard'); if(!card) return;
+  var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }, months=0;
+  function cur(){ return (F.data&&F.data.account&&F.data.account.currency)||'USD'; }
+  function calc(){
+    var av=$('appView'), v=F.viewedAccount&&F.viewedAccount(), m=F.metrics&&F.metrics(), C=(F.data&&F.data.closed)||[];
+    var show=!!(av && av.classList.contains('free') && v && (v.isMaster||v.isPreview) && m && m.seg && C.length>0); card.hidden=!show; if(!show) return;
+    var t0=Math.min.apply(null,C.map(function(t){ return +new Date(t.closeTime)||Infinity; })), d=new Date(); if(months) d.setMonth(d.getMonth()-months);
+    var a=months?Math.max(d.getTime(),t0):t0, g=m.seg(a,null), amt=Math.max(0,parseFloat($('wiAmt').value)||0);
+    var ccy=(F.dispCcy&&F.fx&&F.fx[F.dispCcy])?F.dispCcy:cur(); var sym=''; try{ sym=new Intl.NumberFormat('en',{style:'currency',currency:ccy,currencyDisplay:'narrowSymbol'}).formatToParts(0).filter(function(p){return p.type==='currency';})[0].value; }catch(e){ sym=ccy; }
+    if($('wiCcy').textContent!==sym) $('wiCcy').textContent=sym;
+    var end=amt*(1+g.pct/100), fmt=function(n){ return F.moneyIn?F.moneyIn(n,2,ccy):n.toFixed(2); };
+    $('wiSince').textContent=tr('Today, since {}').replace('{}',new Date(a).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}));
+    $('wiVal').textContent=fmt(end); var pe=$('wiPct'); pe.textContent=(g.pct>0?'+':'')+g.pct.toFixed(2)+'% · '+(end-amt>=0?'+':'-')+fmt(Math.abs(end-amt)).replace(/^-/,''); pe.className=g.pct>0?'up':(g.pct<0?'dn':'');
+  }
+  $('wiTf').addEventListener('click',function(e){ var b=e.target.closest('button[data-m]'); if(!b) return; this.querySelectorAll('button').forEach(function(x){ x.classList.toggle('is-on',x===b); }); months=+b.dataset.m; calc(); });
+  $('wiAmt').addEventListener('input',calc);
+  var orig=F.render; if(orig){ F.render=function(){ var r=orig.apply(this,arguments); try{ calc(); }catch(e){} return r; }; }
+  setTimeout(function(){ try{ calc(); }catch(e){} },1200);
+  F.whatIf=calc;
 })();
 </script>
 </body>
