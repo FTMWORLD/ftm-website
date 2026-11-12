@@ -5738,9 +5738,11 @@ body.op-lock{overflow:hidden}
       if(window.FTM.remote && window.FTM.remote.ready()){
         btn.disabled=true; msg.hidden=true;
         window.FTM.remote.connectAccount(srv, n, pwVal, tier).then(function(r){
-          btn.disabled=false;
+          var T=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
           msg.hidden=false; msg.className='hint'; msg.style.color='#1f8a5b';
-          msg.textContent='Connecting...';
+          var tick0=Date.now(), tickT=setInterval(function(){ if(btn._cxDone){ clearInterval(tickT); return; } msg.textContent=T('Account added. FTM is checking it with your broker… ({}s)').replace('{}',Math.round((Date.now()-tick0)/1000)); },1000);
+          msg.textContent=T('Account added. FTM is checking it with your broker… ({}s)').replace('{}','0'); btn._cxDone=false;
+          var toDash=function(note){ btn._cxDone=true; clearInterval(tickT); btn.disabled=false; var W=window.FTM.cxWizard; if(W&&W.close) W.close(); var nv=document.querySelector('#appView .app-nav-item[data-view="metrics"]'); if(nv) nv.click(); if(note) toast(T(note)); };
 
           try{
             var FT=window.FTM;
@@ -5763,15 +5765,17 @@ body.op-lock{overflow:hidden}
                 var a=list.filter(function(x){return x.accountId===accId;})[0];
                 if(a && a.statusSignature) sig=a.statusSignature;
                 var st=a&&a.displayStatus;
-                if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED'){
-                  msg.style.color = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? '#1f8a5b' : '#E5323E';
-                  msg.textContent = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE' ? 'Account connected.' : 'Connection needs attention. Open Accounts to see why.';
-                  if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); });
+                if(btn._cxDone) return;
+                if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED' && a.statusReason!=='NO_NODE_ASSIGNED'){
+                  var good = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE'||st==='MAINTENANCE';
+                  if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); if(FT.renderActivate)FT.renderActivate(); });
+                  if(good){ btn._cxDone=true; clearInterval(tickT); msg.style.color='#1f8a5b'; msg.textContent=T('Account connected.'); setTimeout(function(){ toDash('Account connected. FTM MACHINE starts trading on it.'); },1200); }
+                  else { btn._cxDone=true; clearInterval(tickT); btn.disabled=false; msg.style.color='#E5323E'; msg.textContent=T(FT.reasonText?FT.reasonText(a):'Connection needs attention. Open Accounts to see why.'); }
                   return;
                 }
-                if(Date.now()-t0c<10*60000) setTimeout(poll, (sig && lpFail<2) ? 150 : (tries<30?2000:5000));
-                else { msg.style.color='#B4690E'; msg.textContent='Still connecting. This can take a few minutes; check Accounts later.'; }
-              }).catch(function(){ if(Date.now()-t0c<10*60000) setTimeout(poll,2000); });
+                if(Date.now()-t0c<60000) setTimeout(poll, (sig && lpFail<2) ? 150 : 2000);
+                else toDash('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.');
+              }).catch(function(){ if(btn._cxDone) return; if(Date.now()-t0c<60000) setTimeout(poll,2000); else toDash('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.'); });
             })();
           }catch(uiErr){ console.warn('FTM: connect succeeded, list refresh skipped:', uiErr); }
         }).catch(function(e){ blocked('API_'+String((e&&e.code)||(e&&e.status)||'ERR').slice(0,40));
@@ -7438,6 +7442,9 @@ body.op-lock{overflow:hidden}
     var CANNOT_TRADE_TEXT = 'Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.';
     var BELOW_MINIMUM_TEXT = 'The balance is below the FTM minimum. Deposit more with your broker, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
+    F.reasonText=function(a){ if(!a) return VALIDATION_REASON_FALLBACK; if(a.statusReason==='CANNOT_TRADE'||a.brokerTradeDisabled) return CANNOT_TRADE_TEXT; if(a.statusReason==='BELOW_MINIMUM') return BELOW_MINIMUM_TEXT;
+      if(a.validationReason==='WRONG_SERVER' && a.serverHint) return 'This account is on server {}. Remove it and add it again with that server.'.replace('{}',String(a.serverHint));
+      return (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK; };
     function plainCode(c){ c=String(c||'').replace(/_/g,' ').toLowerCase(); return c ? c.charAt(0).toUpperCase()+c.slice(1) : 'Connecting'; }
     function renderAccounts(){
       var Lm=window.FTM.accountLimit, le=document.getElementById('acctLimit'); if(le){ le.hidden=!(Lm&&Lm.max); if(Lm&&Lm.max) le.textContent='{} of {} accounts used'.replace('{}',Lm.used).replace('{}',Lm.max); }
