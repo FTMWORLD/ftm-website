@@ -33,6 +33,10 @@ for(const [v,sel] of [['accounts','.acct-table'],['perf','#perfSymbols'],['metri
     ok(o===r.n, n+': '+v+' drop-down shows all '+r.n+' fields ('+o+')'); }
   else ok(r.vis===r.n, n+': '+v+' laptop keeps the full table ('+r.vis+'/'+r.n+')');
 }
+{ await p.evaluate(()=>FTM.showView('perf')); await p.waitForTimeout(900);
+  const f=await p.evaluate(()=>{ const c=document.getElementById('pxDD').closest('.app-card'), h=c.querySelector('h3'), body=()=>[...c.children].filter(x=>x!==h&&x.offsetParent).length; const a=body(); h.click(); const b2=body(); h.click(); return {fold:c.classList.contains('m-fold'),a,b:b2,len:+(document.querySelector('#appView .app-view:not([hidden])').scrollHeight/innerHeight).toFixed(1)}; });
+  if(n==='iphone') ok(f.fold&&f.a===0&&f.b>0&&f.len<6, n+': Performance detail cards fold into one-line rows that open on tap (page '+f.len+' screens)');
+  else ok(f.a>0, n+': laptop keeps every Performance card open'); }
 ok(!errs.length, n+': no script errors '+(errs[0]||''));
 await c.close();}
 await b.close(); console.log(fails?'FAILED: '+fails:'COMPACT LISTS OK'); process.exit(fails?1:0);})();
