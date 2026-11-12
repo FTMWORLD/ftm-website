@@ -4,7 +4,28 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-12 (evening, 3) — FASTER TERMINAL START IN PLACE, SWITCH STILL OFF (this commit; files live 20:07 Berlin)
+## 2026-11-12 (evening, 4) — FASTER TERMINAL START ON + DAILY NEW-CUSTOMER TEST: 95 s FROM "ADD ACCOUNT" TO A TRADE OPEN AT THE BROKER (this commit; switch ON 20:41 Berlin)
+
+- WEBSITE: nothing to change.
+- FASTER START ON for every new and restarted customer terminal (.env FTM_TERMINAL_SESSION=CONSOLE since 20:41, the
+  owner's yes). Measured on the owner's demo account: the new terminal reached the broker 18-27 s after it started
+  (it was almost 6 minutes for today's customer). Running terminals were not touched; a removed account's terminal
+  was closed politely. To go back: remove that line from .env (takes effect at the next job run).
+- DAILY NEW-CUSTOMER TEST (scripts/e2e-new-customer.js, kill switch FTM_E2E_NEW_CUSTOMER=ON): a test customer of FTM's
+  own adds the demo account through the live API and the test times every step: connected, own terminal running,
+  first trade, trade open at the broker, closed, account removed. A failure or a step over 5 minutes -> phone alert
+  E2E_NEW_CUSTOMER; the result is in C:\FTM\logs\e2e-new-customer-last.json and the deploy gate requires a passed
+  run within 26 hours.
+- LIVE RUNS (demo account, play money): run 1 found that the test customer had no plan (a customer without a paid or
+  exempt plan never gets trades, correct): the test customer is now EXEMPT like FTM's own accounts. Run 2 counted a
+  queued trade as placed: the test now waits for the trade OPEN at the broker. Run 3 (20:53): connected 30 s, copying
+  89 s, first trade 93 s, open at the broker 95 s (two copies of the master's open trades), closed in 3 s, account
+  removed and terminal stopped in 37 s. Target under 2 minutes: MET.
+- NEXT: the remaining minute is the set-up job waiting for its next minute tick after "connected"; then the daily
+  schedule for the test (needs the owner's yes for the scheduled task).
+- Deploy gate: RESULT SAFE TO DEPLOY (21:02 Berlin).
+
+## 2026-11-12 (evening, 3) — FASTER TERMINAL START IN PLACE, SWITCH STILL OFF (commit f252462; files live 20:07 Berlin)
 
 - WEBSITE: nothing to change.
 - The three protected job files for the faster start of a customer's own terminal (src/services/terminal-ops.js,
