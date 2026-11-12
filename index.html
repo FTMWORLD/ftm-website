@@ -6507,6 +6507,11 @@ body.op-lock{overflow:hidden}
 
           tradeMode: a.trade_mode || null,
 
+          validationStartedAt: a.validation_started_at ? Date.parse(a.validation_started_at) : null,
+          validationAttempts: (a.validation_attempts!=null && isFinite(+a.validation_attempts)) ? +a.validation_attempts : null,
+          validationWaitingSeconds: (a.validation_waiting_seconds!=null && isFinite(+a.validation_waiting_seconds)) ? +a.validation_waiting_seconds : null,
+          validationDelayReason: a.validation_delay_reason || null,
+          validationDelayText: (typeof a.validation_delay_text==='string' && a.validation_delay_text) ? a.validation_delay_text : null,
           canRetryPassword: !!a.can_retry_password,
           passwordTriesLeft: (a.password_tries_left!=null) ? a.password_tries_left : null
         };
@@ -7442,7 +7447,11 @@ body.op-lock{overflow:hidden}
     var CANNOT_TRADE_TEXT = 'Your broker does not allow trading on this account yet (for example a real account with no balance). Fund it at your broker: we check again automatically every hour and start copying as soon as trading is allowed. Nothing to do here.';
     var BELOW_MINIMUM_TEXT = 'The balance is below the FTM minimum. Deposit more with your broker, then remove the account and add it again.';
     var TRADE_MODE_LABEL = { DEMO:'Demo account', REAL:'Real account', CONTEST:'Contest account' };
-    F.reasonText=function(a){ if(!a) return VALIDATION_REASON_FALLBACK; if(a.statusReason==='CANNOT_TRADE'||a.brokerTradeDisabled) return CANNOT_TRADE_TEXT; if(a.statusReason==='BELOW_MINIMUM') return BELOW_MINIMUM_TEXT;
+    var DERIV_HINT='On Deriv: use the MT5 server name shown next to your MT5 account in Trader\'s Hub, and your MT5 password (not your Deriv login password).';
+    var isDeriv=function(a){ return /deriv/i.test(String((a&&(a.provider||a.name||a.server))||'')); };
+    F.isDeriv=isDeriv; F.DERIV_HINT=DERIV_HINT;
+    F.reasonText=function(a){ var t=F._reasonText(a), tt=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t:function(x){return x;}; return (a && a.validationReason==='NOT_CONNECTED' && isDeriv(a)) ? tt(t)+' '+tt(DERIV_HINT) : t; };
+    F._reasonText=function(a){ if(!a) return VALIDATION_REASON_FALLBACK; if(a.statusReason==='CANNOT_TRADE'||a.brokerTradeDisabled) return CANNOT_TRADE_TEXT; if(a.statusReason==='BELOW_MINIMUM') return BELOW_MINIMUM_TEXT;
       if(a.validationReason==='WRONG_SERVER' && a.serverHint) return 'This account is on server {}. Remove it and add it again with that server.'.replace('{}',String(a.serverHint));
       return (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK; };
     function plainCode(c){ c=String(c||'').replace(/_/g,' ').toLowerCase(); return c ? c.charAt(0).toUpperCase()+c.slice(1) : 'Connecting'; }
@@ -7464,6 +7473,7 @@ body.op-lock{overflow:hidden}
             if(a.validationReason==='WRONG_SERVER' && a.serverHint) detail = ((typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t('This account is on server {}. Remove it and add it again with that server.'):'This account is on server {}. Remove it and add it again with that server.').replace('{}',String(a.serverHint).replace(/[<>&"]/g,''));
             else if(a.validationReason==='NOT_HEDGING') detail = VALIDATION_REASON_TEXT.NOT_HEDGING;
             else if(a.validationReason==='NOT_CONNECTED' && a.canRetryPassword) detail = 'The broker refused these login details. Check your password, account number and server, then try again.';
+            if(a.validationReason==='NOT_CONNECTED' && F.isDeriv && F.isDeriv(a)){ var tt2=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t:function(x){return x;}; detail = tt2(detail||VALIDATION_REASON_TEXT.NOT_CONNECTED)+' '+tt2(F.DERIV_HINT); }
             else detail = (a.validationReason && VALIDATION_REASON_TEXT[a.validationReason]) || VALIDATION_REASON_FALLBACK;
           } else if(s.support){
             detail = VALIDATION_REASON_FALLBACK;
@@ -7471,9 +7481,9 @@ body.op-lock{overflow:hidden}
           if(showNote && (a.statusReason==='CANNOT_TRADE' || a.brokerTradeDisabled)) detail = CANNOT_TRADE_TEXT;
           else if(showNote && a.statusReason==='BELOW_MINIMUM') detail = BELOW_MINIMUM_TEXT;
           var stTxt=s.text;
-          if(a.displayStatus==='SETUP_INCOMPLETE' && F.pendSince){ var pm=Math.floor((Date.now()-F.pendSince(a))/60000), tt=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t:function(x){return x;};
+          if(a.displayStatus==='SETUP_INCOMPLETE' && F.pendSince){ var pm=a.validationWaitingSeconds!=null?Math.floor(a.validationWaitingSeconds/60):Math.floor((Date.now()-F.pendSince(a))/60000), tt=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t:function(x){return x;};
             if(pm>=1) stTxt=tt(s.text)+' · '+tt('{} min').replace('{}',pm);
-            if(pm>=10 && F.pendText){ showNote=true; detail=F.pendText(a); } }
+            if((pm>=10 || a.validationDelayReason) && F.pendText){ showNote=true; detail=F.pendText(a); } }
           status='<span class="conn conn-'+s.tone+'" title="'+String(detail).replace(/"/g,'&quot;')+'">'+stTxt+'</span>';
           if(showNote) status+='<div class="acct-action-note">'+String(detail).replace(/</g,'&lt;')+'</div>';
 
@@ -10009,7 +10019,10 @@ tick();setInterval(tick,5000);})();
   function go(view){ var n=document.querySelector('#appView .app-nav-item[data-view="'+view+'"]'); if(n) n.click(); }
   function since(a){ var k='ftm_pend_'+(a.accountId||a.number), t=0; try{ t=+localStorage.getItem(k)||0; if(!t){ t=Date.now(); localStorage.setItem(k,String(t)); } }catch(e){ t=t||Date.now(); } return t; }
   function waitText(a){
-    var mins=Math.floor((Date.now()-since(a))/60000), why=a.validationReason||((a.statusReason&&!/^(VALIDATION_PENDING|NEVER_VALIDATED|OK)$/.test(a.statusReason))?String(a.statusReason).replace(/_/g,' ').toLowerCase():'');
+    var mins=a.validationWaitingSeconds!=null?Math.floor(a.validationWaitingSeconds/60):Math.floor((Date.now()-since(a))/60000), why=a.validationReason||((a.statusReason&&!/^(VALIDATION_PENDING|NEVER_VALIDATED|OK)$/.test(a.statusReason))?String(a.statusReason).replace(/_/g,' ').toLowerCase():'');
+    var DR={CHECK_NOT_STARTED:'The check has not started yet. FTM starts it automatically.',CHECK_RUNNING:'FTM is logging in to your broker now.',BROKER_UNREACHABLE:'Your broker\'s server is not answering yet. FTM tries again automatically.'};
+    if(a.validationDelayReason||a.validationAttempts){ var parts=[tr('Checking for {} min').replace('{}',mins)]; if(a.validationAttempts) parts.push(tr('attempt {}').replace('{}',a.validationAttempts)); var dt=DR[a.validationDelayReason]?tr(DR[a.validationDelayReason]):(a.validationDelayText||'');
+      if(mins>=10 && !a._stuckSent){ a._stuckSent=1; } return parts.join(' · ')+(dt?'. '+dt:''); }
     if(mins>=10 && !a._stuckSent){ a._stuckSent=1; try{ var k2='ftm_stuck_'+(a.accountId||a.number), l=+localStorage.getItem(k2)||0; if(Date.now()-l>6*3600e3){ localStorage.setItem(k2,String(Date.now())); navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'connect_stuck', reason:String(a.number||'').replace(/\D/g,'')+' '+String(a.statusReason||a.displayStatus||'').replace(/\W/g,'')+' '+mins, live:true, at:new Date().toISOString()})); } }catch(e){} }
     var t=mins>=10?tr('This is taking longer than usual. FTM has been notified and is checking your account. You do not need to do anything.'):(mins>=1?tr('Checking with your broker… ({} min)').replace('{}',mins):tr('Checking with your broker…'));
     return why?t+' '+tr('Status from your broker:')+' '+why:t;

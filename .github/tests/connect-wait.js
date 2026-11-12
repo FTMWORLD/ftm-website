@@ -34,6 +34,23 @@ const ACC={account_id:'acc-stuck-1',account_number:'101875056',name:'DERIV',curr
     const p0=polls; await p.waitForTimeout(7000); ok(polls>p0, dev+': the status keeps being re-checked ('+(polls-p0)+' checks in 7 s)');
     ok(!errs.length, dev+': no script errors '+(errs[0]||''));
     await c.close(); }
+  // engine waiting fields and a Deriv login refusal are explained in plain words
+  for(const [name,acc,expect] of [['engine waiting fields',Object.assign({},ACC,{validation_waiting_seconds:200,validation_attempts:2,validation_delay_reason:'BROKER_UNREACHABLE',validation_started_at:new Date(Date.now()-200000).toISOString()}),/Checking for 3 min · attempt 2\. Your broker's server is not answering yet/],
+                                   ['Deriv login refused',Object.assign({},ACC,{display_status:'ACTION_REQUIRED',status_reason:'VALIDATION_FAILED',validation_reason:'NOT_CONNECTED',broker:{code:'DERIV',name:'Deriv'}}),/Trader's Hub.*not your Deriv login password/]]){
+    const c=await b.newContext({viewport:{width:1366,height:900}}); const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+    await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
+    await p.route('**/api/v1/**',r=>{ const u=r.request().url();
+      if(u.includes('client-log')) return r.fulfill({status:204,body:''});
+      if(/\/customer\/accounts(\?|$)/.test(u)) return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,accounts:[acc]})});
+      if(u.includes('/billing')) return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE","plan":"ANNUAL"}'});
+      return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[],"trades":[]}'}); });
+    await p.goto(BASE+'/'); await p.waitForTimeout(800);
+    await p.evaluate(()=>{ const F=window.FTM; F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('t'),signOut:()=>Promise.resolve()}); F.session={email:'w@ftm.com',products:['auto'],name:'W'}; return F.loadLive().then(()=>F.openArea('auto')); });
+    await p.waitForTimeout(2000);
+    const r=await p.evaluate(()=>{ if(FTM.renderActivate) FTM.renderActivate(); if(FTM.renderAccounts) FTM.renderAccounts(); return [...document.querySelectorAll('#actSteps li')].map(l=>l.textContent).join(' | ')+' || '+[...document.querySelectorAll('#acctRows .acct-action-note, #acctRows .conn')].map(x=>x.textContent).join(' | '); });
+    ok(expect.test(r), name+': explained in plain words ('+r.slice(0,260)+')');
+    ok(!errs.length, name+': no script errors '+(errs[0]||''));
+    await c.close(); }
   // the connect window: connected -> closes and goes to the Dashboard; error -> says exactly what is wrong; still checking after 60 s -> closes, Dashboard keeps updating
   for(const [name,after,wait] of [['connected',{display_status:'ACTIVE',status_reason:'OK',is_trading:true,balance:'1000',equity:'1000'},9000],['wrong password',{display_status:'ACTION_REQUIRED',status_reason:'VALIDATION_FAILED',validation_reason:'NOT_CONNECTED'},9000],['still checking',null,5000]]){
     const c=await b.newContext({viewport:{width:1366,height:900}}); const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); let posted=0, t0=0;
