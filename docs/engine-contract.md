@@ -4,7 +4,30 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-12 (evening) — CUSTOMER'S OWN TERMINAL: LONGER WAIT + PHONE ALERT "CONNECTED BUT NOT COPYING" (this commit; live 18:05-18:25 Berlin)
+## 2026-11-12 (evening, 2) — CONNECTION CHECKER LOOKS EVERY MINUTE (WAS EVERY SECOND MINUTE) + FASTER TERMINAL START PREPARED (this commit; checker live 18:58 Berlin)
+
+- WEBSITE: nothing to change. One correction that goes live with the next API restart: the "FTM master account" preview
+  entry of GET /customer/accounts will carry the five validation_* keys too (always null), so every entry of the list
+  has the same keys. Until then that one entry simply lacks them (read a missing key as null).
+- FOUND AND FIXED (live 18:58, all accounts): the job that checks a newly connected account was meant to run every
+  minute but ran only every SECOND minute (measured 18:50-18:55: runs at 18:50, 18:52, 18:54, nothing in between).
+  Cause: each run was told to leave "55 s after it started", counted from a clock that starts about 5 s late on this
+  server, so it left 1 s AFTER the next minute had begun and Windows skipped that minute's run. A new account could
+  wait a whole extra minute before anyone looked at it. Now a run leaves at second 54 of the clock minute; seen live
+  at 19:01:54, 19:02:54, 19:04:54, one run per minute. Proof scripts/verify-connect-speed.js (25/0, in the gate):
+  366 simulated runs, however slowly the process starts, leave at second 54-57.5 of their own minute.
+- FASTER TERMINAL START, PREPARED (no behaviour change yet): switch FTM_TERMINAL_SESSION (OFF by default, not set).
+  When ON, a new or restarted customer terminal is started where the check terminals already reach the broker in
+  5-36 s, instead of the busy background area where today's new terminal needed almost 6 minutes. Running terminals
+  are never moved. src/services/check-session.js (shared part) is live; the three protected job files are prepared
+  and hash-checked and wait for the owner's one click on the server. Proof scripts/verify-terminal-session.js: 24/0
+  on the prepared files (switch OFF = exactly today's behaviour; switch ON = one start, never a second terminal on
+  the same folder, even when the answer of the start is lost). It joins the gate when the files are in place.
+- STILL OPEN (honest): from "connected" to "copying" is still 6-7 minutes until the switch is ON (after the click and
+  a proof on a demo account). The daily end-to-end new-customer test needs a demo account saved by the owner.
+- Deploy gate after the checker fix: RESULT SAFE TO DEPLOY (19:12 Berlin).
+
+## 2026-11-12 (evening) — CUSTOMER'S OWN TERMINAL: LONGER WAIT + PHONE ALERT "CONNECTED BUT NOT COPYING" (commit d8c86eb; live 18:05-18:25 Berlin)
 
 - WEBSITE: the five validation_* fields of GET /customer/accounts (entry below) are LIVE since the API restart at 17:51.
 - WHAT HAPPENED (account of the urgent request, login checked CONNECTED at 17:42): the customer's own trading terminal was
