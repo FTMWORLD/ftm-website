@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Account stuck on 'Connecting' / 'Checking with your broker' with balance 0 and 'Last validated: Never': FTM's engine has not read the account yet. The page now shows how many minutes it has been checking and any status from the broker; after 10 minutes FTM support is alerted automatically. The member does not need to do anything; if the login details were wrong, the page shows what to fix.
 - Visitors who were not logged in saw a 'Your session has ended' login window on the homepage (12 Nov, about 3 hours): fixed; that message only appears for someone who was logged in.
 - 'Is this drop normal?': the Risk level card on the Dashboard shows the largest drop ever (dark pin) and where the account is now below its highest balance (gold ring, from FTM's engine), against the normal range of the member's risk profile (Conservative 10-20%, Balanced 20-40%, Growth 40% and more).
 - Big figures (for example in naira) broke over two lines in Balance, Equity and other boxes: every figure in the client area now stays on one line and shrinks to fit its box; tap a shrunk figure to see it full size.

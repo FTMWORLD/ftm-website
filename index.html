@@ -7463,8 +7463,12 @@ body.op-lock{overflow:hidden}
           }
           if(showNote && (a.statusReason==='CANNOT_TRADE' || a.brokerTradeDisabled)) detail = CANNOT_TRADE_TEXT;
           else if(showNote && a.statusReason==='BELOW_MINIMUM') detail = BELOW_MINIMUM_TEXT;
-          status='<span class="conn conn-'+s.tone+'" title="'+detail.replace(/"/g,'&quot;')+'">'+s.text+'</span>';
-          if(showNote) status+='<div class="acct-action-note">'+detail+'</div>';
+          var stTxt=s.text;
+          if(a.displayStatus==='SETUP_INCOMPLETE' && F.pendSince){ var pm=Math.floor((Date.now()-F.pendSince(a))/60000), tt=(typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t:function(x){return x;};
+            if(pm>=1) stTxt=tt(s.text)+' · '+tt('{} min').replace('{}',pm);
+            if(pm>=10 && F.pendText){ showNote=true; detail=F.pendText(a); } }
+          status='<span class="conn conn-'+s.tone+'" title="'+String(detail).replace(/"/g,'&quot;')+'">'+stTxt+'</span>';
+          if(showNote) status+='<div class="acct-action-note">'+String(detail).replace(/</g,'&lt;')+'</div>';
 
           var items='';
 
@@ -9541,7 +9545,7 @@ tick();setInterval(tick,5000);})();
     var A=(window.FTM&&FTM.data&&FTM.data.accounts)||[], sel=$('dxView'), v=FTM.viewedAccount&&FTM.viewedAccount();
     $('dxViewW').hidden=A.length<2;
     var uw=$('umViewW'), us=$('umView'); if(uw){ uw.hidden=A.length<2; }
-    if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+' · '+lt(a.active?TRADING:(a.isMaster?MASTER:VIEWONLY))+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h; if(us&&us.innerHTML!==h)us.innerHTML=h;}
+    if(A.length>1){var h=A.map(function(a){return '<option value="'+a.number+'"'+(a===v?' selected':'')+'>'+a.name+' '+a.number+' · '+lt(a.active?TRADING:(a.isMaster?MASTER:(a.displayStatus==='SETUP_INCOMPLETE'?'Connecting':VIEWONLY)))+'</option>'}).join('');if(sel.innerHTML!==h)sel.innerHTML=h; if(us&&us.innerHTML!==h)us.innerHTML=h;}
   }
   var TRADING='Trading', VIEWONLY='View only', MASTER='View only — FTM master account';
   function lt(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }
@@ -9996,6 +10000,15 @@ tick();setInterval(tick,5000);})();
   function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   var BAD={ACTION_REQUIRED:1,SETUP_FAILED:1,BLOCKED:1,OFFLINE:1};
   function go(view){ var n=document.querySelector('#appView .app-nav-item[data-view="'+view+'"]'); if(n) n.click(); }
+  function since(a){ var k='ftm_pend_'+(a.accountId||a.number), t=0; try{ t=+localStorage.getItem(k)||0; if(!t){ t=Date.now(); localStorage.setItem(k,String(t)); } }catch(e){ t=t||Date.now(); } return t; }
+  function waitText(a){
+    var mins=Math.floor((Date.now()-since(a))/60000), why=a.validationReason||((a.statusReason&&!/^(VALIDATION_PENDING|NEVER_VALIDATED|OK)$/.test(a.statusReason))?String(a.statusReason).replace(/_/g,' ').toLowerCase():'');
+    if(mins>=10 && !a._stuckSent){ a._stuckSent=1; try{ var k2='ftm_stuck_'+(a.accountId||a.number), l=+localStorage.getItem(k2)||0; if(Date.now()-l>6*3600e3){ localStorage.setItem(k2,String(Date.now())); navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:'connect_stuck', reason:String(a.number||'').replace(/\D/g,'')+' '+String(a.statusReason||a.displayStatus||'').replace(/\W/g,'')+' '+mins, live:true, at:new Date().toISOString()})); } }catch(e){} }
+    var t=mins>=10?tr('This is taking longer than usual. FTM has been notified and is checking your account. You do not need to do anything.'):(mins>=1?tr('Checking with your broker… ({} min)').replace('{}',mins):tr('Checking with your broker…'));
+    return why?t+' '+tr('Status from your broker:')+' '+why:t;
+  }
+  F.pendSince=since; F.pendText=waitText;
+  setInterval(function(){ if(document.hidden) return; var A0=((F.data&&F.data.accounts)||[]).some(function(a){ return a.displayStatus==='SETUP_INCOMPLETE'; }); if(A0){ try{ render(); if(F.renderAccounts) F.renderAccounts(); }catch(e){} } },30000);
   function render(){
     var steps=$('actSteps'); if(!steps) return;
     var s=F.session||{}, paid=!!(s.products&&s.products.indexOf('auto')>-1) && F.planStatus!=='EXPIRED' && F.planStatus!=='CANCELED';
@@ -10004,11 +10017,12 @@ tick();setInterval(tick,5000);})();
     var ok=A.filter(function(a){ return a.displayStatus && !BAD[a.displayStatus] && a.displayStatus!=='SETUP_INCOMPLETE' && !a.brokerTradeDisabled; })[0];
     var bad=A.filter(function(a){ return BAD[a.displayStatus] || a.brokerTradeDisabled; })[0];
     var wait=A.filter(function(a){ return a.displayStatus==='SETUP_INCOMPLETE' || a.statusReason==='VALIDATION_PENDING'; })[0];
+    A.forEach(function(a){ if(a!==wait && a.displayStatus && a.displayStatus!=='SETUP_INCOMPLETE'){ try{ localStorage.removeItem('ftm_pend_'+(a.accountId||a.number)); }catch(e){} } });
     var note=bad ? ((document.querySelector('#acctRows .acct-action-note')||{}).textContent||'') : '';
     var st=[
       {t:paid?'Plan active':'Choose a plan', d:paid},
       {t:'Trading account connected', d:A.length>0},
-      {t:'Broker allows trading', d:!!(ok||on), x:!ok&&!on&&!!bad, w:!ok&&!on&&!bad&&!!wait, sub:(!ok&&!on&&bad)?note:((!ok&&!on&&wait)?tr('Checking with your broker…'):'')},
+      {t:'Broker allows trading', d:!!(ok||on), x:!ok&&!on&&!!bad, w:!ok&&!on&&!bad&&!!wait, sub:(!ok&&!on&&bad)?note:((!ok&&!on&&wait)?waitText(wait):'')},
       {t:'FTM MACHINE is trading', d:!!on}
     ];
     var first=-1; st.forEach(function(x,i){ if(first<0 && !x.d) first=i; });
@@ -10043,13 +10057,13 @@ tick();setInterval(tick,5000);})();
     pendT=null;
     if(!pending()||!F.remote||!F.remote.ready()){ pendSince=0; return; }
     if(!pendSince) pendSince=Date.now();
-    var age=Date.now()-pendSince; if(age>15*60000){ pendSince=0; return; }
+    var age=Date.now()-pendSince;
     if(document.hidden){ pendT=setTimeout(pendTick,4000); return; }
     F.remote.fetchAccounts().then(function(list){
       var mine=(F.data.accounts||[]); var changed=false;
       list.forEach(function(a){ var o=mine.filter(function(x){return x.accountId===a.accountId;})[0]; if(!o||o.displayStatus!==a.displayStatus||o.statusReason!==a.statusReason) changed=true; });
       if(changed){ if(F.loadLive) F.loadLive().then(function(){ if(F.renderAccounts)F.renderAccounts(); render(); }); }
-    }).catch(function(){}).then(function(){ pendT=setTimeout(pendTick, age<60000?2000:5000); });
+    }).catch(function(){}).then(function(){ pendT=setTimeout(pendTick, age<60000?2000:(age<15*60000?5000:20000)); });
   }
   setInterval(function(){ if(!pendT && pending()) pendTick(); },1500);
   document.addEventListener('click',function(e){

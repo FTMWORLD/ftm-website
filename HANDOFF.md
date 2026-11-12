@@ -651,3 +651,8 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Root cause: `.app-tile b{overflow-wrap:anywhere}` broke numbers mid-way, and the shrink-to-fit only covered .hx-stat/.fs-c/#dxVal. Phone CSS also forced sizes with !important.
 - Fix: one shared fitter (FTM.fitNums) for every text with a 5+ digit number in #appView/#invView: nowrap, then shrink (setProperty important) until it fits its block, card and screen (min 45%, 7.5px); tap-to-zoom (.fz-on) when shrunk. Runs on DOM changes (MutationObserver, throttled), clicks, resize and every 1.2 s; cached per text+width.
 - Test: .github/tests/figures-fit.js (NGN on a big account, 8 sizes x 8 views; FIT_CCY=IDR also passes).
+
+## 12 Nov 2026: accounts stuck on "Connecting" (customer DERIV 101875056, engine never validated it)
+- Website: status re-check no longer stops after 15 min (2 s / 5 s / 20 s); setup step 3 and the account row show minutes waiting and any engine status; after 10 min an honest message, and client-log ev connect_stuck emails the support inbox once (server limits: 1 per account per 6 h, 20 a day). Connecting accounts are no longer labelled "View only" in the account picker.
+- Engine note sent (scratchpad to-ftm-engine-connect-stuck-101875056.txt): validate the account, root cause, always send a reason, add validation_started_at / validation_attempts.
+- Test: .github/tests/connect-wait.js.
