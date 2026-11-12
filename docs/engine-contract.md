@@ -4,7 +4,23 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-12 (evening, 4) — FASTER TERMINAL START ON + DAILY NEW-CUSTOMER TEST: 95 s FROM "ADD ACCOUNT" TO A TRADE OPEN AT THE BROKER (this commit; switch ON 20:41 Berlin)
+## 2026-11-13 — THE FIRST FTM TRADE OF EVERY ACCOUNT IS ITS "WELCOME TRADE" (this commit; live at the next API restart)
+
+- WEBSITE: nothing to change. The fields are the same (welcome_trade true + label "Welcome trade"); more trades now carry them.
+- Rule (owner 13 Nov, customer 51402's first trade showed no label): per account, its dedicated FTM-WELCOME trade when it
+  has one, otherwise its FIRST FTM trade (also when that is a copied master trade). Exactly one per account. Applied at
+  read time in GET /customer/accounts/:id/history, /positions and stats.history_page (src/services/welcome-label.js),
+  so every past and future account follows it with no data change. Display only: nothing in the trading path reads it.
+- closed_by: a welcome trade the customer closed themselves stays "CUSTOMER"; otherwise "Welcome trade" as before.
+- Accounts that change: customer 51402 (account 4701, BTCUSD SELL 0.01 of 12 Nov 18:18) and the fixture account
+  DEMO-CUSTOMER-001. Unchanged: 2022 (its first trade already was its welcome trade) and the owner's 184 (its dedicated
+  welcome trade of 8 Nov stays the one; its earlier trades predate the welcome feature).
+- Gate: scripts/verify-welcome-label.js (22/0) now checks every connected account with trades: exactly one welcome
+  trade, it is the first (or the dedicated one), and /history, /positions and stats.history_page label exactly it.
+- Deploy gate: all checks pass except "daily new-customer test passed within 26 h" (the 12 Nov 23:48 proof run of the
+  new daily schedule hit the gold market's daily break); the first scheduled run is 13 Nov 10:30.
+
+## 2026-11-12 (evening, 4) — FASTER TERMINAL START ON + DAILY NEW-CUSTOMER TEST: 95 s FROM "ADD ACCOUNT" TO A TRADE OPEN AT THE BROKER (commit 92f0104; switch ON 20:41 Berlin)
 
 - WEBSITE: nothing to change.
 - FASTER START ON for every new and restarted customer terminal (.env FTM_TERMINAL_SESSION=CONSOLE since 20:41, the
