@@ -22,6 +22,8 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Logged in but the dashboard showed 0.00 and 'No account' until logging out and in: a single failed request (login token renewal after the computer slept, or a weak connection) emptied the screen. Fixed: the token is renewed and the request repeated, figures stay on screen and reconnect by themselves; if a session truly ended, the login window opens instead. If it ever happens, refresh the page once.
+- Year by year table looked messy (numbers broken over two lines): numbers now stay on one line, columns are aligned, and the month sits under the best and worst month %.
 - Account progress: after using Compare with (Gold, Bitcoin...) and going back, the equity (floating) part disappeared because the chart stayed in %. Now clearing Compare returns to the view you had, and equity also shows in % mode.
 - Account progress on phones: the currency/% switch, Compare and the zoom -/+ buttons were on two lines and the All tab could be cut off. Now they sit on one line (currency and % left, Compare middle, -/+ right) and every period tab fits.
 - Face ID login on a phone showed an extra 'Continue' sheet before the face or fingerprint scan: the site now names the passkey saved on that device, so the tap goes straight to Face ID or fingerprint (after the first login on that device). The passkey is also offered above the keyboard in the email field for one-tap login.

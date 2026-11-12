@@ -2567,6 +2567,9 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .cv-head .cv-controls .cv-zoom-btns{margin-top:0}
 .cv-head>*{min-width:0;max-width:100%}.cv-head .cv-controls{row-gap:8px}.cv-head .cv-controls .tf{max-width:100%;flex-wrap:wrap}
 #appView .app-view[data-view="metrics"] #mCurve{height:340px}
+.yr-tbl td{white-space:nowrap;vertical-align:middle}.yr-tbl td.yr-mo b{display:block;font-weight:700}.yr-tbl td.yr-mo small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
+@media (min-width:701px){.yr-tbl{width:100%}.yr-tbl th{white-space:normal;vertical-align:bottom;line-height:1.35;max-width:9.5em}.yr-tbl th:not(:first-child),.yr-tbl td:not(:first-child){text-align:right;padding-left:18px}.yr-tbl th:last-child,.yr-tbl td:last-child{padding-right:2px}.yr-tbl td:first-child{font-size:15px}}
+@media (max-width:700px){.yr-tbl td.yr-mo{align-items:center}.yr-tbl td.yr-mo b,.yr-tbl td.yr-mo small{display:inline;margin:0 0 0 6px}}
 @media (max-width:600px){.cv-head .cv-controls{width:100%;flex-wrap:wrap;column-gap:6px;row-gap:8px}.cv-head .cv-controls #curveTF{flex:1 0 100%}
 .cv-head .cv-controls #curveUnit{flex:0 0 auto;flex-wrap:nowrap;padding:3px;gap:2px}.cv-head .cv-controls #curveUnit button{padding:5px 8px;font-size:12.5px}
 .cv-head .cv-controls #cvCmp{flex:1 1 0;min-width:0;width:0;margin:0;height:36px;padding:0 24px 0 10px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;letter-spacing:-.01em;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b1440' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center}
@@ -3991,7 +3994,7 @@ body.op-lock{overflow:hidden}
           <div class="app-card">
             <h3>Year by year</h3>
             <p class="hint">Balance at the start and end of each year, the return, and the best and worst month.</p>
-            <div class="app-scroll"><table class="app-trades" id="pxYears"></table></div>
+            <div class="app-scroll"><table class="app-trades yr-tbl" id="pxYears"></table></div>
           </div>
           <div class="app-card">
             <h3>Month by month</h3>
@@ -4833,11 +4836,14 @@ body.op-lock{overflow:hidden}
         });
       },
 
-      getAccessToken: function(){
+      getAccessToken: function(force){
+        var fresh=function(){ return client.auth.refreshSession().then(function(r2){ var s2=r2&&r2.data&&r2.data.session; return s2?s2.access_token:null; }).catch(function(){ return null; }); };
+        if(force) return fresh();
         return client.auth.getSession().then(function(r){
           var session=r.data && r.data.session;
-          return session ? session.access_token : null;
-        });
+          if(session && session.expires_at && session.expires_at*1000-Date.now()<30000) return fresh().then(function(t){ return t||session.access_token; });
+          return session ? session.access_token : fresh();
+        }).catch(function(){ return fresh(); });
       },
 
       restoreSession: function(){
@@ -5692,7 +5698,7 @@ body.op-lock{overflow:hidden}
     document.getElementById('appLogout').addEventListener('click',function(){
       app.hidden=true;document.body.style.overflow='';
       try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
-      if(window.FTM){ FTM.session=null; FTM._liveLoaded=false; FTM._acctsKnown=false; FTM._snapTried=false; FTM._fromSnap=false; FTM._dataAt=null; if(FTM.clearSnaps) FTM.clearSnaps(); if(FTM.resetPlan) FTM.resetPlan(); }
+      if(window.FTM){ FTM.session=null; FTM._liveLoaded=false; FTM._acctsKnown=false; clearTimeout(FTM._liveRetryT); FTM._liveRetryT=null; FTM._liveFails=0; FTM.refreshing=false; FTM._snapTried=false; FTM._fromSnap=false; FTM._dataAt=null; if(FTM.clearSnaps) FTM.clearSnaps(); if(FTM.resetPlan) FTM.resetPlan(); }
       window.__ftmWelcomed=0;
       if(LIVE) window.FTM.auth.signOut().catch(function(e){console.warn('FTM.auth: sign out failed:',e);});
     });
@@ -6432,9 +6438,9 @@ body.op-lock{overflow:hidden}
           });
         });
       }
-      function call(path, opts){
+      function call(path, opts, again){
         opts = opts || {};
-        return getTokenWithRetry(false).then(function(token){
+        return (again?window.FTM.auth.getAccessToken(true):getTokenWithRetry(false)).then(function(token){
           if(!token) throw Object.assign(new Error('Your session has expired. Log in again and retry.'), {code:'UNAUTHENTICATED', status:401});
           return fetch(BASE+path, {
             method: opts.method||'GET',
@@ -6445,11 +6451,12 @@ body.op-lock{overflow:hidden}
             body: opts.body ? JSON.stringify(opts.body) : undefined
           });
         }).then(function(r){
-          return r.json().then(function(j){
+          if(r.status===401 && !again) return call(path, opts, true);
+          return r.json().catch(function(){ return {ok:false, error:'BAD_RESPONSE'}; }).then(function(j){
             if(!r.ok || j.ok===false) throw Object.assign(new Error(j.message||('HTTP '+r.status)), {code:j.error, status:r.status, issues:j.issues, body:j});
             return j;
           });
-        });
+        }, function(e){ if(e && e.status===401 && !again) return call(path, opts, true); throw e; });
       }
 
       function num(s){ return (s===null||s===undefined) ? null : parseFloat(s); }
@@ -6814,6 +6821,8 @@ body.op-lock{overflow:hidden}
       var seq=F._loadSeq=(F._loadSeq||0)+1;
       return F.remote.fetchAccounts().then(function(accounts){
         if(seq!==F._loadSeq) return true;
+        if(!accounts.length && (F.data.accounts||[]).length && !F._emptyOk){ F._emptyOk=true; liveLog('accounts_empty','had '+F.data.accounts.length); return new Promise(function(r){ setTimeout(r,2500); }).then(function(){ return seq===F._loadSeq ? loadLive() : true; }); }
+        F._emptyOk=false; F._liveFails=0; F._liveEnded=false; clearTimeout(F._liveRetryT); F._liveRetryT=null;
         F._acctsKnown=true;
         if(!accounts.length){ F.data = emptyLiveData(); setTimeout(function(){ try{ F.render(); }catch(e){} },0); return true; }
 
@@ -6852,9 +6861,12 @@ body.op-lock{overflow:hidden}
 
         console.warn('FTM live data fetch failed:', err);
         if(seq!==F._loadSeq) return false;
-        var hard=err && (err.status===401 || err.status===403 || err.code==='EMAIL_ALREADY_REGISTERED');
+        var st=err&&err.status, hard=err && (st===403 || err.code==='EMAIL_ALREADY_REGISTERED');
+        liveLog('live_fail', String(st||'net')+' '+String((err&&err.code)||'').slice(0,30));
+        if(st===401){ liveExpired(); return false; }
         if(F.session && (hard || !(F.data.accounts||[]).length)) F.data = emptyLiveData();
         if(hard && F.session && F.session.email){ try{ localStorage.removeItem('ftm_snap_'+String(F.session.email).toLowerCase()); }catch(e){} }
+        if(!hard && F.session) liveRetry();
         if(err && err.code==='EMAIL_ALREADY_REGISTERED'){
           var bar=document.getElementById('planBar'), txt=document.getElementById('planBarTxt');
           var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
@@ -6865,6 +6877,23 @@ body.op-lock{overflow:hidden}
     }
 
     F.emptyLiveData = emptyLiveData;
+    function liveLog(ev,why){ try{ navigator.sendBeacon('/api/v1/client-log', JSON.stringify({ev:ev, reason:String(why||'').slice(0,60), live:true, at:new Date().toISOString()})); }catch(e){} }
+    function liveRetry(){
+      if(F._liveRetryT) return; var n=F._liveFails=(F._liveFails||0)+1, wait=[2000,5000,10000,20000,40000][Math.min(n-1,4)]; F.refreshing=true;
+      try{ if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } }catch(e){}
+      F._liveRetryT=setTimeout(function go(){ F._liveRetryT=null; if(!F.session) return; if(document.hidden){ F._liveRetryT=setTimeout(go,3000); return; }
+        loadLive().then(function(ok){ if(ok){ F.refreshing=false; try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } }catch(e){} } else if(!F._liveRetryT && F.session && !F._liveEnded) liveRetry(); }); },wait);
+    }
+    function liveExpired(){
+      var A=window.FTM.auth; if(!A||!A.getAccessToken){ liveRetry(); return; }
+      A.getAccessToken(true).then(function(t){ if(t){ liveRetry(); return; }
+        F._liveEnded=true; liveLog('session_end','refresh failed'); var mail=F.session&&F.session.email; F.session=null; try{ A.signOut(); }catch(e){}
+        try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){} var app=document.getElementById('appView'); if(app) app.hidden=true; document.documentElement.classList.remove('app-open');
+        var l=document.querySelector('.js-login'); if(l) l.click(); setTimeout(function(){ var em=document.getElementById('authEmail'); if(em&&mail&&!em.value) em.value=mail; var er=document.getElementById('authError'); if(er){ er.classList.remove('ok'); er.textContent=(window.I18NE&&I18NE.t?I18NE.t('Your session has ended. Log in again to see your account.'):'Your session has ended. Log in again to see your account.'); er.hidden=false; } },300); });
+    }
+    window.addEventListener('online',function(){ if(F.session && (F._liveRetryT||F._liveFails)){ clearTimeout(F._liveRetryT); F._liveRetryT=null; F._liveFails=0; liveRetry(); } });
+    document.addEventListener('visibilitychange',function(){ if(document.hidden||!F.session||!(F.remote&&F.remote.ready())) return; var app=document.getElementById('appView'); if(!app||app.hidden) return;
+      if(F._liveFails || !F._dataAt || Date.now()-F._dataAt>120000){ clearTimeout(F._liveRetryT); F._liveRetryT=null; loadLive().then(function(ok){ if(ok){ F.refreshing=false; try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); }catch(e){} } }); } });
 
     try{ F.viewNum = localStorage.getItem('ftm_view_acct') || null; }catch(e){ F.viewNum=null; }
     F.viewAccount = function(num){
@@ -7318,7 +7347,7 @@ body.op-lock{overflow:hidden}
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
           var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
           var nd=inY(y,function(p){return p.flow&&!p.adj;}), aj=inY(y,function(p){return p.adj;});
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,2)+'</td><td>'+sg2(nd)+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'">'+sg2(y.pl)+'</td>'+(hasAdj?'<td>'+sg2(aj)+'</td>':'')+'<td>'+money(y.e,2)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="'+(b.r<0?'pl-down':'pl-up')+'">'+pc(b.r)+' · '+mS(b.k)+'</td><td class="'+(w.r<0?'pl-down':'pl-up')+'">'+pc(w.r)+' · '+mS(w.k)+'</td></tr>';}).join('')
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,2)+'</td><td>'+sg2(nd)+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'">'+sg2(y.pl)+'</td>'+(hasAdj?'<td>'+sg2(aj)+'</td>':'')+'<td>'+money(y.e,2)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="yr-mo '+(b.r<0?'pl-down':'pl-up')+'"><b>'+pc(b.r)+'</b><small>'+mS(b.k)+'</small></td><td class="yr-mo '+(w.r<0?'pl-down':'pl-up')+'"><b>'+pc(w.r)+'</b><small>'+mS(w.k)+'</small></td></tr>';}).join('')
          :'<tr>'+new Array(hasAdj?11:10).join('<td>&mdash;</td>')+'</tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

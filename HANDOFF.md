@@ -640,3 +640,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Fix: the device remembers its own credential id (localStorage ftm_pk_id, saved on Turn on and on every passkey login) and the tap sends allowCredentials=[that id, transports internal]. If that fails with NotAllowedError, the next tap falls back to the picker (pickAll).
 - Also conditional mediation (passkey offered above the keyboard in the email field, autocomplete="username webauthn"); aborted before the button's request and when the login window closes.
 - Test: .github/tests/passkey-e2e.js (the test holds conditional requests pending like a real person, because Chromium's virtual authenticator auto-accepts them).
+
+## 12 Nov 2026: empty dashboard after login (owner: "dent on our credibility")
+- Cause: one failed engine request (token renewal hiccup after sleep, or network) made loadLive wipe F.data to empty and delete the snapshot, with no retry. A 401 was treated as final.
+- Fix: getAccessToken renews when the token is missing/expiring (refreshSession); call() repeats a 401 once with a forced renewal; loadLive keeps figures on failure and retries (2s,5s,10s,20s,40s), also on 'online' and when the tab becomes visible again (data older than 2 min); an empty account list right after having accounts is re-asked once; a truly ended session opens the login window with a message. client-log events: live_fail, accounts_empty, session_end.
+- Test: .github/tests/live-recovery.js (fails 9 checks on the old code).
+- Year by year table: nowrap numbers, right-aligned, month under best/worst %.

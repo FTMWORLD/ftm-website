@@ -6,8 +6,12 @@ const BASE=process.argv[2]||'http://localhost:8765'; let fails=0; const ok=(c,m)
 for(const w of [320,360,375,390,412,600,1280]){
   const c=await b.newContext({viewport:{width:w,height:900},isMobile:w<700,hasTouch:w<700,deviceScaleFactor:1}); const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
+  await p.route('**/api/v1/**',r=>{ const u=r.request().url();
+    if(/\/customer\/accounts(\?|$)/.test(u)) return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,accounts:[{account_id:'a1',account_number:'5739503',name:'DERIV',currency:'USD',balance:'498.62',equity:'498.62',display_status:'ACTIVE',status_reason:'OK',is_trading:true}]})});
+    if(u.includes('/history')) return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,trades:[],page:{offset:0,limit:200,total:0}})});
+    return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"positions":[]}'}); });
   await p.goto(BASE+'/?preview=split'); await p.waitForTimeout(800);
-  await p.evaluate(()=>{ const F=window.FTM; F.session={email:'t@ftm.com',products:['auto'],name:'T'}; return Promise.resolve(F.loadLive&&F.loadLive()).catch(()=>{}).then(()=>F.openArea('auto')); }).catch(()=>{}); await p.waitForTimeout(2000);
+  await p.evaluate(()=>{ const F=window.FTM; F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('t'),signOut:()=>Promise.resolve()}); F.session={email:'t@ftm.com',products:['auto'],name:'T'}; return Promise.resolve(F.loadLive&&F.loadLive()).catch(()=>{}).then(()=>F.openArea('auto')); }).catch(()=>{}); await p.waitForTimeout(2000);
   const r=await p.evaluate(()=>{ const cmp=document.getElementById('cvCmp'); cmp.hidden=false;
     const R=s=>document.querySelector(s).getBoundingClientRect(), u=R('#curveUnit'), m=R('#cvCmp'), z=R('.cv-zoom-btns'), tf=R('#curveTF'), card=R('.cv-card');
     const mid=x=>x.top+x.height/2, row=Math.max(mid(u),mid(m),mid(z))-Math.min(mid(u),mid(m),mid(z));
