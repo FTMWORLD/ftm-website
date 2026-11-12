@@ -4,7 +4,31 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-12 — SLOW ACCOUNT CONNECTION FIXED + "NEVER AGAIN" CHECKS (this commit; jobs live 16:35 Berlin, website fields after the next API restart)
+## 2026-11-12 (evening) — CUSTOMER'S OWN TERMINAL: LONGER WAIT + PHONE ALERT "CONNECTED BUT NOT COPYING" (this commit; live 18:05-18:25 Berlin)
+
+- WEBSITE: the five validation_* fields of GET /customer/accounts (entry below) are LIVE since the API restart at 17:51.
+- WHAT HAPPENED (account of the urgent request, login checked CONNECTED at 17:42): the customer's own trading terminal was
+  started twice (17:46, 18:00) and given up after 120 s each time, because a new terminal needed about 6 minutes to reach
+  the broker on this trading day. The website showed "connected" while nothing was copying.
+- STOP-GAP (live 18:05, all accounts): the set-up waits up to 450 s for the new terminal (was 120 s) and confirms as soon as
+  it answers. Third try: terminal confirmed 18:18:00, account ACTIVE, first trade copied 18:18:16.
+- NEVER UNNOTICED AGAIN (live, all accounts): phone alert ACCOUNT_SETUP_STUCK when an account is connected for more than
+  5 minutes without its own running terminal (set-up not started, tries failing, or given up). The deploy gate fails on
+  the same condition (scripts/regress.js; verify-validation-health 59/0).
+- NOT DONE YET (honest): 6-7 minutes from "connected" to "copying" is far from the target (under 2 minutes end to end).
+  The speed fix (start the customer's terminal where the check terminals already start in 5-36 s) and the daily
+  end-to-end new-customer test on a demo account are the next deploys.
+- STATISTICS PROOF CORRECTED (scripts/verify-stats-audit.js, 14/0): the first brand-new live account showed two cases the
+  proof did not know: no trade line at all (whole account 0 %, FTM-only empty) and "first copy open, nothing closed yet"
+  (FTM-only 0 %). Both are correct figures; such an account is not ranked on the leaderboard until it has closed copies.
+  No product code changed.
+- INVESTMENT PROOF CORRECTED (scripts/verify-investment.js, 113/0): proof I8 failed once at 18:35 because the 5-minute
+  alert job closed one of the two test statements a moment before the proof did. The proof now asks for the real
+  thing: exactly one statement per contract, and a second run closes nothing. No product code changed.
+- Deploy gate after all of the above: RESULT SAFE TO DEPLOY (18:45 Berlin).
+- Nothing changes for the website in this entry: no new field, no new status key.
+
+## 2026-11-12 — SLOW ACCOUNT CONNECTION FIXED + "NEVER AGAIN" CHECKS (jobs live 16:35 Berlin, website fields live since the API restart at 17:51)
 
 - ROOT CAUSE of "Connecting" for up to an hour (the urgent request of 12 Nov): the terminal that checks a new account was started
   in the server's background area, which the six permanent trading terminals keep busy all trading day. It needed 3-6
