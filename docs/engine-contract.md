@@ -4,6 +4,32 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-12 — SLOW ACCOUNT CONNECTION FIXED + "NEVER AGAIN" CHECKS (this commit; jobs live 16:35 Berlin, website fields after the next API restart)
+
+- ROOT CAUSE of "Connecting" for up to an hour (the urgent request of 12 Nov): the terminal that checks a new account was started
+  in the server's background area, which the six permanent trading terminals keep busy all trading day. It needed 3-6
+  minutes to reach the broker, and a check without an answer was only repeated after 10 minutes.
+- FIX (live, all accounts): the check terminal now starts in the server's console area. Measured through the real jobs:
+  220 s before; 5 s, 9.5 s and 10.8 s after (the last one by the automatic 15-minute test, 16:53). Kill switch: .env FTM_CHECK_SESSION=OFF.
+- A check that brought no broker answer is repeated after 2 minutes (was 10). The validator looks for waiting accounts
+  every minute, as before.
+- Every check records its time-to-broker. Every 15 minutes one statistics run on a connected
+  account measures it again. Phone alerts: FIRST_CONNECTION_SLOW (above 60 s or no answer), FIRST_CONNECTION_CHECK_STALE
+  (the measuring stopped), ACCOUNT_PENDING_LONG (an account waits more than 10 minutes after its login details were entered).
+- The deploy gate fails when any account waits more than 10 minutes (scripts/regress.js + verify-validation-health 45/0).
+- The account of the urgent request: the broker refused the login twice with "authorization failed (Invalid account)".
+  The account reads ACTION_REQUIRED; the customer re-enters the exact MT5 server name and the MT5 trading
+  password on the website. Nothing to change on the engine for this account.
+- WEBSITE (answer to the urgent request; additive, live after the next API restart): GET /customer/accounts, only while an
+  account waits to be checked (status_reason NEVER_VALIDATED / VALIDATION_PENDING), null otherwise:
+  validation_started_at, validation_attempts, validation_waiting_seconds, validation_delay_reason (null under 2 minutes,
+  then CHECK_NOT_STARTED | CHECK_RUNNING | BROKER_UNREACHABLE) and validation_delay_text (plain words to show next to
+  "Connecting"). No new status_reason key: the existing texts keep working. In all three cases the engine retries by itself.
+- Nothing was growing on the disk; no cleanup job was needed.
+- Deploy gate, two proofs repaired (tests only, no product change): verify-live-sizing took its locks in the opposite order
+  to a live heartbeat and could end in a database deadlock (the live side was never the one stopped); verify-group-copy
+  depended on a real signal the master has since closed. Both are independent of live activity now. Gate: SAFE TO DEPLOY.
+
 ## 2026-11-12 — EA 3.7 + RISK BUDGET FOR SMALL ACCOUNTS (commit 7d5ad81 + this one, API restarted 13:29 Berlin)
 
 - FTM MACHINE 3.7 runs on the master (13:19) and on the prop account (13:01). New strategy "Range Breakout" (magic 34686,
