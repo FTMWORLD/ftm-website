@@ -16,7 +16,7 @@ const hist=[
 const balance=500+11-310+11.53+289.83; // 502.36
 const base={ok:true,history:hist.slice().reverse(),history_total:hist.length,deposits_total:789.83,withdrawals_total:310,closed_pl_total:22.53,trades_closed:2,wins:2,losses:0,win_rate_pct:100};
 const full=Object.assign({},base,{peak_balance:504.94,peak_balance_at:new Date(now-2*D).toISOString(),peak_balance_trading:522.53,peak_balance_trading_at:new Date(now-5*D).toISOString(),
- max_drawdown_pct:1.71,max_drawdown_basis:'EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS',max_drawdown_closed_balance_pct:1.03});
+ max_drawdown_pct:1.71,max_drawdown_basis:'EQUITY_READINGS_EXCLUDING_DEPOSITS_WITHDRAWALS',max_drawdown_closed_balance_pct:1.03,risk_score_parts:{current_drawdown_pct:'0.60'}});
 const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) fails.push(m);};
 (async()=>{
  const b=await chromium.launch(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{});
@@ -92,7 +92,9 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   const fsA=await p.evaluate(()=>{const b=[...document.querySelectorAll('#fsGrid button.fs-c')].find(x=>/all time/i.test(x.textContent));b.click();const sh=document.getElementById('fsPop'),c=FTM._fsCells.find(x=>x.l==='All time'),cl=FTM.data.closed.map(t=>+new Date(t.closeTime)).filter(Boolean),a0=Math.min(...cl),yrs=(Date.now()-a0)/(365.25*864e5),d=[...sh.querySelectorAll('.fsp-grid div')].find(x=>/per year/i.test(x.textContent));const how=!!sh.querySelector('.fsp-how');sh.click();if(yrs<1)return d?'shown under a year':'ok';if(!d)return 'missing';const want=(Math.pow(1+c.g.pct/100,1/yrs)-1)*100,got=parseFloat(d.querySelector('dd').textContent.replace(/[^0-9.\-]/g,''));return (Math.abs(got-want)<0.02&&how)?'ok':'bad '+got+' vs '+want.toFixed(2)+' how='+how;});
   ok(fsA==='ok', label+': all-time pop-up shows the average yearly return (compounded, same shared %) and how it is calculated (got '+fsA+')');
   if(stats===full && !preview){ const rk=await p.evaluate(()=>[document.getElementById('rkScore').textContent,document.getElementById('rkVs').textContent,document.getElementById('rkRange').textContent]);
-   ok(/1\.03%/.test(rk[0]) && /Below/.test(rk[1]) && /20\D{1,4}40%/.test(rk[2]), label+': risk level = engine drawdown against the Balanced band 20-40% (got '+rk.join(' | ')+')'); }
+   ok(/1\.03%/.test(rk[0]) && /Below/.test(rk[1]) && /20\D{1,4}40%/.test(rk[2]), label+': risk level = engine drawdown against the Balanced band 20-40% (got '+rk.join(' | ')+')');
+   const now=await p.evaluate(()=>{ const t=()=>{ const n=document.getElementById('rkNow'); return n.hidden?'hidden':n.textContent; }; const a=t(); const es=FTM.data.engineStats; es.riskParts={current_drawdown_pct:'45.5'}; FTM.render(); const b=t(); es.riskParts={current_drawdown_pct:'0'}; FTM.render(); const c=t(); es.riskParts=null; FTM.render(); const d=t(); es.riskParts={current_drawdown_pct:'0.60'}; FTM.render(); return [a,b,c,d]; });
+   ok(now[0]==='Now 0.60% below its highest balance · smaller than usual for this profile' && /45\.50% below its highest balance · deeper than usual/.test(now[1]) && now[2]==='Now at its highest balance' && now[3]==='hidden', label+': Risk level shows where the account is now, from the engine current drawdown (got '+now.join(' | ')+')'); }
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
   await p.close();
  }

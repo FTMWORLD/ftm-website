@@ -47,4 +47,12 @@ for(const [name,plan] of SCEN){ for(const [dev,opt] of [['laptop',{viewport:{wid
   const r=await p.evaluate(()=>({login:!document.getElementById('authOverlay').hidden, msg:(document.getElementById('authError')||{}).textContent, app:!document.getElementById('appView').hidden}));
   ok(r.login && !r.app && /session has ended/.test(r.msg), 'ended session: the login window opens with a clear message instead of an empty dashboard ('+JSON.stringify(r)+')');
   await c.close(); }
+// a visitor who is not logged in must never get a login pop-up or a "session has ended" message
+for(const [dev,opt] of [['laptop',{viewport:{width:1440,height:900}}],['phone',{viewport:{width:390,height:844},isMobile:true,hasTouch:true}]]){ const c=await b.newContext(opt); const p=await c.newPage();
+  await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
+  await p.route('**/api/v1/**',r=>r.request().url().includes('/customer/')?r.fulfill({status:401,contentType:'application/json',body:'{"ok":false,"error":"UNAUTHENTICATED"}'}):r.fulfill({status:204,body:''}));
+  await p.goto(BASE+'/'); await p.waitForTimeout(3500);
+  const v=await p.evaluate(()=>({login:!document.getElementById('authOverlay').hidden, msg:(document.getElementById('authError')||{}).textContent||''}));
+  ok(!v.login && !/session has ended/.test(v.msg), dev+': a visitor who is not logged in sees the homepage, no login pop-up ('+JSON.stringify(v)+')');
+  await c.close(); }
 await b.close(); console.log(fails?'FAILED: '+fails:'LIVE RECOVERY OK'); process.exit(fails?1:0); })();

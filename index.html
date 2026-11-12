@@ -2144,7 +2144,9 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .dz-n{font-size:11.5px;color:var(--ink);font-weight:700;margin-top:2px}
 .rk-sub{font-size:12px;color:var(--muted);font-weight:600}
 @media (max-width:600px){.dz-n{display:none}.rk-l .rk-sub{align-self:end;margin-bottom:6px}}
-.rk-legend{display:flex;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted)}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
+.rk-legend{display:flex;justify-content:center;margin-top:10px;font-size:12px;color:var(--muted)}
+.dz-now{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#fff;border:3px solid #D4AF37;box-shadow:0 3px 8px -2px rgba(11,20,64,.35);transition:left 1s cubic-bezier(.2,.8,.2,1);z-index:1}.dz-now[hidden]{display:none}
+.rk-now{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:8px;font-size:12.5px;font-weight:700;color:var(--ink);text-align:center;flex-wrap:wrap}.rk-now[hidden]{display:none}.rk-now i{width:10px;height:10px;border-radius:50%;border:2.5px solid #D4AF37;background:#fff;flex:0 0 auto}.rk-now.deep{color:#b4232f}.rk-legend .rk-rng em{font-style:normal}.rk-legend .rk-rng b{color:var(--ink)}
 .rk-h{display:grid;gap:4px}.rk-h[hidden]{display:none}
 .rk-hist{width:100%;height:64px;border-radius:10px;background:#f6f7fb}
 .rk-h small{font-size:11px;color:var(--muted);text-align:end}
@@ -3764,10 +3766,11 @@ body.op-lock{overflow:hidden}
     <div class="app-card rk-card" id="rkCard" hidden data-tip="Your largest drop from a high, from closed trades only, compared with the normal range for your risk profile: Conservative 10–20%, Balanced 20–40%, Growth 40% and more.">
       <div class="rk-l"><span class="app-label">Risk level</span><div class="rk-score"><b id="rkScore">&mdash;</b></div><small class="rk-sub">Max drawdown</small><span class="rk-vs" id="rkVs"></span></div>
       <div class="rk-m">
-        <div class="dz" id="rkScale"><i class="dz-z z0" data-p=""></i><i class="dz-z z1" data-p="CONSERVATIVE"></i><i class="dz-z z2" data-p="BALANCED"></i><i class="dz-z z3" data-p="GROWTH"></i><i class="rk-band" id="rkBand"></i><i class="dz-pin" id="rkPin"></i></div>
+        <div class="dz" id="rkScale"><i class="dz-z z0" data-p=""></i><i class="dz-z z1" data-p="CONSERVATIVE"></i><i class="dz-z z2" data-p="BALANCED"></i><i class="dz-z z3" data-p="GROWTH"></i><i class="rk-band" id="rkBand"></i><i class="dz-now" id="rkNowPin" hidden></i><i class="dz-pin" id="rkPin"></i></div>
         <div class="dz-t"><span style="left:0">0%</span><span style="left:12.5%">10%</span><span style="left:25%">20%</span><span style="left:50%">40%</span><span style="left:100%">80%+</span></div>
         <div class="dz-n"><span style="left:18.75%">Conservative</span><span style="left:37.5%">Balanced</span><span style="left:75%">Growth</span></div>
         <div class="rk-legend"><span class="rk-rng"><em>Normal range for this profile</em> <b id="rkRange"></b></span></div>
+        <div class="rk-now" id="rkNow" hidden><i></i><span id="rkNowT"></span></div>
       </div>
     </div>
 
@@ -6610,7 +6613,7 @@ body.op-lock{overflow:hidden}
                      rows:(j.history||[]).length, peakBalance:num(j.peak_balance), peakBalanceAt:j.peak_balance_at||null, peakEquity:num(j.peak_equity), ddBasis:j.max_drawdown_basis||null,
                      ddClosedPct:num(j.max_drawdown_closed_balance_pct!=null?j.max_drawdown_closed_balance_pct:(j.max_drawdown_closed_balance&&j.max_drawdown_closed_balance.pct)),
                      ddClosed:j.max_drawdown_closed_balance||null, ddEqObj:j.max_drawdown||null, accountId:__acc, feesAdj:num(j.fees_and_adjustments), creditTotal:num(j.credit_total),
-                     split:(j.split&&typeof j.split==='object')?j.split:null, drawdowns:Array.isArray(j.drawdowns)?j.drawdowns:null, initialDepositSource:j.initial_deposit_source||null, riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[] };
+                     split:(j.split&&typeof j.split==='object')?j.split:null, drawdowns:Array.isArray(j.drawdowns)?j.drawdowns:null, initialDepositSource:j.initial_deposit_source||null, riskScore:num(j.risk_score), riskVs:j.risk_score_vs_range||null, riskRange:j.expected_range||null, riskHistory:Array.isArray(j.risk_score_history)?j.risk_score_history:[], riskParts:(j.risk_score_parts&&typeof j.risk_score_parts==='object')?j.risk_score_parts:null };
           });
         },
         fetchPositions: function(accountId){
@@ -6868,7 +6871,7 @@ body.op-lock{overflow:hidden}
         if(seq!==F._loadSeq) return false;
         var st=err&&err.status, hard=err && (st===403 || err.code==='EMAIL_ALREADY_REGISTERED');
         liveLog('live_fail', String(st||'net')+' '+String((err&&err.code)||'').slice(0,30));
-        if(st===401){ liveExpired(); return false; }
+        if(st===401){ if(F.session && F.session.email) liveExpired(); return false; }
         if(F.session && (hard || !(F.data.accounts||[]).length)) F.data = emptyLiveData();
         if(hard && F.session && F.session.email){ try{ localStorage.removeItem('ftm_snap_'+String(F.session.email).toLowerCase()); }catch(e){} }
         if(!hard && F.session) liveRetry();
@@ -6890,6 +6893,7 @@ body.op-lock{overflow:hidden}
         loadLive().then(function(ok){ if(ok){ F.refreshing=false; try{ F.render(); if(F.redrawAllViews) F.redrawAllViews(); if(F.renderAccounts) F.renderAccounts(); if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); } }catch(e){} } else if(!F._liveRetryT && F.session && !F._liveEnded) liveRetry(); }); },wait);
     }
     function liveExpired(){
+      if(!(F.session && F.session.email)) return;
       var A=window.FTM.auth; if(!A||!A.getAccessToken){ liveRetry(); return; }
       A.getAccessToken(true).then(function(t){ if(t){ liveRetry(); return; }
         F._liveEnded=true; liveLog('session_end','refresh failed'); var mail=F.session&&F.session.email; F.session=null; try{ A.signOut(); }catch(e){}
@@ -10244,6 +10248,12 @@ tick();setInterval(tick,5000);})();
     card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
     var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[prof]||'';
     $('rkRange').textContent=bd?(tr(pn)+' · '+bd[0]+(bd[1]!=null?'–'+bd[1]+'%':'%+')):'—';
+    var rp=es.riskParts, cd=(rp&&rp.current_drawdown_pct!=null&&rp.current_drawdown_pct!=='')?Math.abs(parseFloat(rp.current_drawdown_pct)):null, nw=$('rkNow'), np=$('rkNowPin');
+    if(cd!=null && isFinite(cd)){ var t1=cd<0.005?tr('Now at its highest balance'):tr('Now {}% below its highest balance').replace('{}',cd.toFixed(2));
+      var t2=(cd<0.005||!bd)?'':(bd[1]!=null&&cd>bd[1]?tr('deeper than usual for this profile'):(cd>=bd[0]?tr('usual for this profile'):tr('smaller than usual for this profile')));
+      $('rkNowT').textContent=t1+(t2?' · '+t2:''); nw.className='rk-now'+(t2&&bd&&bd[1]!=null&&cd>bd[1]?' deep':''); nw.hidden=false; np.style.left=P(cd)+'%'; np.hidden=false;
+      np.setAttribute('data-tip',t1); }
+    else { nw.hidden=true; np.hidden=true; }
     card.hidden=false;
   }
   (function(){ var tf=$("rkSpan"); if(!tf) return; tf.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; tf.querySelectorAll('button').forEach(function(x){x.classList.toggle('is-on',x===b);}); F.rkRange=+b.dataset.r; riskCard(); }); })();
