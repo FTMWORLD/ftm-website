@@ -5740,7 +5740,7 @@ body.op-lock{overflow:hidden}
         window.FTM.remote.connectAccount(srv, n, pwVal, tier).then(function(r){
           var T=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
           msg.hidden=false; msg.className='hint'; msg.style.color='#1f8a5b';
-          var tickT=0; btn._cxDone=false; btn._cxClosed=false;
+          var tickT=0; btn._cxDone=false; btn._cxClosed=false; try{ if(window.FTM.celebrateWatch) window.FTM.celebrateWatch({accountId:r&&r.account_id, number:n}); }catch(eW){}
           msg.textContent=T('Account added. FTM is still checking it with your broker. Your Dashboard updates by itself.');
           var toDash=function(note){ if(!btn._cxClosed){ btn._cxClosed=true; btn.disabled=false; var W=window.FTM.cxWizard; if(W&&W.close) W.close(); var nv=document.querySelector('#appView .app-nav-item[data-view="metrics"]'); if(nv) nv.click(); } if(note) toast(T(note)); };
           setTimeout(function(){ if(!btn._cxDone) toDash(null); },1400);
@@ -5770,7 +5770,7 @@ body.op-lock{overflow:hidden}
                 if(st && st!=='SETUP_INCOMPLETE' && a.statusReason!=='VALIDATION_PENDING' && a.statusReason!=='NEVER_VALIDATED' && a.statusReason!=='NO_NODE_ASSIGNED'){
                   var good = st==='ACTIVE'||st==='PAUSED'||st==='INACTIVE'||st==='MAINTENANCE';
                   if(FT.loadLive) FT.loadLive().then(function(){ if(FT.render)FT.render(); if(FT.renderAccounts)FT.renderAccounts(); if(FT.renderActivate)FT.renderActivate(); });
-                  if(good){ btn._cxDone=true; msg.style.color='#1f8a5b'; msg.textContent=T('Account connected.'); setTimeout(function(){ toDash('Account connected. FTM MACHINE starts trading on it.'); },btn._cxClosed?0:900); }
+                  if(good){ btn._cxDone=true; msg.style.color='#1f8a5b'; msg.textContent=T('Account connected.'); setTimeout(function(){ toDash(null); if(FT.celebrateCheck) FT.celebrateCheck([a]); },btn._cxClosed?0:600); }
                   else { btn._cxDone=true; btn.disabled=false; var why=T(FT.reasonText?FT.reasonText(a):'Connection needs attention. Open Accounts to see why.'); msg.style.color='#E5323E'; msg.textContent=why; if(btn._cxClosed){ toast(why); var na=document.querySelector('#appView .app-nav-item[data-view="accounts"]'); if(na) na.click(); } }
                   return;
                 }
@@ -6841,6 +6841,7 @@ body.op-lock{overflow:hidden}
         if(!accounts.length && (F.data.accounts||[]).length && !F._emptyOk){ F._emptyOk=true; liveLog('accounts_empty','had '+F.data.accounts.length); return new Promise(function(r){ setTimeout(r,2500); }).then(function(){ return seq===F._loadSeq ? loadLive() : true; }); }
         F._emptyOk=false; F._liveFails=0; F._liveEnded=false; clearTimeout(F._liveRetryT); F._liveRetryT=null;
         F._acctsKnown=true;
+        try{ if(F.celebrateCheck) F.celebrateCheck(accounts); }catch(eC){}
         if(!accounts.length){ F.data = emptyLiveData(); setTimeout(function(){ try{ F.render(); }catch(e){} },0); return true; }
 
         F.data.accounts = accounts;
@@ -10038,7 +10039,7 @@ tick();setInterval(tick,5000);})();
     var bad=A.filter(function(a){ return BAD[a.displayStatus] || a.brokerTradeDisabled; })[0];
     var wait=A.filter(function(a){ return a.displayStatus==='SETUP_INCOMPLETE' || a.statusReason==='VALIDATION_PENDING'; })[0];
     A.forEach(function(a){ if(a!==wait && a.displayStatus && a.displayStatus!=='SETUP_INCOMPLETE'){ try{ localStorage.removeItem('ftm_pend_'+(a.accountId||a.number)); }catch(e){} } });
-    var note=bad ? ((document.querySelector('#acctRows .acct-action-note')||{}).textContent||'') : '';
+    var note=bad ? ((F.reasonText?tr(F.reasonText(bad)):'')||(document.querySelector('#acctRows .acct-action-note')||{}).textContent||'') : '';
     var st=[
       {t:paid?'Plan active':'Choose a plan', d:paid},
       {t:'Trading account connected', d:A.length>0},
@@ -10851,6 +10852,45 @@ tick();setInterval(tick,5000);})();
   var orig=F.render; if(orig){ F.render=function(){ var r=orig.apply(this,arguments); try{ calc(); }catch(e){} return r; }; }
   setTimeout(function(){ try{ calc(); }catch(e){} },1200);
   F.whatIf=calc;
+})();
+</script>
+<style>
+.cel{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;background:rgba(11,20,64,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
+.cel[hidden]{display:none}
+.cel-card{position:relative;overflow:hidden;width:min(420px,100%);border-radius:26px;padding:34px 26px 26px;text-align:center;background:radial-gradient(120% 90% at 50% 0%,#1d3394 0%,#0B1440 62%);color:#fff;box-shadow:0 30px 80px -20px rgba(0,0,0,.55);animation:celIn .5s cubic-bezier(.2,.9,.25,1.15) both}
+.cel-badge{width:86px;height:86px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#E3B62F,#D4AF37);box-shadow:0 0 0 10px rgba(212,175,55,.16),0 14px 30px -8px rgba(212,175,55,.6);animation:celPop .7s .15s cubic-bezier(.2,.9,.25,1.4) both}
+.cel-badge svg{width:44px;height:44px;stroke:#0B1440;stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:celTick .5s .55s ease-out forwards}
+.cel-card h2{margin:0 0 8px;font-size:26px;letter-spacing:-.02em;color:#fff}
+.cel-card h2 span{color:#E3B62F}
+.cel-card p{margin:0 auto 22px;max-width:330px;color:#c9d0ee;font-size:15px;line-height:1.5}
+.cel-fx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}.cel-card>*:not(.cel-fx){position:relative;z-index:1}
+.cel-card .btn{min-width:220px;border:0;background:linear-gradient(135deg,#E3B62F,#D4AF37);color:#0B1440;font-weight:800;box-shadow:0 12px 26px -10px rgba(212,175,55,.7)}.cel-card .btn:hover{filter:brightness(1.05)}.cel-card .btn:focus{outline:none}.cel-card .btn:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.cel-c{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:celFall 2.6s ease-in forwards}
+@keyframes celIn{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes celPop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes celTick{to{stroke-dashoffset:0}}
+@keyframes celFall{0%{opacity:1;transform:translate3d(0,0,0) rotate(0)}100%{opacity:0;transform:translate3d(var(--dx),520px,0) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.cel-card,.cel-badge,.cel-badge svg,.cel-c{animation:none!important}.cel-badge svg{stroke-dashoffset:0}.cel-c{display:none}}
+</style>
+<div class="cel" id="celBox" hidden role="dialog" aria-modal="true" aria-labelledby="celT"><div class="cel-card" id="celCard"><div class="cel-fx" id="celFx" aria-hidden="true"></div><div class="cel-badge"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></svg></div><h2 id="celT"><span>Auto Trading</span> connected</h2><p id="celP"></p><button type="button" class="btn btn-primary" id="celGo">Go to Dashboard</button></div></div>
+<script>
+(function(){ var F=window.FTM=window.FTM||{}, box=document.getElementById('celBox'); if(!box) return;
+  var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }, GOOD={ACTIVE:1,PAUSED:1,INACTIVE:1}, T=null;
+  function key(a,k){ return 'ftm_'+k+'_'+(a.accountId||a.number); }
+  function get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } } function set(k,v){ try{ if(v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
+  function close(){ box.hidden=true; clearTimeout(T); var nv=document.querySelector('#appView .app-nav-item[data-view="metrics"]'); if(nv) nv.click(); var av=document.getElementById('appView'); if(av) av.scrollTop=0; }
+  F.celebrate=function(a){ var card=document.getElementById('celFx'); card.innerHTML='';
+    document.getElementById('celP').textContent=tr('FTM MACHINE is now connected to account {}. It trades for you from the next signal.').replace('{}',String(a.number||''));
+    var C=['#E3B62F','#D4AF37','#ffffff','#2ee07a','#5b7bff'];
+    for(var i=0;i<34;i++){ var c=document.createElement('i'); c.className='cel-c'; c.style.left=(Math.random()*100)+'%'; c.style.background=C[i%C.length]; c.style.setProperty('--dx',(Math.random()*160-80)+'px'); c.style.setProperty('--r',(Math.random()*720-360)+'deg'); c.style.animationDelay=(Math.random()*.6)+'s'; card.appendChild(c); }
+    box.hidden=false; clearTimeout(T); T=setTimeout(close,6000); };
+  F.celebrateWatch=function(a){ if(a) set(key(a,'cel_watch'),'1'); };
+  F.celebrateCheck=function(list){ (list||[]).forEach(function(a){ if(a.isMaster||a.isPreview) return; var good=a.active||GOOD[a.displayStatus];
+      if(!good){ if(/^(SETUP_INCOMPLETE|ACTION_REQUIRED|SETUP_FAILED)$/.test(a.displayStatus||'')) set(key(a,'cel_watch'),'1'); return; }
+      if(get(key(a,'cel_watch')) && !get(key(a,'cel_done'))){ set(key(a,'cel_done'),'1'); set(key(a,'cel_watch'),null); var app=document.getElementById('appView'); if(app && !app.hidden) setTimeout(function(){ F.celebrate(a); },300); } }); };
+  document.getElementById('celGo').addEventListener('click',close);
+  box.addEventListener('click',function(e){ if(e.target===box) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !box.hidden) close(); });
 })();
 </script>
 </body>

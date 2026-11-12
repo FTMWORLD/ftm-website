@@ -52,7 +52,7 @@ const ACC={account_id:'acc-stuck-1',account_number:'101875056',name:'DERIV',curr
     ok(!errs.length, name+': no script errors '+(errs[0]||''));
     await c.close(); }
   // the connect window: connected -> closes and goes to the Dashboard; error -> says exactly what is wrong; still checking after 60 s -> closes, Dashboard keeps updating
-  for(const [name,after,wait] of [['connected',{display_status:'ACTIVE',status_reason:'OK',is_trading:true,balance:'1000',equity:'1000'},9000],['wrong password',{display_status:'ACTION_REQUIRED',status_reason:'VALIDATION_FAILED',validation_reason:'NOT_CONNECTED'},9000],['still checking',null,5000]]){
+  for(const [name,after,wait] of [['connected',{display_status:'ACTIVE',status_reason:'OK',is_trading:true,balance:'1000',equity:'1000'},4500],['wrong password',{display_status:'ACTION_REQUIRED',status_reason:'VALIDATION_FAILED',validation_reason:'NOT_CONNECTED'},9000],['still checking',null,5000]]){
     const c=await b.newContext({viewport:{width:1366,height:900}}); const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); let posted=0, t0=0;
     await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
     await p.route('**/api/v1/**',r=>{ const u=r.request().url(), m=r.request().method();
@@ -73,7 +73,12 @@ const ACC={account_id:'acc-stuck-1',account_number:'101875056',name:'DERIV',curr
     await p.waitForTimeout(wait);
     const end=await p.evaluate(()=>({open:!document.querySelector('.cw-sheet, #cxSheet') ? null : !document.querySelector('.cw-sheet, #cxSheet').hidden, lock:document.documentElement.classList.contains('cw-lock'), msg:document.getElementById('appConnectMsg').textContent, view:(document.querySelector('#appView .app-nav-item.is-on')||{}).dataset?.view, toast:(window.__toasts||[]).join(' | ')}));
     if(name==='wrong password') ok(!end.lock && end.view==='accounts' && /could not log in with these details/i.test(end.toast), name+': a message says exactly what is wrong and Accounts opens ('+JSON.stringify(end)+')');
-    else ok(!end.lock && end.view==='metrics' && (name==='connected'?/Account connected/.test(end.toast):true), name+': the Dashboard is shown'+(name==='connected'?' with "Account connected"':'')+' ('+JSON.stringify(end)+')');
+    else if(name==='connected'){ const cel=await p.evaluate(()=>{ const b=document.getElementById('celBox'); return {shown:!b.hidden, text:b.textContent.replace(/\s+/g,' ').trim()}; });
+      ok(!end.lock && cel.shown && /Auto Trading connected/.test(cel.text) && /22334455/.test(cel.text), name+': a celebration pops up: "Auto Trading connected" ('+cel.text.slice(0,120)+')');
+      await p.click('#celGo'); await p.waitForTimeout(400); const v2=await p.evaluate(()=>({hid:document.getElementById('celBox').hidden, view:(document.querySelector('#appView .app-nav-item.is-on')||{}).dataset?.view}));
+      ok(v2.hid && v2.view==='metrics', name+': Go to Dashboard closes it and shows the Dashboard ('+JSON.stringify(v2)+')');
+      await p.evaluate(()=>FTM.loadLive()); await p.waitForTimeout(800); ok(await p.evaluate(()=>document.getElementById('celBox').hidden), name+': the celebration shows only once'); }
+    else ok(!end.lock && end.view==='metrics', name+': the Dashboard is shown ('+JSON.stringify(end)+')');
     ok(posted===1, name+': the account is sent once ('+posted+')');
     ok(!errs.length, name+': no script errors '+(errs[0]||''));
     await c.close(); }
