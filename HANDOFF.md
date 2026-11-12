@@ -646,3 +646,8 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Fix: getAccessToken renews when the token is missing/expiring (refreshSession); call() repeats a 401 once with a forced renewal; loadLive keeps figures on failure and retries (2s,5s,10s,20s,40s), also on 'online' and when the tab becomes visible again (data older than 2 min); an empty account list right after having accounts is re-asked once; a truly ended session opens the login window with a message. client-log events: live_fail, accounts_empty, session_end.
 - Test: .github/tests/live-recovery.js (fails 9 checks on the old code).
 - Year by year table: nowrap numbers, right-aligned, month under best/worst %.
+
+## 12 Nov 2026: long figures never break (owner, naira)
+- Root cause: `.app-tile b{overflow-wrap:anywhere}` broke numbers mid-way, and the shrink-to-fit only covered .hx-stat/.fs-c/#dxVal. Phone CSS also forced sizes with !important.
+- Fix: one shared fitter (FTM.fitNums) for every text with a 5+ digit number in #appView/#invView: nowrap, then shrink (setProperty important) until it fits its block, card and screen (min 45%, 7.5px); tap-to-zoom (.fz-on) when shrunk. Runs on DOM changes (MutationObserver, throttled), clicks, resize and every 1.2 s; cached per text+width.
+- Test: .github/tests/figures-fit.js (NGN on a big account, 8 sizes x 8 views; FIT_CCY=IDR also passes).
