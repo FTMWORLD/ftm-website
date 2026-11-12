@@ -50,7 +50,7 @@ const rows=()=>p.evaluate(()=>[...document.querySelectorAll('#acctRows tr')].map
 const cmsg=()=>p.evaluate(()=>document.getElementById('appConnectMsg').textContent);
 async function addAcct(n){await nav('metrics');await p.waitForFunction(()=>window.FTM&&FTM._liveLoaded,null,{timeout:10000}).catch(()=>{});await p.waitForTimeout(300);await p.evaluate(()=>FTM.cxWizard&&FTM.cxWizard.close());await p.click('#cxOpen');await p.click('#appBroker');await p.fill('#appBroker','Deriv-Demo');await p.keyboard.press('Enter');await p.click('#cwNext');await p.fill('#appAcct',n);await p.click('#cwNext');await p.fill('#appPass','secret');if(await p.inputValue('#appPass')!=='secret')await p.fill('#appPass','secret');await p.click('#cwNext');await p.click('#appConnect');await p.waitForTimeout(1500);await p.evaluate(()=>FTM.cxWizard&&FTM.cxWizard.close());}
 await step('Add account (master refused)',()=>addAcct('9900000099'),cmsg,['POST /accounts','This is the FTM master account']);
-await step('Add account (normal)',()=>addAcct('40123456'),cmsg,['-> 202','Connecting']);
+await step('Add account (normal)',()=>addAcct('40123456'),cmsg,['-> 202','Account added']);
 await step('Pause trading (row menu)',async()=>{await menu(1,'data-pause');await goOn();},rows,['POST /accounts/acc-A/pause {}','WARN Before you pause trading']);
 await step('Pause and close all trades',async()=>{await menu(1,'data-pauseclose');await goOn();},rows,['close_open']);
 await step('Trade on this account (switch)',()=>menu(0,'data-switch'),rows,['/acc-B/activate']);
