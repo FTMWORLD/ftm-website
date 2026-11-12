@@ -26,21 +26,30 @@ for(const [n,opt] of [['laptop',{viewport:{width:1280,height:900}}],['phone',{vi
   await p.evaluate(()=>{ const A=FTM.auth; A.ready=()=>true; A.getAccessToken=()=>Promise.resolve('tok'); A.verifyTokenHash=th=>th==='th123'?Promise.resolve({email:'pk@ftm.com',products:['auto'],name:'PK'}):Promise.reject(new Error('bad'));
     window.__f=0; const of=window.fetch; window.fetch=function(){ window.__f++; return of.apply(this,arguments); };
     window.__calls=[]; const cc=navigator.credentials.create.bind(navigator.credentials), cg=navigator.credentials.get.bind(navigator.credentials);
-    navigator.credentials.create=o=>{ window.__calls.push(['create',window.__f]); return cc(o); }; navigator.credentials.get=o=>{ window.__calls.push(['get',window.__f]); return cg(o); };
+    window.__tap=false; document.addEventListener('click',()=>{ window.__tap=true; setTimeout(()=>{ window.__tap=false; },0); },true); navigator.credentials.create=o=>{ window.__calls.push(['create',window.__tap?0:1]); return cc(o); }; navigator.credentials.get=o=>{ window.__calls.push(['get',window.__tap?0:1]); return cg(o); };
     const t=document.createElement('button'); t.id='__reg'; t.textContent='turn on'; t.style.cssText='position:fixed;top:0;left:0;z-index:99999'; t.onclick=()=>{ window.__f=0; FTM.pk.register().then(()=>window.__regR='ok',e=>window.__regR='err '+(e.code||e.name||e.message)); }; document.body.appendChild(t); });
-  // turn on Face ID: the options are fetched before the tap
-  await p.evaluate(()=>FTM.pk.prepRegister&&FTM.pk.prepRegister()); await p.click('#__reg'); await p.waitForFunction(()=>window.__regR,null,{timeout:10000}).catch(()=>{});
+  // before Face ID is on, the login window must not offer it (it would only show a QR code)
+  await p.evaluate(()=>{ try{ localStorage.removeItem('ftm_pk_on'); }catch(e){} FTM.session=null; document.querySelector('.js-login').click(); }); await p.waitForTimeout(900);
+  ok(!(await p.isVisible('#authPk')), n+': no Face ID button on a device where Face ID is not turned on');
+  await p.evaluate(()=>{ document.getElementById('authOverlay').hidden=true; });
+  // turn on Face ID from the menu prompt: Turn on waits until it is ready, then goes straight to Face ID
+  await p.evaluate(()=>{ FTM.session={email:'pk@ftm.com',products:['auto'],name:'PK'}; return FTM.loadLive().then(()=>FTM.openArea('auto')); }); await p.waitForTimeout(1500);
+  await p.evaluate(()=>{ const b=document.querySelector('.um-pk'); b.dispatchEvent(new MouseEvent('click',{bubbles:true})); });
+  await p.waitForFunction(()=>{ const y=document.getElementById('pkYes'); return y&&!y.hidden&&!y.disabled; },null,{timeout:8000}).catch(()=>{}); if(process.env.DBG) console.log('DBG',await p.evaluate(()=>({t:document.getElementById('pkToast').hidden,y:document.getElementById('pkYes').hidden,d:document.getElementById('pkYes').disabled,m:document.getElementById('pkMsg').textContent,on:FTM.pk.isOn(),um:document.querySelectorAll('.um-pk').length})));
+  await p.evaluate(()=>{ window.__f=0; window.__calls=[]; }); await p.click('#pkYes');
+  await p.waitForFunction(()=>/is on for this device/.test(document.getElementById('pkMsg').textContent),null,{timeout:10000}).catch(()=>{});
+  await p.evaluate(()=>{ window.__regR=/is on for this device/.test(document.getElementById('pkMsg').textContent)?'ok':'msg: '+document.getElementById('pkMsg').textContent; });
   let r=await p.evaluate(()=>({reg:window.__regR,calls:window.__calls.slice()}));
   ok(r.reg==='ok' && (U.app_metadata.passkeys||[]).length===1, n+': turning on Face ID stores a passkey for this person ('+r.reg+')');
-  ok(r.calls[0] && r.calls[0][0]==='create' && r.calls[0][1]===0, n+': tapping Turn on goes straight to Face ID, no download first');
+  ok(r.calls[0] && r.calls[0][0]==='create' && r.calls[0][1]===0, n+': tapping Turn on starts Face ID within the tap itself (what Safari requires)');
   // log in with Face ID from the login window
-  await p.evaluate(()=>{ FTM.session=null; const a=document.querySelector('.js-login'); a.click(); }); await p.waitForTimeout(1200);
+  await p.evaluate(()=>{ FTM.session=null; document.getElementById('appView').hidden=true; const a=document.querySelector('.js-login'); a.click(); }); await p.waitForTimeout(1200);
   ok(await p.isVisible('#authPk'), n+': the login window offers "Log in with Face ID or fingerprint"');
   await p.evaluate(()=>{ window.__f=0; window.__calls=[]; }); await p.click('#authPk');
   await p.waitForFunction(()=>window.FTM.session&&FTM.session.email==='pk@ftm.com',null,{timeout:10000}).catch(()=>{});
   r=await p.evaluate(()=>({calls:window.__calls.slice(),email:FTM.session&&FTM.session.email,err:(document.getElementById('authError')||{}).textContent}));
   ok(r.email==='pk@ftm.com', n+': Face ID logs the person in ('+(r.email||r.err)+')');
-  ok(r.calls[0] && r.calls[0][0]==='get' && r.calls[0][1]===0, n+': tapping Face ID goes straight to Face ID, no download first');
+  ok(r.calls[0] && r.calls[0][0]==='get' && r.calls[0][1]===0, n+': tapping Face ID starts it within the tap itself (what Safari requires)');
   // a device without an FTM passkey gets a clear message
   U.app_metadata={passkeys:[]}; await p.evaluate(()=>{ FTM.session=null; document.getElementById('appView').hidden=true; const a=document.querySelector('.js-login'); a.click(); }); await p.waitForTimeout(1200);
   await p.click('#authPk'); await p.waitForTimeout(1500);

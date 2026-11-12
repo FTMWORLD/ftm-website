@@ -5502,7 +5502,7 @@ body.op-lock{overflow:hidden}
         var row=document.getElementById('authPkRow'), b=document.getElementById('authPk'); if(!row||!b||!window.FTM.pk) return;
         var sync=function(){ var pr=document.getElementById('authPassRow'), orow=document.getElementById('authOtpRow'), er=document.getElementById('authEmailRow');
           var loginMode=!!(pr && !pr.hidden && orow && orow.hidden && er && !er.hidden);
-          var show=window.FTM.pk.anySupport() && loginMode; row.hidden=!show; if(show) window.FTM.pk.prepLogin().catch(function(){}); };
+          var P=window.FTM.pk; if(!(loginMode && P.isOn())){ row.hidden=true; return; } P.supported().then(function(ok){ row.hidden=!ok; if(ok) P.prepLogin().catch(function(){}); }); };
         sync(); new MutationObserver(sync).observe(document.getElementById('authForm'),{attributes:true,subtree:true,attributeFilter:['hidden']});
         b.addEventListener('click',function(){
           b.disabled=true; var er2=document.getElementById('authError'); if(er2) er2.hidden=true;
@@ -10359,18 +10359,24 @@ tick();setInterval(tick,5000);})();
     };
     document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.cid-copy'); if(!b||!F._cid) return; try{ navigator.clipboard.writeText(F._cid); b.classList.add('is-ok'); setTimeout(function(){ b.classList.remove('is-ok'); },1400); }catch(x){} });
   })();
-  (function(){
-    var P=window.FTM&&window.FTM.pk, T=$('pkToast'); if(!P||!T) return;
+  (function pkInit(){
+    var P=window.FTM&&window.FTM.pk, T=$('pkToast'); if(!T && document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',pkInit); return; } if(!P||!T) return;
     var msg=$('pkMsg'), yes=$('pkYes'), no=$('pkNo'), offB=$('pkOff'), offered=false;
-    function show(m,mode){ if(mode==='offer') P.prepRegister().catch(function(){}); msg.textContent=tr(m); yes.hidden=mode!=='offer'; no.hidden=false; no.textContent=tr(mode==='offer'?'Not now':'Close'); offB.hidden=mode!=='on'; T.hidden=false; requestAnimationFrame(function(){ T.classList.add('in'); }); }
+    function show(m,mode){ if(mode==='offer'){ yes.disabled=true; P.prepRegister().then(function(){ yes.disabled=false; },function(){ yes.disabled=false; }); } msg.textContent=tr(m); yes.hidden=mode!=='offer'; no.hidden=false; no.textContent=tr(mode==='offer'?'Not now':'Close'); offB.hidden=mode!=='on'; T.hidden=false; requestAnimationFrame(function(){ T.classList.add('in'); }); }
     function hide(){ T.classList.remove('in'); setTimeout(function(){ T.hidden=true; },250); }
     no.addEventListener('click',function(){ if(!yes.hidden){ try{ localStorage.setItem('ftm_pk_no',String(Date.now())); }catch(e){} } hide(); });
     yes.addEventListener('click',function(){ yes.disabled=true; P.register().then(function(){ yes.disabled=false; show('Face ID login is on for this device.','done'); setTimeout(hide,3500); menu(); }).catch(function(e){ yes.disabled=false; if(e&&e.name==='NotAllowedError'){ show('Face ID was cancelled. Tap Turn on to try again.','offer'); return; } show('Face ID could not be turned on. Please try again.','offer'); }); });
     offB.addEventListener('click',function(){ offB.disabled=true; P.off().then(function(){ offB.disabled=false; show('Face ID login is off.','done'); setTimeout(hide,3000); menu(); }).catch(function(){ offB.disabled=false; hide(); }); });
-    function menu(){ P.supported().then(function(ok){ document.querySelectorAll('.um-pk').forEach(function(b){ b.hidden=!ok; b.classList.toggle('is-on',P.isOn()); }); }); }
-    document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.um-pk'); if(!b) return; if(P.isOn()) show('Face ID login is on for this device.','on'); else show('Log in faster next time with Face ID or your fingerprint.','offer'); });
+    function menu(){ var any=P.anySupport(); document.querySelectorAll('.um-pk').forEach(function(b){ b.hidden=!any; b.classList.toggle('is-on',P.isOn()); }); }
+    document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.um-pk'); if(!b) return; if(P.isOn()){ show('Face ID login is on for this device.','on'); return; }
+      P.supported().then(function(ok){ if(ok){ show('Log in faster next time with Face ID or your fingerprint.','offer'); return; }
+        var ua=navigator.userAgent||'', ios=/iPhone|iPad/.test(ua), andr=/Android/.test(ua), inApp=/FBAN|FBAV|Instagram|WhatsApp|Line\/|GSA\/|wv\)/.test(ua);
+        show(inApp?'Face ID does not work inside this app. Open ftmwealthnation.com in your phone\'s browser (Safari or Chrome), log in, and turn it on there.':(ios?'Turn on Face ID for your iPhone first (Settings, Face ID & Passcode), then open ftmwealthnation.com in Safari.':(andr?'Turn on fingerprint or face unlock in your phone settings first, then open ftmwealthnation.com in Chrome.':'This computer has no fingerprint or face login. Use Face ID on your phone instead.')),'done');
+        try{ fetch('/api/v1/client-log',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ev:'pk_unsupported',reason:inApp?'in_app':(ios?'ios':(andr?'android':'desktop'))})}); }catch(x){} }); });
+    var warm=null;
     F.pkOffer=function(){
       menu();
+      if(!warm && F.session && F.session.email && !P.isOn()){ P.supported().then(function(ok){ if(!ok||warm) return; P.prepRegister().catch(function(){}); warm=setInterval(function(){ if(F.session&&F.session.email&&!P.isOn()) P.prepRegister().catch(function(){}); else { clearInterval(warm); warm=null; } },100000); }); }
       if(offered || !(F.session&&F.session.email)) return; offered=true;
       var no0=0; try{ no0=+localStorage.getItem('ftm_pk_no')||0; }catch(e){}
       if(P.isOn() || Date.now()-no0<30*864e5) return;
