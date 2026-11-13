@@ -51,18 +51,23 @@ const BASE=process.argv[2]||'http://localhost:8765';
     const c=await b.newContext(opt); const p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message)); const calls=[];
     await p.route(/(binance|coinbase|gold-api)/,r=>r.abort());
     await p.route('**/api/v1/**',r=>{ const u=r.request().url(); if(u.includes('/push')||u.includes('/login-alert')) calls.push(u.split('/api/v1/')[1]+' '+(r.request().postData()||'')); if(u.includes('/push?key')) return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,key:v.pub})}); if(u.includes('/push')) return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"prefs":{"messages":true,"follows":true,"social":true,"trades":true,"leaderboard":false},"devices":0}'}); return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"accounts":[],"positions":[]}'}); });
-    await p.addInitScript(()=>{ try{ Object.defineProperty(Notification,'permission',{get:()=>'default'}); }catch(e){} });
+    await p.addInitScript(()=>{ window.__perm='default'; window.__asked=0; try{ Object.defineProperty(Notification,'permission',{get:()=>window.__perm}); Notification.requestPermission=()=>{ window.__asked++; window.__perm='granted'; return Promise.resolve('granted'); };
+      PushManager.prototype.subscribe=function(){ return Promise.resolve({endpoint:'https://push.example/dev',options:{applicationServerKey:new Uint8Array(65).buffer},toJSON(){ return {endpoint:'https://push.example/dev',keys:{p256dh:'p',auth:'a'}}; },unsubscribe(){ return Promise.resolve(true); }}); };
+      PushManager.prototype.getSubscription=function(){ return Promise.resolve(null); }; }catch(e){} });
     await p.goto(BASE+'/'); await p.waitForTimeout(700);
     const head=await p.evaluate(()=>({mf:!!document.querySelector('link[rel=manifest]'), sw:'serviceWorker' in navigator}));
     ok(head.mf, dev+': the site can be installed like an app (manifest)');
     await p.evaluate(()=>{ const F=window.FTM; F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('t'),signOut:()=>Promise.resolve()}); F.session={email:'t@ftm.com',products:['auto'],name:'T'}; return F.loadLive().then(()=>F.openArea('auto')); });
     await p.evaluate(()=>FTM.loginCheck&&FTM.loginCheck()); await p.waitForTimeout(3500);
-    const ask=await p.evaluate(()=>!document.getElementById('ntAsk').hidden);
-    ok(ask, dev+': after login a one-time card offers phone notifications');
+    const card=await p.evaluate(()=>!!document.getElementById('ntAsk')); ok(!card, dev+': no FTM card asks first on the dashboard');
+    if(dev!=='iPhone'){ await p.mouse.click(5,300); await p.waitForTimeout(1500);
+      const st=await p.evaluate(()=>({asked:window.__asked,perm:window.__perm}));
+      ok(st.asked===1 && calls.some(x=>/^push /.test(x)&&/"subscribe"/.test(x)), dev+': the first tap shows the phone\'s own Allow prompt; once allowed, notifications are on with every type ('+JSON.stringify(st)+')');
+      await p.mouse.click(5,320); await p.waitForTimeout(500); ok(await p.evaluate(()=>window.__asked)===1, dev+': the prompt is not repeated'); }
     await p.evaluate(()=>{ const m=document.querySelector('#appView .um-nt'); m.dispatchEvent(new MouseEvent('click',{bubbles:true})); }); await p.waitForTimeout(800);
     const sh=await p.evaluate(()=>({open:!document.getElementById('ntSheet').hidden, state:document.getElementById('ntState').textContent, prefs:!document.getElementById('ntPrefs').hidden, on:!document.getElementById('ntOn').hidden, lb:(document.querySelector('#ntPrefs [data-k=leaderboard]')||{}).checked}));
     if(dev==='iPhone') ok(sh.open && /Add to Home Screen/.test(sh.state) && !sh.on, dev+': iPhone (not installed) is told how to add FTM to the Home Screen ('+sh.state.slice(0,60)+')');
-    else ok(sh.open && sh.prefs && sh.on && sh.lb===false, dev+': "Phone notifications" opens the settings with a Turn on button and the saved choices ('+JSON.stringify(sh)+')');
+    else ok(sh.open && sh.prefs && sh.lb===false, dev+': "Phone notifications" shows the switches to turn types off ('+JSON.stringify(sh)+')');
     ok(calls.some(x=>/^login-alert/.test(x)&&/device/.test(x)), dev+': every login is checked for a new device');
     ok(!errs.length, dev+': no script errors '+(errs[0]||''));
     await c.close(); }

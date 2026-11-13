@@ -10918,7 +10918,7 @@ tick();setInterval(tick,5000);})();
 <label><span>Trades closed in profit</span><input type="checkbox" data-k="trades" checked><i></i></label>
 <label><span>Leaderboard moves</span><input type="checkbox" data-k="leaderboard" checked><i></i></label></div>
 <div class="nt-btns"><button type="button" class="btn btn-gold" id="ntOn">Turn on notifications</button><button type="button" class="btn btn-outline" id="ntTest" hidden>Send a test notification</button><button type="button" class="nt-off" id="ntOff" hidden>Turn off on this device</button></div></div></div>
-<div class="nt-ask" id="ntAsk" hidden role="dialog" aria-labelledby="ntAskT"><span class="ntp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><div><b id="ntAskT">Get FTM notifications on your phone</b><p>Messages, new followers, trades closed in profit and leaderboard moves.</p><div class="nt-ask-b"><button type="button" class="btn btn-gold" id="ntAskOn">Turn on</button><button type="button" class="nt-off" id="ntAskNo">Not now</button></div></div></div>
+
 <style>
 .nt-card{padding:26px 22px 22px}.nt-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}.nt-head h3{margin:0;font-size:20px;color:var(--ink)}
 .ntp-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#152a7a,#0B1440);color:#E3B62F;flex:none}.ntp-ic svg{width:22px;height:22px}
@@ -10930,8 +10930,6 @@ tick();setInterval(tick,5000);})();
 .nt-prefs input:checked+i{background:#D4AF37}.nt-prefs input:checked+i::after{transform:translateX(18px)}.nt-prefs input:focus-visible+i{outline:2px solid #152a7a;outline-offset:2px}
 .nt-btns{display:grid;gap:10px;margin-top:16px}.nt-btns .btn{width:100%;min-height:46px}
 .nt-off{background:none;border:0;font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;padding:10px;text-decoration:underline;text-underline-offset:3px}
-.nt-ask{position:fixed;left:12px;right:12px;bottom:18px;margin:0 auto;max-width:440px;box-sizing:border-box;z-index:1150;display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:18px;padding:16px;box-shadow:0 22px 50px -16px rgba(8,14,40,.45);border:1px solid rgba(212,175,55,.35);animation:cwIn .25s ease both}
-.nt-ask[hidden]{display:none}.nt-ask b{display:block;font-size:15px;color:var(--ink)}.nt-ask p{margin:4px 0 10px;font-size:13px;color:var(--muted);line-height:1.45}.nt-ask-b{display:flex;gap:6px;align-items:center}.nt-ask-b .btn{min-height:38px;padding:0 18px}
 </style>
 <script>
 (function(){ var F=window.FTM=window.FTM||{}, $=function(i){ return document.getElementById(i); }, tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
@@ -10970,17 +10968,24 @@ tick();setInterval(tick,5000);})();
   $('ntTest').addEventListener('click',function(){ var b=this; b.disabled=true; api({action:'test'}).then(function(j){ state(j&&j.devices?'Test sent. It arrives in a few seconds.':'Could not reach this device. Turn notifications off and on again.', j&&j.devices?'on':'bad'); }).catch(function(){ state('Could not reach this device. Turn notifications off and on again.','bad'); }).then(function(){ b.disabled=false; }); });
   document.querySelectorAll('#ntPrefs input').forEach(function(c){ c.addEventListener('change',function(){ var p={}; p[c.dataset.k]=c.checked; api({action:'prefs',prefs:p}).catch(function(){}); }); });
   // one-time invitation after login; keeps an existing subscription in sync
-  function invite(){ var app=$('appView'); if(!F.session||!app||app.hidden) return;
-    if(ok && Notification.permission==='granted'){ current().then(function(s){ if(s) subscribe().catch(function(){}); }); return; }
-    var seen=null; try{ seen=localStorage.getItem('ftm_push_ask'); }catch(e){} if(seen) return;
-    if(!(ok&&Notification.permission==='default') && !(ios&&!standalone)) return; $('ntAsk').hidden=false; }
-  $('ntAskOn').addEventListener('click',function(){ $('ntAsk').hidden=true; try{ localStorage.setItem('ftm_push_ask',String(Date.now())); }catch(e){} if(ios&&!standalone){ open(); return; } enable().then(function(){ open(); }).catch(function(){ open(); }); });
-  $('ntAskNo').addEventListener('click',function(){ $('ntAsk').hidden=true; try{ localStorage.setItem('ftm_push_ask',String(Date.now())); }catch(e){} });
+  // on by default: no FTM card; the phone's own one-time "Allow" prompt on the member's first tap after login,
+  // then every notification type is on. Granted already -> subscribe silently. Declined -> asked again at most twice, a day apart.
+  var armed=false;
+  function invite(){ var app=$('appView'); if(!F.session||!app||app.hidden||!ok) return;
+    if(Notification.permission==='granted'){ subscribe().catch(function(){}); return; }
+    if(Notification.permission!=='default' || (ios&&!standalone) || armed) return;
+    var n=0, t=0; try{ n=+localStorage.getItem('ftm_push_tries')||0; t=+localStorage.getItem('ftm_push_ask')||0; }catch(e){}
+    if(n>=3 || (t && Date.now()-t<864e5)) return;
+    armed=true;
+    var ask=function(e){ if(e && e.target && e.target.closest && e.target.closest('input,textarea,select,.pk-sheet,.auth-overlay')) return; document.removeEventListener('pointerup',ask,true); document.removeEventListener('keyup',ask,true); armed=false;
+      if(!F.session||Notification.permission!=='default') return; try{ localStorage.setItem('ftm_push_tries',String(n+1)); localStorage.setItem('ftm_push_ask',String(Date.now())); }catch(x){}
+      Notification.requestPermission().then(function(pm){ if(pm==='granted') subscribe().catch(function(){}); }).catch(function(){}); };
+    document.addEventListener('pointerup',ask,true); document.addEventListener('keyup',ask,true); }
   // notification taps open the right page
   function route(q){ var v=q.get('open'); if(!v) return; var go=function(){ if(F.showView) F.showView(v==='perf'?'perf':(v==='board'?'board':(v==='community'?'community':'metrics'))); var c=q.get('chat'); if(c){ var n=0, t=setInterval(function(){ var it=document.querySelector('.chat-item[data-t="'+c.replace(/[^\w-]/g,'')+'"]'); if(it){ clearInterval(t); it.click(); } else if(++n>40) clearInterval(t); },250); } };
     var w=0, t2=setInterval(function(){ var app=$('appView'); if(app&&!app.hidden&&F.showView){ clearInterval(t2); setTimeout(go,300); } else if(++w>80) clearInterval(t2); },250); }
   try{ var q0=new URLSearchParams(location.search); if(q0.get('open')){ route(q0); if(history.replaceState) history.replaceState(null,'',location.pathname); } }catch(e){}
-  var app0=$('appView'); if(app0) new MutationObserver(function(){ if(!app0.hidden) setTimeout(invite,2500); else $('ntAsk').hidden=true; }).observe(app0,{attributes:true,attributeFilter:['hidden']});
+  var app0=$('appView'); if(app0) new MutationObserver(function(){ if(!app0.hidden) setTimeout(invite,1500); }).observe(app0,{attributes:true,attributeFilter:['hidden']});
   F.pushSync=invite;
 })();
 </script>
