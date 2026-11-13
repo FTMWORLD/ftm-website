@@ -63,9 +63,9 @@ module.exports = async function handler(req, res) {
     }),
     check('Emails', async () => {
       const mail = require('../_lib/mail');
-      if (mail.smtpOn()) return await mail.verify();
-      if (!env.BREVO_API_KEY) throw new Error('No email provider: set SMTP_USER and SMTP_PASS (Google Workspace) in Vercel');
-      return 'Brevo suspended sending for FTM on 12 Nov 2026: waiting for Google Workspace (SMTP_USER / SMTP_PASS in Vercel)';
+      if (mail.resendOn() || mail.smtpOn()) return await mail.verify();
+      if (!env.BREVO_API_KEY) throw new Error('No email provider: set RESEND_API_KEY (and SMTP_USER/SMTP_PASS as backup) in Vercel');
+      return 'Brevo suspended sending for FTM on 12 Nov 2026: set RESEND_API_KEY and the Gmail backup (SMTP_USER / SMTP_PASS) in Vercel';
     }),
     check('Ask here chat (Anthropic)', async () => {
       if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY missing in Vercel');
@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
   const down = results.filter(r => !r.ok);
   const body = { ok: down.length === 0, checked_at: new Date().toISOString(), services: results, alert_sent: false };
 
-  if (down.length && req.query && req.query.alert === '1' && (env.BREVO_API_KEY || (env.SMTP_USER && env.SMTP_PASS))) {
+  if (down.length && req.query && req.query.alert === '1' && (env.RESEND_API_KEY || env.BREVO_API_KEY || (env.SMTP_USER && env.SMTP_PASS))) {
     const rows = down.map(d => '<tr><td style="padding:6px 0;color:#b3202b;font-weight:bold;">' + d.name + '</td></tr><tr><td style="padding:0 0 12px;color:#444;">' + (d.detail || 'Not answering') + '</td></tr>').join('');
     const html = '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:32px 20px;">'
       + '<p style="font-size:22px;font-weight:bold;color:#0b1640;margin:0 0 12px;">FTM watchdog: ' + down.length + ' problem' + (down.length > 1 ? 's' : '') + ' found</p>'

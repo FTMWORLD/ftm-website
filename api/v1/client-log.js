@@ -8,7 +8,7 @@ const ALERT_TO = 'ftmwebnation@gmail.com';
 
 async function alertStuck(acct, why, mins) {
   const env = process.env;
-  if (!env.BREVO_API_KEY && !(env.SMTP_USER && env.SMTP_PASS)) return false;
+  if (!env.RESEND_API_KEY && !env.BREVO_API_KEY && !(env.SMTP_USER && env.SMTP_PASS)) return false;
   const now = Date.now(), last = mailed.get(acct) || 0;
   if (now - last < 6 * 3600e3) return false;
   const day = new Date().toISOString().slice(0, 10);
