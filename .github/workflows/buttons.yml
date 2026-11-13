@@ -35,6 +35,7 @@ jobs:
           node .github/tests/renew.js http://localhost:8765
           node .github/tests/charts-hover.js http://localhost:8765
           node .github/tests/chart-controls.js http://localhost:8765
+          node .github/tests/phone-tabs.js http://localhost:8765
           node .github/tests/live-recovery.js http://localhost:8765
           node .github/tests/figures-fit.js http://localhost:8765
           node .github/tests/connect-wait.js http://localhost:8765

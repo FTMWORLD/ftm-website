@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- On a phone the tab bar of the client area did not show the open tab (for example Calendar or Leaderboard off-screen) and a gold bar appeared next to another tab: the open tab now always scrolls into view with a gold line under it.
 - No 'create your password', login code or reset email arrived: if FTM's email provider is unavailable, the same secure link is now sent automatically through a backup mailer (it may look plainer and can take a few minutes; check spam). Logging in with password or Face ID always works without email.
 - After connecting, the page stayed on the setup steps: now, the moment FTM confirms the account, an 'Auto Trading connected' celebration appears once and then opens the Dashboard. If a step shows a red '!', the exact reason is written under it.
 - Deriv account refused with 'Invalid account': enter the exact MT5 server name shown next to the MT5 account in Deriv's Trader's Hub, and the MT5 trading password (not the Deriv website password; it can be reset in Deriv). FTM checks again within about a minute. While FTM checks a new account, the page shows how long and which attempt (engine fix 12 Nov: checks reach the broker in 5-16 s).

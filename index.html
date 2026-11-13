@@ -465,6 +465,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     .app-main{padding:24px 16px 64px}
     .app-crumb,.app-title{padding-inline:16px}
     .app-nav-item{white-space:nowrap;width:auto}
+    .app-nav-item.is-on::before{left:14px;right:14px;top:auto;bottom:3px;transform:none;width:auto;height:2.5px;border-radius:2px}
   }
 
   .cal-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -7969,6 +7970,7 @@ body.op-lock{overflow:hidden}
         draw(name);
       }
       document.querySelectorAll('.app-nav-item').forEach(function(b){ b.classList.toggle('is-on', b.dataset.view===name); });
+      if(F.navIntoView) F.navIntoView();
       if(name==='accounts')renderAccounts();
       var app=document.getElementById('appView'); if(app)app.scrollTop=0;
     }
@@ -7978,6 +7980,10 @@ body.op-lock{overflow:hidden}
 
     setTimeout(function(){ show('metrics'); },0);
     F.showView=function(name){ show(name); };
+    F.navIntoView=function(smooth){ document.querySelectorAll('.app-nav').forEach(function(nav){ if(nav.scrollWidth<=nav.clientWidth+1) return; var on=nav.querySelector('.app-nav-item.is-on'); if(!on||!on.offsetParent) return;
+      var nr=nav.getBoundingClientRect(), r=on.getBoundingClientRect(), pad=24; if(r.left>=nr.left+pad && r.right<=nr.right-pad) return;
+      var target=nav.scrollLeft+(r.left-nr.left)-(nav.clientWidth-r.width)/2; try{ nav.scrollTo({left:Math.max(0,target),behavior:smooth===false?'auto':'smooth'}); }catch(e){ nav.scrollLeft=Math.max(0,target); } }); };
+    window.addEventListener('resize',function(){ if(F.navIntoView) F.navIntoView(false); });
 
     var stacked=true;
     var origShow=show;
@@ -7994,6 +8000,7 @@ body.op-lock{overflow:hidden}
         if(v.getBoundingClientRect().top<=threshold) current=vname;
       });
       document.querySelectorAll('.app-nav-item').forEach(function(b){ b.classList.toggle('is-on', b.dataset.view===current); });
+      if(F.navIntoView) setTimeout(function(){ F.navIntoView(); },0);
     }
     if(appEl){
       appEl.addEventListener('scroll',function(){
@@ -9330,7 +9337,7 @@ body.op-lock{overflow:hidden}
     var F=window.FTM;
     if(F&&F.openArea){
       var orig=F.openArea;
-      F.openArea=function(p){ orig(p); sync(); };
+      F.openArea=function(p){ orig(p); sync(); setTimeout(function(){ if(F.navIntoView) F.navIntoView(false); },60); };
     }
   })();
 
