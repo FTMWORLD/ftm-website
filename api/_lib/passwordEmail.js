@@ -4,8 +4,8 @@
    fresh   — a new link when the first one expired (paid or free)
    login   — 6-digit login code plus a one-tap login button
    reset   — forgot password: choose a new password
-   Supabase only makes the secure one-time links and codes (generateLink sends nothing itself); Brevo sends
-   our own branded email. */
+   Supabase only makes the secure one-time links and codes (generateLink sends nothing itself); our own branded
+   email goes out through api/_lib/mail.js (Google Workspace SMTP when configured, otherwise Brevo). */
 
 const SITE = () => (process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
 
@@ -68,22 +68,15 @@ function html(kind, o) {
     + P('This button works once. If it has expired, just tap it anyway: FTM sends you a fresh link straight away.', true) + SAFE);
 }
 
+const { sendMail } = require('./mail');
 async function send(email, subject, htmlContent) {
-  const key = process.env.BREVO_API_KEY;
-  if (!key) throw new Error('BREVO_API_KEY missing');
-  const r = await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM' }, replyTo: { email: 'ftmwebnation@gmail.com', name: 'FTM support' }, to: [{ email }], subject, htmlContent }),
-    signal: AbortSignal.timeout(8000)
-  });
-  if (!r.ok) throw new Error('Brevo ' + r.status + ' ' + (await r.text()).slice(0, 200));
+  return sendMail({ to: email, subject, html: htmlContent, fromName: 'FTM' });
 }
 
 // When Brevo refuses to send (for example while Brevo reviews the account), the same secure link is sent
 // through Supabase's own mailer instead, so nobody is left without their email. Logged as email_fallback.
 async function sendOrFallback(admin, email, subject, htmlContent, fallback) {
-  try { await send(email, subject, htmlContent); return 'brevo'; }
+  try { return (await send(email, subject, htmlContent)) || 'brevo'; }
   catch (e) {
     console.error('email_fallback', subject.slice(0, 40), e.message.slice(0, 160));
     const r = await fallback();

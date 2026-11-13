@@ -8,7 +8,7 @@ const ALERT_TO = 'ftmwebnation@gmail.com';
 
 async function alertStuck(acct, why, mins) {
   const env = process.env;
-  if (!env.BREVO_API_KEY) return false;
+  if (!env.BREVO_API_KEY && !(env.SMTP_USER && env.SMTP_PASS)) return false;
   const now = Date.now(), last = mailed.get(acct) || 0;
   if (now - last < 6 * 3600e3) return false;
   const day = new Date().toISOString().slice(0, 10);
@@ -24,13 +24,8 @@ async function alertStuck(acct, why, mins) {
     + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="40" height="40" alt="" style="display:block;border-radius:10px;"></td><td style="color:#fff;font-size:26px;font-weight:bold;">FTM</td></tr></table>'
     + '<p style="margin:14px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
   try {
-    const r = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: { 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
-      body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM watchdog' }, to: [{ email: ALERT_TO }],
-        subject: 'FTM: account ' + acct + ' stuck on Connecting (' + mins + ' min)', htmlContent: html })
-    });
-    return r.ok;
+    await require('../_lib/mail').sendMail({ to: ALERT_TO, fromName: 'FTM watchdog', subject: 'FTM: account ' + acct + ' stuck on Connecting (' + mins + ' min)', html });
+    return true;
   } catch (e) { console.error('connect_stuck alert failed', e.message); return false; }
 }
 

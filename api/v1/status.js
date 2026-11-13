@@ -61,16 +61,11 @@ module.exports = async function handler(req, res) {
       });
       must(r, 'Supabase database');
     }),
-    check('Emails (Brevo)', async () => {
-      if (!env.BREVO_API_KEY) throw new Error('BREVO_API_KEY missing in Vercel');
-      const r = await get('https://api.brevo.com/v3/account', { headers: { 'api-key': env.BREVO_API_KEY, accept: 'application/json' } });
-      if (r.status === 401 || r.status === 403) throw new Error('Brevo refused the API key (' + r.status + '): check the key and the authorised IPs in Brevo, Security');
-      must(r, 'Brevo');
-      const j = await r.json().catch(() => ({}));
-      const plans = (j.plan || []).filter(p => p.creditsType === 'sendLimit' || p.type);
-      const left = plans.map(p => p.credits).filter(c => typeof c === 'number');
-      if (left.length && Math.min.apply(null, left) <= 0) throw new Error('Brevo has no email credits left on the current plan');
-      return left.length ? ('credits left: ' + left.join(', ')) : null;
+    check('Emails', async () => {
+      const mail = require('../_lib/mail');
+      if (mail.smtpOn()) return await mail.verify();
+      if (!env.BREVO_API_KEY) throw new Error('No email provider: set SMTP_USER and SMTP_PASS (Google Workspace) in Vercel');
+      return 'Brevo suspended sending for FTM on 12 Nov 2026: waiting for Google Workspace (SMTP_USER / SMTP_PASS in Vercel)';
     }),
     check('Ask here chat (Anthropic)', async () => {
       if (!env.ANTHROPIC_API_KEY) throw new Error('ANTHROPIC_API_KEY missing in Vercel');
@@ -101,7 +96,7 @@ module.exports = async function handler(req, res) {
   const down = results.filter(r => !r.ok);
   const body = { ok: down.length === 0, checked_at: new Date().toISOString(), services: results, alert_sent: false };
 
-  if (down.length && req.query && req.query.alert === '1' && env.BREVO_API_KEY) {
+  if (down.length && req.query && req.query.alert === '1' && (env.BREVO_API_KEY || (env.SMTP_USER && env.SMTP_PASS))) {
     const rows = down.map(d => '<tr><td style="padding:6px 0;color:#b3202b;font-weight:bold;">' + d.name + '</td></tr><tr><td style="padding:0 0 12px;color:#444;">' + (d.detail || 'Not answering') + '</td></tr>').join('');
     const html = '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:32px 20px;">'
       + '<p style="font-size:22px;font-weight:bold;color:#0b1640;margin:0 0 12px;">FTM watchdog: ' + down.length + ' problem' + (down.length > 1 ? 's' : '') + ' found</p>'
@@ -111,17 +106,8 @@ module.exports = async function handler(req, res) {
       + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="40" height="40" alt="" style="display:block;border-radius:10px;"></td><td style="color:#fff;font-size:26px;font-weight:bold;">FTM</td></tr></table>'
       + '<p style="margin:14px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
     try {
-      const r = await get('https://api.brevo.com/v3/smtp/email', {
-        method: 'POST',
-        headers: { 'api-key': env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
-        body: JSON.stringify({
-          sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM watchdog' },
-          to: [{ email: ALERT_TO }],
-          subject: 'FTM watchdog: ' + down.map(d => d.name).join(', ') + ' down',
-          htmlContent: html
-        })
-      });
-      body.alert_sent = r.ok;
+      await require('../_lib/mail').sendMail({ to: ALERT_TO, fromName: 'FTM watchdog', subject: 'FTM watchdog: ' + down.map(d => d.name).join(', ') + ' down', html });
+      body.alert_sent = true;
     } catch (e) {
       console.error('Watchdog alert failed', e.message);
     }

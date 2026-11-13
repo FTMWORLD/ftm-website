@@ -284,7 +284,6 @@ module.exports = async function handler(req, res) {
    --------------------------------------------------------------------- */
 
 async function alertFtm(title, rows) {
-  const key = process.env.BREVO_API_KEY; if (!key) return;
   const esc = v => String(v).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   const html = '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;"><tr><td style="padding:28px 20px;">'
     + '<p style="font-size:20px;font-weight:bold;color:#0b1640;margin:0 0 12px;">' + esc(title) + '</p><table cellpadding="4">'
@@ -292,8 +291,7 @@ async function alertFtm(title, rows) {
     + '</table></td></tr><tr><td align="center" bgcolor="#0b1640" style="background-color:#0b1640;padding:24px 20px;"><p style="margin:0 0 12px;color:#D4AF37;font-size:18px;font-weight:bold;">Invest today, secure tomorrow.</p>'
     + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="36" height="36" alt="" style="display:block;border-radius:9px;"></td><td style="color:#fff;font-size:24px;font-weight:bold;">FTM</td></tr></table>'
     + '<p style="margin:12px 0 0;color:#9aa3c7;font-size:11px;">Follow The Market Ltd. · Internal monitoring email.</p></td></tr></table>';
-  await fetch('https://api.brevo.com/v3/smtp/email', { method: 'POST', headers: { 'api-key': key, 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: 'FTM payments' }, to: [{ email: 'ftmwebnation@gmail.com' }], subject: 'FTM: ' + title, htmlContent: html }) });
+  await require('../_lib/mail').sendMail({ to: 'ftmwebnation@gmail.com', fromName: 'FTM payments', subject: 'FTM: ' + title, html }).catch(e => console.error('alertFtm failed', e.message));
 }
 
 // Earlier subscription checkouts (Annual) for this email that are still running, from Stripe (read-only key).

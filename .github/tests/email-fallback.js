@@ -24,6 +24,19 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   const codes=[]; for(let i=0;i<10;i++) codes.push(await run({email:'p'+i+'@x.com',mode:'signup'},'2.2.2.2'));
   ok(codes.slice(0,8).every(c=>c===200) && codes[8]===429 && codes[9]===429 && sent===8, 'one sender can trigger at most 8 account emails an hour ('+codes.join(',')+', sent '+sent+')');
   ok(await run({email:'other@x.com',mode:'signup'},'3.3.3.3')===200, 'other people are not affected by one sender\'s limit');
+  // Google Workspace (SMTP) is used as soon as SMTP_USER and SMTP_PASS are set; Brevo is then not called at all
+  const sentSmtp=[]; let smtpFail=false; const orig2=Module._load;
+  Module._load=function(req,...a){ if(req==='nodemailer') return {createTransport:(cfg)=>({ cfg, sendMail:async(m)=>{ if(smtpFail) throw new Error('535 auth failed'); sentSmtp.push(Object.assign({cfg},m)); return {messageId:'x'}; }, verify:async()=>true })}; return orig2.call(this,req,...a); };
+  process.env.SMTP_USER='support@ftmwealthnation.com'; process.env.SMTP_PASS='abcd efgh ijkl mnop'; delete process.env.SMTP_FROM;
+  const M=require(path.join(__dirname,'../../api/_lib/mail.js')); M._reset(); let brevoCalls=0; global.fetch=async()=>{ brevoCalls++; return {ok:true,status:201,text:async()=>'{}'}; };
+  calls.length=0; const r3=await E.sendPasswordEmail(admin,'new@x.com',{free:true});
+  const m=sentSmtp[0]||{};
+  ok(r3.via==='google', 'with Google set up, the password email is sent through Google ('+r3.via+')');
+  ok(m.to&&m.to[0]==='new@x.com' && m.from&&m.from.address==='no-reply@ftmwealthnation.com' && m.replyTo==='support@ftmwealthnation.com' && brevoCalls===0, 'sent from no-reply@ftmwealthnation.com, replies go to support@, Brevo not used');
+  ok(m.cfg&&m.cfg.host==='smtp.gmail.com'&&m.cfg.port===587&&m.cfg.auth.pass==='abcdefghijklmnop', 'Google SMTP settings: smtp.gmail.com:587, app password spaces removed');
+  smtpFail=true; calls.length=0; await E.sendLoginEmail(admin,'l2@x.com',{}); ok(calls.some(c=>c[0]==='otp'), 'if Google refuses, the login email still goes out through Supabase');
+  ok(await M.verify()!==null, 'the hourly watchdog can check the Google login');
+  Module._load=orig2; delete process.env.SMTP_USER; delete process.env.SMTP_PASS;
   Module._load=orig;
   console.log(fails?'FAILED: '+fails:'EMAIL FALLBACK OK'); process.exit(fails?1:0);
 })().catch(e=>{ console.error(e); process.exit(1); });

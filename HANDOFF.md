@@ -663,3 +663,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Abuse protection on /api/v1/auth-email: hidden honeypot field (website), max 8 emails per sender IP per hour, max 300 per hour per instance.
 - Likely triggers to check in Brevo (Transactional logs): bursts of welcome emails to unknown addresses, bounces, and marketing campaigns to the sign-up list (every sign-up is added with consent via the Terms).
 - Test: .github/tests/email-fallback.js.
+
+## 13 Nov 2026: Brevo ban is final -> Google Workspace
+- Brevo refuses automated-trading businesses, even transactional email (final). Owner chose Google Workspace (support@ftmwealthnation.com mailbox, alias no-reply@). Setup guide sent to the owner (DNS at Cloudflare: verification TXT, MX smtp.google.com, SPF include:_spf.google.com, DKIM google._domainkey, DMARC rua to support@).
+- Code: api/_lib/mail.js sends every email (Google SMTP smtp.gmail.com:587 when SMTP_USER + SMTP_PASS are set, from SMTP_FROM or no-reply@ftmwealthnation.com, reply-to SUPPORT_EMAIL or SMTP_USER; else Brevo). Used by passwordEmail.js, client-log, status watchdog, Stripe webhook alerts. nodemailer 6.10.1 in package.json. Supabase fallback stays.
+- Watchdog "Emails" check logs in to Google every hour once configured.
+- Keep account emails factual (no performance figures or promotion) and do not send newsletters from this mailbox.
