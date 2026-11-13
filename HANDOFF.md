@@ -671,3 +671,10 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Keep account emails factual (no performance figures or promotion) and do not send newsletters from this mailbox.
 - 13 Nov (later): Google Workspace verification stalled; owner needs email by 14 Nov. mail.js now tries Resend (RESEND_API_KEY, MAIL_FROM) -> SMTP mailbox (SMTP_USER/SMTP_PASS; the owner's Gmail ftmwebnation@gmail.com with an app password as instant backup; from = SMTP_FROM or the mailbox) -> Brevo -> (account emails) Supabase. Supabase Auth SMTP: smtp.resend.com, port 465, user "resend", password = Resend API key.
 - 13 Nov: owner added SMTP_USER / SMTP_PASS (Gmail backup) in Vercel; deployment triggered by this commit so the new variables are used (manual Redeploy asked for an Apple-relay email code).
+
+## 13 Nov 2026: phone notifications + new-device security email
+- Web Push: manifest.json, sw.js, icon-192/512.png, notif-badge.png; client module at the end of index.html (menu "Phone notifications" .um-nt, sheet #ntSheet, one-time card #ntAsk, iPhone needs Add to Home Screen, deep links ?open=community|perf|board&chat=<mid>).
+- Server: api/_lib/push.js (VAPID derived from SUPABASE_SERVICE_ROLE_KEY, overridable by VAPID_PUBLIC_KEY/VAPID_PRIVATE_KEY; subscriptions + prefs in community bucket push/<mid>.json; texts translated from i18n/<lang>.json), api/v1/push.js (subscribe/unsubscribe/status/prefs/test; engine events trade_profit, leaderboard_up, account_connected with header x-ftm-engine-key = ENGINE_PUSH_SECRET). Community hooks: message, follow, like, comment.
+- Login alerts: api/v1/login-alert.js; known devices in app_metadata.ftm_devices; first device silent; new device -> "New sign-in" email (max 3/h) with "This wasn't me" (signed 7-day link) -> app_metadata.ftm_revoked_at + reset email; website signs out sessions older than that (FTM.loginCheck on every enter and every 10 min).
+- Dependencies: web-push 3.6.7. Test: .github/tests/notifications.js.
+- Needs: ENGINE_PUSH_SECRET in Vercel + the same value given to FTM ENGINE (note to engine in chat 13 Nov).

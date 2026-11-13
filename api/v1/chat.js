@@ -22,6 +22,8 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Phone notifications: open the menu (top right) > Phone notifications > Turn on. Choose what to receive: messages, new followers, likes and comments, trades closed in profit, leaderboard moves. On iPhone, first tap Share > Add to Home Screen, open FTM from the Home Screen, then turn them on. If they stop, turn them off and on again on that device.
+- 'New sign-in to your FTM account' email: FTM emails you when your account is opened on a new device. If it was you, do nothing. If not, tap 'This wasn't me': every device is signed out and you get a link to choose a new password.
 - On a phone the tab bar of the client area did not show the open tab (for example Calendar or Leaderboard off-screen) and a gold bar appeared next to another tab: the open tab now always scrolls into view with a gold line under it.
 - No 'create your password', login code or reset email arrived: if FTM's email provider is unavailable, the same secure link is now sent automatically through a backup mailer (it may look plainer and can take a few minutes; check spam). Logging in with password or Face ID always works without email.
 - After connecting, the page stayed on the setup steps: now, the moment FTM confirms the account, an 'Auto Trading connected' celebration appears once and then opens the Dashboard. If a step shows a red '!', the exact reason is written under it.

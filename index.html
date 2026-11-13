@@ -12,6 +12,11 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FTM">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Follow The Market">
@@ -3640,7 +3645,7 @@ body.op-lock{overflow:hidden}
 <div class="app" id="appView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="appHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em><span class="um-cid" id="appCidW" hidden><small>Client ID</small> <b id="appCid"></b><button type="button" class="cid-copy" aria-label="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></span></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i um-pk" hidden>Face ID / fingerprint login</button><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchA" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctA" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctA" hidden><div class="um-who"><small>Signed in as</small><b id="appEmail">sam@example.com</b><em class="um-mail"></em><span class="um-cid" id="appCidW" hidden><small>Client ID</small> <b id="appCid"></b><button type="button" class="cid-copy" aria-label="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></span></div><label class="um-view" id="umViewW" hidden><span>Show statistics of</span><select id="umView"></select></label><button type="button" class="um-i um-act">Activate FTM MACHINE</button><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i um-pk" hidden>Face ID / fingerprint login</button><button type="button" class="um-i um-nt">Phone notifications</button><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="appLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
@@ -4397,7 +4402,7 @@ body.op-lock{overflow:hidden}
 <div class="app" id="invView" hidden>
   <div class="app-bar">
     <a class="logo app-home" href="#top" id="invHome" aria-label="Go to the FTM homepage"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
-    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctB" hidden><div class="um-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i um-pk" hidden>Face ID / fingerprint login</button><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="invLogout">Log out</button></div></div></div>
+    <div class="app-who"><div class="prod-switch" id="prodSwitchB" hidden><button type="button" data-p="auto">Auto Trading</button><button type="button" data-p="invest">Investment</button></div><div class="um"><button type="button" class="um-btn" aria-haspopup="true" aria-expanded="false" aria-controls="acctB" aria-label="Account menu"><span></span><span></span></button><div class="um-list" id="acctB" hidden><div class="um-who"><small>Signed in as</small><b id="invEmail">&mdash;</b><em class="um-mail"></em></div><a href="/performance.html" class="um-i">Trust engine</a><a href="#pricing" class="um-i um-home">Subscription plans</a><button type="button" class="um-i um-ai">Ask here</button><button type="button" class="um-i um-live">Chat with FTM support</button><a href="mailto:ftmwebnation@gmail.com" class="um-i">Email support</a><button type="button" class="um-i um-pk" hidden>Face ID / fingerprint login</button><button type="button" class="um-i um-nt">Phone notifications</button><button type="button" class="um-i js-pw">Change password</button><button type="button" class="um-i um-out" id="invLogout">Log out</button></div></div></div>
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Investor area">
@@ -5451,6 +5456,7 @@ body.op-lock{overflow:hidden}
       setTimeout(function(){ t.style.transition='opacity .4s'; t.style.opacity='0'; setTimeout(function(){t.remove();},450); },5200);
     }
     function enter(mail,products,first,name){
+      setTimeout(function(){ try{ if(window.FTM&&FTM.loginCheck) FTM.loginCheck(); }catch(e){} },1200);
 
       close(); passEl.value='';
       window.FTM=window.FTM||{};
@@ -10900,6 +10906,94 @@ tick();setInterval(tick,5000);})();
   document.getElementById('celGo').addEventListener('click',close);
   box.addEventListener('click',function(e){ if(e.target===box) close(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !box.hidden) close(); });
+})();
+</script>
+<div class="pk-sheet nt-sheet" id="ntSheet" hidden><div class="pk-card nt-card" role="dialog" aria-modal="true" aria-labelledby="ntT"><button type="button" class="cw-x pk-x" id="ntX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+<div class="nt-head"><span class="ntp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><h3 id="ntT">Phone notifications</h3></div>
+<p class="nt-state" id="ntState"></p>
+<div class="nt-prefs" id="ntPrefs"><p class="nt-sub">Get a notification on this device for:</p>
+<label><span>Messages</span><input type="checkbox" data-k="messages" checked><i></i></label>
+<label><span>New followers</span><input type="checkbox" data-k="follows" checked><i></i></label>
+<label><span>Likes and comments</span><input type="checkbox" data-k="social" checked><i></i></label>
+<label><span>Trades closed in profit</span><input type="checkbox" data-k="trades" checked><i></i></label>
+<label><span>Leaderboard moves</span><input type="checkbox" data-k="leaderboard" checked><i></i></label></div>
+<div class="nt-btns"><button type="button" class="btn btn-gold" id="ntOn">Turn on notifications</button><button type="button" class="btn btn-outline" id="ntTest" hidden>Send a test notification</button><button type="button" class="nt-off" id="ntOff" hidden>Turn off on this device</button></div></div></div>
+<div class="nt-ask" id="ntAsk" hidden role="dialog" aria-labelledby="ntAskT"><span class="ntp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span><div><b id="ntAskT">Get FTM notifications on your phone</b><p>Messages, new followers, trades closed in profit and leaderboard moves.</p><div class="nt-ask-b"><button type="button" class="btn btn-gold" id="ntAskOn">Turn on</button><button type="button" class="nt-off" id="ntAskNo">Not now</button></div></div></div>
+<style>
+.nt-card{padding:26px 22px 22px}.nt-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}.nt-head h3{margin:0;font-size:20px;color:var(--ink)}
+.ntp-ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(145deg,#152a7a,#0B1440);color:#E3B62F;flex:none}.ntp-ic svg{width:22px;height:22px}
+.nt-state{margin:8px 0 14px;font-size:14px;line-height:1.5;color:var(--muted)}.nt-state.on{color:#15803d;font-weight:700}.nt-state.bad{color:#b4232f}
+.nt-sub{margin:0 0 6px;font-size:13px;font-weight:700;color:var(--ink)}
+.nt-prefs label{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:14.5px;color:var(--ink);cursor:pointer}
+.nt-prefs input{position:absolute;opacity:0;pointer-events:none}.nt-prefs i{position:relative;width:42px;height:24px;border-radius:99px;background:#d6daea;flex:none;transition:background .2s}
+.nt-prefs i::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.nt-prefs input:checked+i{background:#D4AF37}.nt-prefs input:checked+i::after{transform:translateX(18px)}.nt-prefs input:focus-visible+i{outline:2px solid #152a7a;outline-offset:2px}
+.nt-btns{display:grid;gap:10px;margin-top:16px}.nt-btns .btn{width:100%;min-height:46px}
+.nt-off{background:none;border:0;font:inherit;font-size:13.5px;font-weight:700;color:var(--muted);cursor:pointer;padding:10px;text-decoration:underline;text-underline-offset:3px}
+.nt-ask{position:fixed;left:12px;right:12px;bottom:18px;margin:0 auto;max-width:440px;box-sizing:border-box;z-index:1150;display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:18px;padding:16px;box-shadow:0 22px 50px -16px rgba(8,14,40,.45);border:1px solid rgba(212,175,55,.35);animation:cwIn .25s ease both}
+.nt-ask[hidden]{display:none}.nt-ask b{display:block;font-size:15px;color:var(--ink)}.nt-ask p{margin:4px 0 10px;font-size:13px;color:var(--muted);line-height:1.45}.nt-ask-b{display:flex;gap:6px;align-items:center}.nt-ask-b .btn{min-height:38px;padding:0 18px}
+</style>
+<script>
+(function(){ var F=window.FTM=window.FTM||{}, $=function(i){ return document.getElementById(i); }, tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
+  var ok=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
+  var ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1), standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  var reg=null; if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js').then(function(r){ reg=r; }).catch(function(){});
+    navigator.serviceWorker.addEventListener('message',function(e){ if(e.data&&e.data.ftmOpen){ try{ var u=new URL(e.data.ftmOpen); route(u.searchParams); }catch(x){} } }); }
+  function tok(){ return (F.auth&&F.auth.getAccessToken)?F.auth.getAccessToken():Promise.resolve(null); }
+  function api(body){ return tok().then(function(t){ if(!t) throw new Error('NO_SESSION'); return fetch('/api/v1/push',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify(body)}).then(function(r){ return r.json(); }); }); }
+  function b2u(s){ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; var r=atob(s), u=new Uint8Array(r.length); for(var i=0;i<r.length;i++) u[i]=r.charCodeAt(i); return u; }
+  function swReady(){ return reg?Promise.resolve(reg):navigator.serviceWorker.register('/sw.js').then(function(r){ reg=r; return navigator.serviceWorker.ready; }); }
+  function current(){ return ok?swReady().then(function(r){ return r.pushManager.getSubscription(); }).catch(function(){ return null; }):Promise.resolve(null); }
+  function keyNow(){ return fetch('/api/v1/push?key=1').then(function(r){ return r.json(); }).then(function(j){ return j.key; }); }
+  function lang(){ return (document.documentElement.lang||'en').toLowerCase(); }
+  function subscribe(){ return keyNow().then(function(key){ return swReady().then(function(r){ return r.pushManager.getSubscription().then(function(old){
+      var same=old&&old.options&&old.options.applicationServerKey&&btoa(String.fromCharCode.apply(null,new Uint8Array(old.options.applicationServerKey)))===btoa(String.fromCharCode.apply(null,b2u(key)));
+      return (old&&!same?old.unsubscribe():Promise.resolve()).then(function(){ return (old&&same)?old:r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b2u(key)}); }); }); }); })
+    .then(function(sub){ try{ localStorage.setItem('ftm_push','1'); }catch(e){} return api({action:'subscribe',sub:sub.toJSON(),lang:lang()}); }); }
+  function enable(){ if(!ok) return Promise.reject(new Error('UNSUPPORTED')); return Notification.requestPermission().then(function(p){ if(p!=='granted') throw new Error(p==='denied'?'DENIED':'DISMISSED'); return subscribe(); }); }
+  function disable(){ return current().then(function(s){ if(!s) return; var ep=s.endpoint; return s.unsubscribe().then(function(){ try{ localStorage.removeItem('ftm_push'); }catch(e){} return api({action:'unsubscribe',endpoint:ep}); }); }); }
+  function state(msg,cls){ var e=$('ntState'); e.textContent=tr(msg); e.className='nt-state'+(cls?' '+cls:''); }
+  function paint(){ var on=$('ntOn'), off=$('ntOff'), test=$('ntTest'), pr=$('ntPrefs');
+    if(ios && !standalone){ state('On iPhone: tap the Share button, then “Add to Home Screen”. Open FTM from your Home Screen and turn on notifications here.'); on.hidden=true; off.hidden=true; test.hidden=true; pr.hidden=true; return Promise.resolve(); }
+    if(!ok){ state('This browser cannot show notifications. Try Chrome, Edge, Firefox or Safari.','bad'); on.hidden=true; off.hidden=true; test.hidden=true; pr.hidden=true; return Promise.resolve(); }
+    if(Notification.permission==='denied'){ state('Notifications are blocked in this browser. Allow them in the browser\'s site settings, then try again.','bad'); on.hidden=true; off.hidden=true; test.hidden=true; pr.hidden=true; return Promise.resolve(); }
+    return current().then(function(s){ var isOn=!!s&&Notification.permission==='granted'; on.hidden=isOn; off.hidden=!isOn; test.hidden=!isOn; pr.hidden=false;
+      state(isOn?'Notifications are on for this device.':'Notifications are off for this device.',isOn?'on':'');
+      return api({action:'status',endpoint:s?s.endpoint:''}).then(function(j){ if(j&&j.prefs) document.querySelectorAll('#ntPrefs input').forEach(function(c){ c.checked=j.prefs[c.dataset.k]!==false; }); }).catch(function(){}); }); }
+  function open(){ $('ntSheet').hidden=false; paint(); }
+  F.pushOpen=open;
+  document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('.um-nt'); if(!b) return; var m=b.closest('.um'); if(m){ var t=m.querySelector('[aria-expanded="true"]'); if(t) t.click(); } open(); });
+  $('ntX').addEventListener('click',function(){ $('ntSheet').hidden=true; });
+  $('ntSheet').addEventListener('click',function(e){ if(e.target.id==='ntSheet') $('ntSheet').hidden=true; });
+  $('ntOn').addEventListener('click',function(){ var b=this; b.disabled=true; enable().then(paint).catch(function(e){ var c=e&&e.message; if(c==='DENIED') state('Notifications are blocked in this browser. Allow them in the browser\'s site settings, then try again.','bad'); else if(c!=='DISMISSED') state('Could not turn on notifications. Please try again.','bad'); }).then(function(){ b.disabled=false; }); });
+  $('ntOff').addEventListener('click',function(){ disable().then(paint).catch(paint); });
+  $('ntTest').addEventListener('click',function(){ var b=this; b.disabled=true; api({action:'test'}).then(function(j){ state(j&&j.devices?'Test sent. It arrives in a few seconds.':'Could not reach this device. Turn notifications off and on again.', j&&j.devices?'on':'bad'); }).catch(function(){ state('Could not reach this device. Turn notifications off and on again.','bad'); }).then(function(){ b.disabled=false; }); });
+  document.querySelectorAll('#ntPrefs input').forEach(function(c){ c.addEventListener('change',function(){ var p={}; p[c.dataset.k]=c.checked; api({action:'prefs',prefs:p}).catch(function(){}); }); });
+  // one-time invitation after login; keeps an existing subscription in sync
+  function invite(){ var app=$('appView'); if(!F.session||!app||app.hidden) return;
+    if(ok && Notification.permission==='granted'){ current().then(function(s){ if(s) subscribe().catch(function(){}); }); return; }
+    var seen=null; try{ seen=localStorage.getItem('ftm_push_ask'); }catch(e){} if(seen) return;
+    if(!(ok&&Notification.permission==='default') && !(ios&&!standalone)) return; $('ntAsk').hidden=false; }
+  $('ntAskOn').addEventListener('click',function(){ $('ntAsk').hidden=true; try{ localStorage.setItem('ftm_push_ask',String(Date.now())); }catch(e){} if(ios&&!standalone){ open(); return; } enable().then(function(){ open(); }).catch(function(){ open(); }); });
+  $('ntAskNo').addEventListener('click',function(){ $('ntAsk').hidden=true; try{ localStorage.setItem('ftm_push_ask',String(Date.now())); }catch(e){} });
+  // notification taps open the right page
+  function route(q){ var v=q.get('open'); if(!v) return; var go=function(){ if(F.showView) F.showView(v==='perf'?'perf':(v==='board'?'board':(v==='community'?'community':'metrics'))); var c=q.get('chat'); if(c){ var n=0, t=setInterval(function(){ var it=document.querySelector('.chat-item[data-t="'+c.replace(/[^\w-]/g,'')+'"]'); if(it){ clearInterval(t); it.click(); } else if(++n>40) clearInterval(t); },250); } };
+    var w=0, t2=setInterval(function(){ var app=$('appView'); if(app&&!app.hidden&&F.showView){ clearInterval(t2); setTimeout(go,300); } else if(++w>80) clearInterval(t2); },250); }
+  try{ var q0=new URLSearchParams(location.search); if(q0.get('open')){ route(q0); if(history.replaceState) history.replaceState(null,'',location.pathname); } }catch(e){}
+  var app0=$('appView'); if(app0) new MutationObserver(function(){ if(!app0.hidden) setTimeout(invite,2500); else $('ntAsk').hidden=true; }).observe(app0,{attributes:true,attributeFilter:['hidden']});
+  F.pushSync=invite;
+})();
+</script>
+<script>
+(function(){ var F=window.FTM=window.FTM||{};
+  function dev(){ var d=null; try{ d=localStorage.getItem('ftm_dev'); if(!d){ d=(crypto.randomUUID?crypto.randomUUID():(Date.now().toString(36)+Math.random().toString(36).slice(2,12))); localStorage.setItem('ftm_dev',d); } }catch(e){ d=d||('tmp-'+Date.now().toString(36)); } return d; }
+  var last=0;
+  F.loginCheck=function(){ if(!(F.session&&F.auth&&F.auth.getAccessToken)) return; if(Date.now()-last<20000) return; last=Date.now();
+    F.auth.getAccessToken().then(function(t){ if(!t) return; return fetch('/api/v1/login-alert',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+t},body:JSON.stringify({device:dev(),lang:document.documentElement.lang||'en'})}).then(function(r){ return r.json(); }).then(function(j){
+      if(j&&j.signout){ var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }; F.session=null; try{ F.auth.signOut(); }catch(e){} try{ sessionStorage.removeItem('ftm_in_app'); }catch(e){}
+        var app=document.getElementById('appView'); if(app) app.hidden=true; document.documentElement.classList.remove('app-open');
+        var l=document.querySelector('.js-login'); if(l) l.click(); setTimeout(function(){ var er=document.getElementById('authError'); if(er){ er.classList.remove('ok'); er.textContent=tr('For your security you were signed out. Log in again.'); er.hidden=false; } },300); } }); }).catch(function(){}); };
+  setInterval(function(){ if(!document.hidden) F.loginCheck(); },10*60000);
 })();
 </script>
 </body>

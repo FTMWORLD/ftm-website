@@ -19,6 +19,7 @@
    Members are addressed by an opaque id (mid), never by their login id or email. */
 
 const crypto = require('crypto');
+const Push = require('../_lib/push');
 const { createClient } = require('@supabase/supabase-js');
 
 const BUCKET = 'community';
@@ -148,6 +149,8 @@ module.exports = async function handler(req, res) {
     const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m), posts: postCount(m) }; };
     const notify = async (m, n) => { if (!m || m === me) return; const p = 'notif/' + m + '.json', nb = await S.read(p, { items: [], read: '' }); n.t = new Date().toISOString(); nb.items = nb.items.filter(z => !(z.k === n.k && z.by === n.by && z.post === n.post && n.k !== 'comment')); nb.items.push(n); if (nb.items.length > 100) nb.items = nb.items.slice(-100); await S.write(p, nb); };
     const okTarget = m => m && m !== me && idx.members[m] && idx.members[m].visible && !hidden.has(m);
+    const pushNick = () => (mine && mine.nickname) || 'A member';
+    const ping = async (m, o) => { if (!m || m === me) return; try { await within(5000, Push.send(admin, Object.assign({ mid: m }, o)), 'push'); } catch (e) { console.error('push hook', e.message); } };
 
     if (action === 'me') {
       const paid = await isPaid(admin, user.id);
@@ -203,7 +206,7 @@ module.exports = async function handler(req, res) {
       const L = (soc[k][me] || []).filter(x => x !== m); if (on) L.push(m); soc[k][me] = L;
       if (action === 'block') soc.follows[me] = (soc.follows[me] || []).filter(x => x !== m);
       await S.write('social.json', soc);
-      if (action === 'follow') await notify(m, { k: 'follow', by: me });
+      if (action === 'follow') { await notify(m, { k: 'follow', by: me }); await ping(m, { kind: 'follows', tag: 'follow-' + me, url: '/?open=community', title: 'New follower', body: '{} started following you.', args: { body: [pushNick()] } }); }
       return res.status(200).json({ ok: true });
     }
 
@@ -245,6 +248,7 @@ module.exports = async function handler(req, res) {
       th.msgs.push(nm); if (th.msgs.length > 500) th.msgs = th.msgs.slice(-500);
       await S.write(p, th);
       for (const [a, b] of [[me, m], [m, me]]) { const ib = await S.read('inbox/' + a + '.json', { threads: {} }); ib.threads[b] = Object.assign({}, ib.threads[b], { last: text.slice(0, 120), from: me, t: at }, a === me ? { read: at } : {}); await S.write('inbox/' + a + '.json', ib); }
+      await ping(m, { kind: 'messages', tag: 'msg-' + me, url: '/?open=community&chat=' + me, title: 'New message from {}', body: Array.from(text).slice(0, 140).join(''), args: { title: [pushNick()] }, urgency: 'high' });
       return res.status(200).json({ ok: true, message: outMsg(nm, me) });
     }
 
@@ -352,7 +356,7 @@ module.exports = async function handler(req, res) {
       if (!x || hidden.has(x.a)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (action === 'like') {
         x.lk = x.lk || []; const on = x.lk.indexOf(me) === -1; x.lk = x.lk.filter(m => m !== me); if (on) x.lk.push(me);
-        await S.write('posts.json', P); if (on && x.a !== me && !x.ftm) await notify(x.a, { k: 'like', by: me, post: x.id });
+        await S.write('posts.json', P); if (on && x.a !== me && !x.ftm) { await notify(x.a, { k: 'like', by: me, post: x.id }); await ping(x.a, { kind: 'social', tag: 'like-' + x.id, url: '/?open=community', title: 'New like', body: '{} liked your post.', args: { body: [pushNick()] } }); }
         return res.status(200).json({ ok: true, post: outPost(x) });
       }
       if (action === 'vote') {
@@ -378,7 +382,7 @@ module.exports = async function handler(req, res) {
         if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
         x.c = x.c || []; const c = { id: Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), a: me, x: text, t: new Date().toISOString() }; if (staff) c.ftm = true;
         x.c.push(c); if (x.c.length > 200) x.c = x.c.slice(-200);
-        await S.write('posts.json', P); if (x.a !== me && !x.ftm) await notify(x.a, { k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') });
+        await S.write('posts.json', P); if (x.a !== me && !x.ftm) { await notify(x.a, { k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') }); await ping(x.a, { kind: 'social', tag: 'cmt-' + x.id, url: '/?open=community', title: '{} commented on your post', body: Array.from(text).slice(0, 140).join(''), args: { title: [pushNick()] } }); }
         return res.status(200).json({ ok: true, post: outPost(x) });
       }
       if (action === 'delpost') {
