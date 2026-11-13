@@ -670,3 +670,4 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Watchdog "Emails" check logs in to Google every hour once configured.
 - Keep account emails factual (no performance figures or promotion) and do not send newsletters from this mailbox.
 - 13 Nov (later): Google Workspace verification stalled; owner needs email by 14 Nov. mail.js now tries Resend (RESEND_API_KEY, MAIL_FROM) -> SMTP mailbox (SMTP_USER/SMTP_PASS; the owner's Gmail ftmwebnation@gmail.com with an app password as instant backup; from = SMTP_FROM or the mailbox) -> Brevo -> (account emails) Supabase. Supabase Auth SMTP: smtp.resend.com, port 465, user "resend", password = Resend API key.
+- 13 Nov: owner added SMTP_USER / SMTP_PASS (Gmail backup) in Vercel; deployment triggered by this commit so the new variables are used (manual Redeploy asked for an Apple-relay email code).
