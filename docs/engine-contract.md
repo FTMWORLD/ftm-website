@@ -17,7 +17,7 @@ Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 - The 10:41 restart check of the morning did not run (the 10:30 test had failed; the session check did not fire).
 - Deploy gate: RESULT SAFE TO DEPLOY (22:45 Berlin).
 
-## 2026-11-13 — THE FIRST FTM TRADE OF EVERY ACCOUNT IS ITS "WELCOME TRADE" (commit 207919d; live at the next API restart)
+## 2026-11-13 — THE FIRST FTM TRADE OF EVERY ACCOUNT IS ITS "WELCOME TRADE" (commit 207919d; live 13 Nov 22:51 Berlin, API restarted with the owner's click)
 
 - WEBSITE: nothing to change. The fields are the same (welcome_trade true + label "Welcome trade"); more trades now carry them.
 - Rule (owner 13 Nov, customer 51402's first trade showed no label): per account, its dedicated FTM-WELCOME trade when it
