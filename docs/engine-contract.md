@@ -4,7 +4,20 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-13 — THE FIRST FTM TRADE OF EVERY ACCOUNT IS ITS "WELCOME TRADE" (this commit; live at the next API restart)
+## 2026-11-13 (evening) — DAILY NEW-CUSTOMER TEST 1.1.0: WAITS FOR AN OPEN MASTER TRADE (this commit)
+
+- WEBSITE: nothing to change.
+- The 10:30 run failed at "trade open at the broker": the demo login had traded with FTM on 12 Nov, so the safety guard
+  rightly gave it no welcome trade (one per broker account), and the master held no open trade to copy at 10:30. Not a
+  fault of the onboarding. scripts/e2e-new-customer.js 1.1.0 now waits (up to 6 h, checking every minute) until the
+  master holds an open trade before it adds the account; a market-closed hold (WAITING_MARKET) counts as passed with a note;
+  6 h without any master trade records "trade not tested: MASTER_FLAT" (shown in the gate line).
+- Proof run 22:39 from the scheduled task: connected 12 s, copying 71 s, trade open at the broker 79 s (copy of the
+  master's USTEC sell), closed 2.5 s, removed 38 s. Target under 2 minutes: MET.
+- The 10:41 restart check of the morning did not run (the 10:30 test had failed; the session check did not fire).
+- Deploy gate: RESULT SAFE TO DEPLOY (22:45 Berlin).
+
+## 2026-11-13 — THE FIRST FTM TRADE OF EVERY ACCOUNT IS ITS "WELCOME TRADE" (commit 207919d; live at the next API restart)
 
 - WEBSITE: nothing to change. The fields are the same (welcome_trade true + label "Welcome trade"); more trades now carry them.
 - Rule (owner 13 Nov, customer 51402's first trade showed no label): per account, its dedicated FTM-WELCOME trade when it
