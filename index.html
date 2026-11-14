@@ -7046,7 +7046,8 @@ body.op-lock{overflow:hidden}
     function money(n,dp,currency){
       return F.moneyIn(n,dp,currency===undefined ? F.data.account.currency : currency);
     }
-    function signed(n,dp){ return (n>=0?'+':'')+money(n,dp); }
+    F.fmtSigned=function(n,dp){ return signed(n,dp); };
+    function signed(n,dp){ n=+n; dp=dp||0; var r=+n.toFixed(dp); if(r===0 && n!==0 && dp<2){ dp=2; r=+n.toFixed(2); } if(r===0) return money(0,dp); return (r>0?'+':'')+money(r,dp); }
     function balAt(t){ var cv=F.metrics().curve||[], b=null; for(var i=0;i<cv.length;i++){ if(cv[i].t<t) b=cv[i].v; else break; } return b===null?(cv.length?cv[0].v:0):b; }
     function el(id){ return document.getElementById(id); }
     function key(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -7112,7 +7113,7 @@ body.op-lock{overflow:hidden}
         return s0+(sym?F.moneyIn(Math.abs(amt)/sc[0],dp,F.data.account.currency):q.toFixed(dp))+sc[1]; }
       function cellText(amt,pc){
         var gw=(document.getElementById('calGrid')||{}).clientWidth||0;
-        if(gw && gw/8<50){ var A=Math.abs(F.toDisp?F.toDisp(amt):amt), s0=amt<0?'-':'+', na=A>=1000?kmb(amt,false,true):s0+Math.round(A), np=(pc>=0?'+':'')+pc.toFixed(1)+'%';
+        if(gw && gw/8<50){ var A=Math.abs(F.toDisp?F.toDisp(amt):amt), s0=amt<0?'-':'+', na=A>=1000?kmb(amt,false,true):(Math.round(A)>0?s0+Math.round(A):(+A.toFixed(2)>0?s0+A.toFixed(2):'0')), np=(pc>=0?'+':'')+pc.toFixed(1)+'%';
           na=na.replace(/^\+/,''); np=np.replace(/^\+/,''); if(gw/8<34){ na=na.replace(/^-/,''); np=np.replace(/^-/,''); }
           return pctPrimary?[np,na,np,na]:[na,np,na,np]; }
         var DA=Math.abs(F.toDisp?F.toDisp(amt):amt), big=DA>=1000, a=DA>=100000?kmb(amt,true):signed(amt,big?0:2), p=(pc>=0?'+':'')+pc.toFixed(2)+'%';
@@ -10265,7 +10266,8 @@ tick();setInterval(tick,5000);})();
   function $(i){ return document.getElementById(i); }
   function tr(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }
   function money(n,dp){ var c=F.data&&F.data.account&&F.data.account.currency; return F.moneyIn?F.moneyIn(n,dp==null?2:dp,c):String(n); }
-  function sgn(n,dp){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),dp); }
+  F.fmtSgn=function(n,dp){ return sgn(n,dp); };
+  function sgn(n,dp){ n=+n; dp=dp||0; var r=+n.toFixed(dp); if(r===0 && n!==0 && dp<2){ dp=2; r=+n.toFixed(2); } return (r>0?'+':(r<0?'-':''))+money(Math.abs(r),dp); }
   function pnl(){
     var box=$('dxPnl'), card=$('ppCard'); if(!box||!card) return;
     var d=F.data||{}, va=F.viewedAccount&&F.viewedAccount();

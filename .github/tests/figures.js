@@ -95,6 +95,9 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
    ok(/1\.03%/.test(rk[0]) && /Below/.test(rk[1]) && /20\D{1,4}40%/.test(rk[2]), label+': risk level = engine drawdown against the Balanced band 20-40% (got '+rk.join(' | ')+')');
    const now=await p.evaluate(()=>{ const t=()=>{ const n=document.getElementById('rkNow'); return n.hidden?'hidden':n.textContent; }; const a=t(); const es=FTM.data.engineStats; es.riskParts={current_drawdown_pct:'45.5'}; FTM.render(); const b=t(); es.riskParts={current_drawdown_pct:'0'}; FTM.render(); const c=t(); es.riskParts=null; FTM.render(); const d=t(); es.riskParts={current_drawdown_pct:'0.60'}; FTM.render(); return [a,b,c,d]; });
    ok(now[0]==='Now 0.60% below its highest balance · smaller than usual for this profile' && /45\.50% below its highest balance · deeper than usual/.test(now[1]) && now[2]==='Now at its highest balance' && now[3]==='hidden', label+': Risk level shows where the account is now, from the engine current drawdown (got '+now.join(' | ')+')'); }
+  { const z=await p.evaluate(()=>{ const out=[]; for(const f of [FTM.fmtSigned,FTM.fmtSgn]){ if(!f) { out.push('missing'); continue; } out.push([f(-0.3,0),f(0.2,0),f(0,0),f(-0.001,2),f(-12.6,0),f(12.6,0)].join('|')); } return out; });
+    const bad=z.filter(x=>/(^|\|)[-+][^0-9]*0(\.00)?(\||$)/.test(x) || x==='missing');
+    ok(!bad.length && z.every(x=>/-.*0\.30/.test(x.split('|')[0]) && /\+.*0\.20/.test(x.split('|')[1]) && !/[-+]/.test(x.split('|')[2]) && !/[-+]/.test(x.split('|')[3]) && /-.*13/.test(x.split('|')[4]) && /\+.*13/.test(x.split('|')[5])), label+': never "-0" or "+0": tiny results show cents, zero shows no sign ('+z.join(' / ')+')'); }
   ok(!errs.length, label+': no script errors '+(errs[0]||''));
   await p.close();
  }
