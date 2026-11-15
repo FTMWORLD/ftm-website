@@ -155,7 +155,14 @@ section{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:22px;min-width:0}
 .chart{width:100%;overflow-x:auto}
 .chart svg{display:block;width:100%;height:auto;min-width:560px}
+.pf-foot{width:100vw;margin:56px 0 -64px calc(50% - 50vw);background:#0b1640;color:#c9cfe6;border-top:3px solid #D4AF37}
+.pf-in{max-width:1100px;margin:0 auto;padding:34px 20px 30px;display:grid;justify-items:center;gap:12px;text-align:center}
+.pf-logo{display:inline-flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:22px;text-decoration:none}.pf-logo .mark{width:34px;height:34px;border-radius:9px;background:#1F3A93;display:grid;place-items:center}.pf-logo svg{width:20px;height:20px}
+.pf-claim{margin:0;color:#D4AF37;font-weight:700;font-size:17px;letter-spacing:.02em}
+.pf-links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}.pf-links a{color:#c9cfe6;text-decoration:none;font-size:14px;padding:10px 10px;border-radius:8px}.pf-links a:hover{color:#fff;background:rgba(255,255,255,.06)}
+.pf-copy{margin:0;font-size:12px;color:#8b93b8}
 svg text{font-family:var(--font);font-size:11px;fill:var(--muted)}
+@media (max-width:600px){.chart{overflow:visible;padding-left:26px;box-sizing:border-box}.chart svg{min-width:0;overflow:visible}.chart svg text{font-size:26px}.chart svg text[style*="font-size"]{font-size:26px!important}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-bottom:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
 .note{font-size:14px;color:var(--muted)}
@@ -961,7 +968,16 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   <a class="invest-btn imp-btn" href="/#pricing">Start auto trading</a>
 </section>
 
+<footer class="pf-foot">
+  <div class="pf-in">
+    <a class="pf-logo" href="/" aria-label="FTM home"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</a>
+    <p class="pf-claim">Invest today, secure tomorrow.</p>
+    <nav class="pf-links" aria-label="Footer"><a href="/">Home</a><a href="/#pricing">Subscription plans</a><a href="/terms.html">Terms and Conditions</a><a href="/privacy.html">Privacy Policy</a><a href="mailto:ftmwebnation@gmail.com">Contact</a></nav>
+    <p class="pf-copy">© <span id="pf-y">2026</span> Follow The Market Ltd.</p>
+  </div>
+</footer>
 <div class="tip" id="tip" hidden></div>
+<script>document.getElementById('pf-y').textContent=new Date().getFullYear();</script>
 <div class="mback" id="mback" hidden><div class="mbox" role="dialog" aria-modal="true" aria-labelledby="m-title">
   <div class="mtop"><h3 id="m-title"></h3><div class="mret"><span class="ret" id="m-ret"></span><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div>
     <div class="mnav"><button type="button" id="m-prev" aria-label="Previous month">&larr;</button><button type="button" id="m-next" aria-label="Next month">&rarr;</button></div>
@@ -1042,7 +1058,7 @@ function compare(){
 
 function kpis(p){
   const mUp=p.monthly.filter(m=>m[1]>0).length,wUp=p.weekly.filter(w=>w[1]>0).length,yUp=p.yearly.filter(y=>y[1]>0).length;
-  const items=[['Final balance',usd(p.final),'from '+usd(S0(p))],['Total return',pct((p.final/S0(p)-1)*100,0),YEARS.toFixed(1)+' years'],['Average a year',pct(cagr(p)),'compounded'],['Max drawdown','-'+p.bdd+'%','balance · -'+p.edd+'% equity'],['Profit factor',p.pf,'gross profit ÷ gross loss'],['Profitable years',yUp+' of '+p.yearly.length,'2026 counted to 8 October'],['Profitable months',mUp+' of '+p.monthly.length,Math.round(mUp/p.monthly.length*100)+'%'],['Profitable weeks',wUp+' of '+p.weekly.length,Math.round(wUp/p.weekly.length*100)+'%'],['Total trades',p.trades.toLocaleString('en-US'),p.win+'% winning trades'],['Recovery factor',p.rf,'net profit ÷ max drawdown']];
+  const items=[['Final balance',usd(p.final),'from '+usd(S0(p))],['Total return',pct((p.final/S0(p)-1)*100,0),YEARS.toFixed(1)+' years'],['Average a year',pct(cagr(p)),'compounded'],['Max drawdown','-'+p.bdd+'%','balance · -'+p.edd+'% equity'],['Profit factor',p.pf,'gross profit ÷ gross loss'],['Profitable years',yUp+' of '+p.yearly.length,'2026 counted to '+(mkt==='gold'?'8':'16')+' October'],['Profitable months',mUp+' of '+p.monthly.length,Math.round(mUp/p.monthly.length*100)+'%'],['Profitable weeks',wUp+' of '+p.weekly.length,Math.round(wUp/p.weekly.length*100)+'%'],['Total trades',p.trades.toLocaleString('en-US'),p.win+'% winning trades'],['Recovery factor',p.rf,'net profit ÷ max drawdown']];
   $('kpis').innerHTML=items.map(([l,v,s])=>`<div class="kpi"><span class="l">${l}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join('');
 }
 
@@ -1132,7 +1148,7 @@ function risk(p){
   $('f-worst').innerHTML=[['Worst month',pct(ms[0][1])+' · '+ml(ms[0][0])],['2nd worst month',pct(ms[1][1])+' · '+ml(ms[1][0])],['3rd worst month',pct(ms[2][1])+' · '+ml(ms[2][0])],['Worst week',pct(ws[0][1])+' · '+wk(ws[0][0])],['Worst year',pct(ys[0][1])+' · '+ys[0][0]],['Months below -10%',p.monthly.filter(m=>m[1]<-10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="down">${b}</span></div>`).join('');
   const mb=ms.slice().reverse(),wb=ws.slice().reverse(),yb=ys.slice().reverse();
   $('f-best').innerHTML=[['Best month',pct(mb[0][1])+' · '+ml(mb[0][0])],['2nd best month',pct(mb[1][1])+' · '+ml(mb[1][0])],['3rd best month',pct(mb[2][1])+' · '+ml(mb[2][0])],['Best week',pct(wb[0][1])+' · '+wk(wb[0][0])],['Best year',pct(yb[0][1])+' · '+yb[0][0]+(yb[0][0]==='2026'?' (to Oct)':'')],['Months above +10%',p.monthly.filter(m=>m[1]>10).length+' of '+p.monthly.length]].map(([a,b])=>`<div><span>${a}</span><span class="up">${b}</span></div>`).join('');
-  const top=ep[0];$('h-risk').textContent=`The deepest drawdown was ${top.dd.toFixed(1)}%, from ${d(top.peak)} to ${d(top.trough)}`;
+  const top=ep[0];$('h-risk').textContent=`The deepest drawdown was ${Math.max(top.dd,+p.bdd||0).toFixed(1)}%, from ${d(top.peak)} to ${d(top.trough)}`;
   $('n-risk').textContent=`Drawdowns of ${lim}% or more happened ${ep.length} times in ${YEARS.toFixed(1)} years at this profile, and each one ${ep.every(e=>e.rec)?'recovered to a new high':'is listed with its recovery date'}.`;
 }
 

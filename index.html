@@ -838,6 +838,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 @media (max-width:380px){.stf-hero{grid-template-columns:1fr}}
 .stf-main{gap:0!important}
 @media (max-width:600px){.stf-kv{grid-template-columns:1fr;gap:2px}.stf-kv dt{font-size:12px;margin-top:8px}.stf-head{flex-wrap:wrap}}
+#ckPick{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1440' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/14px;border-radius:999px;padding:9px 36px 9px 16px;font:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;min-height:38px}#ckPick:hover{border-color:#D4AF37}#ckPick:focus-visible{outline:2px solid #D4AF37;outline-offset:2px}
+@media (pointer:coarse){#appView .hx-tf button,#appView .unit-sw button{position:relative}#appView .hx-tf button::after,#appView .unit-sw button::after{content:'';position:absolute;inset:-7px -2px}}
   .lb-cm{cursor:pointer}
   .mp-back{border:0;background:none;color:var(--blue);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;padding:0}
   .mp-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
@@ -1681,7 +1683,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .form-card .ticket div{border:1px solid var(--line);border-radius:8px;padding:8px}
   .form-card .ticket b{display:block;font-size:14px}
   .form-card .ticket small{color:var(--muted)}
-  .form-card .kv-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .trust-title{margin-bottom:0}
+  .form-card .kv-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}.form-card .kv-row span{border:0;padding:0;border-radius:0;color:var(--muted);font-weight:500}
   .form-card .kv-row b{color:var(--ink)}
   .step .txt .btn{margin-top:20px}
   @media (max-width:820px){.step{grid-template-columns:1fr}.step .txt{padding:40px 28px}}
@@ -1800,7 +1803,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   .calc-toggle{display:none}
   @media (max-width:760px){
     section:not(.app-view):not(.iv-view){padding-block:52px}
-    .how-steps{display:none!important}
     .how .how-security{margin-top:22px}
     #platforms .feature-art{display:none}
     #platforms .feature{padding-block:18px;gap:0}
@@ -1869,7 +1871,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   }
   .tl-graph{display:none}
   @media (max-width:760px){
-    .inv-tl{display:flex!important;flex-direction:column-reverse;gap:26px;padding:18px 0 22px!important;margin-bottom:30px}
+    .inv-tl{display:flex!important;flex-direction:column;gap:26px;padding:18px 0 22px!important;margin-bottom:30px}
     .inv-tl::before{display:none}
     .inv-tl li{padding:0 0 0 calc(var(--x) + 36px)!important;z-index:1}
     .inv-tl li:nth-of-type(1){--x:0%}.inv-tl li:nth-of-type(2){--x:11%}.inv-tl li:nth-of-type(3){--x:22%}.inv-tl li:nth-of-type(4){--x:33%}
@@ -2128,7 +2130,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .al-ic.adj{background:#fbf6e4;color:#a07c12}
 .al-list b{display:block;color:#0b1440;font-size:14.5px}.al-list small{display:block;color:#5b6378;font-size:12.5px;margin-top:2px}
 .al-amt{font-weight:800;font-variant-numeric:tabular-nums;text-align:right}.al-amt.up{color:#16a34a}.al-amt.dn{color:#E5323E}
-.al-empty{color:#5b6378;padding:14px 0}
+.al-empty{color:#5b6378;padding:14px 0;width:100%;grid-column:1/-1;flex:1 1 100%;white-space:normal}.acct-none td{text-align:center;color:#5b6378;padding:22px 10px!important;font-weight:600}
 .al-more{margin-top:12px}
 .um-cid,.ac-cid{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12px;color:var(--muted)}
 .um-cid[hidden],.ac-cid[hidden],.sb-cid[hidden]{display:none!important}
@@ -3249,12 +3251,7 @@ body.op-lock{overflow:hidden}
 <section class="trust">
   <div class="container">
     <div class="trust-head">
-      <div class="marquee" style="margin-bottom:0">
-        <div class="marquee-track" style="animation-duration:16s">
-          <h2 class="section-title" style="margin-bottom:0;white-space:nowrap" data-i18n="trust.title">Your money, working around the clock</h2>
-          <h2 class="section-title" style="margin-bottom:0;white-space:nowrap" aria-hidden="true">Your money, working around the clock</h2>
-        </div>
-      </div>
+      <h2 class="section-title trust-title" data-i18n="trust.title">Your money, working around the clock</h2>
       <p data-i18n="trust.sub">Follow The Market is built to enable anyone to take part in and profit from the trading business, through automated execution around the clock with clear risk rules.</p>
     </div>
     <div class="trust-cards">
@@ -3284,7 +3281,7 @@ body.op-lock{overflow:hidden}
   <div class="container">
     <div class="feature">
       <div><p class="eyebrow auto-eyebrow" style="color:var(--gold);margin-bottom:12px">Auto Trading</p><h3>FTM MACHINE trades the plan, not the mood</h3><p>Link your trading account and FTM MACHINE trades for you across gold, forex, crypto and stocks. Pause or withdraw any time.</p>
-        <ul class="auto-list"><li>No emotions: every trade follows the rules</li><li>No 4 a.m. signals to chase, unlike copy trading</li><li>Made for busy people: doctors, pilots, professionals</li><li>Averaged 54–176% a year in the backtest since 2020</li><li>Runs 24/7 on the FTM trading engine, nothing to install</li></ul>
+        <ul class="auto-list"><li>No emotions: every trade follows the rules</li><li>Averaged 54–176% a year in the backtest since 2020</li><li>Runs 24/7 on the FTM trading engine, nothing to install</li></ul>
         <a class="btn btn-red" href="#pricing">Explore FTM MACHINE</a></div>
       <div class="auto-art-col">
         <div class="feature-art dark"><div class="art-card live-card"><div class="t"><span>FTM MACHINE · <span id="lcName">Balanced</span></span> <span class="running"><i></i>Running</span></div><svg id="liveChart" viewBox="0 0 300 160" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D4AF37" stop-opacity=".45"/><stop offset="1" stop-color="#D4AF37" stop-opacity="0"/></linearGradient></defs><g id="liveGrid" stroke="rgba(11,20,64,.07)" stroke-width="1"><line x1="0" y1="40" x2="300" y2="40"/><line x1="0" y1="80" x2="300" y2="80"/><line x1="0" y1="120" x2="300" y2="120"/></g><path id="liveArea" fill="url(#ag)"/><polyline id="liveLine" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle id="liveDot" r="4" fill="#D4AF37"/><circle id="livePulse" r="4" fill="none" stroke="#D4AF37" stroke-width="2"/></svg><div class="kv"><span>Since January 2020</span><b id="lcRet">+12,137%</b></div><div class="kv"><span>Max drawdown</span><b id="lcDD">-21.92%</b></div><a class="live-link" href="/performance.html">See the full performance record &rarr;</a></div></div>
@@ -4436,7 +4433,7 @@ body.op-lock{overflow:hidden}
         <div class="app-main">
           <div class="app-card">
             <div class="chart-top">
-              <div><h3><span id="ckSymbol">Gold</span> <span class="ck-live" id="ckLive" hidden><i></i>Live</span><span class="ck-state" id="ckState" hidden></span></h3><p class="hint" id="ckQuote">&mdash;</p></div>
+              <div><h3><span id="ckSymbol">Gold</span> <span class="ck-live" id="ckLive" hidden><i></i>Live</span><span class="ck-state" id="ckState" hidden></span></h3><p class="hint" id="ckQuote"></p></div>
               <div class="chart-controls">
                 <select id="ckPick" aria-label="Market"></select>
                 <div class="tf" id="ckTF"></div>
@@ -7254,10 +7251,10 @@ body.op-lock{overflow:hidden}
       var avgW=winDays?winSum/winDays:0, avgL=lossDays?lossSum/lossDays:0;
       el('calRatio').textContent=avgL?(avgW/avgL).toFixed(2):'-';
       var tot=avgW+avgL||1;
-      el('ratioWin').style.width=(avgW/tot*100)+'%'; el('ratioWin').setAttribute('data-tip',money(avgW,2)+' avg win day'); el('ratioLoss').setAttribute('data-tip','-'+money(avgL,2)+' avg loss day');
+      el('ratioWin').style.width=(avgW/tot*100)+'%'; el('ratioWin').setAttribute('data-tip',money(avgW,2)+' avg win day'); el('ratioLoss').setAttribute('data-tip',(avgL>0?'-':'')+money(avgL,2)+' avg loss day');
       el('ratioLoss').style.width=(avgL/tot*100)+'%';
       el('ratioWinV').textContent=money(avgW,2)+' avg win day';
-      el('ratioLossV').textContent='-'+money(avgL,2)+' avg loss day';
+      el('ratioLossV').textContent=(avgL>0?'-':'')+money(avgL,2)+' avg loss day';
 
       el('dailyNet').textContent=signed(net,2);
       el('dailyNet').className='app-big '+(net>=0?'val-up':'val-down');
@@ -7400,6 +7397,7 @@ body.op-lock{overflow:hidden}
         list.map(function(k){ var b=bySym[k];
           return '<tr><td><b>'+k+'</b></td><td>'+b.n+'</td><td>'+(b.w/b.n*100).toFixed(2)+'%</td><td>'+b.lots.toFixed(2)+'</td>'+
                  '<td class="'+(b.pl>=0?'pl-up':'pl-down')+'">'+signed(b.pl,2)+'</td></tr>'; }).join('')+'</tbody>';
+      [['perfYears',!!rows],['perfSymbols',!!list.length]].forEach(function(x){ var c=el(x[0]).closest('.app-card'), m=c.querySelector('.px-empty'); if(!x[1]&&!m){ m=document.createElement('p'); m.className='px-empty'; m.textContent=(window.I18NE&&I18NE.t)?I18NE.t('Connect a trading account to see your figures here.'):'Connect a trading account to see your figures here.'; c.appendChild(m); } if(m) m.hidden=x[1]; });
       renderPerfX();
     }
 
@@ -7589,13 +7587,14 @@ body.op-lock{overflow:hidden}
           '<td>'+(a.server||'&mdash;')+'</td><td>'+balCell+'</td>'+
           '<td>'+pl+'</td>'+
           '<td>'+ago(a.lastReported)+'</td><td>'+status+'</td></tr>';
-      }).join('');
+      }).join('')||'<tr class="acct-none"><td colspan="9">'+((window.I18NE&&I18NE.t)?I18NE.t('No account connected'):'No account connected')+'</td></tr>';
       var note=document.querySelector('.acct-note');
       if(!note){
         note=document.createElement('div'); note.className='acct-note';
         document.querySelector('[data-view="accounts"] .acct-list-card').appendChild(note);
       }
       var on=A.filter(function(a){return a.active;})[0];
+      note.hidden=!A.length;
       note.innerHTML='<b>One account at a time.</b> FTM MACHINE is currently trading on <b>'+
         (on?on.name+' ('+on.number+')':'no account')+
         '</b>. Connecting a different account closes every open position on this one first, then starts trading on the new account.';
@@ -7906,7 +7905,7 @@ body.op-lock{overflow:hidden}
       if(pos){ pos.hidden=!P.length; pos.innerHTML=P.length?('<b>'+trc('Your open trades')+'</b> '+P.map(function(p){ var up=(p.pl||0)>=0; return '<span class="ck-pt '+(up?'up':'dn')+'">'+trc(String(p.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+' '+(p.lots!=null?p.lots.toFixed(2):'')+' @ '+(p.open!=null?(+p.open).toFixed(dp):'—')+' <em>'+(p.pl==null?'—':moneyU(p.pl))+'</em></span>'; }).join('')+'<span class="ck-tot '+(fl>=0?'up':'dn')+'">'+trc('Floating')+' <em>'+moneyU(fl)+'</em></span>'):''; }
       if(!D.length){
         svg.innerHTML=''; if(empty){ empty.hidden=false; empty.textContent=CK.src===null?trc('Loading prices…'):(m.soon||CK.unavail===m.k?trc('Boom 1000 prices coming soon'):trc('Live prices for this market come from FTM’s trading terminal and appear here as soon as the price feed is connected.')); }
-        el('ckQuote').textContent=P.length&&P[0].current!=null?(trc('Last price')+' '+(+P[0].current).toFixed(dp)):'—'; el('ckFrom').textContent=''; el('ckTo').textContent=''; return; }
+        el('ckQuote').textContent=P.length&&P[0].current!=null?(trc('Last price')+' '+(+P[0].current).toFixed(dp)):''; el('ckFrom').textContent=''; el('ckTo').textContent=''; return; }
       if(empty) empty.hidden=true;
       var bb=svg.getBoundingClientRect(), W=Math.max(320,Math.round(bb.width)||900), H=Math.max(220,Math.round(bb.height)||380); svg.setAttribute('viewBox','0 0 '+W+' '+H);
       var n=Math.min(D.length, Math.max(40, Math.floor((W-70)/7))), data=D.slice(-n), padR=70, padB=22, plotW=W-padR;
@@ -7942,7 +7941,7 @@ body.op-lock{overflow:hidden}
       calendar: {t:'Trading calendar',   s:'Profit and loss for every day, week and month.'},
       perf:     {t:'Performance',        s:'How every month and every market has performed.'},
       board:    {t:'Leaderboard',        s:'Where you stand among other FTM accounts.'},
-      community:{t:'FTM Community',      s:'Where wealthy people interact.'},
+      community:{t:'FTM Community',      s:'Meet other people running FTM MACHINE, follow them and talk.'},
       accounts: {t:'Accounts overview',  s:'The accounts you have added to FTM.'},
       sessions: {t:'Trading sessions',   s:'Which session your results come from.'},
       charts:   {t:'Charts',             s:'Price history for the markets FTM MACHINE trades.'},
@@ -10958,7 +10957,7 @@ tick();setInterval(tick,5000);})();
             <button type="button" class="cw-x pk-x" id="ppX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
             <div class="pp-brand"><span class="avatar ftm-av"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-5 4 3 7-8"/></svg></span><b id="ppTitle">FTM Community</b></div>
             <div id="ppBody"></div>
-            <p class="pp-cta-t">Where wealthy people interact.</p>
+            <p class="pp-cta-t">Meet other people running FTM MACHINE, follow them and talk.</p>
             <div class="pk-acts"><button type="button" class="btn btn-red btn-sm" id="ppJoin">Create a free account</button><button type="button" class="follow" id="ppLogin">Log in</button></div>
           </div>
         </div>
