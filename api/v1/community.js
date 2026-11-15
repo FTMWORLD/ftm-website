@@ -78,6 +78,33 @@ async function isPaid(admin, uid) {
   try { const p = await admin.from('profiles').select('products').eq('id', uid).maybeSingle(); const pr = (p && p.data && p.data.products) || []; return Array.isArray(pr) && pr.length > 0; } catch (e) { return false; }
 }
 
+
+/* Leaderboard name -> Community member, for members who never opened the site since the link was added.
+   The engine is asked, as each paying customer (verified server to server), for their leaderboard nickname;
+   the map is kept in lbmap.json and rebuilt at most every 2 minutes. A paying customer without a Community
+   profile gets the automatic one (visible, leaderboard nickname when free), exactly as on their first visit. */
+async function resolveFromBoard(admin, S, idx, n) {
+  let map = await S.read('lbmap.json', { at: null, map: {} });
+  if (!map.map[n] && (!map.at || Date.now() - Date.parse(map.at) > 120000)) {
+    const users = []; for (let page = 1; page <= 20; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) break; users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; }
+    const paid = new Set(); for (let from = 0; from < 50000; from += 1000) { const r = await admin.from('profiles').select('id,products').range(from, from + 999); if (r.error) break; (r.data || []).forEach(p => { if (Array.isArray(p.products) && p.products.length) paid.add(p.id); }); if ((r.data || []).length < 1000) break; }
+    const todo = users.filter(u => paid.has(u.id)), next = {}; let i = 0;
+    await Promise.all(Array.from({ length: Math.min(10, todo.length) }, async () => { while (i < todo.length) { const u = todo[i++];
+      try { const r = await within(7000, Engine.callEngine('/api/v1/customer/leaderboard/profile', { authSubject: u.id, authEmail: u.email, timeoutMs: 6500 }), 'lbmap'); const nk = String((r.ok && r.body && r.body.profile && r.body.profile.nickname) || '').trim(); if (nk) next[nk.toLowerCase()] = { uid: u.id, nick: nk }; } catch (e) { } } }));
+    map = { at: new Date().toISOString(), map: next }; try { await S.write('lbmap.json', map); } catch (e) { console.error('lbmap write', e.message); }
+  }
+  const hit = map.map[n]; if (!hit) return null;
+  const mid = midOf(hit.uid); let x = idx.members[mid];
+  if (!x) {
+    const used = new Set(Object.keys(idx.members).map(k => String(idx.members[k].nickname).toLowerCase()));
+    let nick = /^[A-Za-z0-9_-]{3,24}$/.test(hit.nick) && !used.has(hit.nick.toLowerCase()) && !RESERVED.test(hit.nick) && !/^ftm[_-]?/i.test(hit.nick) ? hit.nick : 'member_' + mid.slice(0, 4);
+    for (let k = 1; used.has(nick.toLowerCase()) && k < 12; k++) nick = 'member_' + mid.slice(k, k + 4 + Math.floor(k / 4));
+    const now = new Date().toISOString(); x = idx.members[mid] = { since: now, nickname: nick, bio: '', country: '', visible: true, auto: true, sub: true, updated: now };
+  }
+  x.lb = hit.nick; await S.write('index.json', idx);
+  return mid;
+}
+
 module.exports = async function handler(req, res) {
   if (req.method === 'GET' && req.query && req.query.avatar) {
     // profile pictures: /api/v1/community?avatar=<mid>&v=<version> (only members' opaque ids; images are small JPEGs)
@@ -342,7 +369,8 @@ module.exports = async function handler(req, res) {
     if (action === 'find') {
       const n = String(body.nickname || '').trim().toLowerCase(); if (!n || n.length > 24) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       const ks = Object.keys(idx.members);
-      const m = ks.find(k => String(idx.members[k].lb || '').toLowerCase() === n) || ks.find(k => String(idx.members[k].nickname || '').toLowerCase() === n);
+      let m = ks.find(k => String(idx.members[k].lb || '').toLowerCase() === n) || ks.find(k => String(idx.members[k].nickname || '').toLowerCase() === n);
+      if (!m) m = await resolveFromBoard(admin, S, idx, n);
       if (!m) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (m === me) return res.status(200).json({ ok: true, self: true });
       if (!okTarget(m)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });

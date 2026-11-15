@@ -79,6 +79,9 @@
   "functions": {
     "api/v1/staff.js": {
       "maxDuration": 60
+    },
+    "api/v1/community.js": {
+      "maxDuration": 30
     }
   }
 }

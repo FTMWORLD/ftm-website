@@ -838,8 +838,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 @media (max-width:380px){.stf-hero{grid-template-columns:1fr}}
 .stf-main{gap:0!important}
 @media (max-width:600px){.stf-kv{grid-template-columns:1fr;gap:2px}.stf-kv dt{font-size:12px;margin-top:8px}.stf-head{flex-wrap:wrap}}
-  .lb-cm{cursor:pointer;text-decoration:underline;text-decoration-color:rgba(212,175,55,.55);text-underline-offset:3px;text-decoration-thickness:2px}
-  .lb-cm:hover,.lb-cm:focus-visible{color:var(--blue);text-decoration-color:#D4AF37}
+  .lb-cm{cursor:pointer}
   .mp-back{border:0;background:none;color:var(--blue);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;padding:0}
   .mp-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
   .avatar{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--ink));color:var(--gold-light);display:grid;place-items:center;font-weight:800;font-size:19px;flex:none}
@@ -3703,7 +3702,6 @@ body.op-lock{overflow:hidden}
   </div>
   <div class="app-body">
     <nav class="app-nav" aria-label="Client area">
-      <button type="button" class="sb-ask js-app-ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>What's on your mind?</span></button>
       <button class="app-nav-item is-on" data-view="metrics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Dashboard</span></button>
       <button class="app-nav-item" data-view="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M7 15h4"/></svg><span>Accounts</span></button>
       <button class="app-nav-item" data-view="perf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16M8 15l4-5 3 3 5-7"/></svg><span>Performance</span></button>
