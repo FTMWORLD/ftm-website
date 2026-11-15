@@ -40,7 +40,6 @@ function clean(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u
 const REACTIONS = ['\u2764\uFE0F', '\uD83D\uDC4D', '\uD83D\uDE02', '\uD83D\uDE2E', '\uD83D\uDE22', '\uD83D\uDE4F', '\uD83D\uDD25', '\uD83C\uDF89'];
 function outMsg(x, me) { const o = { from: x.f === me ? 'me' : 'them', text: x.d ? '' : x.x, t: x.t }; if (x.d) o.removed = true; if (x.r) { const r = {}; Object.keys(x.r).forEach(k => { r[k === me ? 'me' : 'them'] = x.r[k]; }); o.reactions = r; } if (x.q && !x.d) o.reply = { from: x.q.f === me ? 'me' : 'them', text: x.q.x, t: x.q.t }; return o; }
 const postsSent = new Map();
-function isStaff(user) { const e = String((user && user.email) || '').toLowerCase(); const L = ('ftmwebnation@gmail.com,' + String(process.env.FTM_COMMUNITY_ADMINS || '')).toLowerCase().split(',').map(x => x.trim()).filter(Boolean); return !!e && (/@ftmwealthnation\.com$/.test(e) || L.indexOf(e) !== -1); }
 function cleanLong(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u0000-\u0009\u000b-\u001f<>]/g, ' ').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()).slice(0, n).join(''); }
 function postImgs(x) { const n = x.imgs || (x.img ? 1 : 0), v = x.img || ''; const L = []; for (let i = 0; i < n; i++) L.push('/api/v1/community?postimg=' + x.id + (i ? '_' + i : '') + '&v=' + v); return L; }
 function tagsOf(t) { const m = String(t || '').match(/#[\p{L}\p{N}_]{2,30}/gu) || []; return Array.from(new Set(m.map(x => x.slice(1).toLowerCase()))); }
@@ -168,7 +167,7 @@ module.exports = async function handler(req, res) {
       if (dirty) await S.write('index.json', idx);
       const nb = await S.read('notif/' + me + '.json', { items: [], read: '' });
       const ftmNew = (await S.read('posts.json', { posts: [] })).posts.filter(x => x.ftm && x.a !== me && x.t > (nb.read || '') && x.t > (mine && mine.since || '')).length;
-      return res.status(200).json({ ok: true, mid: me, paid, staff: isStaff(user), notif_unread: nb.items.filter(x => x.t > (nb.read || '')).length + ftmNew,
+      return res.status(200).json({ ok: true, mid: me, paid, staff: ['owner', 'staff'].indexOf(await StaffLib.role(admin, user)) !== -1, notif_unread: nb.items.filter(x => x.t > (nb.read || '')).length + ftmNew,
         profile: mine ? { nickname: mine.nickname, bio: mine.bio || '', country: mine.country || '', visible: !!mine.visible, since: mine.since, av: mine.av || null } : { nickname: '', bio: '', country: '', visible: false, since: null, av: null },
         followers: followers(me), following: follows.length, blocked: blocks.filter(m => idx.members[m]).map(m => ({ mid: m, nickname: idx.members[m].nickname })) });
     }
@@ -285,9 +284,11 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'staff') {
-      if (!StaffLib.isStaff(user)) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
+      const srole = await StaffLib.role(admin, user);
+      if (!srole) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
       const op = String(body.op || '');
-      if (op === 'check') return res.status(200).json({ ok: true, staff: true });
+      if (op === 'check') return res.status(200).json({ ok: true, staff: true, role: srole });
+      if (srole === 'support' && op === 'post') return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
       const allUsers = async () => { const out = []; for (let page = 1; page <= 20; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); out.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; } return out; };
       if (op === 'overview') {
         const us = await allUsers(), P = await S.read('posts.json', { posts: [] }), day = Date.now() - 864e5;
@@ -357,7 +358,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (['feed', 'post', 'like', 'comment', 'delpost', 'delcomment', 'pin', 'notifs', 'vote', 'bookmark', 'edit', 'clike', 'trending'].indexOf(action) !== -1) {
-      const staff = isStaff(user);
+      const staff = ['owner', 'staff'].indexOf(await StaffLib.role(admin, user)) !== -1;
       const P = await S.read('posts.json', { posts: [] });
       const who = m => { const x = idx.members[m] || {}; return { mid: m, nickname: x.nickname || '', av: x.av || null, country: x.country || '', sub: !!x.sub }; };
       const saves = (soc.saves && soc.saves[me]) || [];

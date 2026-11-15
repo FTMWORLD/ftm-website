@@ -820,7 +820,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 .stf-accs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stf-acct{border:1px solid var(--line);border-radius:14px;padding:14px}.stf-ah{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}.stf-acct .btn{margin-top:12px}.stf-astats{margin-top:12px;max-height:340px;overflow:auto}
 .stf-acts{display:flex;flex-wrap:wrap;gap:8px}.stf-mini{display:grid;gap:10px}.stf-mini input,.stf-mini select,.stf-mini textarea{margin:0!important}.stf-mini .btn{justify-self:start}
 .stf-t3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.stf-prog{height:6px;border-radius:6px;background:#EEF1F8;overflow:hidden;margin-top:10px}.stf-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#152a7a,#D4AF37);transition:width .4s}
-.stf-hl{display:grid;gap:8px}.stf-hl>div{display:grid;grid-template-columns:auto 160px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:#F7F8FB;font-size:13px}.stf-hl i{width:10px;height:10px;border-radius:50%;background:#22c55e}.stf-hl .bad i{background:#E5323E}.stf-hl .bad{background:#FDECEE}.stf-hl span{color:var(--muted);word-break:break-word}.stf-hl small{color:var(--muted)}
+.stf-team select{width:auto!important;margin:0!important;padding:7px 10px!important;font-size:13px!important}.stf-hl{display:grid;gap:8px}.stf-hl>div{display:grid;grid-template-columns:auto 160px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:#F7F8FB;font-size:13px}.stf-hl i{width:10px;height:10px;border-radius:50%;background:#22c55e}.stf-hl .bad i{background:#E5323E}.stf-hl .bad{background:#FDECEE}.stf-hl span{color:var(--muted);word-break:break-word}.stf-hl small{color:var(--muted)}
 @media (max-width:1100px){.stf-hero{grid-template-columns:repeat(2,minmax(0,1fr))}.stf-2{grid-template-columns:1fr 1fr}}
 @media (max-width:760px){.stf-3,.stf-2,.stf-accs{grid-template-columns:1fr}.stf-pb{grid-template-columns:1fr}.stf-pba{justify-content:flex-start}.stf-hl>div{grid-template-columns:auto 1fr;}.stf-hl span,.stf-hl small{grid-column:2}}
 @media (max-width:600px){.stf-hero b{font-size:21px}.stf-hero>div{padding:16px 14px}.stf-t3{grid-template-columns:1fr!important}.stf-filt{flex-wrap:wrap}.stf-filt select{width:100%!important}.stf-tabs button{padding:9px 12px;font-size:13px}}
@@ -9944,7 +9944,7 @@ tick();setInterval(tick,5000);})();
     renew:{subject:'Your FTM plan ends soon',title:'Keep FTM MACHINE trading for you',text:'Your FTM plan ends soon. Renew now so copying continues without a pause.\n\nYour figures, history and leaderboard place stay exactly as they are.',button:'Renew my plan',link:'https://www.ftmwealthnation.com/?open=accounts'},
     welcome:{subject:'Welcome to FTM',title:'Welcome to FTM',text:'Thank you for joining FTM. Your client area is ready.\n\nIf you need anything, just reply to this email.',button:'Open my client area',link:'https://www.ftmwealthnation.com/'}
   };
-  var who=null, nav=null, view=null, D=null, FX=null, tab='board', acctFilter='', acctStatus='';
+  var who=null, nav=null, view=null, D=null, FX=null, tab='board', acctFilter='', acctStatus='', ROLE='staff';
   function F(){ return window.FTM||{}; }
   function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function $(s){ return view.querySelector(s); }
@@ -9960,7 +9960,7 @@ tick();setInterval(tick,5000);})();
   function toEUR(amount,cur){ if(!FX||!FX.rates) return null; var r=FX.rates, c=String(cur||'').toUpperCase(); if(!r[c]||!r.EUR) return null; return amount/r[c]*r.EUR; }
   function flash(el,msg,bad){ el.className='stf-out'+(bad?' bad':''); el.innerHTML=msg; }
   function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; D=null; }
-  var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['health','Health'],['activity','Activity']];
+  var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['health','Health'],['activity','Activity'],['team','Team']];
   function build(){
     var host=document.querySelector('#appView .app-nav'), content=document.querySelector('#appView .app-content'); if(!host||!content||nav) return;
     nav=document.createElement('button'); nav.type='button'; nav.className='app-nav-item nav-staff'; nav.dataset.view='staff'; nav.setAttribute('translate','no');
@@ -9968,18 +9968,19 @@ tick();setInterval(tick,5000);})();
     var kyc=host.querySelector('.nav-kyc'); if(kyc&&kyc.nextSibling) host.insertBefore(nav,kyc.nextSibling); else host.appendChild(nav);
     nav.addEventListener('click',function(){ F().showView('staff'); go(tab); });
     view=document.createElement('section'); view.className='app-view stf'; view.dataset.view='staff'; view.hidden=true; view.setAttribute('translate','no');
-    view.innerHTML='<div class="app-main stf-main"><div class="stf-head"><div><h2>FTM staff console</h2><p>The whole company at a glance. Only FTM staff logins see this page.</p></div><span class="stf-badge"><i class="stf-live"></i>Staff only</span></div>'+
-      '<div class="stf-tabs" role="tablist">'+TABS.map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'">'+t[1]+(t[0]==='problems'?' <em id="stfPbN" hidden></em>':'')+'</button>'; }).join('')+'</div>'+
+    view.innerHTML='<div class="app-main stf-main"><div class="stf-head"><div><h2>FTM staff console</h2><p>The whole company at a glance. Only FTM staff logins see this page.</p></div><span class="stf-badge"><i class="stf-live"></i>'+(ROLE==='owner'?'Owner':ROLE==='support'?'Support':'Staff')+'</span></div>'+
+      '<div class="stf-tabs" role="tablist">'+TABS.filter(function(t){ return t[0]!=='team'||ROLE==='owner'; }).map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'">'+t[1]+(t[0]==='problems'?' <em id="stfPbN" hidden></em>':'')+'</button>'; }).join('')+'</div>'+
       '<div class="stf-pane" data-p="board"></div><div class="stf-pane" data-p="problems" hidden></div><div class="stf-pane" data-p="accounts" hidden></div><div class="stf-pane" data-p="customers" hidden></div>'+
-      '<div class="stf-pane" data-p="messages" hidden></div><div class="stf-pane" data-p="health" hidden></div><div class="stf-pane" data-p="activity" hidden></div></div>';
+      '<div class="stf-pane" data-p="messages" hidden></div><div class="stf-pane" data-p="health" hidden></div><div class="stf-pane" data-p="activity" hidden></div><div class="stf-pane" data-p="team" hidden></div></div>';
     content.appendChild(view);
     view.addEventListener('click',onClick);
     buildCustomers(); buildMessages();
+    if(ROLE==='support') pane('messages').querySelectorAll('.app-card').forEach(function(c,i){ if(i!==1) c.remove(); });
   }
   function go(t){ tab=t; view.querySelectorAll('.stf-tabs button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===t); b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'); });
     view.querySelectorAll('.stf-pane').forEach(function(p){ p.hidden=p.dataset.p!==t; });
     if(t==='board'||t==='problems'||t==='accounts'){ if(!D) load(false); else render(); }
-    if(t==='health') health(); if(t==='activity') activity(); }
+    if(t==='health') health(); if(t==='activity') activity(); if(t==='team') teamLoad(); }
   function pane(n){ return view.querySelector('.stf-pane[data-p="'+n+'"]'); }
   function load(force){
     ['board','problems','accounts'].forEach(function(n){ if(!D) pane(n).innerHTML='<div class="app-card stf-card"><p class="stf-note">Reading every connected account from the engine… This takes a few seconds.</p></div>'; });
@@ -10154,9 +10155,29 @@ tick();setInterval(tick,5000);})();
   function activity(){ var p=pane('activity'); p.innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Staff activity</h3></div><div id="stfL"><p class="stf-note">Loading…</p></div></div>';
     S({op:'log'}).then(function(j){ p.querySelector('#stfL').innerHTML=j.items.length?'<div class="app-scroll"><table class="stf-tbl"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Customer / group</th><th>Result</th></tr></thead><tbody>'+j.items.map(function(x){ return '<tr><td>'+esc(when(x.at))+'</td><td>'+esc(x.by)+'</td><td>'+esc(x.op.replace(/_/g,' '))+'</td><td>'+esc(x.target)+'</td><td>'+esc(x.detail)+'</td></tr>'; }).join('')+'</tbody></table></div>':'<p class="stf-note">No staff actions yet.</p>'; })
       .catch(function(e){ p.querySelector('#stfL').innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
+  var ROLES={owner:'Owner: everything, and manages the team',staff:'Staff: every tool',support:'Support: customers, problems and one-to-one help; no group sends, posts, payments or team'};
+  function teamLoad(){ var p=pane('team');
+    p.innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Add a staff member</h3></div><p class="stf-note">They get an email to create their password (or a short note if they already have an FTM login). The FTM staff menu appears when they log in. Customers never see it.</p>'+
+      '<div class="stf-two"><label>Email<input id="stfTE" type="email" maxlength="120" placeholder="name@example.com"></label><label>Name (optional)<input id="stfTN" maxlength="60"></label></div>'+
+      '<label>Role<select id="stfTR"><option value="support">Support</option><option value="staff">Staff</option><option value="owner">Owner</option></select></label><p class="stf-note" id="stfTRd">'+esc(ROLES.support)+'</p>'+
+      '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfTAdd">Add to the team</button></div><div class="stf-out" id="stfTOut"></div></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>FTM team</h3></div><div id="stfTL"><p class="stf-note">Loading…</p></div></div>';
+    var r=p.querySelector('#stfTR'); r.addEventListener('change',function(){ p.querySelector('#stfTRd').textContent=ROLES[r.value]; });
+    p.querySelector('#stfTAdd').addEventListener('click',function(){ var e=p.querySelector('#stfTE').value.trim(), out=p.querySelector('#stfTOut'), btn=this; if(!/@/.test(e)){ flash(out,'Enter their email.',true); return; }
+      if(!window.confirm('Give '+e+' '+r.value+' access to the FTM staff console?')) return; btn.disabled=true; flash(out,'Adding…');
+      S({op:'team_add',email:e,role:r.value,name:p.querySelector('#stfTN').value.trim()}).then(function(j){ btn.disabled=false; flash(out,'✓ '+esc(j.message)); p.querySelector('#stfTE').value=''; p.querySelector('#stfTN').value=''; teamList(); })
+        .catch(function(x){ btn.disabled=false; flash(out,({FIXED_OWNER:'This address is a permanent owner.',NOT_YOURSELF:'You cannot change your own access.',EMAIL_INVALID:'That email is not valid.'}[x.code])||'Not added ('+esc(x.code||x.message)+').',true); }); });
+    teamList(); }
+  function teamList(){ var box=pane('team').querySelector('#stfTL');
+    S({op:'team'}).then(function(j){ box.innerHTML='<div class="app-scroll"><table class="stf-tbl stf-team"><thead><tr><th>Member</th><th>Role</th><th>Login</th><th></th></tr></thead><tbody>'+j.members.map(function(m){ var self=m.email===String(j.me).toLowerCase();
+      return '<tr data-e="'+esc(m.email)+'"><td><b>'+esc(m.name||m.email)+'</b>'+(m.name?'<small>'+esc(m.email)+'</small>':'')+(m.added_by?'<small>added by '+esc(m.added_by)+'</small>':'')+'</td><td>'+(m.fixed||self?'<span class="stf-st '+(m.role==='owner'?'ok':'mid')+'">'+esc(m.role)+(m.fixed?' · permanent':'')+'</span>':'<select data-a="trole">'+['support','staff','owner'].map(function(x){ return '<option'+(x===m.role?' selected':'')+'>'+x+'</option>'; }).join('')+'</select>')+'</td>'+
+        '<td>'+(m.has_login?(m.confirmed?'last '+esc(ago(m.last_login)):'waiting for them to create a password'):'no login yet')+'</td><td>'+(m.fixed||self?'':'<button type="button" class="btn btn-sm btn-dark" data-a="tdel">Remove</button>')+'</td></tr>'; }).join('')+'</tbody></table></div><div class="stf-out" id="stfTLOut"></div>';
+      box.querySelectorAll('select[data-a="trole"]').forEach(function(sel){ sel.addEventListener('change',function(){ var e=sel.closest('tr').dataset.e, o=box.querySelector('#stfTLOut'); S({op:'team_role',email:e,role:sel.value}).then(function(x){ flash(o,'✓ '+esc(x.message)); }).catch(function(x){ flash(o,'Not changed ('+esc(x.code||x.message)+').',true); teamList(); }); }); });
+      box.querySelectorAll('[data-a="tdel"]').forEach(function(b){ b.addEventListener('click',function(ev){ ev.stopPropagation(); var e=b.closest('tr').dataset.e, o=box.querySelector('#stfTLOut'); if(!window.confirm('Remove '+e+' from the FTM team? They are signed out at once.')) return; S({op:'team_remove',email:e}).then(function(x){ flash(o,'✓ '+esc(x.message)); teamList(); }).catch(function(x){ flash(o,'Not removed ('+esc(x.code||x.message)+').',true); }); }); });
+    }).catch(function(e){ box.innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
   function tick(){ var f=F(), e=f.session&&f.session.email?String(f.session.email).toLowerCase():null;
     if(e===who) return; who=e; remove(); if(!e) return;
-    C({op:'check'}).then(function(j){ if(j.staff&&who===e) build(); }).catch(function(){}); }
+    C({op:'check'}).then(function(j){ if(j.staff&&who===e){ ROLE=j.role||'staff'; build(); } }).catch(function(){}); }
   setInterval(tick,2500); setTimeout(tick,600);
   setInterval(function(){ if(view&&!view.hidden&&tab==='board'&&D&&Date.now()-Date.parse(D.at)>5*60e3) load(false); },60000);
 })();

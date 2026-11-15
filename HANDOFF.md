@@ -701,3 +701,4 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Messages: group email or phone notification (op broadcast; segments paying / no_account / attention / free / everyone; 60 emails or 300 pushes per call, resumable by id, nobody twice), listed customers email, FTM news post.
 - Health: /api/v1/status. Activity: staff/log.json (every action and group send).
 - Test: .github/tests/staff-area.js (server rules with mocked engine/Supabase/mail + every tab on laptop, phone, small phone; customers never see it).
+- Team (15 Nov): staff console > Team (owners only). Roles owner / staff / support (api/_lib/staff.js role()). Permanent owners: ftmwebnation@gmail.com + FTM_COMMUNITY_ADMINS. Team list in community bucket staff/team.json. Adding sends a create-password email (new login) or a short note; removing signs the person out at once. Support: no group sends, no FTM posts, no payments, no Team tab.

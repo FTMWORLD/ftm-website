@@ -8,10 +8,11 @@
    broadcast {segment, channel:'email'|'push', subject,title,text,button,link | title,body, dry?, id?}
                             segments: paying | free | no_account | attention | everyone; sends in batches, resumable by id
    log                      the last staff actions
+   team | team_add {email, role, name} | team_role {email, role} | team_remove {email}   owners only
    Every action is written to the staff log. */
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
-const { isStaff } = require('../_lib/staff');
+const StaffLib = require('../_lib/staff');
 const Engine = require('../_lib/engineClient');
 const P = require('../_lib/push');
 const Notices = require('../_lib/notices');
@@ -135,8 +136,48 @@ module.exports = async function handler(req, res) {
   try {
     const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
     const me = await userFromToken(admin, req);
-    if (!me || !isStaff(me)) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
+    const role = me ? await StaffLib.role(admin, me) : null;
+    if (!role) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
     const op = String(body.op || ''), by = me.email;
+    if (role === 'support' && op === 'broadcast') return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
+    if (op.indexOf('team') === 0 && role !== 'owner') return res.status(403).json({ ok: false, error: 'OWNERS_ONLY' });
+
+    if (op === 'team') {
+      const T = await StaffLib.team(admin, true), users = await allUsers(admin), byMail = {}; users.forEach(u => { if (u.email) byMail[u.email.toLowerCase()] = u; });
+      const row = (e, r, fixed, extra) => { const u = byMail[e]; return Object.assign({ email: e, role: r, fixed: !!fixed, has_login: !!u, confirmed: !!(u && u.email_confirmed_at), last_login: u ? u.last_sign_in_at || null : null }, extra || {}); };
+      const list = StaffLib.owners().map(e => row(e, 'owner', true)).concat(T.filter(m => StaffLib.owners().indexOf(m.email) === -1).map(m => row(m.email, m.role, false, { name: m.name || '', added_by: m.by || '', added_at: m.at || null })));
+      users.forEach(u => { const e = String(u.email || '').toLowerCase(); if (/@ftmwealthnation\.com$/.test(e) && !list.some(x => x.email === e)) list.push(row(e, 'staff', true)); });
+      return res.status(200).json({ ok: true, me: by, members: list });
+    }
+    if (op === 'team_add' || op === 'team_role' || op === 'team_remove') {
+      const e = String(body.email || '').trim().toLowerCase(), r = ['owner', 'staff', 'support'].indexOf(body.role) !== -1 ? body.role : 'support';
+      if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(e)) return res.status(400).json({ ok: false, error: 'EMAIL_INVALID' });
+      if (StaffLib.owners().indexOf(e) !== -1) return res.status(400).json({ ok: false, error: 'FIXED_OWNER' });
+      if (e === String(by).toLowerCase()) return res.status(400).json({ ok: false, error: 'NOT_YOURSELF' });
+      const T = (await StaffLib.team(admin, true)).slice(), i = T.findIndex(m => m.email === e);
+      if (op === 'team_remove') {
+        if (i === -1) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        T.splice(i, 1); await StaffLib.saveTeam(admin, T);
+        const u = (await allUsers(admin)).find(x => String(x.email || '').toLowerCase() === e);
+        if (u) await admin.auth.admin.updateUserById(u.id, { app_metadata: Object.assign({}, u.app_metadata || {}, { ftm_revoked_at: new Date().toISOString(), ftm_devices: [] }) });
+        await logIt(admin, by, 'team_remove', e, 'Removed from staff and signed out');
+        return res.status(200).json({ ok: true, message: e + ' is no longer staff and was signed out.' });
+      }
+      if (op === 'team_role') {
+        if (i === -1) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        T[i] = Object.assign({}, T[i], { role: r }); await StaffLib.saveTeam(admin, T); await logIt(admin, by, 'team_role', e, r);
+        return res.status(200).json({ ok: true, message: e + ' is now ' + r + '.' });
+      }
+      const name = clean(body.name, 60);
+      if (i === -1) T.push({ email: e, role: r, name, by, at: new Date().toISOString() }); else T[i] = Object.assign({}, T[i], { role: r, name: name || T[i].name });
+      await StaffLib.saveTeam(admin, T);
+      const u = (await allUsers(admin)).find(x => String(x.email || '').toLowerCase() === e);
+      let msg;
+      if (!u || !u.last_sign_in_at) { await Tpl.sendPasswordEmail(admin, e, { free: true, fresh: !!u, name }); msg = e + ' was added as ' + r + '. They got an email to create their password; the FTM staff menu appears after they log in.'; }
+      else { await Notices.custom(admin, u, { subject: 'You now have access to the FTM staff console', title: 'Welcome to the FTM team', text: 'You were added to the FTM staff console as ' + r + '.\n\nLog in as usual: the menu now shows FTM staff.', button: 'Open FTM', link: 'https://www.ftmwealthnation.com/' }); msg = e + ' was added as ' + r + '. They see FTM staff at their next login.'; }
+      await logIt(admin, by, 'team_add', e, r);
+      return res.status(200).json({ ok: true, message: msg });
+    }
 
     if (op === 'dashboard') {
       const [users, prof, cr] = await Promise.all([allUsers(admin), allProfiles(admin), crawl(admin, !!body.force)]);
@@ -157,7 +198,8 @@ module.exports = async function handler(req, res) {
         paying_with_account: (cr.customers || []).filter(c => (c.accounts || []).length).length, accounts: accounts.length, trading, open_positions: open, real: accounts.filter(a => a.mode === 'REAL').length, demo: accounts.filter(a => a.mode === 'DEMO').length,
         community: Object.keys(idx.members).length, online: Object.keys(pres).filter(k => now - Date.parse(pres[k]) < 300000).length, posts_7d: posts.filter(x => now - Date.parse(x.t) < 7 * day).length };
       stats.conversion = stats.customers ? Math.round(stats.paying / stats.customers * 1000) / 10 : 0;
-      return res.status(200).json({ ok: true, at: cr.at, crawl_ms: cr.ms, stats, days, money, by_status: count(a => a.status), by_tier: count(a => a.tier), by_broker: count(a => a.broker), payments: pay,
+      if (role === 'support') pay = null;
+      return res.status(200).json({ ok: true, role, at: cr.at, crawl_ms: cr.ms, stats, days, money, by_status: count(a => a.status), by_tier: count(a => a.tier), by_broker: count(a => a.broker), payments: pay,
         accounts: accounts.sort((a, b) => b.equity - a.equity), problems: problems(users, prof, cr) });
     }
 
