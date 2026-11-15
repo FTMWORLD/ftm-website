@@ -91,7 +91,7 @@ function problems(users, prof, cr) {
       list.push({ sev: /FAILED|ACTION|ERROR/.test(String(a.status) + String(a.reason)) ? 3 : 2, kind: 'account', uid: c.uid, email: c.email, account: a.number, title: 'Account ' + (a.number || '') + ': ' + (a.text || a.status || 'not trading'), detail: [a.reason, a.vdelay, since != null ? 'waiting ' + since + ' min' : null].filter(Boolean).join(' · '), fix: 'lookup' });
     });
     if (c.billing) {
-      if (c.billing.status && c.billing.status !== 'ACTIVE') list.push({ sev: 3, kind: 'billing', uid: c.uid, email: c.email, title: 'Plan in profile, but billing is ' + c.billing.status, detail: 'Check the payment, then Repair plan', fix: 'repair_plan' });
+      if (c.billing.status && ['ACTIVE', 'EXEMPT', 'TRIALING', 'LIFETIME'].indexOf(String(c.billing.status).toUpperCase()) === -1) list.push({ sev: 3, kind: 'billing', uid: c.uid, email: c.email, title: 'Has a plan on the website, but the engine says billing is ' + c.billing.status, detail: 'Repair plan checks Stripe for a payment from this email. If it finds none, ask FTM ENGINE to correct the billing', fix: 'repair_plan' });
       else if (!c.billing.lifetime && c.billing.period_end) { const d = Math.ceil((Date.parse(c.billing.period_end) - now) / day); if (d >= 0 && d <= 14) list.push({ sev: 1, kind: 'renewal', uid: c.uid, email: c.email, title: 'Plan ends in ' + d + ' day' + (d === 1 ? '' : 's'), detail: c.billing.period_end.slice(0, 10), fix: 'email_renew' }); }
     }
   });
@@ -197,6 +197,8 @@ module.exports = async function handler(req, res) {
         active_1d: users.filter(u => now - Date.parse(u.last_sign_in_at || 0) < day).length, active_7d: users.filter(u => now - Date.parse(u.last_sign_in_at || 0) < 7 * day).length,
         paying_with_account: (cr.customers || []).filter(c => (c.accounts || []).length).length, accounts: accounts.length, trading, open_positions: open, real: accounts.filter(a => a.mode === 'REAL').length, demo: accounts.filter(a => a.mode === 'DEMO').length,
         community: Object.keys(idx.members).length, online: Object.keys(pres).filter(k => now - Date.parse(pres[k]) < 300000).length, posts_7d: posts.filter(x => now - Date.parse(x.t) < 7 * day).length };
+      stats.no_account = (cr.customers || []).filter(c => c.accounts && !c.accounts.length).length;
+      stats.attention = accounts.filter(a => !(a.status === 'ACTIVE' || a.status === 'PAUSED' && a.reason === 'PAUSED')).length;
       stats.conversion = stats.customers ? Math.round(stats.paying / stats.customers * 1000) / 10 : 0;
       if (role === 'support') pay = null;
       return res.status(200).json({ ok: true, role, at: cr.at, crawl_ms: cr.ms, stats, days, money, by_status: count(a => a.status), by_tier: count(a => a.tier), by_broker: count(a => a.broker), payments: pay,
