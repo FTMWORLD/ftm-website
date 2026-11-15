@@ -25,6 +25,7 @@ jobs:
           node .github/tests/community-api.js
           node .github/tests/leaderboard-community.js
           node .github/tests/staff-area.js http://localhost:8765
+          node .github/tests/comment-emoji.js http://localhost:8765
           node .github/tests/fx-api.js
           node .github/tests/scripts-pinned.js
           node .github/tests/no-promises.js
