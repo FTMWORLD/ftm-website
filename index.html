@@ -786,6 +786,14 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .lb-table tr.lb-click:hover td{background:var(--bg-3)}
   .lb-table tr.you.lb-click:hover td{background:#E3E9FF}
   .lb-card.lb-click:hover{transform:translateY(-2px)}
+.stf-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:0 0 18px}.stf-head h2{margin:0 0 4px;font-size:26px;color:var(--ink)}.stf-head p{margin:0;color:var(--muted);font-size:14px}
+.stf-badge{flex:none;background:linear-gradient(135deg,#0B1440,#152a7a);color:#E3B62F;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(212,175,55,.45)}
+.stf-card{margin:0 0 18px}.stf-ttl{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 6px}.stf-ttl h3{margin:0;font-size:18px;color:var(--ink)}
+.stf-note{color:var(--muted);font-size:13px;margin:0 0 14px}.stf-note.bad,.stf-out.bad,.stf-out li.bad{color:var(--red-dark,#b4232c)}.stf-out li.ok{color:#15803d}
+.stf label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin:0 0 12px}.stf input:not([type=checkbox]),.stf select,.stf textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;font:inherit;font-weight:500;font-size:15px;background:#fff;color:var(--ink)}
+.stf textarea{resize:vertical}.stf .stf-chk{display:flex;align-items:center;gap:8px;font-weight:600}.stf-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stf-act{margin-top:6px}.stf-out{margin-top:12px;font-size:14px}.stf-out ul{margin:0;padding-left:18px}.stf-out a{color:#152a7a;font-weight:700;text-decoration:underline;text-decoration-color:#D4AF37;text-underline-offset:3px}
+.stf-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stf-tiles>div{background:linear-gradient(135deg,#F7F8FB,#EEF1F8);border-radius:14px;padding:14px 12px;border:1px solid var(--line)}.stf-tiles b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}.stf-tiles span{font-size:12px;color:var(--muted)}
+@media (max-width:600px){.stf-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.stf-two{grid-template-columns:1fr}.stf-head h2{font-size:22px}}
   .lb-cm{cursor:pointer;text-decoration:underline;text-decoration-color:rgba(212,175,55,.55);text-underline-offset:3px;text-decoration-thickness:2px}
   .lb-cm:hover,.lb-cm:focus-visible{color:var(--blue);text-decoration-color:#D4AF37}
   .mp-back{border:0;background:none;color:var(--blue);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;padding:0}
@@ -7893,7 +7901,8 @@ body.op-lock{overflow:hidden}
       accounts: {t:'Accounts overview',  s:'The accounts you have added to FTM.'},
       sessions: {t:'Trading sessions',   s:'Which session your results come from.'},
       charts:   {t:'Charts',             s:'Price history for the markets FTM MACHINE trades.'},
-      kyc:      {t:'Know Your Customer', s:'Five quick questions so FTM can serve you better.'}
+      kyc:      {t:'Know Your Customer', s:'Five quick questions so FTM can serve you better.'},
+      staff:    {t:'FTM staff',          s:'Tools for the FTM team. Customers never see this page.'}
     };
     function header(name){
       var m=F.metrics(), A=F.data.accounts||[], on=A.filter(function(a){return a.active;})[0];
@@ -9892,6 +9901,72 @@ tick();setInterval(tick,5000);})();
     if(Date.now()-(window.__lblT||0)>(last?300000:30000)) load();
   },5000);
   window.FTM=window.FTM||{}; window.FTM.loadBoard=load;
+})();
+</script>
+<script>
+(function(){
+  var MAINT='Service update: last night our broker partner\'s servers were briefly down for maintenance, and copying paused for a few accounts for a short time.\n\nEverything is restored. Copying runs again, open trades were managed throughout, and start dates, figures and leaderboard places are unchanged.\n\nWe have also improved FTM for every account: when a broker is in maintenance, FTM now keeps retrying and no longer pauses copying. There is nothing you need to do.';
+  var who=null, nav=null, view=null;
+  function F(){ return window.FTM||{}; }
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function api(body){ var f=F(); return Promise.resolve(f.auth&&f.auth.getAccessToken?f.auth.getAccessToken():null).then(function(t){ if(!t) throw new Error('NO_SESSION');
+    return fetch('/api/v1/community',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify(Object.assign({action:'staff'},body))}).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok||!j.ok){ var e=new Error(j.error||('HTTP '+r.status)); e.code=j.error; throw e; } return j; }); }); }); }
+  function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; }
+  function build(){
+    var host=document.querySelector('#appView .app-nav'), content=document.querySelector('#appView .app-content'); if(!host||!content||nav) return;
+    nav=document.createElement('button'); nav.type='button'; nav.className='app-nav-item nav-staff'; nav.dataset.view='staff'; nav.setAttribute('translate','no');
+    nav.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 15.4 6.8 18.1l1-5.8L3.5 8.2l5.9-.9z"/></svg><span>FTM staff</span>';
+    var kyc=host.querySelector('.nav-kyc'); if(kyc&&kyc.nextSibling) host.insertBefore(nav,kyc.nextSibling); else host.appendChild(nav);
+    nav.addEventListener('click',function(){ F().showView('staff'); overview(); });
+    view=document.createElement('section'); view.className='app-view stf'; view.dataset.view='staff'; view.hidden=true; view.setAttribute('translate','no');
+    view.innerHTML=
+      '<div class="stf-head"><div><h2>FTM staff</h2><p>Only FTM staff logins see this page. Customers never see it.</p></div><span class="stf-badge">Staff only</span></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Overview</h3><button type="button" class="btn btn-sm btn-dark" id="stfRef">Refresh</button></div><div class="stf-tiles" id="stfTiles"><p class="stf-note">Loading…</p></div></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Email customers</h3></div><p class="stf-note">Sent in the FTM email design to the customers you list (their FTM login email).</p>'+
+        '<label>Email<select id="stfTpl"><option value="copying_resumed">Copying resumed: broker maintenance</option><option value="copying_resumed_other">Copying resumed: other cause</option><option value="custom">Your own message</option></select></label>'+
+        '<label>Customers (one email per line, up to 50)<textarea id="stfTo" rows="3" placeholder="name@example.com"></textarea></label>'+
+        '<div id="stfRes"><label>Account number (optional)<input id="stfAcct" maxlength="24" inputmode="numeric"></label></div>'+
+        '<div id="stfCus" hidden><label>Subject<input id="stfSub" maxlength="120"></label><label>Headline<input id="stfTit" maxlength="80"></label><label>Message (empty line = new paragraph)<textarea id="stfTxt" rows="6"></textarea></label>'+
+        '<div class="stf-two"><label>Button text (optional)<input id="stfBtn" maxlength="40" placeholder="Open my dashboard"></label><label>Button link<input id="stfLnk" maxlength="300" placeholder="https://www.ftmwealthnation.com/"></label></div></div>'+
+        '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfSend">Send email</button></div><div class="stf-out" id="stfMailOut"></div></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Post on FTM news</h3><button type="button" class="btn btn-sm btn-dark" id="stfFill">Use the maintenance update</button></div><p class="stf-note">Appears in Community as an official FTM post with the gold tick.</p>'+
+        '<textarea id="stfPost" rows="6" maxlength="2000" placeholder="Write the update for all members…"></textarea>'+
+        '<label class="stf-chk"><input type="checkbox" id="stfPin"> Pin to the top of the feed</label>'+
+        '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfPostBtn">Post</button></div><div class="stf-out" id="stfPostOut"></div></div>';
+    content.appendChild(view);
+    var tpl=view.querySelector('#stfTpl'); tpl.addEventListener('change',function(){ var c=tpl.value==='custom'; view.querySelector('#stfCus').hidden=!c; view.querySelector('#stfRes').hidden=c; });
+    view.querySelector('#stfRef').addEventListener('click',overview);
+    view.querySelector('#stfFill').addEventListener('click',function(){ view.querySelector('#stfPost').value=MAINT; });
+    view.querySelector('#stfSend').addEventListener('click',sendMail);
+    view.querySelector('#stfPostBtn').addEventListener('click',post);
+  }
+  function out(id,html,bad){ var o=view.querySelector('#'+id); o.className='stf-out'+(bad?' bad':''); o.innerHTML=html; }
+  function overview(){ if(!view) return; api({op:'overview'}).then(function(j){
+    var T=[['Logins',j.logins],['New in 24 h',j.new_24h],['Active in 24 h',j.active_24h],['Community members',j.community],['Subscribers in Community',j.community_subscribers],['Online now',j.online],['Posts',j.posts],['Posts in 24 h',j.posts_24h]];
+    view.querySelector('#stfTiles').innerHTML=T.map(function(x){ return '<div><b>'+esc(x[1]==null?'—':x[1])+'</b><span>'+esc(x[0])+'</span></div>'; }).join(''); }).catch(function(e){ view.querySelector('#stfTiles').innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
+  function sendMail(){
+    var v=view.querySelector('#stfTpl').value, to=view.querySelector('#stfTo').value.split(/[\s,;]+/).filter(function(x){ return /@/.test(x); });
+    if(!to.length){ out('stfMailOut','Add at least one customer email.',true); return; }
+    var b={op:'email',emails:to,template:v==='custom'?'custom':'copying_resumed',cause:v==='copying_resumed_other'?'other':'broker_maintenance',account:view.querySelector('#stfAcct').value.trim()};
+    if(v==='custom'){ b.subject=view.querySelector('#stfSub').value.trim(); b.title=view.querySelector('#stfTit').value.trim(); b.text=view.querySelector('#stfTxt').value.trim(); b.button=view.querySelector('#stfBtn').value.trim(); b.link=view.querySelector('#stfLnk').value.trim();
+      if(!b.subject||!b.title||!b.text){ out('stfMailOut','Fill in subject, headline and message.',true); return; } }
+    if(!window.confirm('Send this email to '+to.length+' customer'+(to.length>1?'s':'')+'?')) return;
+    var btn=view.querySelector('#stfSend'); btn.disabled=true; out('stfMailOut','Sending…');
+    api(b).then(function(j){ btn.disabled=false; out('stfMailOut','<ul>'+j.results.map(function(r){ return '<li class="'+(r.status==='sent'?'ok':'bad')+'"><b>'+esc(r.email)+'</b> '+esc(r.status)+'</li>'; }).join('')+'</ul>'); })
+      .catch(function(e){ btn.disabled=false; out('stfMailOut','Not sent ('+esc(e.code||e.message)+').',true); });
+  }
+  function post(){
+    var t=view.querySelector('#stfPost').value.trim(); if(!t){ out('stfPostOut','Write the post first.',true); return; }
+    if(!window.confirm('Post this on FTM news for all members?')) return;
+    var btn=view.querySelector('#stfPostBtn'); btn.disabled=true; out('stfPostOut','Posting…');
+    api({op:'post',text:t,pin:view.querySelector('#stfPin').checked}).then(function(){ btn.disabled=false; view.querySelector('#stfPost').value=''; out('stfPostOut','Posted. <a href="#" id="stfSee">See it in Community</a>');
+      view.querySelector('#stfSee').addEventListener('click',function(e){ e.preventDefault(); F().showView('community'); if(F().feedLoad) F().feedLoad(true); }); overview(); })
+      .catch(function(e){ btn.disabled=false; out('stfPostOut','Not posted ('+esc(e.code||e.message)+').',true); });
+  }
+  function tick(){ var f=F(), e=f.session&&f.session.email?String(f.session.email).toLowerCase():null;
+    if(e===who) return; who=e; remove(); if(!e) return;
+    api({op:'check'}).then(function(j){ if(j.staff&&who===e) build(); }).catch(function(){}); }
+  setInterval(tick,2500); setTimeout(tick,600);
 })();
 </script>
 <script>

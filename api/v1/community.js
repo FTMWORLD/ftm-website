@@ -14,13 +14,15 @@
      notifs {read?}              likes, comments, new followers and FTM posts for me
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
-   FTM staff = a login on @ftmwealthnation.com or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
+   FTM staff = a login on @ftmwealthnation.com, the FTM mailbox ftmwebnation@gmail.com, or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
+   Staff area (action 'staff', ops check/overview/email/post) also needs a confirmed email.
    Data lives in a private Supabase Storage bucket "community" (JSON files), reachable only through this function.
    Members are addressed by an opaque id (mid), never by their login id or email. */
 
 const crypto = require('crypto');
 const Push = require('../_lib/push');
 const Engine = require('../_lib/engineClient');
+const Notices = require('../_lib/notices');
 const { createClient } = require('@supabase/supabase-js');
 
 const BUCKET = 'community';
@@ -37,7 +39,7 @@ function clean(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u
 const REACTIONS = ['\u2764\uFE0F', '\uD83D\uDC4D', '\uD83D\uDE02', '\uD83D\uDE2E', '\uD83D\uDE22', '\uD83D\uDE4F', '\uD83D\uDD25', '\uD83C\uDF89'];
 function outMsg(x, me) { const o = { from: x.f === me ? 'me' : 'them', text: x.d ? '' : x.x, t: x.t }; if (x.d) o.removed = true; if (x.r) { const r = {}; Object.keys(x.r).forEach(k => { r[k === me ? 'me' : 'them'] = x.r[k]; }); o.reactions = r; } if (x.q && !x.d) o.reply = { from: x.q.f === me ? 'me' : 'them', text: x.q.x, t: x.q.t }; return o; }
 const postsSent = new Map();
-function isStaff(user) { const e = String((user && user.email) || '').toLowerCase(); const L = String(process.env.FTM_COMMUNITY_ADMINS || '').toLowerCase().split(',').map(x => x.trim()).filter(Boolean); return !!e && (/@ftmwealthnation\.com$/.test(e) || L.indexOf(e) !== -1); }
+function isStaff(user) { const e = String((user && user.email) || '').toLowerCase(); const L = ('ftmwebnation@gmail.com,' + String(process.env.FTM_COMMUNITY_ADMINS || '')).toLowerCase().split(',').map(x => x.trim()).filter(Boolean); return !!e && (/@ftmwealthnation\.com$/.test(e) || L.indexOf(e) !== -1); }
 function cleanLong(s, n) { return Array.from(String(s == null ? '' : s).replace(/[\u0000-\u0009\u000b-\u001f<>]/g, ' ').replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim()).slice(0, n).join(''); }
 function postImgs(x) { const n = x.imgs || (x.img ? 1 : 0), v = x.img || ''; const L = []; for (let i = 0; i < n; i++) L.push('/api/v1/community?postimg=' + x.id + (i ? '_' + i : '') + '&v=' + v); return L; }
 function tagsOf(t) { const m = String(t || '').match(/#[\p{L}\p{N}_]{2,30}/gu) || []; return Array.from(new Set(m.map(x => x.slice(1).toLowerCase()))); }
@@ -279,6 +281,48 @@ module.exports = async function handler(req, res) {
       if (!mine || !idx.members[m] || hidden.has(m)) return res.status(200).json({ ok: true });
       const p = 'typing/' + pair(me, m) + '.json', ty = await S.read(p, {}); ty[me] = new Date().toISOString(); await S.write(p, ty);
       return res.status(200).json({ ok: true });
+    }
+
+    if (action === 'staff') {
+      if (!isStaff(user) || !user.email_confirmed_at) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
+      const op = String(body.op || '');
+      if (op === 'check') return res.status(200).json({ ok: true, staff: true });
+      const allUsers = async () => { const out = []; for (let page = 1; page <= 20; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); out.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; } return out; };
+      if (op === 'overview') {
+        const us = await allUsers(), P = await S.read('posts.json', { posts: [] }), day = Date.now() - 864e5;
+        const ms = Object.keys(idx.members);
+        return res.status(200).json({ ok: true, logins: us.length, new_24h: us.filter(u => Date.parse(u.created_at) > day).length, active_24h: us.filter(u => Date.parse(u.last_sign_in_at || 0) > day).length,
+          community: ms.length, community_subscribers: ms.filter(k => idx.members[k].sub).length, online: Object.keys(pres).filter(k => Date.now() - Date.parse(pres[k]) < 300000).length,
+          posts: P.posts.length, posts_24h: P.posts.filter(x => Date.parse(x.t) > day).length });
+      }
+      if (op === 'email') {
+        const emails = [...new Set((Array.isArray(body.emails) ? body.emails : String(body.emails || '').split(/[\s,;]+/)).map(e => String(e).trim().toLowerCase()).filter(e => /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(e)))].slice(0, 50);
+        if (!emails.length) return res.status(400).json({ ok: false, error: 'NO_EMAILS' });
+        const tpl = String(body.template || ''), subject = clean(body.subject, 120), title = clean(body.title, 80), text = cleanLong(body.text, 4000);
+        if (tpl === 'custom' && (!subject || !title || !text)) return res.status(400).json({ ok: false, error: 'MESSAGE_INCOMPLETE' });
+        if (tpl !== 'custom' && tpl !== 'copying_resumed') return res.status(400).json({ ok: false, error: 'UNKNOWN_TEMPLATE' });
+        const byMail = {}; (await allUsers()).forEach(u => { if (u.email) byMail[String(u.email).toLowerCase()] = u; });
+        const results = [];
+        for (const e of emails) {
+          const u = byMail[e]; if (!u) { results.push({ email: e, status: 'no FTM account' }); continue; }
+          if (tpl === 'copying_resumed') {
+            const r = await Notices.copyingResumed(admin, u.id, { account: body.account, cause: body.cause === 'other' ? '' : 'broker_maintenance' });
+            results.push({ email: e, status: r.duplicate ? 'already sent in the last 12 hours' : r.error ? 'no FTM account' : r.via ? 'sent' : 'email failed' });
+          } else {
+            const r = await Notices.custom(admin, u, { subject, title, text, button: clean(body.button, 40), link: String(body.link || '').slice(0, 300) });
+            results.push({ email: e, status: r.via ? 'sent' : 'email failed' });
+          }
+        }
+        console.log('staff email', user.email, tpl, results.map(r => r.status).join(','));
+        return res.status(200).json({ ok: true, results });
+      }
+      if (op === 'post') {
+        const text = cleanLong(body.text, 2000); if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
+        const P = await S.read('posts.json', { posts: [] }), id = Date.now().toString(36) + crypto.randomBytes(3).toString('hex');
+        P.posts.push(Object.assign({ id, a: me, x: text, t: new Date().toISOString(), lk: [], c: [], ftm: true }, body.pin ? { pin: true } : {})); await S.write('posts.json', P);
+        return res.status(200).json({ ok: true, posted: id });
+      }
+      return res.status(400).json({ ok: false, error: 'UNKNOWN_ACTION' });
     }
 
     if (action === 'lbsync') {

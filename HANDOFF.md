@@ -684,3 +684,10 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Mapping: community action `lbsync` asks the engine (GET /customer/leaderboard/profile, verified user) for the member's leaderboard nickname and stores it as `lb` on the Community index; an automatic (never edited) Community name takes the leaderboard name when free. Runs once a day per login from the leaderboard script.
 - /api/v1/push engine event `copying_resumed` {user_id|email, account_number, since, cause:'broker_maintenance'}: designed FTM email (passwordEmail.html('copying_resumed')) + phone notification, max once per account per 12 h (mail/resumed-<mid>-<acct>.json). Needs ENGINE_PUSH_SECRET in Vercel and the engine; note for FTM ENGINE written 15 Nov (accounts 2022 and 4701).
 - Tests: leaderboard-community.js, buttons.js step "Leaderboard name opens Community profile", notifications.js copying_resumed checks.
+
+## 15 Nov 2026: FTM staff area (client area, staff logins only)
+- Menu item "FTM staff" is added by script only after the server confirms staff (community action `staff`, op `check`). Staff = confirmed email on @ftmwealthnation.com, ftmwebnation@gmail.com, or env FTM_COMMUNITY_ADMINS. Customers get 403 and never see the menu or page.
+- Tools: Overview (logins, new/active in 24 h, Community members, online, posts); Email customers (templates: copying resumed - broker maintenance / other cause, or own message in the FTM design; up to 50 addresses; per-address result; 12-h no-double rule for copying resumed); Post on FTM news (official gold-tick post, optional pin, "Use the maintenance update" text).
+- Shared email code: api/_lib/notices.js (copyingResumed, custom); templates in passwordEmail.html('copying_resumed' | 'notice'). Buttons in own messages only link to ftmwealthnation.com.
+- Staff page text is English only (not customer-facing). Add new staff tools as new cards + ops in the same action.
+- Test: .github/tests/staff-area.js (server rules + laptop/phone, customer vs staff).

@@ -53,6 +53,10 @@ function html(kind, o) {
     + P('Tap the button to choose a new password. You then go straight into your client area.')
     + BTN(o.link, 'Choose a new password')
     + P('The button works once and expires soon. If you did not ask for this, you can ignore this email: your password stays the same.', true) + SAFE);
+  if (kind === 'notice') {
+    const paras = String(o.text || '').split(/\n{2,}/).map(t => P(esc(t).replace(/\n/g, '<br>'))).join('');
+    return shell(o.title || 'A message from FTM', hello(o.name) + paras + (o.button && /^https:\/\/(www\.)?ftmwealthnation\.com\//.test(o.link || '') ? BTN(o.link, o.button) : '') + P('Questions? Just reply to this email.', true));
+  }
   if (kind === 'copying_resumed') {
     let when = ''; try { if (o.since) when = new Date(o.since).toLocaleString('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC'; } catch (e) { when = ''; }
     const acct = o.account ? ' (account ' + esc(o.account) + ')' : '';
