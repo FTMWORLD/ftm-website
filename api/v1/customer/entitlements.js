@@ -90,3 +90,5 @@ module.exports = async function handler(req, res) {
   try { await require('../../stripe/webhook.js').alertFtm('Plan repaired at login', [['Customer', user.email], ['Granted', found.join(', ')], ['Why', 'Paid, but the profile had no plan']]); } catch (e) {}
   return res.status(200).json({ ok: true, products: found, repaired: true });
 };
+module.exports.paidProductsFromStripe = paidProductsFromStripe;
+module.exports.activeOnEngine = activeOnEngine;

@@ -691,3 +691,13 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Shared email code: api/_lib/notices.js (copyingResumed, custom); templates in passwordEmail.html('copying_resumed' | 'notice'). Buttons in own messages only link to ftmwealthnation.com.
 - Staff page text is English only (not customer-facing). Add new staff tools as new cards + ops in the same action.
 - Test: .github/tests/staff-area.js (server rules + laptop/phone, customer vs staff).
+
+## 15 Nov 2026 (later): FTM staff console (api/v1/staff.js + staff script in index.html)
+- Tabs: Board · Problems · Accounts · Customers · Messages · Health · Activity. Staff only (api/_lib/staff.js: confirmed email on @ftmwealthnation.com, ftmwebnation@gmail.com, or FTM_COMMUNITY_ADMINS). Menu item added by script only after the server says staff.
+- Board (op dashboard): customers, paying, conversion, new/active, sign-ups per day (30 d, hover), money under copy per currency and ≈EUR (via /api/v1/fx), trading now, open positions, status/risk/broker breakdowns, Stripe payments (MTD/30/90 days, plans sold, latest) when STRIPE_SECRET_KEY is set.
+- Engine figures: the server reads GET /customer/accounts, /billing/status and /customer/me for every paying customer AS that customer (website token + X-FTM-Auth-Subject), 8 at a time, cached 5 min in community bucket staff/crawl.json. vercel.json functions: staff.js maxDuration 60.
+- Problems: engine not answering, paid without account (>1 day), account not ACTIVE (with reason and waiting time), billing not ACTIVE, plan ending ≤14 days, paid but never logged in; each with a one-click fix.
+- Customers (op lookup): by email, account number, client ID, Community/leaderboard nickname (numbers and IDs come from the crawl cache). Shows login, devices, plan, Stripe payments, KYC, Community, leaderboard, push devices, accounts + full engine statistics. Fixes (op act): reset / login code / create-password emails, confirm email, sign out every device, check payment & repair plan (Stripe proof only), test/reset notifications, hide/show Community profile, email this customer (templates).
+- Messages: group email or phone notification (op broadcast; segments paying / no_account / attention / free / everyone; 60 emails or 300 pushes per call, resumable by id, nobody twice), listed customers email, FTM news post.
+- Health: /api/v1/status. Activity: staff/log.json (every action and group send).
+- Test: .github/tests/staff-area.js (server rules with mocked engine/Supabase/mail + every tab on laptop, phone, small phone; customers never see it).

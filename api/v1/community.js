@@ -23,6 +23,7 @@ const crypto = require('crypto');
 const Push = require('../_lib/push');
 const Engine = require('../_lib/engineClient');
 const Notices = require('../_lib/notices');
+const StaffLib = require('../_lib/staff');
 const { createClient } = require('@supabase/supabase-js');
 
 const BUCKET = 'community';
@@ -284,7 +285,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'staff') {
-      if (!isStaff(user) || !user.email_confirmed_at) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
+      if (!StaffLib.isStaff(user)) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
       const op = String(body.op || '');
       if (op === 'check') return res.status(200).json({ ok: true, staff: true });
       const allUsers = async () => { const out = []; for (let page = 1; page <= 20; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); out.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; } return out; };

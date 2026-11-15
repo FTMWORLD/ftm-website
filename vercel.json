@@ -75,5 +75,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/v1/staff.js": {
+      "maxDuration": 60
+    }
+  }
 }

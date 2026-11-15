@@ -794,6 +794,39 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 .stf textarea{resize:vertical}.stf .stf-chk{display:flex;align-items:center;gap:8px;font-weight:600}.stf-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stf-act{margin-top:6px}.stf-out{margin-top:12px;font-size:14px}.stf-out ul{margin:0;padding-left:18px}.stf-out a{color:#152a7a;font-weight:700;text-decoration:underline;text-decoration-color:#D4AF37;text-underline-offset:3px}
 .stf-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.stf-tiles>div{background:linear-gradient(135deg,#F7F8FB,#EEF1F8);border-radius:14px;padding:14px 12px;border:1px solid var(--line)}.stf-tiles b{display:block;font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}.stf-tiles span{font-size:12px;color:var(--muted)}
 @media (max-width:600px){.stf-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.stf-two{grid-template-columns:1fr}.stf-head h2{font-size:22px}}
+.stf-live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e;margin-right:8px;vertical-align:middle;box-shadow:0 0 0 0 rgba(34,197,94,.5);animation:stfPulse 2.2s ease-out infinite}
+@keyframes stfPulse{70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}@media (prefers-reduced-motion:reduce){.stf-live{animation:none}}
+.stf-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 0 18px;padding:5px;background:#fff;border-radius:16px;border:1px solid var(--line)}.stf-tabs::-webkit-scrollbar{display:none}
+.stf-tabs button{flex:0 0 auto;border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--muted);padding:10px 16px;border-radius:12px;cursor:pointer;white-space:nowrap}
+.stf-tabs button.on{background:linear-gradient(135deg,#0B1440,#152a7a);color:#fff;box-shadow:inset 0 -2px 0 #D4AF37}.stf-tabs em{font-style:normal;background:#E5323E;color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:4px}
+.stf-upd{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 14px;font-size:13px;color:var(--muted)}
+.stf-hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:0 0 16px}.stf-hero>div{position:relative;overflow:hidden;background:linear-gradient(140deg,#0B1440,#152a7a);color:#fff;border-radius:20px;padding:20px 18px;box-shadow:0 18px 40px -24px rgba(11,20,64,.6)}
+.stf-hero>div::after{content:'';position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.28),transparent 70%);animation:stfGlow 6s ease-in-out infinite}@keyframes stfGlow{50%{transform:translate(-10px,10px)}}
+.stf-hero span{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#E3B62F;font-weight:700}.stf-hero b{display:block;font-size:26px;margin:8px 0 6px;white-space:nowrap}.stf-hero small{display:block;font-size:12px;color:rgba(255,255,255,.7);line-height:1.4}
+.stf-alert{display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;border:0;font:inherit;text-align:left;background:#FDECEE;color:#9b1c25;border-radius:16px;padding:14px 18px;margin:0 0 16px;cursor:pointer}.stf-alert.ok{background:#E9F8EF;color:#166534;cursor:default}.stf-alert span{font-weight:700;font-size:13px}
+.stf-chart{display:flex;align-items:flex-end;gap:3px;height:120px;padding:6px 0}.stf-col{flex:1;height:100%;display:flex;align-items:flex-end;cursor:default}.stf-col i{display:block;width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,#E3B62F,#D4AF37);transition:filter .15s}.stf-col:hover i{filter:brightness(1.1) saturate(1.2)}
+.stf-axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.stf-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.stf-3 .stf-card h3,.stf-sub{margin:0 0 12px;font-size:15px;color:var(--ink)}.stf-sub{margin:18px 0 10px}
+.stf-bars{display:grid;gap:8px}.stf-bar{display:grid;grid-template-columns:minmax(70px,auto) 1fr auto;gap:10px;align-items:center;font-size:13px}.stf-bar span{color:var(--ink);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}.stf-bar i{display:block;height:8px;border-radius:6px;background:#EEF1F8;position:relative;overflow:hidden}.stf-bar i::after{content:'';position:absolute;inset:0 auto 0 0;width:var(--w);background:linear-gradient(90deg,#152a7a,#D4AF37);border-radius:6px}
+.stf-tbl{width:100%;border-collapse:collapse;font-size:13px}.stf-tbl th{text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}.stf-tbl td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}.stf-tbl td small{display:block;color:var(--muted);font-size:11px}
+.stf-acc tbody tr{cursor:pointer}.stf-acc tbody tr:hover td{background:#F7F8FB}.stf-st{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:999px;background:#E9F8EF;color:#166534}.stf-st.mid{background:#FFF6DC;color:#8a6d12}.stf-st.bad{background:#FDECEE;color:#9b1c25}
+.stf-filt{display:flex;gap:10px;margin:0 0 14px}.stf-filt input{flex:1;margin:0!important}.stf-filt select{width:auto!important;margin:0!important}
+.stf-pbs{display:grid;gap:10px}.stf-pb{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:14px 16px;border-radius:14px;border:1px solid var(--line);border-left:4px solid #D4AF37;background:#fff}.stf-pb.s3{border-left-color:#E5323E}.stf-pb.s1{border-left-color:#94a3b8}
+.stf-pb b{display:block;color:var(--ink);font-size:14px}.stf-pb span{display:block;color:var(--muted);font-size:12px;margin-top:3px;word-break:break-word}.stf-pba{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.stf-pb .stf-out{grid-column:1/-1;margin:0}
+.stf-lnk{border:0;background:none;padding:0;font:inherit;color:#152a7a;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-color:#D4AF37;text-underline-offset:3px}
+.stf-cust{margin-top:8px}.stf-ch{display:flex;align-items:center;gap:14px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#F7F8FB,#EEF1F8);margin:0 0 6px}.stf-ch>div{flex:1;min-width:0}.stf-ch b{display:block;font-size:18px;color:var(--ink)}.stf-ch span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.stf-av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#0B1440,#152a7a);color:#E3B62F;font-weight:800;font-size:18px}
+.stf-2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.stf-kv{display:grid;grid-template-columns:minmax(80px,40%) minmax(0,1fr);gap:6px 12px;margin:0;font-size:13px}.stf-kv dt{color:var(--muted)}.stf-kv dd{margin:0;color:var(--ink);font-weight:600;word-break:break-word}
+.stf-accs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stf-acct{border:1px solid var(--line);border-radius:14px;padding:14px}.stf-ah{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}.stf-acct .btn{margin-top:12px}.stf-astats{margin-top:12px;max-height:340px;overflow:auto}
+.stf-acts{display:flex;flex-wrap:wrap;gap:8px}.stf-mini{display:grid;gap:10px}.stf-mini input,.stf-mini select,.stf-mini textarea{margin:0!important}.stf-mini .btn{justify-self:start}
+.stf-t3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.stf-prog{height:6px;border-radius:6px;background:#EEF1F8;overflow:hidden;margin-top:10px}.stf-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#152a7a,#D4AF37);transition:width .4s}
+.stf-hl{display:grid;gap:8px}.stf-hl>div{display:grid;grid-template-columns:auto 160px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:#F7F8FB;font-size:13px}.stf-hl i{width:10px;height:10px;border-radius:50%;background:#22c55e}.stf-hl .bad i{background:#E5323E}.stf-hl .bad{background:#FDECEE}.stf-hl span{color:var(--muted);word-break:break-word}.stf-hl small{color:var(--muted)}
+@media (max-width:1100px){.stf-hero{grid-template-columns:repeat(2,minmax(0,1fr))}.stf-2{grid-template-columns:1fr 1fr}}
+@media (max-width:760px){.stf-3,.stf-2,.stf-accs{grid-template-columns:1fr}.stf-pb{grid-template-columns:1fr}.stf-pba{justify-content:flex-start}.stf-hl>div{grid-template-columns:auto 1fr;}.stf-hl span,.stf-hl small{grid-column:2}}
+@media (max-width:600px){.stf-hero b{font-size:21px}.stf-hero>div{padding:16px 14px}.stf-t3{grid-template-columns:1fr!important}.stf-filt{flex-wrap:wrap}.stf-filt select{width:100%!important}.stf-tabs button{padding:9px 12px;font-size:13px}}
+@media (max-width:380px){.stf-hero{grid-template-columns:1fr}}
+.stf-main{gap:0!important}
+@media (max-width:600px){.stf-kv{grid-template-columns:1fr;gap:2px}.stf-kv dt{font-size:12px;margin-top:8px}.stf-head{flex-wrap:wrap}}
   .lb-cm{cursor:pointer;text-decoration:underline;text-decoration-color:rgba(212,175,55,.55);text-underline-offset:3px;text-decoration-thickness:2px}
   .lb-cm:hover,.lb-cm:focus-visible{color:var(--blue);text-decoration-color:#D4AF37}
   .mp-back{border:0;background:none;color:var(--blue);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;padding:0}
@@ -9906,23 +9939,160 @@ tick();setInterval(tick,5000);})();
 <script>
 (function(){
   var MAINT='Service update: last night our broker partner\'s servers were briefly down for maintenance, and copying paused for a few accounts for a short time.\n\nEverything is restored. Copying runs again, open trades were managed throughout, and start dates, figures and leaderboard places are unchanged.\n\nWe have also improved FTM for every account: when a broker is in maintenance, FTM now keeps retrying and no longer pauses copying. There is nothing you need to do.';
-  var who=null, nav=null, view=null;
+  var TPL={
+    connect:{subject:'Connect your trading account to start FTM MACHINE',title:'One step left: connect your account',text:'Your FTM plan is active, but no trading account is connected yet, so FTM MACHINE cannot trade for you.\n\nOpen your client area, go to Accounts and press Add account. It takes about two minutes, and FTM confirms the connection on screen.\n\nIf anything is unclear, just reply to this email and we help you.',button:'Connect my account',link:'https://www.ftmwealthnation.com/?open=accounts'},
+    renew:{subject:'Your FTM plan ends soon',title:'Keep FTM MACHINE trading for you',text:'Your FTM plan ends soon. Renew now so copying continues without a pause.\n\nYour figures, history and leaderboard place stay exactly as they are.',button:'Renew my plan',link:'https://www.ftmwealthnation.com/?open=accounts'},
+    welcome:{subject:'Welcome to FTM',title:'Welcome to FTM',text:'Thank you for joining FTM. Your client area is ready.\n\nIf you need anything, just reply to this email.',button:'Open my client area',link:'https://www.ftmwealthnation.com/'}
+  };
+  var who=null, nav=null, view=null, D=null, FX=null, tab='board', acctFilter='', acctStatus='';
   function F(){ return window.FTM||{}; }
   function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-  function api(body){ var f=F(); return Promise.resolve(f.auth&&f.auth.getAccessToken?f.auth.getAccessToken():null).then(function(t){ if(!t) throw new Error('NO_SESSION');
-    return fetch('/api/v1/community',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify(Object.assign({action:'staff'},body))}).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok||!j.ok){ var e=new Error(j.error||('HTTP '+r.status)); e.code=j.error; throw e; } return j; }); }); }); }
-  function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; }
+  function $(s){ return view.querySelector(s); }
+  function tok(){ var f=F(); return Promise.resolve(f.auth&&f.auth.getAccessToken?f.auth.getAccessToken():null); }
+  function post(url,body){ return tok().then(function(t){ if(!t) throw new Error('NO_SESSION'); var ac=window.AbortController?new AbortController():null; if(ac) setTimeout(function(){ ac.abort(); },70000);
+    return fetch(url,{method:'POST',signal:ac?ac.signal:undefined,headers:{'Content-Type':'application/json',Authorization:'Bearer '+t},body:JSON.stringify(body)}).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ if(!r.ok||!j.ok){ var e=new Error(j.detail||j.error||('HTTP '+r.status)); e.code=j.error||('HTTP_'+r.status); throw e; } return j; }); }); }); }
+  function S(b){ return post('/api/v1/staff',b); }
+  function C(b){ return post('/api/v1/community',Object.assign({action:'staff'},b)); }
+  function n0(v){ return (+v||0).toLocaleString('en-US'); }
+  function m2(v,c){ var n=+v||0; return (c?c+' ':'')+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function when(iso){ if(!iso) return '—'; var d=new Date(iso); if(isNaN(d)) return '—'; return d.toLocaleString([], {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+  function ago(iso){ if(!iso) return 'never'; var s=(Date.now()-Date.parse(iso))/1000; if(s<90) return 'just now'; if(s<5400) return Math.round(s/60)+' min ago'; if(s<172800) return Math.round(s/3600)+' h ago'; return Math.round(s/86400)+' days ago'; }
+  function toEUR(amount,cur){ if(!FX||!FX.rates) return null; var r=FX.rates, c=String(cur||'').toUpperCase(); if(!r[c]||!r.EUR) return null; return amount/r[c]*r.EUR; }
+  function flash(el,msg,bad){ el.className='stf-out'+(bad?' bad':''); el.innerHTML=msg; }
+  function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; D=null; }
+  var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['health','Health'],['activity','Activity']];
   function build(){
     var host=document.querySelector('#appView .app-nav'), content=document.querySelector('#appView .app-content'); if(!host||!content||nav) return;
     nav=document.createElement('button'); nav.type='button'; nav.className='app-nav-item nav-staff'; nav.dataset.view='staff'; nav.setAttribute('translate','no');
     nav.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 15.4 6.8 18.1l1-5.8L3.5 8.2l5.9-.9z"/></svg><span>FTM staff</span>';
     var kyc=host.querySelector('.nav-kyc'); if(kyc&&kyc.nextSibling) host.insertBefore(nav,kyc.nextSibling); else host.appendChild(nav);
-    nav.addEventListener('click',function(){ F().showView('staff'); overview(); });
+    nav.addEventListener('click',function(){ F().showView('staff'); go(tab); });
     view=document.createElement('section'); view.className='app-view stf'; view.dataset.view='staff'; view.hidden=true; view.setAttribute('translate','no');
-    view.innerHTML=
-      '<div class="stf-head"><div><h2>FTM staff</h2><p>Only FTM staff logins see this page. Customers never see it.</p></div><span class="stf-badge">Staff only</span></div>'+
-      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Overview</h3><button type="button" class="btn btn-sm btn-dark" id="stfRef">Refresh</button></div><div class="stf-tiles" id="stfTiles"><p class="stf-note">Loading…</p></div></div>'+
-      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Email customers</h3></div><p class="stf-note">Sent in the FTM email design to the customers you list (their FTM login email).</p>'+
+    view.innerHTML='<div class="app-main stf-main"><div class="stf-head"><div><h2>FTM staff console</h2><p>The whole company at a glance. Only FTM staff logins see this page.</p></div><span class="stf-badge"><i class="stf-live"></i>Staff only</span></div>'+
+      '<div class="stf-tabs" role="tablist">'+TABS.map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'">'+t[1]+(t[0]==='problems'?' <em id="stfPbN" hidden></em>':'')+'</button>'; }).join('')+'</div>'+
+      '<div class="stf-pane" data-p="board"></div><div class="stf-pane" data-p="problems" hidden></div><div class="stf-pane" data-p="accounts" hidden></div><div class="stf-pane" data-p="customers" hidden></div>'+
+      '<div class="stf-pane" data-p="messages" hidden></div><div class="stf-pane" data-p="health" hidden></div><div class="stf-pane" data-p="activity" hidden></div></div>';
+    content.appendChild(view);
+    view.addEventListener('click',onClick);
+    buildCustomers(); buildMessages();
+  }
+  function go(t){ tab=t; view.querySelectorAll('.stf-tabs button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===t); b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'); });
+    view.querySelectorAll('.stf-pane').forEach(function(p){ p.hidden=p.dataset.p!==t; });
+    if(t==='board'||t==='problems'||t==='accounts'){ if(!D) load(false); else render(); }
+    if(t==='health') health(); if(t==='activity') activity(); }
+  function pane(n){ return view.querySelector('.stf-pane[data-p="'+n+'"]'); }
+  function load(force){
+    ['board','problems','accounts'].forEach(function(n){ if(!D) pane(n).innerHTML='<div class="app-card stf-card"><p class="stf-note">Reading every connected account from the engine… This takes a few seconds.</p></div>'; });
+    var fx=FX?Promise.resolve(FX):fetch('/api/v1/fx').then(function(r){ return r.json(); }).catch(function(){ return null; });
+    return Promise.all([S({op:'dashboard',force:!!force}),fx]).then(function(r){ D=r[0]; FX=r[1]; render(); })
+      .catch(function(e){ ['board','problems','accounts'].forEach(function(n){ pane(n).innerHTML='<div class="app-card stf-card"><p class="stf-note bad">Could not load ('+esc(e.code||e.message)+'). <button type="button" class="btn btn-sm btn-dark" data-a="reload">Try again</button></p></div>'; }); });
+  }
+  function bars(obj,total){ var k=Object.keys(obj||{}).sort(function(a,b){ return obj[b]-obj[a]; }); if(!k.length) return '<p class="stf-note">No data yet.</p>';
+    var mx=Math.max.apply(null,k.map(function(x){ return obj[x]; }));
+    return '<div class="stf-bars">'+k.map(function(x){ var pc=total?Math.round(obj[x]/total*100):0; return '<div class="stf-bar" data-tip="'+esc(x+': '+obj[x]+(total?' ('+pc+'%)':''))+'"><span>'+esc(x)+'</span><i style="--w:'+(obj[x]/mx*100).toFixed(1)+'%"></i><b>'+n0(obj[x])+'</b></div>'; }).join('')+'</div>'; }
+  function render(){
+    if(!D||!view) return; var s=D.stats, pb=D.problems||[];
+    var n=$('#stfPbN'); if(n){ n.hidden=!pb.length; n.textContent=pb.length; }
+    var eurTot=0, eurOk=true, ccy=Object.keys(D.money||{});
+    ccy.forEach(function(c){ var v=toEUR(D.money[c].equity,c); if(v==null) eurOk=false; else eurTot+=v; });
+    var rev=D.payments, revM=rev?Object.keys(rev.mtd).map(function(c){ return m2(rev.mtd[c],c); }).join(' + ')||'EUR 0.00':'Stripe key not set';
+    var hero=[['Paying customers',n0(s.paying),s.conversion+'% of '+n0(s.customers)+' logins'],['Money under copy',ccy.length?(eurOk?'≈ EUR '+m2(eurTot):ccy.map(function(c){ return m2(D.money[c].equity,c); }).join(' · ')):'—',n0(s.accounts)+' accounts · '+ccy.length+' currenc'+(ccy.length===1?'y':'ies')+(eurOk&&ccy.length?' · equity':'')],['Revenue this month',revM,rev?rev.count30+' payments in 30 days':'Add STRIPE_SECRET_KEY in Vercel'],['Trading now',n0(s.trading),n0(s.open_positions)+' open positions']];
+    var tiles=[['Logins',s.customers],['Free',s.free],['Investors',s.investors],['New today',s.new_1d],['New 7 days',s.new_7d],['New 30 days',s.new_30d],['Active today',s.active_1d],['Active 7 days',s.active_7d],['Paying with an account',s.paying_with_account],['Real accounts',s.real],['Demo accounts',s.demo],['Community members',s.community],['Online now',s.online],['Posts 7 days',s.posts_7d]];
+    var mx=Math.max.apply(null,D.days.map(function(d){ return Math.max(d.signups,1); }));
+    var chart='<div class="stf-chart">'+D.days.map(function(d){ var h=Math.round(d.signups/mx*100); return '<div class="stf-col" data-tip="'+esc(new Date(d.d).toLocaleDateString([], {day:'numeric',month:'short'})+': '+d.signups+' sign-up'+(d.signups===1?'':'s')+', '+d.logins+' last logins')+'"><i style="height:'+Math.max(h,2)+'%"></i></div>'; }).join('')+'</div><div class="stf-axis"><span>'+esc(new Date(D.days[0].d).toLocaleDateString([], {day:'numeric',month:'short'}))+'</span><span>today</span></div>';
+    pane('board').innerHTML=
+      '<div class="stf-upd"><span><i class="stf-live"></i>Updated '+esc(ago(D.at))+' · engine read in '+((D.crawl_ms||0)/1000).toFixed(1)+' s</span><button type="button" class="btn btn-sm btn-dark" data-a="refresh">Refresh now</button></div>'+
+      '<div class="stf-hero">'+hero.map(function(h){ return '<div><span>'+esc(h[0])+'</span><b class="fz-nw">'+esc(h[1])+'</b><small>'+esc(h[2])+'</small></div>'; }).join('')+'</div>'+
+      (pb.length?'<button type="button" class="stf-alert" data-a="tab" data-t="problems"><b>'+pb.length+' thing'+(pb.length===1?'':'s')+' need attention</b><span>Open Problems</span></button>':'<div class="stf-alert ok"><b>No problems found</b><span>Every paying customer is connected and trading.</span></div>')+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Sign-ups, last 30 days</h3></div>'+chart+'</div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Company figures</h3></div><div class="stf-tiles">'+tiles.map(function(x){ return '<div><b>'+n0(x[1])+'</b><span>'+esc(x[0])+'</span></div>'; }).join('')+'</div></div>'+
+      '<div class="stf-3"><div class="app-card stf-card"><h3>Account status</h3>'+bars(D.by_status,s.accounts)+'</div><div class="app-card stf-card"><h3>Risk profile</h3>'+bars(D.by_tier,s.accounts)+'</div><div class="app-card stf-card"><h3>Broker</h3>'+bars(D.by_broker,s.accounts)+'</div></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Money under copy by currency</h3></div><div class="app-scroll"><table class="stf-tbl"><thead><tr><th>Currency</th><th>Accounts</th><th>Balance</th><th>Equity</th><th>Floating</th></tr></thead><tbody>'+
+        (ccy.length?ccy.map(function(c){ var m=D.money[c]; return '<tr><td><b>'+esc(c)+'</b></td><td>'+n0(m.accounts)+'</td><td>'+m2(m.balance)+'</td><td>'+m2(m.equity)+'</td><td class="'+(m.floating>=0?'pl-up':'pl-down')+'">'+m2(m.floating)+'</td></tr>'; }).join(''):'<tr><td colspan="5">No connected accounts yet.</td></tr>')+'</tbody></table></div></div>'+
+      (rev?'<div class="app-card stf-card"><div class="stf-ttl"><h3>Payments</h3></div><div class="stf-tiles stf-t3"><div><b>'+esc(revM)+'</b><span>This month</span></div><div><b>'+esc(Object.keys(rev.d30).map(function(c){ return m2(rev.d30[c],c); }).join(' + ')||'0')+'</b><span>Last 30 days</span></div><div><b>'+esc(Object.keys(rev.d90).map(function(c){ return m2(rev.d90[c],c); }).join(' + ')||'0')+'</b><span>Last 90 days</span></div></div>'+
+        '<h4 class="stf-sub">Plans sold (90 days)</h4>'+bars(rev.plans,0)+
+        '<h4 class="stf-sub">Latest payments</h4><div class="app-scroll"><table class="stf-tbl"><thead><tr><th>Date</th><th>Customer</th><th>Plan</th><th>Amount</th></tr></thead><tbody>'+rev.recent.map(function(p){ return '<tr><td>'+esc(when(p.at))+'</td><td><button type="button" class="stf-lnk" data-a="open" data-q="'+esc(p.email)+'">'+esc(p.email)+'</button></td><td>'+esc(p.plan)+'</td><td>'+m2(p.amount,p.currency)+'</td></tr>'; }).join('')+'</tbody></table></div></div>':'');
+    renderProblems(); renderAccounts();
+    if(F().fitNums) try{ F().fitNums(view); }catch(e){}
+  }
+  var FIX={password_email:['Send create-password email','password_email'],repair_plan:['Repair plan','repair_plan'],email_connect:['Email: connect your account','tpl:connect'],email_renew:['Email: renewal reminder','tpl:renew'],lookup:['Open customer','open']};
+  function renderProblems(){
+    var pb=D.problems||[];
+    pane('problems').innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Problems to solve</h3><button type="button" class="btn btn-sm btn-dark" data-a="refresh">Check again</button></div><p class="stf-note">Found automatically in every paying customer, their accounts and their plan. Engine problems go to FTM ENGINE; everything else can be fixed here.</p>'+
+      (pb.length?'<div class="stf-pbs">'+pb.map(function(p){ var f=FIX[p.fix]||FIX.lookup; return '<div class="stf-pb s'+p.sev+'"><div><b>'+esc(p.title)+'</b><span>'+esc(p.email)+(p.detail?' · '+esc(p.detail):'')+'</span></div><div class="stf-pba">'+
+        (p.fix!=='lookup'?'<button type="button" class="btn btn-sm btn-gold" data-a="fix" data-f="'+esc(f[1])+'" data-uid="'+esc(p.uid)+'" data-email="'+esc(p.email)+'">'+esc(f[0])+'</button>':'')+'<button type="button" class="btn btn-sm btn-dark" data-a="open" data-q="'+esc(p.email)+'">Open customer</button></div><div class="stf-out" hidden></div></div>'; }).join('')+'</div>':'<p class="stf-note">Nothing needs attention right now.</p>')+'</div>';
+  }
+  function renderAccounts(){
+    var A=(D.accounts||[]).filter(function(a){ var q=acctFilter.toLowerCase(); return (!acctStatus||a.status===acctStatus)&&(!q||[a.email,a.number,a.broker,a.server,a.status,a.tier].join(' ').toLowerCase().indexOf(q)!==-1); });
+    var st=Object.keys(D.by_status||{});
+    pane('accounts').innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Connected accounts <small>'+A.length+' of '+(D.accounts||[]).length+'</small></h3><button type="button" class="btn btn-sm btn-dark" data-a="csv">Download CSV</button></div>'+
+      '<div class="stf-filt"><input type="search" id="stfAF" placeholder="Search email, account, broker…" value="'+esc(acctFilter)+'"><select id="stfAS"><option value="">Every status</option>'+st.map(function(x){ return '<option'+(x===acctStatus?' selected':'')+'>'+esc(x)+'</option>'; }).join('')+'</select></div>'+
+      '<div class="app-scroll"><table class="stf-tbl stf-acc"><thead><tr><th>Customer</th><th>Account</th><th>Status</th><th>Balance</th><th>Equity</th><th>Floating</th><th>Open</th><th>Risk</th></tr></thead><tbody>'+
+      (A.length?A.map(function(a){ return '<tr data-a="open" data-q="'+esc(a.email)+'"><td><b>'+esc(a.email)+'</b></td><td>'+esc(a.number||'—')+'<small>'+esc([a.broker,a.mode].filter(Boolean).join(' · '))+'</small></td><td><span class="stf-st '+(a.status==='ACTIVE'?'ok':(a.status==='PAUSED'?'mid':'bad'))+'">'+esc(a.status||'—')+'</span></td><td>'+m2(a.balance,a.currency)+'</td><td>'+m2(a.equity,a.currency)+'</td><td class="'+(a.floating>=0?'pl-up':'pl-down')+'">'+m2(a.floating)+'</td><td>'+n0(a.open)+'</td><td>'+esc(a.tier||'—')+'</td></tr>'; }).join(''):'<tr><td colspan="8">No accounts match.</td></tr>')+'</tbody></table></div></div>';
+    var af=$('#stfAF'); af.addEventListener('input',function(){ acctFilter=af.value; var pos=af.selectionStart; renderAccounts(); var n=$('#stfAF'); n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} });
+    $('#stfAS').addEventListener('change',function(e){ acctStatus=e.target.value; renderAccounts(); });
+  }
+  function csv(){ var rows=[['email','account','broker','server','mode','currency','status','reason','balance','equity','floating','open_positions','risk_profile','last_validated']].concat((D.accounts||[]).map(function(a){ return [a.email,a.number,a.broker,a.server,a.mode,a.currency,a.status,a.reason,a.balance,a.equity,a.floating,a.open,a.tier,a.validated]; }));
+    var txt=rows.map(function(r){ return r.map(function(v){ v=v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(','); }).join('\n');
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'})); a.download='ftm-accounts-'+new Date().toISOString().slice(0,10)+'.csv'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); }
+  function buildCustomers(){
+    pane('customers').innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Find a customer</h3></div><p class="stf-note">Email, account number, client ID (FTM-…) or nickname.</p>'+
+      '<form class="stf-filt" id="stfFind"><input type="search" id="stfQ" placeholder="tanaya@example.com · 101875056 · FTM-0DDE-4EC966 · Tanaya" autocomplete="off"><button type="submit" class="btn btn-gold">Find</button></form><div id="stfCust"></div></div>';
+    pane('customers').querySelector('#stfFind').addEventListener('submit',function(e){ e.preventDefault(); lookup($('#stfQ').value); });
+  }
+  function lookup(q){ q=String(q||'').trim(); if(!q) return; go('customers'); $('#stfQ').value=q; var box=$('#stfCust'); box.innerHTML='<p class="stf-note">Looking up…</p>';
+    S({op:'lookup',q:q}).then(function(j){ renderCustomer(j.customer); }).catch(function(e){ box.innerHTML='<p class="stf-note bad">'+(e.code==='NOT_FOUND'?'No customer found for “'+esc(q)+'”. Account numbers and client IDs are found after the Board has loaded once.':'Could not look up ('+esc(e.code||e.message)+').')+'</p>'; }); }
+  function kv(rows){ return '<dl class="stf-kv">'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]==null||r[1]===''?'—':r[1]))+'</dd>'; }).join('')+'</dl>'; }
+  function renderCustomer(c){
+    var box=$('#stfCust'), b=c.billing||{}, acc=Array.isArray(c.accounts)?c.accounts:[];
+    var acts=[['reset_email','Send password reset'],['login_email','Send login code'],['password_email','Send create-password link'],['confirm_email','Mark email confirmed'],['repair_plan','Check payment & repair plan'],['signout_all','Sign out every device'],['push_test','Send test notification'],['push_clear','Reset phone notifications']];
+    if(c.community) acts.push(c.community.visible?['community_hide','Hide Community profile']:['community_show','Show Community profile']);
+    box.innerHTML='<div class="stf-cust" data-uid="'+esc(c.uid)+'" data-email="'+esc(c.email)+'">'+
+      '<div class="stf-ch"><span class="stf-av">'+esc((c.name||c.email||'?').charAt(0).toUpperCase())+'</span><div><b>'+esc(c.name||c.email)+'</b><span>'+esc(c.email)+(c.client_id?' · '+esc(c.client_id):'')+'</span></div><span class="stf-st '+(c.products.length?'ok':'mid')+'">'+esc(c.products.length?c.products.join(', '):'free')+'</span></div>'+
+      '<div class="stf-2">'+
+        '<div><h4 class="stf-sub">Login</h4>'+kv([['Customer since',when(c.created)],['Last login',when(c.last_login)+' ('+ago(c.last_login)+')'],['Email confirmed',c.confirmed?'yes':'no'],['Signed out remotely',c.signed_out_at?when(c.signed_out_at):'no'],['Known devices',c.devices.length?c.devices.map(function(d){ return d.name+(d.place?' ('+d.place+')':'')+', last '+ago(d.last); }).join('; '):'none']])+'</div>'+
+        '<div><h4 class="stf-sub">Plan and payments</h4>'+kv([['Billing (engine)',b.error?'engine: '+b.error:(b.status||'—')+(b.lifetime?' · Lifetime':b.period_end?' · ends '+when(b.period_end):'')],['Payments (Stripe)',c.payments==null?'Stripe key not set':(c.payments.length?c.payments.map(function(p){ return m2(p.amount,p.currency)+' '+when(p.at).split(',')[0]+' '+(p.paid==='paid'?'✓':p.paid); }).join('; '):'none')],['KYC',c.kyc&&c.kyc.country?(c.kyc.full_name||'')+' · '+c.kyc.country+(c.kyc.goal?' · '+c.kyc.goal:''):'not filled in']])+'</div>'+
+        '<div><h4 class="stf-sub">Community and leaderboard</h4>'+kv([['Community',c.community?c.community.nickname+(c.community.visible?' · visible':' · hidden'):'no profile'],['Leaderboard',c.leaderboard?(c.leaderboard.nickname||'—')+(c.leaderboard.opted_in?' · shown':' · not shown'):'—'],['Phone notifications',c.push.devices+' device'+(c.push.devices===1?'':'s')+' · off: '+(Object.keys(c.push.prefs||{}).filter(function(k){ return !c.push.prefs[k]; }).join(', ')||'none')]])+'</div>'+
+      '</div>'+
+      '<h4 class="stf-sub">Trading accounts</h4>'+(c.accounts&&c.accounts.error?'<p class="stf-note bad">Engine: '+esc(c.accounts.error)+'</p>':(acc.length?'<div class="stf-accs">'+acc.map(function(a){ return '<div class="stf-acct"><div class="stf-ah"><b>'+esc(a.view_only?'FTM master (view only)':(a.number||'—'))+'</b><span class="stf-st '+(a.status==='ACTIVE'?'ok':(a.status==='PAUSED'?'mid':'bad'))+'">'+esc(a.status||'—')+'</span></div>'+
+        kv([['Broker',[a.broker,a.server,a.mode].filter(Boolean).join(' · ')],['Balance / equity',m2(a.balance,a.currency)+' / '+m2(a.equity,a.currency)],['Floating · open',m2(a.floating)+' · '+a.open],['Risk profile',a.tier],['Status detail',[a.text,a.reason,a.vdelay].filter(Boolean).join(' · ')],['Last checked',when(a.validated)]])+
+        '<button type="button" class="btn btn-sm btn-dark" data-a="astats" data-id="'+esc(a.id)+'">Full statistics</button><div class="stf-astats" hidden></div></div>'; }).join('')+'</div>':'<p class="stf-note">No trading account connected.</p>'))+
+      '<h4 class="stf-sub">Fix it</h4><div class="stf-acts">'+acts.map(function(a){ return '<button type="button" class="btn btn-sm '+(/signout|push_clear|hide/.test(a[0])?'btn-dark':'btn-gold')+'" data-a="act" data-do="'+a[0]+'">'+esc(a[1])+'</button>'; }).join('')+'</div><div class="stf-out" id="stfActOut"></div>'+
+      '<h4 class="stf-sub">Email this customer</h4><div class="stf-mini"><select data-k="tpl"><option value="">Own message</option><option value="connect">Connect your account</option><option value="renew">Renewal reminder</option><option value="welcome">Welcome</option></select><input data-k="subject" placeholder="Subject" maxlength="120"><input data-k="title" placeholder="Headline" maxlength="80"><textarea data-k="text" rows="4" placeholder="Message"></textarea><div class="stf-two"><input data-k="button" placeholder="Button text (optional)" maxlength="40"><input data-k="link" placeholder="https://www.ftmwealthnation.com/…" maxlength="300"></div><button type="button" class="btn btn-gold" data-a="mail1">Send email</button><div class="stf-out"></div></div>'+
+    '</div>';
+    var sel=box.querySelector('.stf-mini select'); sel.addEventListener('change',function(){ var t=TPL[sel.value]; if(!t) return; ['subject','title','text','button','link'].forEach(function(k){ box.querySelector('.stf-mini [data-k="'+k+'"]').value=t[k]||''; }); });
+  }
+  var ACT_CONFIRM={signout_all:'Sign this customer out on every device?',push_clear:'Remove every phone from notifications for this customer?',community_hide:'Hide this Community profile?',repair_plan:'Check Stripe for a payment and add the plan if one is found?',confirm_email:'Mark this email as confirmed?'};
+  function act(uid,what,out,extra){ if(ACT_CONFIRM[what]&&!window.confirm(ACT_CONFIRM[what])) return Promise.resolve();
+    out.hidden=false; flash(out,'Working…'); return S(Object.assign({op:'act',uid:uid,do:what},extra||{})).then(function(j){ flash(out,'✓ '+esc(j.message)); }).catch(function(e){ flash(out,'Not done ('+esc(e.code||e.message)+').',true); }); }
+  function onClick(e){
+    var t=e.target.closest('[data-a],[data-t]'); if(!t||!view.contains(t)) return;
+    if(t.closest('.stf-tabs')){ go(t.dataset.t); return; }
+    var a=t.dataset.a;
+    if(a==='tab'){ go(t.dataset.t); return; }
+    if(a==='refresh'||a==='reload'){ t.disabled=true; load(true).then(function(){ t.disabled=false; }); return; }
+    if(a==='csv'){ csv(); return; }
+    if(a==='open'){ lookup(t.dataset.q); return; }
+    if(a==='fix'){ var f=t.dataset.f, out=t.closest('.stf-pb').querySelector('.stf-out');
+      if(f.indexOf('tpl:')===0){ var T=TPL[f.slice(4)]; if(!window.confirm('Send "'+T.subject+'" to '+t.dataset.email+'?')) return; out.hidden=false; flash(out,'Sending…'); S(Object.assign({op:'act',uid:t.dataset.uid,do:'email'},T)).then(function(j){ flash(out,'✓ '+esc(j.message)); }).catch(function(x){ flash(out,'Not sent ('+esc(x.code||x.message)+').',true); }); return; }
+      act(t.dataset.uid,f,out); return; }
+    var cust=t.closest('.stf-cust');
+    if(a==='act'&&cust){ act(cust.dataset.uid,t.dataset.do,$('#stfActOut')); return; }
+    if(a==='astats'&&cust){ var bx=t.nextElementSibling; if(!bx.hidden){ bx.hidden=true; return; } bx.hidden=false; bx.innerHTML='<p class="stf-note">Loading…</p>';
+      S({op:'account_stats',uid:cust.dataset.uid,account_id:t.dataset.id}).then(function(j){ var k=Object.keys(j.stats||{}); bx.innerHTML=k.length?kv(k.map(function(x){ var v=j.stats[x]; return [x.replace(/_/g,' '),typeof v==='number'?(Math.round(v*100)/100).toLocaleString('en-US'):v]; })):'<p class="stf-note">No statistics yet.</p>'; }).catch(function(x){ bx.innerHTML='<p class="stf-note bad">Engine: '+esc(x.code||x.message)+'</p>'; }); return; }
+    if(a==='mail1'&&cust){ var m=t.closest('.stf-mini'), o=m.querySelector('.stf-out'), v={}; ['subject','title','text','button','link'].forEach(function(k){ v[k]=m.querySelector('[data-k="'+k+'"]').value.trim(); });
+      if(!v.subject||!v.title||!v.text){ flash(o,'Fill in subject, headline and message.',true); return; } if(!window.confirm('Send this email to '+cust.dataset.email+'?')) return;
+      flash(o,'Sending…'); S(Object.assign({op:'act',uid:cust.dataset.uid,do:'email'},v)).then(function(j){ flash(o,'✓ '+esc(j.message)); }).catch(function(x){ flash(o,'Not sent ('+esc(x.code||x.message)+').',true); }); return; }
+  }
+  function buildMessages(){
+    pane('messages').innerHTML=
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Message a group</h3></div><p class="stf-note">Email or phone notification to a whole group of customers, in the FTM design. Sent in batches; keep this page open until it says Done.</p>'+
+        '<div class="stf-two"><label>Who<select id="stfSeg"><option value="paying">Paying customers</option><option value="no_account">Paying, no account connected</option><option value="attention">Accounts that need attention</option><option value="free">Free accounts</option><option value="everyone">Everyone</option></select></label><label>How<select id="stfCh"><option value="email">Email</option><option value="push">Phone notification</option></select></label></div>'+
+        '<p class="stf-note" id="stfCount">…</p>'+
+        '<div id="stfBE"><label>Start from<select id="stfBT"><option value="">Empty</option><option value="maint">Maintenance update</option><option value="connect">Connect your account</option><option value="renew">Renewal reminder</option></select></label><label>Subject<input id="stfBSub" maxlength="120"></label><label>Headline<input id="stfBTit" maxlength="80"></label><label>Message (empty line = new paragraph)<textarea id="stfBTxt" rows="6"></textarea></label><div class="stf-two"><label>Button text (optional)<input id="stfBBtn" maxlength="40"></label><label>Button link<input id="stfBLnk" maxlength="300" placeholder="https://www.ftmwealthnation.com/"></label></div></div>'+
+        '<div id="stfBP" hidden><label>Title<input id="stfPT" maxlength="80"></label><label>Text<input id="stfPB" maxlength="160"></label></div>'+
+        '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfBGo">Send to the group</button></div><div class="stf-out" id="stfBOut"></div><div class="stf-prog" id="stfProg" hidden><i></i></div></div>'+
+      '<div class="app-card stf-card"><div class="stf-ttl"><h3>Email listed customers</h3></div><p class="stf-note">Up to 50 addresses (their FTM login email).</p>'+
         '<label>Email<select id="stfTpl"><option value="copying_resumed">Copying resumed: broker maintenance</option><option value="copying_resumed_other">Copying resumed: other cause</option><option value="custom">Your own message</option></select></label>'+
         '<label>Customers (one email per line, up to 50)<textarea id="stfTo" rows="3" placeholder="name@example.com"></textarea></label>'+
         '<div id="stfRes"><label>Account number (optional)<input id="stfAcct" maxlength="24" inputmode="numeric"></label></div>'+
@@ -9933,40 +10103,62 @@ tick();setInterval(tick,5000);})();
         '<textarea id="stfPost" rows="6" maxlength="2000" placeholder="Write the update for all members…"></textarea>'+
         '<label class="stf-chk"><input type="checkbox" id="stfPin"> Pin to the top of the feed</label>'+
         '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfPostBtn">Post</button></div><div class="stf-out" id="stfPostOut"></div></div>';
-    content.appendChild(view);
-    var tpl=view.querySelector('#stfTpl'); tpl.addEventListener('change',function(){ var c=tpl.value==='custom'; view.querySelector('#stfCus').hidden=!c; view.querySelector('#stfRes').hidden=c; });
-    view.querySelector('#stfRef').addEventListener('click',overview);
-    view.querySelector('#stfFill').addEventListener('click',function(){ view.querySelector('#stfPost').value=MAINT; });
-    view.querySelector('#stfSend').addEventListener('click',sendMail);
-    view.querySelector('#stfPostBtn').addEventListener('click',post);
+    var p=pane('messages');
+    var tpl=p.querySelector('#stfTpl'); tpl.addEventListener('change',function(){ var c=tpl.value==='custom'; p.querySelector('#stfCus').hidden=!c; p.querySelector('#stfRes').hidden=c; });
+    p.querySelector('#stfFill').addEventListener('click',function(){ p.querySelector('#stfPost').value=MAINT; });
+    p.querySelector('#stfSend').addEventListener('click',sendMail);
+    p.querySelector('#stfPostBtn').addEventListener('click',postNews);
+    var seg=p.querySelector('#stfSeg'), ch=p.querySelector('#stfCh');
+    function cnt(){ p.querySelector('#stfBE').hidden=ch.value!=='email'; p.querySelector('#stfBP').hidden=ch.value!=='push'; var c=p.querySelector('#stfCount'); c.textContent='Counting…';
+      S({op:'broadcast',segment:seg.value,channel:ch.value,dry:true}).then(function(j){ c.textContent=j.count+' customer'+(j.count===1?'':'s')+' in this group.'; }).catch(function(e){ c.textContent='Could not count ('+(e.code||e.message)+').'; }); }
+    seg.addEventListener('change',cnt); ch.addEventListener('change',cnt);
+    view.querySelector('.stf-tabs [data-t="messages"]').addEventListener('click',function(){ if(!p.dataset.n){ p.dataset.n=1; cnt(); } });
+    p.querySelector('#stfBT').addEventListener('change',function(e){ var v=e.target.value, T=v==='maint'?{subject:'FTM service update: everything is restored',title:'Everything is restored',text:MAINT.replace(/^Service update: /,''),button:'Open my dashboard',link:'https://www.ftmwealthnation.com/?open=perf'}:TPL[v]; if(!T) return;
+      p.querySelector('#stfBSub').value=T.subject; p.querySelector('#stfBTit').value=T.title; p.querySelector('#stfBTxt').value=T.text; p.querySelector('#stfBBtn').value=T.button||''; p.querySelector('#stfBLnk').value=T.link||''; });
+    p.querySelector('#stfBGo').addEventListener('click',function(){
+      var out=p.querySelector('#stfBOut'), prog=p.querySelector('#stfProg'), btn=this, b={op:'broadcast',segment:seg.value,channel:ch.value};
+      if(ch.value==='email'){ b.subject=p.querySelector('#stfBSub').value.trim(); b.title=p.querySelector('#stfBTit').value.trim(); b.text=p.querySelector('#stfBTxt').value.trim(); b.button=p.querySelector('#stfBBtn').value.trim(); b.link=p.querySelector('#stfBLnk').value.trim(); if(!b.subject||!b.title||!b.text){ flash(out,'Fill in subject, headline and message.',true); return; } }
+      else { b.title=p.querySelector('#stfPT').value.trim(); b.body=p.querySelector('#stfPB').value.trim(); if(!b.title||!b.body){ flash(out,'Fill in title and text.',true); return; } }
+      if(!window.confirm('Send this '+(ch.value==='email'?'email':'notification')+' to the group “'+seg.options[seg.selectedIndex].text+'”? '+p.querySelector('#stfCount').textContent)) return;
+      btn.disabled=true; prog.hidden=false; flash(out,'Sending…');
+      (function step(){ S(b).then(function(j){ b.id=j.id; var done=j.total-j.left; prog.firstChild.style.width=(j.total?done/j.total*100:100)+'%';
+          flash(out,(j.left?'Sending… ':'✓ Done. ')+j.sent+' sent'+(j.failed?', '+j.failed+' failed':'')+' · '+done+' of '+j.total+' handled.');
+          if(j.left) step(); else { btn.disabled=false; } })
+        .catch(function(e){ btn.disabled=false; flash(out,'Stopped ('+esc(e.code||e.message)+'). Press Send again to continue where it stopped.',true); }); })();
+    });
   }
-  function out(id,html,bad){ var o=view.querySelector('#'+id); o.className='stf-out'+(bad?' bad':''); o.innerHTML=html; }
-  function overview(){ if(!view) return; api({op:'overview'}).then(function(j){
-    var T=[['Logins',j.logins],['New in 24 h',j.new_24h],['Active in 24 h',j.active_24h],['Community members',j.community],['Subscribers in Community',j.community_subscribers],['Online now',j.online],['Posts',j.posts],['Posts in 24 h',j.posts_24h]];
-    view.querySelector('#stfTiles').innerHTML=T.map(function(x){ return '<div><b>'+esc(x[1]==null?'—':x[1])+'</b><span>'+esc(x[0])+'</span></div>'; }).join(''); }).catch(function(e){ view.querySelector('#stfTiles').innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
   function sendMail(){
-    var v=view.querySelector('#stfTpl').value, to=view.querySelector('#stfTo').value.split(/[\s,;]+/).filter(function(x){ return /@/.test(x); });
-    if(!to.length){ out('stfMailOut','Add at least one customer email.',true); return; }
-    var b={op:'email',emails:to,template:v==='custom'?'custom':'copying_resumed',cause:v==='copying_resumed_other'?'other':'broker_maintenance',account:view.querySelector('#stfAcct').value.trim()};
-    if(v==='custom'){ b.subject=view.querySelector('#stfSub').value.trim(); b.title=view.querySelector('#stfTit').value.trim(); b.text=view.querySelector('#stfTxt').value.trim(); b.button=view.querySelector('#stfBtn').value.trim(); b.link=view.querySelector('#stfLnk').value.trim();
-      if(!b.subject||!b.title||!b.text){ out('stfMailOut','Fill in subject, headline and message.',true); return; } }
+    var p=pane('messages'), v=p.querySelector('#stfTpl').value, to=p.querySelector('#stfTo').value.split(/[\s,;]+/).filter(function(x){ return /@/.test(x); }), out=p.querySelector('#stfMailOut');
+    if(!to.length){ flash(out,'Add at least one customer email.',true); return; }
+    var b={op:'email',emails:to,template:v==='custom'?'custom':'copying_resumed',cause:v==='copying_resumed_other'?'other':'broker_maintenance',account:p.querySelector('#stfAcct').value.trim()};
+    if(v==='custom'){ b.subject=p.querySelector('#stfSub').value.trim(); b.title=p.querySelector('#stfTit').value.trim(); b.text=p.querySelector('#stfTxt').value.trim(); b.button=p.querySelector('#stfBtn').value.trim(); b.link=p.querySelector('#stfLnk').value.trim();
+      if(!b.subject||!b.title||!b.text){ flash(out,'Fill in subject, headline and message.',true); return; } }
     if(!window.confirm('Send this email to '+to.length+' customer'+(to.length>1?'s':'')+'?')) return;
-    var btn=view.querySelector('#stfSend'); btn.disabled=true; out('stfMailOut','Sending…');
-    api(b).then(function(j){ btn.disabled=false; out('stfMailOut','<ul>'+j.results.map(function(r){ return '<li class="'+(r.status==='sent'?'ok':'bad')+'"><b>'+esc(r.email)+'</b> '+esc(r.status)+'</li>'; }).join('')+'</ul>'); })
-      .catch(function(e){ btn.disabled=false; out('stfMailOut','Not sent ('+esc(e.code||e.message)+').',true); });
+    var btn=p.querySelector('#stfSend'); btn.disabled=true; flash(out,'Sending…');
+    C(b).then(function(j){ btn.disabled=false; flash(out,'<ul>'+j.results.map(function(r){ return '<li class="'+(r.status==='sent'?'ok':'bad')+'"><b>'+esc(r.email)+'</b> '+esc(r.status)+'</li>'; }).join('')+'</ul>'); })
+      .catch(function(e){ btn.disabled=false; flash(out,'Not sent ('+esc(e.code||e.message)+').',true); });
   }
-  function post(){
-    var t=view.querySelector('#stfPost').value.trim(); if(!t){ out('stfPostOut','Write the post first.',true); return; }
+  function postNews(){
+    var p=pane('messages'), t=p.querySelector('#stfPost').value.trim(), out=p.querySelector('#stfPostOut'); if(!t){ flash(out,'Write the post first.',true); return; }
     if(!window.confirm('Post this on FTM news for all members?')) return;
-    var btn=view.querySelector('#stfPostBtn'); btn.disabled=true; out('stfPostOut','Posting…');
-    api({op:'post',text:t,pin:view.querySelector('#stfPin').checked}).then(function(){ btn.disabled=false; view.querySelector('#stfPost').value=''; out('stfPostOut','Posted. <a href="#" id="stfSee">See it in Community</a>');
-      view.querySelector('#stfSee').addEventListener('click',function(e){ e.preventDefault(); F().showView('community'); if(F().feedLoad) F().feedLoad(true); }); overview(); })
-      .catch(function(e){ btn.disabled=false; out('stfPostOut','Not posted ('+esc(e.code||e.message)+').',true); });
+    var btn=p.querySelector('#stfPostBtn'); btn.disabled=true; flash(out,'Posting…');
+    C({op:'post',text:t,pin:p.querySelector('#stfPin').checked}).then(function(){ btn.disabled=false; p.querySelector('#stfPost').value=''; flash(out,'Posted. <a href="#" id="stfSee">See it in Community</a>');
+      p.querySelector('#stfSee').addEventListener('click',function(e){ e.preventDefault(); F().showView('community'); if(F().feedLoad) F().feedLoad(true); }); })
+      .catch(function(e){ btn.disabled=false; flash(out,'Not posted ('+esc(e.code||e.message)+').',true); });
   }
+  function health(){ var p=pane('health'); p.innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Service health</h3><button type="button" class="btn btn-sm btn-dark" id="stfHR">Check again</button></div><div id="stfH"><p class="stf-note">Checking every service…</p></div></div>';
+    p.querySelector('#stfHR').addEventListener('click',health);
+    fetch('/api/v1/status',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){ var L=j.checks||j.services||[];
+      p.querySelector('#stfH').innerHTML='<div class="stf-hl">'+L.map(function(c){ return '<div class="'+(c.ok?'ok':'bad')+'"><i></i><b>'+esc(c.name)+'</b><span>'+esc(c.ok?(c.detail||'ok'):(c.detail||'not answering'))+'</span><small>'+esc(c.ms!=null?c.ms+' ms':'')+'</small></div>'; }).join('')+'</div>'; })
+      .catch(function(){ p.querySelector('#stfH').innerHTML='<p class="stf-note bad">The status check did not answer.</p>'; }); }
+  function activity(){ var p=pane('activity'); p.innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Staff activity</h3></div><div id="stfL"><p class="stf-note">Loading…</p></div></div>';
+    S({op:'log'}).then(function(j){ p.querySelector('#stfL').innerHTML=j.items.length?'<div class="app-scroll"><table class="stf-tbl"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Customer / group</th><th>Result</th></tr></thead><tbody>'+j.items.map(function(x){ return '<tr><td>'+esc(when(x.at))+'</td><td>'+esc(x.by)+'</td><td>'+esc(x.op.replace(/_/g,' '))+'</td><td>'+esc(x.target)+'</td><td>'+esc(x.detail)+'</td></tr>'; }).join('')+'</tbody></table></div>':'<p class="stf-note">No staff actions yet.</p>'; })
+      .catch(function(e){ p.querySelector('#stfL').innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
   function tick(){ var f=F(), e=f.session&&f.session.email?String(f.session.email).toLowerCase():null;
     if(e===who) return; who=e; remove(); if(!e) return;
-    api({op:'check'}).then(function(j){ if(j.staff&&who===e) build(); }).catch(function(){}); }
+    C({op:'check'}).then(function(j){ if(j.staff&&who===e) build(); }).catch(function(){}); }
   setInterval(tick,2500); setTimeout(tick,600);
+  setInterval(function(){ if(view&&!view.hidden&&tab==='board'&&D&&Date.now()-Date.parse(D.at)>5*60e3) load(false); },60000);
 })();
 </script>
 <script>
