@@ -1,6 +1,6 @@
 // Community service: two members find each other, follow, message, block; rules for names, links and free accounts. Run: node .github/tests/community-api.js
 const Module=require('module'); const orig=Module._load;
-const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'},'tokS':{id:'00000000-0000-4000-8000-0000000000ff',email:'team@ftmwealthnation.com'}};
+const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'},'tokS':{id:'00000000-0000-4000-8000-0000000000ff',email:'team@ftmwealthnation.com',email_confirmed_at:'2026-01-01T00:00:00Z'}};
 const paid={'00000000-0000-4000-8000-00000000000a':['auto'],'00000000-0000-4000-8000-00000000000b':['auto']};
 const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}})},
   from:()=>({select:()=>({eq:(c,id)=>({maybeSingle:async()=>({data:{products:paid[id]||[]}})})})}),
