@@ -4,7 +4,38 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-13 (evening) — DAILY NEW-CUSTOMER TEST 1.1.0: WAITS FOR AN OPEN MASTER TRADE (this commit)
+## 2026-11-15 — A BROKER OUTAGE NEVER SWITCHES A CUSTOMER OFF; LEADERBOARD BACK (this commit; job files live 16:06 Berlin with the owner's click, no API restart)
+
+- WEBSITE: nothing to change. GET /customer/leaderboard?board=MONTH shows the customers again (Tanaya, G-Marine,
+  member_fff2 + FTM MASTER, rebuilt 16:06 Berlin).
+- Cause: Deriv's live servers were in maintenance at 02:22 Berlin (15 Nov). The relauncher misread the outage:
+  - Account 2022: the line "authorization on DerivSVG-Server failed (Service is not available)" was taken as a refused login.
+    The account was switched off and marked ACTION_REQUIRED.
+  - Account 4701: the broker was unreachable, so it was parked at the 3-relaunches-per-hour cap.
+  - The leaderboard ranks only ACTIVE accounts, so both customers dropped off. The owner's demo account 184 (Deriv-Demo
+    server) stayed up.
+- Fix (shared, every account, past and future): src/services/broker-auth.js holds one rule for terminal-ops.js (provisioner
+  and relauncher), validate-account.js and sync-account-stats.js.
+  - An authorization failure for the broker's own reason (service not available, no connection, timeout, busy, too many
+    requests) is a broker outage: it is retried, never treated as a refused login.
+  - "Invalid account", "Account disabled" and "wrong password" stay refusals.
+  - relaunch-terminals.js lifts the hourly cap when the last 60 minutes of the journal show the broker down. The back-off
+    (5, 10, then 30 minutes) keeps retrying and the account stays switched on.
+- Recovery (owner's standing order for copy terminals): both accounts were re-queued at 13:49 and copied again at 13:51 and
+  13:53 through the normal provisioner path. No welcome trade and no duplicate: their open USTEC copy is still mapped.
+  - With the owner's yes, their original start dates (8 Nov, 12 Nov) and their 500 USD reference were put back. Their
+    November figures, rank and sizing are exactly as before the outage.
+- Both customers got a "copying stopped" email at 02:32 and 03:32.
+- Gate: new check "leaderboard has every ACTIVE customer with closed copies" (leaderboard.js leaderboardProblems: rebuild
+  younger than 15 min, every ACTIVE account has its rows and is ranked once it has 3 closed copies this month). New
+  scripts/verify-broker-outage.js (12/0):
+  - On the preserved journals of that night, the old code reproduces the fault and the new code does not.
+  - No account switched off by the relauncher in the last 26 h is still off.
+- verify-live-sizing now picks its account in a fixed order. It took the table's first row, which changed after the
+  re-activation and failed on the 500 USD account.
+- Deploy gate: RESULT SAFE TO DEPLOY (15 Nov, after the bundle).
+
+## 2026-11-13 (evening) — DAILY NEW-CUSTOMER TEST 1.1.0: WAITS FOR AN OPEN MASTER TRADE (commit b5cdf1e)
 
 - WEBSITE: nothing to change.
 - The 10:30 run failed at "trade open at the broker": the demo login had traded with FTM on 12 Nov, so the safety guard
