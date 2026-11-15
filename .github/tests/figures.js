@@ -29,9 +29,12 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
    if(u.includes('/billing'))return r.fulfill({status:200,contentType:'application/json',body:'{"status":"ACTIVE"}'});
    if(/\/customer\/accounts(\?|$)/.test(u))return r.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,account_limit:{max:3,used:1},accounts:[Object.assign({account_id:'f7a00000-0000-4000-8000-000000000002',account_number:preview?null:'41734917',name:'DERIV',currency:'USD',balance:String(balance),equity:String(balance),display_status:preview?'PAUSED':'ACTIVE',status_reason:'OK',is_trading:!preview,risk_tier:'BALANCED',deposits:'789.83',withdrawals:'310'},preview?{preview:true,view_only:true,floating_profit:'12.34'}:{})]})});
    return r.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});});
-  await p.goto(BASE+'/');await p.waitForTimeout(800);
-  await p.evaluate(pv=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fig@ftm.com',products:pv?[]:['auto'],name:'Fig'};},preview);
-  await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto')));await p.waitForTimeout(2500);
+  const setup=async()=>{ await p.waitForLoadState('load'); await p.waitForTimeout(800);
+    await p.evaluate(pv=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok'),signOut:()=>Promise.resolve()});F.session={email:'fig@ftm.com',products:pv?[]:['auto'],name:'Fig'};},preview);
+    await p.evaluate(()=>FTM.loadLive().then(()=>FTM.openArea('auto'))); };
+  await p.goto(BASE+'/');
+  try{ await setup(); }catch(e){ if(!/context was destroyed|navigation/i.test(e.message)) throw e; console.log('note: the page reloaded once during setup; set up again'); await setup(); }
+  await p.waitForTimeout(2500);
   const v=await p.evaluate(()=>{const g=i=>(document.getElementById(i)||{}).textContent||'';return {high:g('mHigh'),kp:g('kpHigh'),dd:g('mDDtile'),ddb:g('mDDbal'),gain:g('mGain'),pnl:g('dxPnl')};});
   if(stats===full){
    ok(/504\.94/.test(v.high)&&/504\.94/.test(v.kp), label+': highest balance is the highest balance the account really reached, from the engine (got '+v.high+')');

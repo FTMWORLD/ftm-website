@@ -285,8 +285,8 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 @keyframes prPulse{50%{box-shadow:0 0 0 6px rgba(229,50,62,.0),0 0 16px rgba(229,50,62,.8)}}
 .promo .pr-big{position:absolute;left:18px;top:40px;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(227,182,47,.45)}
 .promo .pr-sub{position:absolute;left:18px;top:92px;font-size:13px;color:rgba(255,255,255,.75)}
-.promo .pr-slide{position:absolute;right:16px;top:44px;text-align:right;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
-.promo .pr-slide.on{opacity:1;transform:none}
+.promo .pr-slide{position:absolute;right:16px;top:44px;text-align:right;opacity:0;transform:translateY(10px);transition:none}
+.promo .pr-slide.on{opacity:1;transform:none;transition:opacity .5s,transform .5s}
 .promo .pr-slide b{display:block;font-size:24px;font-weight:800;color:#3ddc84;text-shadow:0 0 14px rgba(61,220,132,.5)}
 .promo .pr-slide small{font-size:12px;color:rgba(255,255,255,.7)}
 @media (max-width:500px){.promo .pr-slide{top:auto;bottom:12px;right:auto;left:18px;text-align:left}}
@@ -1367,7 +1367,7 @@ new MutationObserver(draw).observe(document.documentElement,{attributes:true,att
     var W=400,H=160,mn=Math.min.apply(null,wb),mx=Math.max.apply(null,wb);
     var pts=wb.map(function(v,i){return [(i/(wb.length-1)*W).toFixed(1),(H-8-(v-mn)/(mx-mn)*(H-24)).toFixed(1)]});
     var d='M'+pts.map(function(q){return q.join(' ')}).join(' L');
-    var slides=[[ '+'+Math.round((p.final/st-1)*100)+'%','total return'],['+'+best[1].toFixed(1)+'%','best year, '+best[0]],[upY+' of '+ys.length,'years profitable'],[upM+' of '+p.monthly.length,'months profitable']];
+    var slides=[[ '+'+Math.round((p.final/st-1)*100).toLocaleString('en-US')+'%','total return'],['+'+best[1].toFixed(1)+'%','best year, '+best[0]],[upY+' of '+ys.length,'years profitable'],[upM+' of '+p.monthly.length,'months profitable']];
     box.innerHTML='<div class="pr-top"><span>'+lbl+' · best results</span><i>▶ Results</i></div><b class="pr-big">'+fmt(st)+'</b><span class="pr-sub">from '+fmt(st)+' · historical test</span>'+
       slides.map(function(x){return '<div class="pr-slide"><b>'+x[0]+'</b><small>'+x[1]+'</small></div>'}).join('')+
       '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><defs><linearGradient id="prG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".45"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path class="pr-area" d="'+d+' L'+W+' '+H+' L0 '+H+' Z"/><path class="pr-line" d="'+d+'"/></svg>';
