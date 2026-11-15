@@ -4,7 +4,43 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-15 — A BROKER OUTAGE NEVER SWITCHES A CUSTOMER OFF; LEADERBOARD BACK (this commit; job files live 16:06 Berlin with the owner's click, no API restart)
+## 2026-11-15 (afternoon) — DURING A BROKER OUTAGE EVERYTHING WAITS; NOTHING CUSTOMERS SEE CHANGES (this commit; live 16:35 Berlin, owner's click, API restarted)
+
+- WEBSITE: nothing to change. During a broker outage every account stays ACTIVE, the leaderboard keeps the last figures and
+  rank, and no customer email goes out.
+- Owner's rule (15 Nov): when a broker server is down or in maintenance, nothing is switched off, parked or set to
+  ACTION_REQUIRED. Copying resumes by itself when the broker is back. Only a CONFIRMED wrong password leads to
+  ACTION_REQUIRED.
+- Watchdog (scripts/relaunch-terminals.js):
+  - A terminal that lost its broker is left running while its journal of the last 60 minutes shows the broker down
+    (BROKER_WAIT). After that, one relaunch per hour.
+  - Every "login refused" park of a running account first goes through refusalVerdict (src/services/broker-auth.js).
+    During an outage it waits. A first refusal is re-checked with a fresh terminal (AUTH_RECHECK). Only a second refusal,
+    with the broker answering normally, parks the account.
+  - New internal alerts for the owner only: one "[ALERT] BROKER_DOWN server=... accounts_waiting=N" and one
+    "[ALERT] BROKER_BACK" per broker server. A reconnect within one pass raises nothing. State is kept in
+    C:/FTM/logs/broker-outage-state.json.
+- Login check:
+  - "Broker did not answer" (CONNECT_FAILED) is retried about every 10 minutes for about a day
+    (MAX_BROKER_DOWN_ATTEMPTS 150) instead of ACTION_REQUIRED after 2 tries. The STUCK stop does not apply.
+  - A wrong password needs two refusals in a row. Replaces the 29 Sep rule "a refused password is never retried". A new
+    customer who mistypes is told about 10 minutes later.
+  - Files: scripts/validate-account.js, src/routes/validator.js.
+- Checked, unchanged:
+  - Customer emails and the leaderboard follow the account status only, and that status no longer changes on an outage.
+  - The stats sync only records its own retry state.
+  - Queued CLOSEs never expire; only a stale OPEN does. Open trades are closed when the terminal is back.
+  - The A2 "broker disabled trading on the account" marker still needs two connected readings and is not an outage.
+- Gate: new scripts/verify-broker-wait.js (19/0) simulates a 6-hour outage:
+  - No refusal, no park, at most one relaunch per hour.
+  - Exactly one down and one back alert per server.
+  - Every live ACTIVE account "disconnected 6 h" (rolled back) stays ACTIVE, the leaderboard is identical and no email
+    goes out.
+  - The validator route keeps a new account PENDING through an hour of "broker did not answer" and needs two refusals.
+- verify-connect-speed A10 expects the re-check of a first refusal.
+- Deploy gate: RESULT SAFE TO DEPLOY (15 Nov, after the bundle).
+
+## 2026-11-15 — A BROKER OUTAGE NEVER SWITCHES A CUSTOMER OFF; LEADERBOARD BACK (commit 58a3f39; job files live 16:06 Berlin with the owner's click, no API restart)
 
 - WEBSITE: nothing to change. GET /customer/leaderboard?board=MONTH shows the customers again (Tanaya, G-Marine,
   member_fff2 + FTM MASTER, rebuilt 16:06 Berlin).
