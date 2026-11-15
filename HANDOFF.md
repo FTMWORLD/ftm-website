@@ -678,3 +678,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Login alerts: api/v1/login-alert.js; known devices in app_metadata.ftm_devices; first device silent; new device -> "New sign-in" email (max 3/h) with "This wasn't me" (signed 7-day link) -> app_metadata.ftm_revoked_at + reset email; website signs out sessions older than that (FTM.loginCheck on every enter and every 10 min).
 - Dependencies: web-push 3.6.7. Test: .github/tests/notifications.js.
 - Needs: ENGINE_PUSH_SECRET in Vercel + the same value given to FTM ENGINE (note to engine in chat 13 Nov).
+
+## 15 Nov 2026: leaderboard → Community profile; "copying resumed" email
+- Leaderboard names (podium cards and table names, not your own row or FTM MASTER) open the member's Community profile peek (Follow / Message). Client: FTM.openMemberByNick → community action `find`.
+- Mapping: community action `lbsync` asks the engine (GET /customer/leaderboard/profile, verified user) for the member's leaderboard nickname and stores it as `lb` on the Community index; an automatic (never edited) Community name takes the leaderboard name when free. Runs once a day per login from the leaderboard script.
+- /api/v1/push engine event `copying_resumed` {user_id|email, account_number, since, cause:'broker_maintenance'}: designed FTM email (passwordEmail.html('copying_resumed')) + phone notification, max once per account per 12 h (mail/resumed-<mid>-<acct>.json). Needs ENGINE_PUSH_SECRET in Vercel and the engine; note for FTM ENGINE written 15 Nov (accounts 2022 and 4701).
+- Tests: leaderboard-community.js, buttons.js step "Leaderboard name opens Community profile", notifications.js copying_resumed checks.

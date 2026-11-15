@@ -20,6 +20,7 @@
 
 const crypto = require('crypto');
 const Push = require('../_lib/push');
+const Engine = require('../_lib/engineClient');
 const { createClient } = require('@supabase/supabase-js');
 
 const BUCKET = 'community';
@@ -278,6 +279,29 @@ module.exports = async function handler(req, res) {
       if (!mine || !idx.members[m] || hidden.has(m)) return res.status(200).json({ ok: true });
       const p = 'typing/' + pair(me, m) + '.json', ty = await S.read(p, {}); ty[me] = new Date().toISOString(); await S.write(p, ty);
       return res.status(200).json({ ok: true });
+    }
+
+    if (action === 'lbsync') {
+      if (!mine) return res.status(200).json({ ok: true, synced: false });
+      let nick = '';
+      try { const r = await within(8000, Engine.callEngine('/api/v1/customer/leaderboard/profile', { authSubject: user.id, authEmail: user.email, timeoutMs: 7000 }), 'lbsync'); nick = String((r.ok && r.body && r.body.profile && r.body.profile.nickname) || '').trim(); } catch (e) { console.error('lbsync', e.message); }
+      if (!/^[A-Za-z0-9_-]{3,24}$/.test(nick)) return res.status(200).json({ ok: true, synced: false });
+      let dirty = mine.lb !== nick; mine.lb = nick;
+      const taken = Object.keys(idx.members).some(k => k !== me && String(idx.members[k].nickname).toLowerCase() === nick.toLowerCase());
+      if (mine.auto && mine.nickname !== nick && !taken && !RESERVED.test(nick) && !/^ftm[_-]?/i.test(nick)) { mine.nickname = nick; dirty = true; }
+      if (dirty) { mine.updated = nowIso; await S.write('index.json', idx); }
+      return res.status(200).json({ ok: true, synced: true, nickname: mine.nickname });
+    }
+
+    if (action === 'find') {
+      const n = String(body.nickname || '').trim().toLowerCase(); if (!n || n.length > 24) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      const ks = Object.keys(idx.members);
+      const m = ks.find(k => String(idx.members[k].lb || '').toLowerCase() === n) || ks.find(k => String(idx.members[k].nickname || '').toLowerCase() === n);
+      if (!m) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      if (m === me) return res.status(200).json({ ok: true, self: true });
+      if (!okTarget(m)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      postsCache = (await S.read('posts.json', { posts: [] })).posts;
+      return res.status(200).json({ ok: true, member: pub(m) });
     }
 
     if (action === 'profile') {

@@ -27,6 +27,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
   ok(r.j&&r.j.devices===1 && pushed[0].p.title==='Trade mit Gewinn geschlossen' && pushed[0].p.body==='XAUUSD geschlossen mit +12.40 USD', 'trade closed in profit -> notification in the member\'s language ('+JSON.stringify(pushed[0]&&pushed[0].p)+')');
   r=await call(H,{headers:{'x-ftm-engine-key':'engine-secret-0123456789'},body:{event:'trade_profit',user_id:'u1',symbol:'XAUUSD',profit:'-3'}}); ok(r.code===400, 'a losing trade sends nothing');
   pushed.length=0; r=await call(H,{headers:{'x-ftm-engine-key':'engine-secret-0123456789'},body:{event:'leaderboard_up',email:'one@x.com',rank:3,previous_rank:7}}); ok(pushed[0]&&/#3/.test(pushed[0].p.body)&&/#7/.test(pushed[0].p.body), 'leaderboard climb -> notification with the new and old place');
+  pushed.length=0; mails.length=0; r=await call(H,{headers:{'x-ftm-engine-key':'engine-secret-0123456789'},body:{event:'copying_resumed',user_id:'u1',account_number:'2022',cause:'broker_maintenance',since:'2026-11-15T12:51:00Z'}});
+  { const m=mails[0]||{}; ok(r.j&&r.j.email==='sent'&&m.to==='one@x.com'&&/everything is restored/i.test(m.subject)&&/maintenance/.test(m.html)&&/account 2022/.test(m.html)&&/15 November/.test(m.html)&&/Invest today, secure tomorrow\./.test(m.html)&&/#0b1640/.test(m.html)&&pushed.length===1, 'copying resumed -> designed FTM email (cause, account, time, navy footer) + phone notification'); }
+  r=await call(H,{headers:{'x-ftm-engine-key':'engine-secret-0123456789'},body:{event:'copying_resumed',user_id:'u1',account_number:'2022'}}); ok(r.j&&r.j.duplicate&&mails.length===1, 'the same account is never emailed twice in 12 hours (engine retries are safe)');
+  r=await call(H,{headers:{'x-ftm-engine-key':'wrong'},body:{event:'copying_resumed',user_id:'u1'}}); ok(r.code===401, 'only the engine can send it');
+  mails.length=0;
   r=await call(H,{headers:{authorization:'Bearer t'},body:{action:'prefs',prefs:{trades:false}}}); pushed.length=0;
   await call(H,{headers:{'x-ftm-engine-key':'engine-secret-0123456789'},body:{event:'trade_profit',user_id:'u1',symbol:'X',profit:'1'}}); ok(pushed.length===0, 'a member who switched trade notifications off gets none');
   // login alerts

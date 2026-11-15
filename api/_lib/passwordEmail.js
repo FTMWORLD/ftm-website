@@ -53,6 +53,20 @@ function html(kind, o) {
     + P('Tap the button to choose a new password. You then go straight into your client area.')
     + BTN(o.link, 'Choose a new password')
     + P('The button works once and expires soon. If you did not ask for this, you can ignore this email: your password stays the same.', true) + SAFE);
+  if (kind === 'copying_resumed') {
+    let when = ''; try { if (o.since) when = new Date(o.since).toLocaleString('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) + ' UTC'; } catch (e) { when = ''; }
+    const acct = o.account ? ' (account ' + esc(o.account) + ')' : '';
+    return shell('Copying is running again', hello(o.name)
+      + (o.cause === 'broker_maintenance'
+        ? P('Your broker\'s servers were briefly down for maintenance. To keep your account safe, FTM paused copying on your account' + acct + ' for a short time, which is why you received a "copying stopped" email.')
+        : P('Copying on your account' + acct + ' paused for a short time, which is why you received a "copying stopped" email.'))
+      + '<table cellpadding="0" cellspacing="0" width="100%" style="margin:6px 0 18px;"><tr><td style="background:#f3f6ff;border-left:4px solid #D4AF37;border-radius:8px;padding:16px 18px;font-size:15px;line-height:1.6;color:#0b1640;">'
+      + '<b>Everything is restored.</b><br>&#10003; FTM MACHINE copies on your account again' + (when ? ' since ' + esc(when) : '') + '.<br>&#10003; Your open trades were managed the whole time.<br>&#10003; Your start date, figures and leaderboard place are unchanged.</td></tr></table>'
+      + P('We have also improved FTM for every account: when a broker is in maintenance, FTM now keeps retrying and no longer pauses copying.')
+      + P('There is nothing you need to do.')
+      + BTN('https://www.ftmwealthnation.com/?open=perf', 'Open my dashboard')
+      + P('Questions? Just reply to this email.', true));
+  }
   const free = kind === 'free' || (kind === 'fresh' && o.free);
   const lead = kind === 'fresh'
     ? 'Here is your new link to create your FTM password.'

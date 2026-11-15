@@ -8,9 +8,12 @@
    POST {event, user_id|email, ...}              FTM ENGINE (header x-ftm-engine-key = ENGINE_PUSH_SECRET):
         event 'trade_profit'   {symbol, profit, currency, account_number?}
         event 'leaderboard_up' {rank, previous_rank?, period?}
-        event 'account_connected' {account_number?} */
+        event 'account_connected' {account_number?}
+        event 'copying_resumed' {account_number?, since?, cause?('broker_maintenance')}  designed email + notification, once per account per 12 h */
 const { createClient } = require('@supabase/supabase-js');
 const P = require('../_lib/push');
+const Mail = require('../_lib/mail');
+const Tpl = require('../_lib/passwordEmail');
 
 async function userFromToken(admin, req) {
   const h = String(req.headers.authorization || ''); const tok = h.startsWith('Bearer ') ? h.slice(7) : '';
@@ -45,6 +48,15 @@ module.exports = async function handler(req, res) {
         n = await P.send(admin, { uid: user.id, kind: 'leaderboard', tag: 'board', url: '/?open=board', title: 'You climbed on the leaderboard', body: pr > r ? 'You are now #{} (was #{}).' : 'You are now #{}.', args: { body: pr > r ? [r, pr] : [r] } });
       } else if (body.event === 'account_connected') {
         n = await P.send(admin, { uid: user.id, kind: 'trades', tag: 'connected', url: '/', title: 'Auto Trading connected', body: 'FTM MACHINE now trades for you from the next signal.' });
+      } else if (body.event === 'copying_resumed') {
+        const acct = String(body.account_number || '').replace(/[^\w-]/g, '').slice(0, 24), mid = P.midOf(user.id), key = 'mail/resumed-' + mid + '-' + (acct || 'all') + '.json';
+        const prev = await P.read(admin, key, {}); if (prev.at && Date.now() - Date.parse(prev.at) < 12 * 3600e3) return res.status(200).json({ ok: true, duplicate: true });
+        const full = (await admin.auth.admin.getUserById(user.id)).data; const u = full && full.user; if (!u || !u.email) return res.status(404).json({ ok: false, error: 'NO_USER' });
+        const meta = u.user_metadata || {}, since = body.since && !isNaN(Date.parse(body.since)) ? body.since : new Date().toISOString();
+        let via = null; try { via = await Mail.sendMail({ to: u.email, subject: 'FTM: copying is running again, everything is restored', html: Tpl.html('copying_resumed', { name: meta.full_name || meta.name || '', account: acct, since, cause: body.cause === 'broker_maintenance' ? 'broker_maintenance' : '' }) }); } catch (e) { console.error('resumed mail', e.message); }
+        n = await P.send(admin, { uid: user.id, kind: 'trades', tag: 'resumed', url: '/?open=perf', title: 'Copying is running again', body: 'Everything is restored. Your figures and leaderboard place are unchanged.' });
+        await P.write(admin, key, { at: new Date().toISOString(), via, account: acct });
+        return res.status(200).json({ ok: true, devices: n, email: via ? 'sent' : 'failed', via });
       } else return res.status(400).json({ ok: false, error: 'UNKNOWN_EVENT' });
       return res.status(200).json({ ok: true, devices: n });
     }
