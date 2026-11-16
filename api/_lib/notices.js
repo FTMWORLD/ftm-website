@@ -22,4 +22,14 @@ async function custom(admin, u, o) {
   return { via };
 }
 
-module.exports = { copyingResumed, custom };
+/* "Why we recommend 2,000 or more": once per customer every 30 days. accounts = [{number, balance, currency}] below 2,000. */
+async function topup(admin, u, accounts) {
+  const mid = P.midOf(u.id), key = 'mail/topup-' + mid + '.json', prev = await P.read(admin, key, {});
+  if (prev.at && Date.now() - Date.parse(prev.at) < 30 * 864e5) return { duplicate: true };
+  const meta = u.user_metadata || {};
+  let via = null; try { via = await Mail.sendMail({ to: u.email, subject: 'Get the full FTM strategy: why we recommend 2,000 or more', html: Tpl.html('topup2000', { name: meta.full_name || meta.name || '', accounts: accounts || [] }) }); } catch (e) { console.error('topup mail', e.message); }
+  if (via) await P.write(admin, key, { at: new Date().toISOString(), via, accounts: (accounts || []).map(a => a.number) });
+  return { via };
+}
+
+module.exports = { copyingResumed, custom, topup };

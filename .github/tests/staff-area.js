@@ -66,6 +66,15 @@ const BASE=process.argv[2]||'http://localhost:8765';
   r=await sc('tokS',{op:'team'}); ok(r[1].members.some(m=>m.email==='ftmwebnation@gmail.com'&&m.fixed)&&r[1].members.some(m=>m.email==='helper@x.com'&&m.role==='staff'&&m.name==='Ada'),'team: list shows permanent owner and members');
   r=await sc('tokS',{op:'team_remove',email:'helper@x.com'}); ok(r[0]===200&&users.tokH.app_metadata&&users.tokH.app_metadata.ftm_revoked_at,'team: removing a member signs them out');
   r=await call('tokH',{op:'check'}); ok(r[0]===403,'team: a removed member has no access');
+  // upgrade-to-2,000 email
+  r=await sc('tokS',{op:'dashboard',force:true}); ok((r[1].problems||[]).some(x=>x.kind==='small'&&/2022/.test(x.title)&&x.fix==='email_topup'),'problems: an account below 2,000 is listed with the upgrade email as its fix');
+  r=await sc('tokS',{op:'broadcast',segment:'small',channel:'email',dry:true}); ok(r[1].count===1,'group "an account below 2,000" counts the right customers');
+  let mb=mails.length; r=await sc('tokS',{op:'broadcast',segment:'small',channel:'email',template:'topup2000'}); const tm=mails[mails.length-1]||{};
+  ok(r[1].sent===1&&mails.length-mb===1&&/why we recommend 2,000/.test(tm.subject)&&/Account <b>2022<\/b>: <b>500\.00 USD/.test(tm.html)&&/about 4 in 10/.test(tm.html)&&/I have topped up/.test(tm.html)&&/Invest today, secure tomorrow\./.test(tm.html)&&!/Deriv/i.test(tm.html),'upgrade email: FTM design, the customer\'s own account and balance, no broker named');
+  mb=mails.length; r=await sc('tokS',{op:'broadcast',segment:'small',channel:'email',template:'topup2000'}); ok(r[1].skipped===1&&mails.length===mb,'the upgrade email is never sent twice within 30 days');
+  r=await sc('tokS',{op:'act',uid:'c1',do:'email_topup'}); ok(/Already sent/.test(r[1].message),'one-customer send also respects the 30 days');
+  r=await sc('tokS',{op:'act',uid:'c2',do:'email_topup'}); ok(r[1].error==='NO_ACCOUNT_BELOW_2000','no upgrade email for a customer without a small account');
+  r=await sc('tokS',{op:'broadcast',segment:'paying',channel:'email',template:'topup2000'}); ok(r[1].error==='TOPUP_ONLY_FOR_SMALL','the upgrade email cannot go to the wrong group');
   r=await sc('tokS',{op:'log'}); ok(r[1].items.length>=3&&r[1].items[0].by==='ftmwebnation@gmail.com','every staff action is in the activity log');
   // browser
   let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');}

@@ -53,6 +53,32 @@ function html(kind, o) {
     + P('Tap the button to choose a new password. You then go straight into your client area.')
     + BTN(o.link, 'Choose a new password')
     + P('The button works once and expires soon. If you did not ask for this, you can ignore this email: your password stays the same.', true) + SAFE);
+  if (kind === 'topup2000') {
+    const H3 = t => '<p style="font-size:17px;font-weight:bold;color:#0b1640;margin:26px 0 10px;">' + t + '</p>';
+    const bar = (label, pct, note, gold) => '<tr><td style="padding:6px 12px 6px 0;font-size:15px;font-weight:bold;color:#0b1640;white-space:nowrap;width:70px;">' + label + '</td>'
+      + '<td style="padding:6px 0;width:100%;"><table cellpadding="0" cellspacing="0" width="100%" style="background:#eef1f8;border-radius:6px;"><tr><td width="' + pct + '%" style="background:' + (gold ? '#D4AF37' : '#152a7a') + ';height:14px;border-radius:6px;font-size:0;line-height:0;">&nbsp;</td><td style="font-size:0;line-height:0;">&nbsp;</td></tr></table></td>'
+      + '<td style="padding:6px 0 6px 12px;font-size:14px;color:#333;white-space:nowrap;">' + note + '</td></tr>';
+    const accts = (o.accounts || []).map(a => 'Account <b>' + esc(a.number) + '</b>: <b>' + esc(Number(a.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) + ' ' + esc(a.currency || '') + '</b>').join('<br>');
+    const mail = 'mailto:ftmwebnation@gmail.com?subject=' + encodeURIComponent('I have topped up' + ((o.accounts || [])[0] ? ' - account ' + o.accounts[0].number : ''));
+    return shell('Get the full FTM strategy', hello(o.name)
+      + P('Thank you for being with FTM. We want your account to follow our master account as closely as possible, so here is something important about account size.')
+      + (accts ? '<table cellpadding="0" cellspacing="0" width="100%" style="margin:4px 0 6px;"><tr><td style="background:#f3f6ff;border-left:4px solid #D4AF37;border-radius:8px;padding:14px 18px;font-size:15px;line-height:1.6;color:#0b1640;">Your trading account today<br>' + accts + '</td></tr></table>' : '')
+      + H3('Why size matters')
+      + P('Every broker has a smallest trade size. On a small account, that smallest size is often too large for the trade to be safe. We never put too much of your money into one trade, so on small accounts FTM skips those trades.')
+      + H3('How many FTM trades an account can take')
+      + '<table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 10px;">' + bar('500', 44, 'about 4 in 10', false) + bar('1,000', 79, 'about 8 in 10', false) + bar('2,000', 99, 'practically every trade', true) + '</table>'
+      + P('From 2,000 your account trades all five FTM markets: gold, Bitcoin, USD/JPY, US Tech 100 and Hong Kong 50, each trade at its intended risk. Your results follow the master account much more closely, and your risk is spread across more markets.')
+      + P('In our tests on past market data (2020 to 2025), a 2,000 account earned clearly more per year than a 500 account, with the same level of ups and downs.')
+      + H3('What we changed for small accounts')
+      + P('Your safety comes first. We have tightened our rules so that a small account never takes a trade that is too large for it. This keeps small accounts steadier, but it also means they skip more trades. That is the main reason we recommend 2,000 or more.')
+      + H3('How to upgrade')
+      + '<table cellpadding="0" cellspacing="0" style="margin:0 0 6px;">'
+      + [['Add funds to your existing trading account at your broker, to bring it to 2,000 or more in your account currency.'], ['Tell us: reply to this email with “I have topped up”, or tap the button below.'], ['We update your account size on our side, usually within one working day. Nothing else changes: same account, same settings.']]
+        .map((x, i) => '<tr><td valign="top" style="padding:6px 12px 6px 0;"><span style="display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:#0b1640;color:#D4AF37;font-weight:bold;font-size:14px;">' + (i + 1) + '</span></td><td style="padding:8px 0;font-size:16px;line-height:1.5;color:#333;">' + x[0] + '</td></tr>').join('') + '</table>'
+      + BTN(mail, 'I have topped up')
+      + P('You do not have to upgrade. Your account stays connected and keeps trading at its current size, with the same safety rules. We simply want you to know how to get the most from FTM.', true)
+      + P('Questions? Just reply to this email. We are happy to help.<br><br>Best regards,<br>The FTM team'));
+  }
   if (kind === 'notice') {
     const paras = String(o.text || '').split(/\n{2,}/).map(t => P(esc(t).replace(/\n/g, '<br>'))).join('');
     return shell(o.title || 'A message from FTM', hello(o.name) + paras + (o.button && /^https:\/\/(www\.)?ftmwealthnation\.com\//.test(o.link || '') ? BTN(o.link, o.button) : '') + P('Questions? Just reply to this email.', true));

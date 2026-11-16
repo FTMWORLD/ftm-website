@@ -5,8 +5,8 @@
    account_stats {uid, account_id}   the engine statistics of one account
    act {uid, do, ...}       reset_email | login_email | password_email | confirm_email | signout_all | repair_plan |
                             push_test | push_clear | community_hide | community_show | email (own message)
-   broadcast {segment, channel:'email'|'push', subject,title,text,button,link | title,body, dry?, id?}
-                            segments: paying | free | no_account | attention | everyone; sends in batches, resumable by id
+   broadcast {segment, channel:'email'|'push', subject,title,text,button,link | title,body, dry?, id?, template?:'topup2000'}
+                            segments: paying | free | no_account | attention | small (an account below 2,000) | everyone; sends in batches, resumable by id
    log                      the last staff actions
    team | team_add {email, role, name} | team_role {email, role} | team_remove {email}   owners only
    Every action is written to the staff log. */
@@ -90,6 +90,7 @@ function problems(users, prof, cr) {
       const since = a.vstart ? Math.round((now - Date.parse(a.vstart)) / 60000) : null;
       list.push({ sev: /FAILED|ACTION|ERROR/.test(String(a.status) + String(a.reason)) ? 3 : 2, kind: 'account', uid: c.uid, email: c.email, account: a.number, title: 'Account ' + (a.number || '') + ': ' + (a.text || a.status || 'not trading'), detail: [a.reason, a.vdelay, since != null ? 'waiting ' + since + ' min' : null].filter(Boolean).join(' · '), fix: 'lookup' });
     });
+    smallOf(c.accounts).forEach(a => list.push({ sev: 1, kind: 'small', uid: c.uid, email: c.email, account: a.number, title: 'Account ' + a.number + ' is below 2,000 (' + a.balance.toFixed(2) + ' ' + (a.currency || '') + ')', detail: 'It skips many FTM trades. Send the upgrade email once; it is not sent twice within 30 days', fix: 'email_topup' }));
     if (c.billing) {
       if (c.billing.status && ['ACTIVE', 'EXEMPT', 'TRIALING', 'LIFETIME'].indexOf(String(c.billing.status).toUpperCase()) === -1) list.push({ sev: 3, kind: 'billing', uid: c.uid, email: c.email, title: 'Has a plan on the website, but the engine says billing is ' + c.billing.status, detail: 'Repair plan checks Stripe for a payment from this email. If it finds none, ask FTM ENGINE to correct the billing', fix: 'repair_plan' });
       else if (!c.billing.lifetime && c.billing.period_end) { const d = Math.ceil((Date.parse(c.billing.period_end) - now) / day); if (d >= 0 && d <= 14) list.push({ sev: 1, kind: 'renewal', uid: c.uid, email: c.email, title: 'Plan ends in ' + d + ' day' + (d === 1 ? '' : 's'), detail: c.billing.period_end.slice(0, 10), fix: 'email_renew' }); }
@@ -101,6 +102,8 @@ function problems(users, prof, cr) {
   });
   return list.sort((a, b) => b.sev - a.sev);
 }
+const SMALL = 2000;
+function smallOf(accounts) { return (accounts || []).filter(a => !a.view_only && a.balance > 0 && a.balance < SMALL).map(a => ({ number: a.number, balance: a.balance, currency: a.currency })); }
 async function logIt(admin, by, op, target, detail) {
   try { const L = await P.read(admin, LOG, { items: [] }); L.items.push({ at: new Date().toISOString(), by, op, target: target || '', detail: String(detail || '').slice(0, 200) }); if (L.items.length > 500) L.items = L.items.slice(-500); await P.write(admin, LOG, L); } catch (e) { console.error('staff log', e.message); }
 }
@@ -237,6 +240,11 @@ module.exports = async function handler(req, res) {
       else if (what === 'push_test') { const n = await P.send(admin, { uid: u.id, tag: 'test', url: '/', title: 'FTM notifications are on', body: 'You will get messages, new followers, trades closed in profit and leaderboard moves here.' }); msg = 'Test notification sent to ' + n + ' device' + (n === 1 ? '' : 's') + '.'; }
       else if (what === 'push_clear') { const mid = P.midOf(u.id), box = await P.getBox(admin, mid); box.subs = []; await P.write(admin, 'push/' + mid + '.json', box); msg = 'Phone notifications reset. The phone asks again at the next login.'; }
       else if (what === 'community_hide' || what === 'community_show') { const mid = P.midOf(u.id), idx = await P.read(admin, 'index.json', { members: {} }); if (!idx.members[mid]) return res.status(404).json({ ok: false, error: 'NO_COMMUNITY_PROFILE' }); idx.members[mid].visible = what === 'community_show'; idx.members[mid].vis_set = true; await P.write(admin, 'index.json', idx); msg = what === 'community_show' ? 'Community profile visible.' : 'Community profile hidden.'; }
+      else if (what === 'email_topup') {
+        const acc = await eng(u, '/api/v1/customer/accounts'); if (acc._error) throw new Error('engine: ' + acc._error);
+        const sm = smallOf((acc.accounts || []).map(slimAccount)); if (!sm.length) return res.status(400).json({ ok: false, error: 'NO_ACCOUNT_BELOW_2000' });
+        const r = await Notices.topup(admin, u, sm); msg = r.duplicate ? 'Already sent in the last 30 days. Not sent again.' : r.via ? 'Upgrade email sent (' + sm.map(a => a.number).join(', ') + ').' : 'Email failed.';
+      }
       else if (what === 'email') {
         const subject = clean(body.subject, 120), title = clean(body.title, 80), text = cleanLong(body.text, 4000); if (!subject || !title || !text) return res.status(400).json({ ok: false, error: 'MESSAGE_INCOMPLETE' });
         const s = await Notices.custom(admin, u, { subject, title, text, button: clean(body.button, 40), link: String(body.link || '').slice(0, 300) }); msg = s.via ? 'Email sent.' : 'Email failed.';
@@ -249,30 +257,34 @@ module.exports = async function handler(req, res) {
     if (op === 'broadcast') {
       const channel = body.channel === 'push' ? 'push' : 'email', seg = String(body.segment || '');
       const [users, prof] = await Promise.all([allUsers(admin), allProfiles(admin)]);
-      let list;
+      let list, smallMap = null;
       if (seg === 'paying') list = users.filter(u => (prof[u.id] || []).indexOf('auto') !== -1);
       else if (seg === 'free') list = users.filter(u => !(prof[u.id] || []).length);
       else if (seg === 'everyone') list = users;
+      else if (seg === 'small') { const cr = await crawl(admin, false); smallMap = {}; (cr.customers || []).forEach(c => { const sm = smallOf(c.accounts); if (sm.length) smallMap[c.uid] = sm; }); list = users.filter(u => smallMap[u.id]); }
       else if (seg === 'no_account' || seg === 'attention') { const cr = await crawl(admin, false); const ids = new Set((cr.customers || []).filter(c => seg === 'no_account' ? (c.accounts && !c.accounts.length) : (c.accounts || []).some(a => !(a.status === 'ACTIVE' || a.status === 'PAUSED' && a.reason === 'PAUSED'))).map(c => c.uid)); list = users.filter(u => ids.has(u.id)); }
       else return res.status(400).json({ ok: false, error: 'UNKNOWN_SEGMENT' });
       list = list.filter(u => u.email);
       if (body.dry) return res.status(200).json({ ok: true, count: list.length });
       const subject = clean(body.subject, 120), title = clean(body.title, 80), text = cleanLong(body.text, 4000), pbody = clean(body.body, 160);
-      if (channel === 'email' && (!subject || !title || !text)) return res.status(400).json({ ok: false, error: 'MESSAGE_INCOMPLETE' });
+      const tpl = body.template === 'topup2000' ? 'topup2000' : '';
+      if (tpl && (channel !== 'email' || seg !== 'small')) return res.status(400).json({ ok: false, error: 'TOPUP_ONLY_FOR_SMALL' });
+      if (channel === 'email' && !tpl && (!subject || !title || !text)) return res.status(400).json({ ok: false, error: 'MESSAGE_INCOMPLETE' });
       if (channel === 'push' && (!title || !pbody)) return res.status(400).json({ ok: false, error: 'MESSAGE_INCOMPLETE' });
       const id = /^[a-z0-9]{6,20}$/.test(String(body.id || '')) ? body.id : Date.now().toString(36) + crypto.randomBytes(3).toString('hex'), key = 'staff/broadcast-' + id + '.json';
       const st = await P.read(admin, key, { done: [], failed: 0, sent: 0 }); const done = new Set(st.done);
       const todo = list.filter(u => !done.has(u.id)).slice(0, channel === 'email' ? 60 : 300); const t0 = Date.now();
       await pool(todo, channel === 'email' ? 6 : 12, async u => {
         if (Date.now() - t0 > 45000) return;
-        try { if (channel === 'email') { const r = await Notices.custom(admin, u, { subject, title, text, button: clean(body.button, 40), link: String(body.link || '').slice(0, 300) }); if (r.via) st.sent++; else st.failed++; }
+        try { if (tpl) { const r = await Notices.topup(admin, u, smallMap[u.id]); if (r.via) st.sent++; else if (r.duplicate) st.skipped = (st.skipped || 0) + 1; else st.failed++; }
+          else if (channel === 'email') { const r = await Notices.custom(admin, u, { subject, title, text, button: clean(body.button, 40), link: String(body.link || '').slice(0, 300) }); if (r.via) st.sent++; else st.failed++; }
           else { const n = await P.send(admin, { uid: u.id, tag: 'ftm-news', url: '/?open=community', title, body: pbody }); if (n) st.sent++; } } catch (e) { st.failed++; }
         st.done.push(u.id);
       });
       await P.write(admin, key, st);
       const left = list.filter(u => st.done.indexOf(u.id) === -1).length;
-      if (!left) await logIt(admin, by, 'broadcast_' + channel, seg + ' (' + list.length + ')', channel === 'email' ? subject : title + ': ' + pbody);
-      return res.status(200).json({ ok: true, id, total: list.length, sent: st.sent, failed: st.failed, left });
+      if (!left) await logIt(admin, by, 'broadcast_' + (tpl || channel), seg + ' (' + list.length + ')', tpl ? 'Why we recommend 2,000 or more' : channel === 'email' ? subject : title + ': ' + pbody);
+      return res.status(200).json({ ok: true, id, total: list.length, sent: st.sent, failed: st.failed, skipped: st.skipped || 0, left });
     }
 
     if (op === 'log') { const L = await P.read(admin, LOG, { items: [] }); return res.status(200).json({ ok: true, items: L.items.slice(-100).reverse() }); }

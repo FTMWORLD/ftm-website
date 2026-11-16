@@ -10049,7 +10049,7 @@ tick();setInterval(tick,5000);})();
     renderProblems(); renderAccounts();
     if(F().fitNums) try{ F().fitNums(view); }catch(e){}
   }
-  var FIX={password_email:['Send create-password email','password_email'],repair_plan:['Repair plan','repair_plan'],email_connect:['Email: connect your account','tpl:connect'],email_renew:['Email: renewal reminder','tpl:renew'],lookup:['Open customer','open']};
+  var FIX={email_topup:['Send upgrade email (2,000)','email_topup'],password_email:['Send create-password email','password_email'],repair_plan:['Repair plan','repair_plan'],email_connect:['Email: connect your account','tpl:connect'],email_renew:['Email: renewal reminder','tpl:renew'],lookup:['Open customer','open']};
   function renderProblems(){
     var pb=D.problems||[];
     pane('problems').innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Problems to solve</h3><button type="button" class="btn btn-sm btn-dark" data-a="refresh">Check again</button></div><p class="stf-note">Found automatically in every paying customer, their accounts and their plan. Engine problems go to FTM ENGINE; everything else can be fixed here.</p>'+
@@ -10079,7 +10079,7 @@ tick();setInterval(tick,5000);})();
   function kv(rows){ return '<dl class="stf-kv">'+rows.map(function(r){ return '<dt>'+esc(r[0])+'</dt><dd>'+(r[2]?r[1]:esc(r[1]==null||r[1]===''?'—':r[1]))+'</dd>'; }).join('')+'</dl>'; }
   function rows(list){ return '<div class="stf-rows">'+list.map(function(r){ return '<div><span>'+esc(r[0])+'</span><b>'+(r[2]?r[1]:esc(r[1]==null||r[1]===''?'—':r[1]))+'</b></div>'; }).join('')+'</div>'; }
   var FIXES=[['Access',[['reset_email','Send password reset','A link to choose a new password'],['login_email','Send login code','A 6-digit code and a one-tap login link'],['password_email','Send create-password link','For customers who never set a password'],['confirm_email','Mark email confirmed','When the confirmation email never arrived'],['signout_all','Sign out every device','After a lost phone or a "This wasn\'t me"',1]]],
-    ['Plan',[['repair_plan','Check payment & repair plan','Looks for a Stripe payment from this email']]],
+    ['Plan',[['repair_plan','Check payment & repair plan','Looks for a Stripe payment from this email'],['email_topup','Send upgrade email (2,000)','For an account below 2,000: why and how to top up']]],
     ['Notifications',[['push_test','Send test notification','Checks the phone receives FTM notifications'],['push_clear','Reset phone notifications','The phone asks again at the next login',1]]]];
   function renderCustomer(c){
     var box=$('#stfCust'), b=c.billing||{}, acc=Array.isArray(c.accounts)?c.accounts:[], own=acc.filter(function(a){ return !a.view_only; });
@@ -10130,9 +10130,9 @@ tick();setInterval(tick,5000);})();
   function buildMessages(){
     pane('messages').innerHTML=
       '<div class="app-card stf-card"><div class="stf-ttl"><h3>Message a group</h3></div><p class="stf-note">Email or phone notification to a whole group of customers, in the FTM design. Sent in batches; keep this page open until it says Done.</p>'+
-        '<div class="stf-two"><label>Who<select id="stfSeg"><option value="paying">Paying customers</option><option value="no_account">Paying, no account connected</option><option value="attention">Accounts that need attention</option><option value="free">Free accounts</option><option value="everyone">Everyone</option></select></label><label>How<select id="stfCh"><option value="email">Email</option><option value="push">Phone notification</option></select></label></div>'+
+        '<div class="stf-two"><label>Who<select id="stfSeg"><option value="paying">Paying customers</option><option value="no_account">Paying, no account connected</option><option value="attention">Accounts that need attention</option><option value="small">An account below 2,000</option><option value="free">Free accounts</option><option value="everyone">Everyone</option></select></label><label>How<select id="stfCh"><option value="email">Email</option><option value="push">Phone notification</option></select></label></div>'+
         '<p class="stf-note" id="stfCount">…</p>'+
-        '<div id="stfBE"><label>Start from<select id="stfBT"><option value="">Empty</option><option value="maint">Maintenance update</option><option value="connect">Connect your account</option><option value="renew">Renewal reminder</option></select></label><label>Subject<input id="stfBSub" maxlength="120"></label><label>Headline<input id="stfBTit" maxlength="80"></label><label>Message (empty line = new paragraph)<textarea id="stfBTxt" rows="6"></textarea></label><div class="stf-two"><label>Button text (optional)<input id="stfBBtn" maxlength="40"></label><label>Button link<input id="stfBLnk" maxlength="300" placeholder="https://www.ftmwealthnation.com/"></label></div></div>'+
+        '<div id="stfBE"><label>Start from<select id="stfBT"><option value="">Empty</option><option value="topup">Upgrade to 2,000 (designed email, for “An account below 2,000”)</option><option value="maint">Maintenance update</option><option value="connect">Connect your account</option><option value="renew">Renewal reminder</option></select></label><label>Subject<input id="stfBSub" maxlength="120"></label><label>Headline<input id="stfBTit" maxlength="80"></label><label>Message (empty line = new paragraph)<textarea id="stfBTxt" rows="6"></textarea></label><div class="stf-two"><label>Button text (optional)<input id="stfBBtn" maxlength="40"></label><label>Button link<input id="stfBLnk" maxlength="300" placeholder="https://www.ftmwealthnation.com/"></label></div></div>'+
         '<div id="stfBP" hidden><label>Title<input id="stfPT" maxlength="80"></label><label>Text<input id="stfPB" maxlength="160"></label></div>'+
         '<div class="stf-act"><button type="button" class="btn btn-gold" id="stfBGo">Send to the group</button></div><div class="stf-out" id="stfBOut"></div><div class="stf-prog" id="stfProg" hidden><i></i></div></div>'+
       '<div class="app-card stf-card"><div class="stf-ttl"><h3>Email listed customers</h3></div><p class="stf-note">Up to 50 addresses (their FTM login email).</p>'+
@@ -10156,16 +10156,19 @@ tick();setInterval(tick,5000);})();
       S({op:'broadcast',segment:seg.value,channel:ch.value,dry:true}).then(function(j){ c.textContent=j.count+' customer'+(j.count===1?'':'s')+' in this group.'; }).catch(function(e){ c.textContent='Could not count ('+(e.code||e.message)+').'; }); }
     seg.addEventListener('change',cnt); ch.addEventListener('change',cnt);
     view.querySelector('.stf-tabs [data-t="messages"]').addEventListener('click',function(){ if(!p.dataset.n){ p.dataset.n=1; cnt(); } });
+    function tplMode(){ var on=p.querySelector('#stfBT').value==='topup'; ['#stfBSub','#stfBTit','#stfBTxt','#stfBBtn','#stfBLnk'].forEach(function(id){ p.querySelector(id).closest('label').hidden=on; }); var n=p.querySelector('#stfTopNote'); if(!n){ n=document.createElement('p'); n.className='stf-note'; n.id='stfTopNote'; p.querySelector('#stfBE').appendChild(n); } n.hidden=!on; n.textContent='The designed FTM email “Get the full FTM strategy: why we recommend 2,000 or more”, with each customer\'s own account number and balance. Each customer gets it at most once in 30 days.'; if(on&&seg.value!=='small'){ seg.value='small'; cnt(); } }
+    p.querySelector('#stfBT').addEventListener('change',tplMode);
     p.querySelector('#stfBT').addEventListener('change',function(e){ var v=e.target.value, T=v==='maint'?{subject:'FTM service update: everything is restored',title:'Everything is restored',text:MAINT.replace(/^Service update: /,''),button:'Open my dashboard',link:'https://www.ftmwealthnation.com/?open=perf'}:TPL[v]; if(!T) return;
       p.querySelector('#stfBSub').value=T.subject; p.querySelector('#stfBTit').value=T.title; p.querySelector('#stfBTxt').value=T.text; p.querySelector('#stfBBtn').value=T.button||''; p.querySelector('#stfBLnk').value=T.link||''; });
     p.querySelector('#stfBGo').addEventListener('click',function(){
       var out=p.querySelector('#stfBOut'), prog=p.querySelector('#stfProg'), btn=this, b={op:'broadcast',segment:seg.value,channel:ch.value};
-      if(ch.value==='email'){ b.subject=p.querySelector('#stfBSub').value.trim(); b.title=p.querySelector('#stfBTit').value.trim(); b.text=p.querySelector('#stfBTxt').value.trim(); b.button=p.querySelector('#stfBBtn').value.trim(); b.link=p.querySelector('#stfBLnk').value.trim(); if(!b.subject||!b.title||!b.text){ flash(out,'Fill in subject, headline and message.',true); return; } }
+      if(ch.value==='email'&&p.querySelector('#stfBT').value==='topup'){ if(seg.value!=='small'){ flash(out,'The upgrade email is only for “An account below 2,000”.',true); return; } b.template='topup2000'; }
+      else if(ch.value==='email'){ b.subject=p.querySelector('#stfBSub').value.trim(); b.title=p.querySelector('#stfBTit').value.trim(); b.text=p.querySelector('#stfBTxt').value.trim(); b.button=p.querySelector('#stfBBtn').value.trim(); b.link=p.querySelector('#stfBLnk').value.trim(); if(!b.subject||!b.title||!b.text){ flash(out,'Fill in subject, headline and message.',true); return; } }
       else { b.title=p.querySelector('#stfPT').value.trim(); b.body=p.querySelector('#stfPB').value.trim(); if(!b.title||!b.body){ flash(out,'Fill in title and text.',true); return; } }
       if(!window.confirm('Send this '+(ch.value==='email'?'email':'notification')+' to the group “'+seg.options[seg.selectedIndex].text+'”? '+p.querySelector('#stfCount').textContent)) return;
       btn.disabled=true; prog.hidden=false; flash(out,'Sending…');
       (function step(){ S(b).then(function(j){ b.id=j.id; var done=j.total-j.left; prog.firstChild.style.width=(j.total?done/j.total*100:100)+'%';
-          flash(out,(j.left?'Sending… ':'✓ Done. ')+j.sent+' sent'+(j.failed?', '+j.failed+' failed':'')+' · '+done+' of '+j.total+' handled.');
+          flash(out,(j.left?'Sending… ':'✓ Done. ')+j.sent+' sent'+(j.failed?', '+j.failed+' failed':'')+(j.skipped?', '+j.skipped+' already had it':'')+' · '+done+' of '+j.total+' handled.');
           if(j.left) step(); else { btn.disabled=false; } })
         .catch(function(e){ btn.disabled=false; flash(out,'Stopped ('+esc(e.code||e.message)+'). Press Send again to continue where it stopped.',true); }); })();
     });
