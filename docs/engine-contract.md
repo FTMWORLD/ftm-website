@@ -4,7 +4,41 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-15 (afternoon) — DURING A BROKER OUTAGE EVERYTHING WAITS; NOTHING CUSTOMERS SEE CHANGES (this commit; live 16:35 Berlin, owner's click, API restarted)
+## 2026-11-16 — SMALL ACCOUNTS NEVER OVER-RISKED; HK50 COPIES SIZED RIGHT; RISK BUDGET OFF (this commit; live 01:21 Berlin, owner's yes in the operator chat, API restarted)
+
+- WEBSITE: nothing to change. No API field changed.
+- Owner's decision (16 Nov) after FTM MACHINE's calibrated backtest. Method: real ticks plus 1-minute data, a fresh account
+  started every month from Jan 2020 to Nov 2025. Result at 500 USD Balanced:
+  - with the new rule: 12-month median +48 %, worst +4 %, worst dip 27.8 % (master 27.6 %)
+  - with the old rules: worst dip 73 %
+- Risk budget OFF for every account (.env COPY_RISK_BUDGET=OFF).
+- New src/services/min-lot-rule.js applies to accounts whose reference balance is under 2,000 USD:
+  - The broker minimum lot is allowed only up to a multiple of the normal size: 3x on BTCUSD and USDJPY, 1.5x on gold,
+    US Tech 100 and HK50. Otherwise the copy is skipped as SKIPPED_MIN_LOT_WOULD_EXCEED_<f>X.
+  - It is applied in the planner, the group copy (decision and claim proof) and the claim guard G-SIZE.
+  - Accounts of 2,000 USD and up keep 3x on every market.
+  - Settings: COPY_SMALL_ACCOUNT_USD, COPY_SMALL_MIN_LOT_FACTOR(_BTC/_JPY/_GOLD/_NDX/_HK50). No factor can be above 3.
+  - Kill switch: COPY_SMALL_MIN_LOT_FACTOR=3, then an API restart.
+  - The reference balance is set at activation only; a deposit or growth never moves an account over the line.
+- New src/services/point-value.js fixes HK50 sizing:
+  - Deriv "Hong Kong 50" reports its tick value in HKD, unconverted. The planner read it as 1 USD per point instead of 0.1275,
+    so HK50 copies were about 7.8x too small.
+  - The value is now converted with the master's USD rate for that currency. If no rate exists, the copy is skipped, never
+    guessed.
+  - The planner and the claim guard use the same rule.
+- Gate: new scripts/verify-point-value.js (10 checks) and scripts/verify-small-min-lot.js (7 checks).
+  - Replay of all 49 real minimum-lot decisions of the two 500 USD accounts: the old rule took 16, the new rule takes 5
+    (Bitcoin). Nothing is newly taken.
+  - The dry run of every market on every ACTIVE account is identical to before for account 184 (HK50 aside).
+  - verify-group-copy now proves the group mechanics with the kill-switch value; its real 10 Nov gold signal no longer
+    gives the 500 USD account a group copy.
+- Files:
+  - New: src/services/min-lot-rule.js, src/services/point-value.js.
+  - Changed: execution-planner.js, group-copy.js, trade-guards.js, risk-budget.js (the reason pattern accepts "1.5X").
+  - Backups: C:/FTM/_backups/*.before-small-minlot-20261116.
+- Deploy gate: see the commit.
+
+## 2026-11-15 (afternoon) — DURING A BROKER OUTAGE EVERYTHING WAITS; NOTHING CUSTOMERS SEE CHANGES (commit 897508e; live 16:35 Berlin, owner's click, API restarted)
 
 - WEBSITE: nothing to change. During a broker outage every account stays ACTIVE, the leaderboard keeps the last figures and
   rank, and no customer email goes out.
