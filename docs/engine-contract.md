@@ -4,7 +4,26 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-16 (night) — THE COPY SIZE FOLLOWS THE ACCOUNT BALANCE (RE-BASE) (this commit; migration 044 and live 01:52 Berlin, owner's yes for each, API restarted)
+## 2026-11-16 (night, 2) — A DEPOSIT OR WITHDRAWAL RE-BASES THE COPY SIZE BY ITSELF (this commit; live 02:10 Berlin, owner's yes, API restarted)
+
+- WEBSITE: nothing to change. No API field changed. Returns, leaderboard and start dates are untouched, as for every re-base.
+- Owner's decision (16 Nov): no one has to report a top-up. Per-trade sizing on the live balance was considered and NOT taken
+  (the monthly re-base backtests better).
+- Every minute (src/services/rebase.js runDepositRebase): when an ACTIVE account's broker deal history shows a deposit or
+  withdrawal (BALANCE deal) booked after its current base was set, and the balance reading is newer than that deal, the account
+  is re-based by itself.
+  - Same guards and audit line SIZING_REBASED; why DEPOSIT / WITHDRAWAL.
+  - Never twice for the same deal; a withdrawal waits until the balance shows it.
+- The 0.2x-5x bounds now count the transfers booked since the base was set (a booked top-up from 500 to 3,000 is accepted).
+- Balance watch: the deal history is re-read by the stats sync only after a copy closes or while a customer views it. So a
+  balance move that no closed copy explains (more than 5 USD and 1 %) requests a re-read (account_stats_sync reason
+  BALANCE_CHANGE, at most every 30 min per account). The watch never re-bases by itself.
+- Kill switch: .env COPY_REBASE_ON_DEPOSIT=ON|OFF. The monthly run and the operator button stay.
+- First live use, 02:11 Berlin: account 2022 was re-based 500 -> 534.88 (WITHDRAWAL; net transfers -20.17 booked after its
+  8 Nov activation), exactly as the dry run said.
+- Gate: scripts/verify-rebase.js now has 17 checks (R12-R17 new). New scripts/deposit-rebase-dry-run.js.
+
+## 2026-11-16 (night) — THE COPY SIZE FOLLOWS THE ACCOUNT BALANCE (RE-BASE) (commit 8105bd8; migration 044 and live 01:52 Berlin, owner's yes for each, API restarted)
 
 - WEBSITE: nothing to change. No customer API field changed. Customers' return figures, the leaderboard, the statistics and
   start dates do NOT move on a re-base (proven).
