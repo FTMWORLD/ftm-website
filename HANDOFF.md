@@ -96,6 +96,11 @@ this section wins.
 - Sending: 60 per call, resumable, once per member per letter; a sent letter cannot be edited. Optional FTM news post (English) and phone notification ("Letter from FTM", translated in i18n).
 - Year by year table: seven columns, adjustments under End, "-$0.00" fixed, phone shows year/return/end. Tests: `.github/tests/letter.js`, `.github/tests/year-table.js`.
 
+### Letter from FTM is automatic (16 November 2026, owner: "the site should generate and send the emails")
+- `ftm-calc.js` (site root) now holds the dashboards' calculation (mapAccount, mapExecution, mapStats, build = the former F._metricsRaw), moved verbatim; index.html loads it and `F._metricsRaw` calls `FTMCalc.build`. The server requires the same file, so letter figures can never differ from the dashboards.
+- `api/v1/letter-cron.js` (Vercel cron daily 09:23 UTC) runs `api/_lib/letterAuto.js`: on the 1st writes last month's letter (engine master account, read as the FTM owner login; text by the Anthropic API from the figures and `data/changes.json`, checked for unknown figures, promises, "traders", broker names, else plain text), emails owners a preview, schedules 2nd 09:00 UTC. Then translates and sends to every confirmed login, once each, posts FTM news, phone notification. Calls itself again when it runs out of time. A staff draft for the month is sent instead. Staff console › Letter: Hold/Release, "Write last month's now".
+- Test: `.github/tests/letter-auto.js`.
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the

@@ -29,6 +29,7 @@ jobs:
           node .github/tests/site-polish.js http://localhost:8765
           node .github/tests/free-board.js http://localhost:8765
           node .github/tests/letter.js http://localhost:8765
+          node .github/tests/letter-auto.js
           node .github/tests/year-table.js http://localhost:8765/
           YT_DIV=0 node .github/tests/year-table.js http://localhost:8765/
           node .github/tests/fx-api.js

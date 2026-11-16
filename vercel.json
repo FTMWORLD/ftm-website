@@ -34,6 +34,11 @@
       "source": "/docs/:path*",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/data/:path*",
+      "destination": "/",
+      "permanent": false
     }
   ],
   "git": {
@@ -49,6 +54,10 @@
     {
       "path": "/api/v1/status?alert=1",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/v1/letter-cron",
+      "schedule": "23 9 * * *"
     }
   ],
   "rewrites": [
@@ -82,6 +91,9 @@
     },
     "api/v1/community.js": {
       "maxDuration": 30
+    },
+    "api/v1/letter-cron.js": {
+      "maxDuration": 60
     }
   }
 }

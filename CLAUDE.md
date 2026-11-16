@@ -43,6 +43,11 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Every customer problem we solve gets a short cause-and-fix line in the TROUBLESHOOTING list in `api/v1/chat.js`, in the same commit, so the Ask here assistant can answer it.
 - Messages for FTM ENGINE go through the FTM MACHINE session, which passes them on.
 
+## Monthly Letter is automatic (owner instruction, 16 November 2026)
+- The Letter from FTM is written and sent by the site itself (daily job /api/v1/letter-cron): written on the 1st, owners get a preview, sent on the 2nd at 09:00 UTC. Never make it depend on someone pressing Send.
+- Every change customers can see gets one short, plain dated line in `data/changes.json` in the same commit, so the letter can say what changed that month.
+- The letter's figures use `ftm-calc.js`, the same calculation file the dashboards load. Change figure logic only there.
+
 ## Figures come from the engine (owner instruction, 9 November 2026)
 - FTM is a financial company: every customer figure must be exact. Balance, equity, deposits, withdrawals, P/L, growth, drawdown, win rate and trade counts are taken directly from the FTM engine (`/customer/accounts`, `/customer/accounts/:id/stats`, `/history`, `/positions`), never estimated by the website when the engine has the number.
 - The website only calculates what the engine does not send, and then from the engine's full history. When a figure is missing, ask FTM ENGINE (via FTM MACHINE) to add it rather than approximating.

@@ -12,6 +12,8 @@
    letter_translate {id, lang}  translate once into one language (kept until the letter changes)
    letter_preview {id, lang}    the email as a member in that language receives it
    letter_send {id, segment, dry?}   in batches, once per member, each in their own language
+   letter_auto                  write last month's letter now (normally the daily job does it on the 1st)
+   letter_hold {id, hold}       stop or release an automatic letter before it goes out
    log                      the last staff actions
    team | team_add {email, role, name} | team_role {email, role} | team_remove {email}   owners only
    Every action is written to the staff log. */
@@ -299,6 +301,12 @@ module.exports = async function handler(req, res) {
 
     if (op.indexOf('letter_') === 0) {
       if (op === 'letter_list') { const ix = await Letter.readIndex(admin); return res.status(200).json({ ok: true, items: ix.items }); }
+      if (op === 'letter_auto') {
+        const Auto = require('../_lib/letterAuto'), ym = Auto.prevMonth(Date.now()), ix = await Letter.readIndex(admin);
+        if (ix.items.some(x => x.month === ym)) return res.status(409).json({ ok: false, error: 'ALREADY_EXISTS' });
+        const L = await Auto.generate(admin, ym, await allUsers(admin)); await logIt(admin, by, 'letter_auto', Letter.monthName(ym), L.title);
+        return res.status(200).json({ ok: true, letter: L });
+      }
       if (op === 'letter_save') {
         const month = /^20\d\d-(0[1-9]|1[0-2])$/.test(String(body.month || '')) ? body.month : '';
         const title = clean(body.title, 90), intro = cleanLong(body.intro, 2500); if (!month || !title || !intro) return res.status(400).json({ ok: false, error: 'LETTER_INCOMPLETE' });
@@ -316,6 +324,12 @@ module.exports = async function handler(req, res) {
       }
       const L = await Letter.get(admin, body.id); if (!L) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (op === 'letter_get') return res.status(200).json({ ok: true, letter: L });
+      if (op === 'letter_hold') {
+        if (L.status === 'sent') return res.status(409).json({ ok: false, error: 'ALREADY_SENT' });
+        L.held = !!body.hold; if (!L.held && L.status === 'draft') { L.status = 'scheduled'; L.send_at = L.send_at || new Date().toISOString(); L.segment = L.segment || 'everyone'; }
+        L.updated = new Date().toISOString(); await Letter.save(admin, L); await logIt(admin, by, L.held ? 'letter_hold' : 'letter_release', Letter.monthName(L.month), L.title);
+        return res.status(200).json({ ok: true, letter: L });
+      }
       if (op === 'letter_delete') { if (L.sent && L.sent.sent) return res.status(409).json({ ok: false, error: 'ALREADY_SENT' }); const ix = await Letter.readIndex(admin); ix.items = ix.items.filter(x => x.id !== L.id); await P.write(admin, 'letters/index.json', ix); await logIt(admin, by, 'letter_delete', Letter.monthName(L.month), L.title); return res.status(200).json({ ok: true }); }
       if (op === 'letter_preview') {
         const lang = Letter.LANG_EN[body.lang] ? body.lang : 'en', W = (await Letter.wordsFor(admin, L, lang)) || null;

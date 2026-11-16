@@ -63,6 +63,8 @@ const BASE=process.argv[2]||'http://localhost:8765';
         if(o.op==='letter_langs') return J(200,{ok:true,total:3,langs:[{lang:'en',name:'English',members:2,ready:true},{lang:'fr',name:'French',members:1,ready:!!global.frDone}]});
         if(o.op==='letter_translate'){ global.frDone=true; return J(200,{ok:true,lang:o.lang,cached:false}); }
         if(o.op==='letter_send') return J(200,{ok:true,total:3,sent:3,failed:0,left:0,langs:{en:2,fr:1}});
+        if(o.op==='letter_get') return J(200,{ok:true,letter:{id:'auto1',month:'2026-10',title:'October in profit',intro:'Hi.',status:'scheduled',auto:true,send_at:'2026-11-02T09:00:00.000Z',figs:{month_pct:3.95,ytd_pct:6.03,trades:2,win_pct:50},v:1}});
+        if(o.op==='letter_hold') return J(200,{ok:true,letter:{id:'auto1',month:'2026-10',title:'October in profit',intro:'Hi.',status:'scheduled',held:!!o.hold,auto:true,send_at:'2026-11-02T09:00:00.000Z',figs:{},v:1}});
         if(o.op==='broadcast') return J(200,{ok:true,id:'b1',total:3,sent:2,failed:0,left:0});
         return J(200,{ok:true}); }
       if(u.pathname==='/api/v1/fx') return J(200,{ok:true,rates:{USD:1,EUR:.9}});
@@ -84,7 +86,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     ok(await p.isVisible('#ltTitle')&&/FTM master account 900/.test(await p.textContent('#ltAcct')),'['+label+'] Letter tab opens with the master account as the figures source');
     await p.selectOption('#ltMonth','2026-10').catch(()=>{});
     const hasOct=await p.evaluate(()=>[...document.querySelectorAll('#ltMonth option')].some(o=>o.value==='2026-10'));
-    if(hasOct){ await p.click('#ltRead'); await p.waitForTimeout(700);
+    if(hasOct){ await p.click('#ltRead'); await p.waitForTimeout(700); 
       const figs=await p.evaluate(()=>[...document.querySelectorAll('#ltFigs b')].map(b=>b.textContent));
       const fmt=v=>(v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%';
       ok(figs[0]===fmt(exp.m)&&figs[1]===fmt(exp.y)&&figs[2]==='3'&&figs[3]==='67%','['+label+'] figures come from the shared calculation: '+figs.join(' | ')+' expected '+fmt(exp.m)+' '+fmt(exp.y)); }
@@ -94,6 +96,9 @@ const BASE=process.argv[2]||'http://localhost:8765';
     ok(/Saved/.test(await p.textContent('#ltOut'))&&sent.includes('s:letter_preview:en')&&/French/.test(await p.textContent('#ltLangs')),'['+label+'] saved, preview and member languages shown');
     await p.click('#ltSend'); await p.waitForTimeout(1500);
     ok(sent.includes('s:letter_translate:fr')&&sent.includes('s:letter_send')&&sent.includes('c:post')&&sent.includes('s:broadcast')&&/✓ Sent\. 3 emails/.test(await p.textContent('#ltSOut')),'['+label+'] send: translates missing languages first, emails, FTM news post, phone notification '+(await p.textContent('#ltSOut')));
+    await p.evaluate(()=>{ const b=document.createElement('button'); b.dataset.id='auto1'; document.querySelector('#ltList').appendChild(b); b.click(); }); await p.waitForTimeout(500);
+    ok(/Goes out automatically/.test(await p.textContent('#ltSch'))&&await p.isVisible('#ltHold'),'['+label+'] an automatic letter shows when it goes out, with Hold');
+    await p.click('#ltHold'); await p.waitForTimeout(400); ok(/On hold/.test(await p.textContent('#ltSch'))&&sent.includes('s:letter_hold'),'['+label+'] Hold stops it');
     const lay=await p.evaluate(()=>{ const v=document.querySelector('.app-view[data-view="staff"]'), W=document.documentElement.clientWidth; let over=[]; v.querySelectorAll('[data-p="letter"] *').forEach(e=>{ const r=e.getBoundingClientRect(); if(r.width&&r.right>W+1) over.push(e.tagName+'.'+e.className); }); return {over:over.slice(0,4),sw:document.documentElement.scrollWidth,W}; });
     ok(!lay.over.length&&lay.sw<=lay.W,'['+label+'] nothing wider than the screen '+JSON.stringify(lay));
     if(process.env.SHOT_DIR){ const hgt=await p.evaluate(()=>Math.min(6000,Math.ceil(document.querySelector('.app-view[data-view="staff"] .stf-main').getBoundingClientRect().height)+200)); await p.setViewportSize({width:vp.width,height:hgt}); await p.waitForTimeout(300); await p.screenshot({path:path.join(process.env.SHOT_DIR,'letter-'+label.replace(/ /g,'_')+'.png')}); }

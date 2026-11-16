@@ -24,7 +24,7 @@ function words(L) {
     subject: 'Letter from FTM: ' + mn, kicker: 'Letter from FTM', month: mn, title: L.title, hello: 'Hello', intro: L.intro,
     h_did: 'What FTM MACHINE did', did: L.did, h_changed: 'What changed and why', changed: L.changed, h_next: 'What comes next', next: L.next,
     f_month: 'This month', f_ytd: 'Since 1 January', f_trades: 'Trades', f_win: 'Winning trades', f_src: 'FTM master account. Figures from the FTM engine, time-weighted: deposits and withdrawals do not change them.',
-    button: 'See your own month', sign_for: 'For everyone at FTM'
+    button: 'See the month in detail', sign_for: 'For everyone at FTM'
   };
 }
 
@@ -75,7 +75,7 @@ async function readIndex(admin) { return P.read(admin, INDEX, { items: [] }); }
 async function get(admin, id) { return /^[a-z0-9]{6,24}$/.test(String(id || '')) ? P.read(admin, 'letters/' + id + '.json', null) : null; }
 async function save(admin, L) {
   await P.write(admin, 'letters/' + L.id + '.json', L);
-  const ix = await readIndex(admin), row = { id: L.id, month: L.month, title: L.title, status: L.status, at: L.updated, by: L.by, sent: L.sent || null };
+  const ix = await readIndex(admin), row = { id: L.id, month: L.month, title: L.title, status: L.status, at: L.updated, by: L.by, auto: !!L.auto, send_at: L.send_at || null, held: !!L.held, sent: L.sent ? { sent: L.sent.sent, failed: L.sent.failed, finished: L.sent.finished || null } : null };
   const i = ix.items.findIndex(x => x.id === L.id); if (i === -1) ix.items.push(row); else ix.items[i] = row;
   ix.items.sort((a, b) => String(b.month).localeCompare(String(a.month)) || String(b.at).localeCompare(String(a.at))); ix.items = ix.items.slice(0, 60);
   await P.write(admin, INDEX, ix);
