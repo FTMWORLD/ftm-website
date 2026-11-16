@@ -367,6 +367,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (action === 'find') {
+      if (!(await isPaid(admin, user.id)) && !(await StaffLib.role(admin, user))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
       const n = String(body.nickname || '').trim().toLowerCase(); if (!n || n.length > 24) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       const ks = Object.keys(idx.members);
       let m = ks.find(k => String(idx.members[k].lb || '').toLowerCase() === n) || ks.find(k => String(idx.members[k].nickname || '').toLowerCase() === n);

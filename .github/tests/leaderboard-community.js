@@ -1,6 +1,6 @@
 // Leaderboard → Community: a leaderboard name opens that member's Community profile (follow / message). Run: node .github/tests/leaderboard-community.js
 const Module=require('module'); const orig=Module._load;
-const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a',email:'a@x.io'},'tokB':{id:'00000000-0000-4000-8000-00000000000b',email:'b@x.io'},'tokC':{id:'00000000-0000-4000-8000-00000000000c',email:'c@x.io'},'tokD':{id:'00000000-0000-4000-8000-00000000000d',email:'d@x.io'}};
+const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a',email:'a@x.io'},'tokB':{id:'00000000-0000-4000-8000-00000000000b',email:'b@x.io'},'tokC':{id:'00000000-0000-4000-8000-00000000000c',email:'c@x.io'},'tokD':{id:'00000000-0000-4000-8000-00000000000d',email:'d@x.io'},'tokF':{id:'00000000-0000-4000-8000-00000000000f',email:'f@x.io'}};
 const paid={'00000000-0000-4000-8000-00000000000a':['auto'],'00000000-0000-4000-8000-00000000000b':['auto'],'00000000-0000-4000-8000-00000000000c':['auto'],'00000000-0000-4000-8000-00000000000d':['auto']};
 const lbNick={'00000000-0000-4000-8000-00000000000a':'Tanaya','00000000-0000-4000-8000-00000000000b':'G-Marine','00000000-0000-4000-8000-00000000000c':'Tanaya','00000000-0000-4000-8000-00000000000d':'member_fff2'};
 const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}}),admin:{listUsers:async()=>({data:{users:Object.values(users)}})}},
@@ -30,6 +30,7 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   await call('tokB',{action:'save',nickname:'Marine',visible:false}); r=await call('tokC',{action:'find',nickname:'G-Marine'}); ok(r[0]===404,'a hidden profile is not opened from the leaderboard');
   r=await call('tokA',{action:'find',nickname:'member_fff2'}); ok(r[0]===200&&r[1].member&&r[1].member.mid,'a paying member who never opened the site is still found from the leaderboard (engine asked server to server)');
   const before=engineCalls; r=await call('tokB',{action:'find',nickname:'member_FFF2'}); ok(r[0]===200&&engineCalls===before,'the name map is reused (no engine calls for the next click)');
+  r=await call('tokF',{action:'find',nickname:'Tanaya'}); ok(r[0]===403,'a free account cannot open Community profiles from the leaderboard (Community is for subscribers)');
   r=await call('tokA',{action:'find',nickname:'ghost_name'}); ok(r[0]===404,'a name no member has is still NOT_FOUND');
   const fs=require('fs'), html=fs.readFileSync(require('path').join(__dirname,'../../index.html'),'utf8');
   ok(/data-cm="'\+esc\(e\.nickname\)/.test(html)&&/openMemberByNick\(cm\.getAttribute\('data-cm'\)\)/.test(html),'leaderboard cards and names carry the member link');
