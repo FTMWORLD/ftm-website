@@ -89,6 +89,13 @@ this section wins.
   arrives.
 - Raise legal points once, plainly, then do the work as asked.
 
+### Letter from FTM and Year by year (16 November 2026)
+- Staff console › Letter (owners and staff, not support): month, figures, five text parts, preview per language, send. Server: `api/_lib/letter.js` + `letter_*` ops in `api/v1/staff.js`; stored in the community bucket under `letters/`.
+- Figures: the console switches its own view to the chosen account (FTM master account first) and reads `FTM.metrics().seg()` for the month and since 1 January, the same function as every dashboard; trades and winning share are counted from the engine's closed trades in that month. Then it switches back.
+- Languages: each member's language is saved as `user_metadata.ftm_lang` when they use the site (falls back to their phone-notification language, then English). Translation: once per language per letter version via the Anthropic API (ANTHROPIC_API_KEY, same as Ask here), kept in `letters/<id>-<lang>.json`; editing a draft makes them out of date. Untranslated languages get English.
+- Sending: 60 per call, resumable, once per member per letter; a sent letter cannot be edited. Optional FTM news post (English) and phone notification ("Letter from FTM", translated in i18n).
+- Year by year table: seven columns, adjustments under End, "-$0.00" fixed, phone shows year/return/end. Tests: `.github/tests/letter.js`, `.github/tests/year-table.js`.
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the

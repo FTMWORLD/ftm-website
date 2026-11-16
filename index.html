@@ -837,6 +837,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 @media (max-width:600px){.stf-hero b{font-size:21px}.stf-hero>div{padding:16px 14px}.stf-t3{grid-template-columns:1fr!important}.stf-filt{flex-wrap:wrap}.stf-filt select{width:100%!important}.stf-tabs button{padding:9px 12px;font-size:13px}}
 @media (max-width:380px){.stf-hero{grid-template-columns:1fr}}
 .stf-main{gap:0!important}
+.stf-lt{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);gap:18px;align-items:start}.stf-ltm,.stf-lts{min-width:0}
+.stf-ltf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#1d2d6e;border-radius:16px;overflow:hidden;margin:4px 0 10px;background-image:linear-gradient(135deg,#0B1440,#152a7a)}.stf-ltf>div{padding:16px 10px;text-align:center;min-width:0}.stf-ltf b{display:block;font-size:22px;color:#fff;font-variant-numeric:tabular-nums;white-space:nowrap}.stf-ltf b.up{color:#E3B62F}.stf-ltf b.dn{color:#ff8a92}.stf-ltf span{display:block;margin-top:4px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#aab3d6}
+.stf-ltfa{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}.stf-ltfa .stf-note{margin:0}
+.stf-ltp{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;height:620px}.stf-ltp iframe{display:block;width:100%;height:100%;border:0}
+.stf .stf-ttl select{width:auto!important;margin:0!important;padding:6px 10px!important;font-size:13px!important}
+.stf-ltc{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}.stf-ltc span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:#FFF6DC;color:#8a6d12}.stf-ltc span.ok{background:#E9F8EF;color:#166534}.stf-ltc b{font-weight:800;margin-left:2px}
+.stf-ltx{display:grid;gap:8px}.stf-ltx button{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px 14px;font:inherit;cursor:pointer;transition:border-color .15s}.stf-ltx button:hover{border-color:#D4AF37}.stf-ltx b{font-size:13px;color:var(--ink);white-space:nowrap}.stf-ltx span{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+@media (max-width:1100px){.stf-lt{grid-template-columns:1fr}.stf-ltp{height:560px}}
+@media (max-width:600px){.stf-ltf{grid-template-columns:repeat(2,minmax(0,1fr))}.stf-ltf b{font-size:19px}.stf-ltp{height:520px}.stf-ltx button{grid-template-columns:1fr auto}.stf-ltx span{grid-column:1/-1;grid-row:2}}
 @media (max-width:600px){.stf-kv{grid-template-columns:1fr;gap:2px}.stf-kv dt{font-size:12px;margin-top:8px}.stf-head{flex-wrap:wrap}}
 #ckPick{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1440' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/14px;border-radius:999px;padding:9px 36px 9px 16px;font:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;min-height:38px}#ckPick:hover{border-color:#D4AF37}#ckPick:focus-visible{outline:2px solid #D4AF37;outline-offset:2px}
 @media (pointer:coarse){#appView .hx-tf button,#appView .unit-sw button{position:relative}#appView .hx-tf button::after,#appView .unit-sw button::after{content:'';position:absolute;inset:-7px -2px}}
@@ -2642,9 +2651,9 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .cv-head .cv-controls .cv-zoom-btns{margin-top:0}
 .cv-head>*{min-width:0;max-width:100%}.cv-head .cv-controls{row-gap:8px}.cv-head .cv-controls .tf{max-width:100%;flex-wrap:wrap}
 #appView .app-view[data-view="metrics"] #mCurve{height:340px}
-.yr-tbl td{white-space:nowrap;vertical-align:middle}.yr-tbl td.yr-mo b{display:block;font-weight:700}.yr-tbl td.yr-mo small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin-top:2px}
-@media (min-width:701px){.yr-tbl{width:100%}.yr-tbl th{white-space:normal;vertical-align:bottom;line-height:1.35;max-width:9.5em}.yr-tbl th:not(:first-child),.yr-tbl td:not(:first-child){text-align:right;padding-left:18px}.yr-tbl th:last-child,.yr-tbl td:last-child{padding-right:2px}.yr-tbl td:first-child{font-size:15px}}
-@media (max-width:700px){.yr-tbl td.yr-mo{align-items:center}.yr-tbl td.yr-mo b,.yr-tbl td.yr-mo small{display:inline;margin:0 0 0 6px}}
+.yr-tbl td{white-space:nowrap;vertical-align:middle;font-variant-numeric:tabular-nums}.yr-tbl td b{font-weight:700}.yr-tbl td.yr-end small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin:3px 0 0 auto;white-space:normal;max-width:13em;line-height:1.35}.yr-tbl td.yr-ret b{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(47,174,116,.1)}.yr-tbl td.yr-ret.pl-down b{background:rgba(226,71,90,.1)}
+@media (min-width:701px){.yr-tbl{width:100%}.yr-tbl th{white-space:nowrap;vertical-align:bottom}.yr-tbl th:not(:first-child),.yr-tbl td:not(:first-child){text-align:right;padding-left:18px}.yr-tbl th:last-child,.yr-tbl td:last-child{padding-right:2px}.yr-tbl td:first-child{font-size:15px}}
+@media (max-width:700px){.yr-tbl td.yr-end small{display:block;max-width:none;margin:2px 0 0;text-align:right}.app-scroll table.yr-tbl tbody tr.cx:not(.open) td.yr-end small{display:none}.app-scroll table.yr-tbl tbody tr td:nth-child(6){order:1}.app-scroll table.yr-tbl tbody tr td:nth-child(5){order:2}.app-scroll table.yr-tbl tbody tr td:nth-child(n+2):not(:nth-child(5)):not(:nth-child(6)){order:3}.app-scroll table.yr-tbl tbody tr.cx:not(.open) td:nth-child(n+2){display:none!important}.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(5),.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(6){display:flex!important}.yr-tbl td.yr-ret b{padding:2px 9px}}
 @media (max-width:600px){.cv-head .cv-controls{width:100%;flex-wrap:wrap;column-gap:6px;row-gap:8px}.cv-head .cv-controls #curveTF{flex:1 0 100%}
 .cv-head .cv-controls #curveUnit{flex:0 0 auto;flex-wrap:nowrap;padding:3px;gap:2px}.cv-head .cv-controls #curveUnit button{padding:5px 8px;font-size:12.5px}
 .cv-head .cv-controls #cvCmp{flex:1 1 0;min-width:0;width:0;margin:0;height:36px;padding:0 24px 0 10px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;letter-spacing:-.01em;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b1440' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center}
@@ -4064,7 +4073,7 @@ body.op-lock{overflow:hidden}
           </div>
           <div class="app-card">
             <h3>Year by year</h3>
-            <p class="hint">Balance at the start and end of each year, the return, and the best and worst month.</p>
+            <p class="hint">Balance at the start and end of each year, and the return. Every month is in the table below.</p>
             <div class="app-scroll"><table class="app-trades yr-tbl" id="pxYears"></table></div>
           </div>
           <div class="app-card">
@@ -4917,6 +4926,11 @@ body.op-lock{overflow:hidden}
         }).catch(function(){ return fresh(); });
       },
 
+      saveLang: function(code){
+        if(!client||!code) return Promise.resolve(false);
+        return client.auth.getSession().then(function(r){ var s=r.data&&r.data.session; if(!s||((s.user.user_metadata||{}).ftm_lang===code)) return false; return client.auth.updateUser({data:{ftm_lang:code}}).then(function(){ return true; }); }).catch(function(){ return false; });
+      },
+
       restoreSession: function(){
         return client.auth.getSession().then(function(r){
           var session=r.data && r.data.session;
@@ -5151,7 +5165,9 @@ body.op-lock{overflow:hidden}
     document.querySelectorAll('#langList li').forEach(li=>li.setAttribute('aria-selected',li.dataset.code===code));
     document.querySelectorAll('#mobileLang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.code===code));
     try{localStorage.setItem('ftm-lang',code)}catch(e){}
+    try{ if(window.FTM&&FTM.session&&FTM.auth&&FTM.auth.saveLang) FTM.auth.saveLang(code); }catch(e){}
   };
+  (function(){ var last=''; setInterval(function(){ var f=window.FTM, e=f&&f.session&&f.session.email, c=document.documentElement.lang||'en'; if(!e||!f.auth||!f.auth.saveLang||last===e+'|'+c) return; last=e+'|'+c; f.auth.saveLang(c); },4000); })();
   const langMenu=document.getElementById('langMenu'),langList=document.getElementById('langList'),langBtn=document.getElementById('langBtn'),mobileLang=document.getElementById('mobileLang');
 
   const LANG_EN={en:'English',ar:'Arabic',fr:'French',es:'Spanish',pt:'Portuguese',ru:'Russian',it:'Italian',vi:'Vietnamese',de:'German',bn:'Bengali',sw:'Swahili',ko:'Korean',pl:'Polish',si:'Sinhala',zh:'Chinese Simplified Mandarin','zh-tw':'Chinese Traditional Taiwan',mn:'Mongolian',ta:'Tamil',hi:'Hindi',id:'Indonesian',ur:'Urdu',ja:'Japanese',tr:'Turkish',nl:'Dutch',uk:'Ukrainian',ro:'Romanian',th:'Thai',he:'Hebrew',el:'Greek',cs:'Czech',sv:'Swedish',hu:'Hungarian',ms:'Malay',fil:'Filipino Tagalog',fa:'Persian Farsi',mr:'Marathi',te:'Telugu',gu:'Gujarati',kn:'Kannada',ml:'Malayalam',pa:'Punjabi',ne:'Nepali',my:'Burmese Myanmar',km:'Khmer Cambodian',uz:'Uzbek',ha:'Hausa',yo:'Yoruba',ig:'Igbo',am:'Amharic',zu:'Zulu'};
@@ -7432,12 +7448,12 @@ body.op-lock{overflow:hidden}
       var CVy=m.curve||[], hasAdj=CVy.some(function(p){return p.adj;});
       var inY=function(y,f){ var a=new Date(+y.k,0,1).getTime(), z=new Date(+y.k+1,0,1).getTime(), t=0; CVy.forEach(function(p){ if(p.t>=a&&p.t<z&&f(p)) t+=p.flow; }); return t; };
       var sg2=function(n){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),2); };
-      el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>Net deposits</th><th>Profit</th>'+(hasAdj?'<th>Dividends, tax &amp; adjustments</th>':'')+'<th>End</th><th>Return</th><th>Profitable months</th><th>Best month</th><th>Worst month</th></tr></thead><tbody>'+
+      var z0=function(v){ return Math.abs(v)<0.005?0:v; };
+      el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>Net deposits</th><th>Profit</th><th>End</th><th>Return</th><th>Profitable months</th></tr></thead><tbody>'+
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
-          var b=ms.reduce(function(a,x){return x.r>a.r?x:a;}), w=ms.reduce(function(a,x){return x.r<a.r?x:a;});
-          var nd=inY(y,function(p){return p.flow&&!p.adj;}), aj=inY(y,function(p){return p.adj;});
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(y.s,2)+'</td><td>'+sg2(nd)+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'">'+sg2(y.pl)+'</td>'+(hasAdj?'<td>'+sg2(aj)+'</td>':'')+'<td>'+money(y.e,2)+'</td><td class="'+(y.r>=0?'pl-up':'pl-down')+'">'+pc(y.r)+'</td><td>'+up+' / '+ms.length+'</td><td class="yr-mo '+(b.r<0?'pl-down':'pl-up')+'"><b>'+pc(b.r)+'</b><small>'+mS(b.k)+'</small></td><td class="yr-mo '+(w.r<0?'pl-down':'pl-up')+'"><b>'+pc(w.r)+'</b><small>'+mS(w.k)+'</small></td></tr>';}).join('')
-         :'<tr>'+new Array(hasAdj?11:10).join('<td>&mdash;</td>')+'</tr>')+'</tbody>';
+          var nd=z0(inY(y,function(p){return p.flow&&!p.adj;})), aj=z0(inY(y,function(p){return p.adj;}));
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(z0(y.s),2)+'</td><td>'+(nd?sg2(nd):money(0,2))+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'"><b>'+sg2(z0(y.pl))+'</b></td><td class="yr-end"><b>'+money(z0(y.e),2)+'</b>'+(hasAdj&&aj?'<small><span>Dividends, tax &amp; adjustments</span> '+sg2(aj)+'</small>':'')+'</td><td class="yr-ret '+(y.r>=0?'pl-up':'pl-down')+'"><b>'+pc(y.r)+'</b></td><td>'+up+' / '+ms.length+'</td></tr>';}).join('')
+         :'<tr>'+new Array(8).join('<td>&mdash;</td>')+'</tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       var yrs=has?Y.map(function(y){return y.k;}).reverse():[String(new Date().getFullYear())];
@@ -9998,7 +10014,7 @@ tick();setInterval(tick,5000);})();
   function toEUR(amount,cur){ if(!FX||!FX.rates) return null; var r=FX.rates, c=String(cur||'').toUpperCase(); if(!r[c]||!r.EUR) return null; return amount/r[c]*r.EUR; }
   function flash(el,msg,bad){ el.className='stf-out'+(bad?' bad':''); el.innerHTML=msg; }
   function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; D=null; }
-  var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['health','Health'],['activity','Activity'],['team','Team']];
+  var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['letter','Letter'],['health','Health'],['activity','Activity'],['team','Team']];
   function build(){
     var host=document.querySelector('#appView .app-nav'), content=document.querySelector('#appView .app-content'); if(!host||!content||nav) return;
     nav=document.createElement('button'); nav.type='button'; nav.className='app-nav-item nav-staff'; nav.dataset.view='staff'; nav.setAttribute('translate','no');
@@ -10007,12 +10023,12 @@ tick();setInterval(tick,5000);})();
     nav.addEventListener('click',function(){ F().showView('staff'); go(tab); });
     view=document.createElement('section'); view.className='app-view stf'; view.dataset.view='staff'; view.hidden=true; view.setAttribute('translate','no');
     view.innerHTML='<div class="app-main stf-main"><div class="stf-head"><div><h2>FTM staff console</h2><p>The whole company at a glance. Only FTM staff logins see this page.</p></div><span class="stf-badge"><i class="stf-live"></i>'+(ROLE==='owner'?'Owner':ROLE==='support'?'Support':'Staff')+'</span></div>'+
-      '<div class="stf-tabs" role="tablist">'+TABS.filter(function(t){ return t[0]!=='team'||ROLE==='owner'; }).map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'">'+t[1]+(t[0]==='problems'?' <em id="stfPbN" hidden></em>':'')+'</button>'; }).join('')+'</div>'+
+      '<div class="stf-tabs" role="tablist">'+TABS.filter(function(t){ return (t[0]!=='team'||ROLE==='owner')&&(t[0]!=='letter'||ROLE!=='support'); }).map(function(t){ return '<button type="button" role="tab" data-t="'+t[0]+'">'+t[1]+(t[0]==='problems'?' <em id="stfPbN" hidden></em>':'')+'</button>'; }).join('')+'</div>'+
       '<div class="stf-pane" data-p="board"></div><div class="stf-pane" data-p="problems" hidden></div><div class="stf-pane" data-p="accounts" hidden></div><div class="stf-pane" data-p="customers" hidden></div>'+
-      '<div class="stf-pane" data-p="messages" hidden></div><div class="stf-pane" data-p="health" hidden></div><div class="stf-pane" data-p="activity" hidden></div><div class="stf-pane" data-p="team" hidden></div></div>';
+      '<div class="stf-pane" data-p="messages" hidden></div><div class="stf-pane" data-p="letter" hidden></div><div class="stf-pane" data-p="health" hidden></div><div class="stf-pane" data-p="activity" hidden></div><div class="stf-pane" data-p="team" hidden></div></div>';
     content.appendChild(view);
     view.addEventListener('click',onClick);
-    buildCustomers(); buildMessages();
+    buildCustomers(); buildMessages(); if(ROLE!=='support') buildLetter();
     if(ROLE==='support') pane('messages').querySelectorAll('.app-card').forEach(function(c,i){ if(i!==1) c.remove(); });
   }
   function go(t){ tab=t; view.querySelectorAll('.stf-tabs button').forEach(function(b){ b.classList.toggle('on',b.dataset.t===t); b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'); });
@@ -10177,6 +10193,101 @@ tick();setInterval(tick,5000);})();
           if(j.left) step(); else { btn.disabled=false; } })
         .catch(function(e){ btn.disabled=false; flash(out,'Stopped ('+esc(e.code||e.message)+'). Press Send again to continue where it stopped.',true); }); })();
     });
+  }
+  var LT={cur:null,figs:null,langs:null};
+  function ymList(){ var d=new Date(), out=[]; for(var i=0;i<13;i++){ var x=new Date(d.getFullYear(),d.getMonth()-i,1); out.push(x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')); } return out; }
+  function ymName(ym){ var a=ym.split('-'); return new Date(+a[0],+a[1]-1,1).toLocaleDateString('en-GB',{month:'long',year:'numeric'}); }
+  function pc(v){ if(v==null||!isFinite(v)) return '—'; return (v>0?'+':v<0?'−':'')+Math.abs(v).toFixed(2)+'%'; }
+  function buildLetter(){
+    var p=pane('letter'), last=new Date(new Date().getFullYear(),new Date().getMonth()-1,1), def=last.getFullYear()+'-'+String(last.getMonth()+1).padStart(2,'0');
+    p.innerHTML='<div class="stf-lt">'+
+      '<div class="stf-ltm"><div class="app-card stf-card"><div class="stf-ttl"><h3>Letter from FTM</h3><button type="button" class="btn btn-sm btn-dark" id="ltNew">New letter</button></div>'+
+        '<p class="stf-note">Once a month: what FTM MACHINE did, the figures, what changed and why, what comes next. Every member gets it in their own language, as a designed FTM email.</p>'+
+        '<div class="stf-two"><label>Month<select id="ltMonth">'+ymList().map(function(m){ return '<option value="'+m+'"'+(m===def?' selected':'')+'>'+esc(ymName(m))+'</option>'; }).join('')+'</select></label><label>Figures from<select id="ltAcct"></select></label></div>'+
+        '<div class="stf-ltf" id="ltFigs"><div><b>—</b><span>This month</span></div><div><b>—</b><span>Since 1 January</span></div><div><b>—</b><span>Trades</span></div><div><b>—</b><span>Winning trades</span></div></div>'+
+        '<div class="stf-ltfa"><button type="button" class="btn btn-sm btn-gold" id="ltRead">Read the figures from the engine</button><span class="stf-note" id="ltFigNote">Same calculation as every dashboard: the engine\'s closed trades, time-weighted.</span></div>'+
+        '<label>Headline<input id="ltTitle" maxlength="90" placeholder="October: steady month, one improvement"></label>'+
+        '<label>A word to members<textarea id="ltIntro" rows="4" maxlength="2500" placeholder="Two or three sentences: how the month went, in plain words."></textarea></label>'+
+        '<label>What FTM MACHINE did<textarea id="ltDid" rows="4" maxlength="2500"></textarea></label>'+
+        '<label>What changed and why<textarea id="ltChanged" rows="4" maxlength="2500" placeholder="Every change to FTM MACHINE or the site this month, and the reason."></textarea></label>'+
+        '<label>What comes next<textarea id="ltNext" rows="3" maxlength="2500"></textarea></label>'+
+        '<label>Signed<input id="ltSign" maxlength="60" placeholder="Gospel"></label>'+
+        '<div class="stf-act stf-acts"><button type="button" class="btn btn-dark" id="ltDraft">Write a first draft from the figures</button><button type="button" class="btn btn-gold" id="ltSave">Save</button></div><div class="stf-out" id="ltOut"></div></div></div>'+
+      '<div class="stf-lts"><div class="app-card stf-card"><div class="stf-ttl"><h3>Preview</h3><select id="ltPL" aria-label="Preview language"><option value="en">English</option></select></div><div class="stf-ltp"><iframe id="ltFrame" title="Letter preview" sandbox=""></iframe></div><p class="stf-note" id="ltPN">Save to see the preview.</p></div>'+
+        '<div class="app-card stf-card"><div class="stf-ttl"><h3>Send</h3></div><label>To<select id="ltSeg"><option value="paying">Paying members</option><option value="everyone">Everyone with an FTM login</option><option value="free">Free accounts</option></select></label>'+
+        '<div id="ltLangs" class="stf-ltl"><p class="stf-note">Save first.</p></div>'+
+        '<label class="stf-chk"><input type="checkbox" id="ltPost" checked> Also post it on FTM news in Community</label><label class="stf-chk"><input type="checkbox" id="ltPush" checked> Phone notification to members who allowed them</label>'+
+        '<div class="stf-act stf-acts"><button type="button" class="btn btn-dark" id="ltTr">Translate</button><button type="button" class="btn btn-gold" id="ltSend">Send the letter</button></div><div class="stf-out" id="ltSOut"></div><div class="stf-prog" id="ltProg" hidden><i></i></div></div>'+
+        '<div class="app-card stf-card"><div class="stf-ttl"><h3>Letters</h3></div><div id="ltList"><p class="stf-note">Loading…</p></div></div></div></div>';
+    function q(s){ return p.querySelector(s); }
+    function accts(){ var A=(F().data&&F().data.accounts)||[], sel=q('#ltAcct'), was=sel.value; sel.innerHTML=A.length?A.slice().sort(function(a,b){ return (b.isMaster?1:0)-(a.isMaster?1:0); }).map(function(a){ return '<option value="'+esc(a.number)+'">'+esc((a.isMaster?'FTM master account':'Account')+' '+(a.number||''))+'</option>'; }).join(''):'<option value="">No account loaded</option>'; if(was) sel.value=was; }
+    accts(); view.querySelector('.stf-tabs [data-t="letter"]').addEventListener('click',function(){ accts(); if(!p.dataset.n){ p.dataset.n=1; list(); } });
+    function fill(L){ LT.cur=L; LT.figs=L?L.figs:null; LT.langs=null; q('#ltMonth').value=L?L.month:def; ['title','intro','did','changed','next','sign'].forEach(function(k){ q('#lt'+k.charAt(0).toUpperCase()+k.slice(1)).value=L?(L[k]||''):''; });
+      if(!L) q('#ltSign').value=((F().session&&F().session.name)||'').split(' ')[0]||'';
+      showFigs(); var sent=L&&L.sent&&L.sent.sent; ['#ltSave','#ltDraft','#ltRead','#ltSend','#ltTr'].forEach(function(s){ q(s).disabled=!!sent; });
+      flash(q('#ltOut'),sent?'This letter was sent on '+esc(when(L.sent.finished||L.sent.started))+' to '+L.sent.sent+' members. Start a new letter to write another.':'');
+      preview(); langs(); }
+    function showFigs(){ var f=LT.figs||{}; var v=[pc(f.month_pct),pc(f.ytd_pct),f.trades!=null?String(f.trades):'—',f.win_pct!=null?Math.round(f.win_pct)+'%':'—'];
+      q('#ltFigs').querySelectorAll('b').forEach(function(b,i){ b.textContent=v[i]; b.className=(i<2&&f[i?'ytd_pct':'month_pct']>0)?'up':(i<2&&f[i?'ytd_pct':'month_pct']<0)?'dn':''; });
+      if(f.at) q('#ltFigNote').textContent='Read from the engine '+when(f.at)+(f.account?' · account '+f.account:'')+'. Same calculation as every dashboard.'; }
+    function body(){ var b={op:'letter_save',month:q('#ltMonth').value,figs:LT.figs||{}}; if(LT.cur) b.id=LT.cur.id; ['title','intro','did','changed','next','sign'].forEach(function(k){ b[k]=q('#lt'+k.charAt(0).toUpperCase()+k.slice(1)).value.trim(); }); return b; }
+    function save(){ var b=body(), o=q('#ltOut'); if(!b.title||!b.intro){ flash(o,'Write the headline and the word to members first.',true); return Promise.reject(new Error('INCOMPLETE')); }
+      flash(o,'Saving…'); return S(b).then(function(j){ LT.cur=j.letter; flash(o,'✓ Saved.'); preview(); langs(); list(); return j.letter; }).catch(function(e){ if(e.message!=='INCOMPLETE') flash(o,'Not saved ('+esc(e.code||e.message)+').',true); throw e; }); }
+    function preview(){ var fr=q('#ltFrame'), n=q('#ltPN'); if(!LT.cur){ fr.srcdoc=''; n.textContent='Save to see the preview.'; return; }
+      S({op:'letter_preview',id:LT.cur.id,lang:q('#ltPL').value}).then(function(j){ fr.srcdoc='<!doctype html><meta charset="utf-8"><body style="margin:0">'+j.html; n.textContent='Subject: '+j.subject+(j.ready?'':' · Not translated yet: shown in English.'); }).catch(function(e){ n.textContent='Preview failed ('+(e.code||e.message)+').'; }); }
+    function langs(){ var box=q('#ltLangs'); if(!LT.cur){ box.innerHTML='<p class="stf-note">Save first.</p>'; return Promise.resolve(); } box.innerHTML='<p class="stf-note">Reading the members\' languages…</p>';
+      return S({op:'letter_langs',id:LT.cur.id,segment:q('#ltSeg').value}).then(function(j){ LT.langs=j.langs; var pl=q('#ltPL'), was=pl.value;
+        pl.innerHTML=j.langs.concat(j.langs.some(function(l){ return l.lang==='en'; })?[]:[{lang:'en',name:'English'}]).map(function(l){ return '<option value="'+esc(l.lang)+'">'+esc(l.name)+'</option>'; }).join(''); pl.value=was||'en'; if(!pl.value) pl.value='en';
+        box.innerHTML='<p class="stf-note">'+j.total+' member'+(j.total===1?'':'s')+' in '+j.langs.length+' language'+(j.langs.length===1?'':'s')+'.</p><div class="stf-ltc">'+j.langs.map(function(l){ return '<span class="'+(l.ready?'ok':'')+'" data-tip="'+esc(l.members+' member'+(l.members===1?'':'s')+(l.ready?', ready':', not translated yet'))+'">'+esc(l.name)+' <b>'+l.members+'</b></span>'; }).join('')+'</div>'; })
+        .catch(function(e){ box.innerHTML='<p class="stf-note bad">Could not read ('+esc(e.code||e.message)+').</p>'; }); }
+    function translateAll(){ var todo=(LT.langs||[]).filter(function(l){ return !l.ready; }), o=q('#ltSOut'), prog=q('#ltProg'), i=0;
+      if(!todo.length){ flash(o,'✓ Every language is ready.'); return Promise.resolve(true); }
+      prog.hidden=false; return new Promise(function(res){ (function step(){ if(i>=todo.length){ flash(o,'✓ Translated into '+todo.length+' language'+(todo.length===1?'':'s')+'.'); langs().then(function(){ res(true); }); return; }
+        var l=todo[i]; flash(o,'Translating '+(i+1)+' of '+todo.length+': '+esc(l.name)+'…'); prog.firstChild.style.width=(i/todo.length*100)+'%';
+        S({op:'letter_translate',id:LT.cur.id,lang:l.lang}).then(function(){ i++; step(); }).catch(function(e){ flash(o,'Translation into '+esc(l.name)+' failed ('+esc(e.code||e.message)+'). Members in that language get it in English unless you try again.',true); res(false); }); })(); }); }
+    function plain(L){ var f=L.figs||{}, t=['Letter from FTM · '+ymName(L.month),'',L.title,'',L.intro];
+      if(f.month_pct!=null) t.push('','FTM master account: '+pc(f.month_pct)+' this month, '+pc(f.ytd_pct)+' since 1 January'+(f.trades!=null?', '+f.trades+' trades':'')+(f.win_pct!=null?', '+Math.round(f.win_pct)+'% winning trades':'')+'.');
+      [['What FTM MACHINE did',L.did],['What changed and why',L.changed],['What comes next',L.next]].forEach(function(s){ if(s[1]) t.push('',s[0],s[1]); }); t.push('',L.sign||'FTM'); return t.join('\n').slice(0,2000); }
+    function send(){ var o=q('#ltSOut'), prog=q('#ltProg'), btn=q('#ltSend'), seg=q('#ltSeg');
+      save().then(function(L){ return langs().then(function(){ var miss=(LT.langs||[]).filter(function(l){ return !l.ready; }); return miss.length?translateAll():true; }).then(function(){ return L; }); }).then(function(L){
+        var miss=(LT.langs||[]).filter(function(l){ return !l.ready; });
+        if(!window.confirm('Send “'+L.title+'” ('+ymName(L.month)+') to '+seg.options[seg.selectedIndex].text.toLowerCase()+'?'+(miss.length?' '+miss.length+' language(s) are not translated and get English.':'')+' Each member gets it once.')) return;
+        btn.disabled=true; prog.hidden=false; var b={op:'letter_send',id:L.id,segment:seg.value};
+        (function step(){ S(b).then(function(j){ var done=j.total-j.left; prog.firstChild.style.width=(j.total?done/j.total*100:100)+'%';
+            flash(o,(j.left?'Sending… ':'✓ Sent. ')+j.sent+' sent'+(j.failed?', '+j.failed+' failed':'')+' · '+done+' of '+j.total+' handled.');
+            if(j.left) return step();
+            var extra=[];
+            if(q('#ltPost').checked) extra.push(C({op:'post',text:plain(L)}).then(function(){ return 'posted on FTM news'; }).catch(function(){ return 'FTM news post failed'; }));
+            if(q('#ltPush').checked) extra.push(new Promise(function(res){ var pb={op:'broadcast',segment:seg.value,channel:'push',title:'Letter from FTM',body:'This month’s letter from FTM is in your inbox.'}; (function ps(){ S(pb).then(function(x){ pb.id=x.id; if(x.left) ps(); else res(x.sent+' phone notification'+(x.sent===1?'':'s')); }).catch(function(){ res('phone notifications failed'); }); })(); }));
+            Promise.all(extra).then(function(r){ btn.disabled=false; flash(o,'✓ Sent. '+j.sent+' email'+(j.sent===1?'':'s')+(j.failed?', '+j.failed+' failed':'')+(r.length?' · '+esc(r.join(' · ')):'')+'.'); list(); fill(Object.assign({},L,{sent:{sent:j.sent,finished:new Date().toISOString()}})); }); })
+          .catch(function(e){ btn.disabled=false; flash(o,'Stopped ('+esc(e.code||e.message)+'). Press Send again: it continues where it stopped, and nobody gets it twice.',true); }); })();
+      }).catch(function(){}); }
+    function list(){ var box=q('#ltList'); S({op:'letter_list'}).then(function(j){ box.innerHTML=j.items.length?'<div class="stf-ltx">'+j.items.map(function(x){ return '<button type="button" data-id="'+esc(x.id)+'"><b>'+esc(ymName(x.month))+'</b><span>'+esc(x.title)+'</span><em class="stf-st '+(x.status==='sent'?'':'mid')+'">'+esc(x.status==='sent'?'sent'+(x.sent?' · '+x.sent.sent:''):x.status)+'</em></button>'; }).join('')+'</div>':'<p class="stf-note">No letters yet. The first one starts the archive.</p>'; })
+      .catch(function(e){ box.innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
+    function readFigs(){ var o=q('#ltOut'), btn=q('#ltRead'), f=F(), num=q('#ltAcct').value, ym=q('#ltMonth').value.split('-');
+      if(!num||!f.viewAccount||!f.metrics){ flash(o,'No trading account is loaded in this login yet. Open the Dashboard once, then try again.',true); return; }
+      var before=f.viewNum||null, t0=Date.now(); btn.disabled=true; flash(o,'Reading the account\'s full history from the engine…');
+      var ready=function(){ var v=f.viewedAccount&&f.viewedAccount(); return v&&String(v.number)===String(num)&&!f.refreshing&&f.es&&f.es()&&(f.data.closed||[]).length; };
+      if(!(f.viewedAccount()&&String(f.viewedAccount().number)===String(num))) f.viewAccount(num);
+      (function wait(){ if(!ready()){ if(Date.now()-t0>45000){ btn.disabled=false; flash(o,'The engine did not send this account\'s figures in time. Try again in a minute.',true); if(String(before||'')!==String(num)) f.viewAccount(before); return; } return setTimeout(wait,400); }
+        try{ var M=f.metrics(), a=new Date(+ym[0],+ym[1]-1,1).getTime(), z=new Date(+ym[0],+ym[1],1).getTime(), y0=new Date(+ym[0],0,1).getTime();
+          var inM=(f.data.closed||[]).filter(function(t){ return t.closeTime>=a&&t.closeTime<z&&t.pl!=null; }), wins=inM.filter(function(t){ return t.pl>0; }).length;
+          LT.figs={month_pct:+M.seg(a,z).pct.toFixed(4),ytd_pct:+M.seg(y0,z).pct.toFixed(4),trades:inM.length,win_pct:inM.length?wins/inM.length*100:null,account:String(num),at:new Date().toISOString()};
+          showFigs(); flash(o,'✓ Figures read. Save to keep them.'); }
+        catch(e){ flash(o,'Could not calculate ('+esc(e.message)+').',true); }
+        btn.disabled=false; if(String(before||'')!==String(num)) f.viewAccount(before); })(); }
+    function draft(){ var f=LT.figs, mn=ymName(q('#ltMonth').value).split(' ')[0]; if(!f||f.month_pct==null){ flash(q('#ltOut'),'Read the figures first.',true); return; }
+      var d=q('#ltDid'); if(d.value.trim()&&!window.confirm('Replace what you wrote under “What FTM MACHINE did”?')) return;
+      d.value='In '+mn+' FTM MACHINE closed '+f.trades+' trade'+(f.trades===1?'':'s')+' on the FTM master account'+(f.win_pct!=null?', and '+Math.round(f.win_pct)+'% of them closed in profit':'')+'. The month ended at '+pc(f.month_pct)+', and the account stands at '+pc(f.ytd_pct)+' since 1 January.\n\nEvery member\'s own month is in their Calendar, calculated the same way.';
+      if(!q('#ltTitle').value.trim()) q('#ltTitle').value=mn+': '+(f.month_pct>=0?'a month in profit':'a month in the red, and what it means'); }
+    q('#ltNew').addEventListener('click',function(){ fill(null); });
+    q('#ltRead').addEventListener('click',readFigs); q('#ltDraft').addEventListener('click',draft);
+    q('#ltSave').addEventListener('click',function(){ save().catch(function(){}); });
+    q('#ltPL').addEventListener('change',preview); q('#ltSeg').addEventListener('change',langs);
+    q('#ltTr').addEventListener('click',function(){ if(!LT.cur){ flash(q('#ltSOut'),'Save first.',true); return; } save().then(function(){ return translateAll(); }).then(function(){ preview(); }).catch(function(){}); });
+    q('#ltSend').addEventListener('click',send);
+    q('#ltList').addEventListener('click',function(e){ var b=e.target.closest('[data-id]'); if(!b) return; S({op:'letter_get',id:b.dataset.id}).then(function(j){ fill(j.letter); window.scrollTo({top:view.offsetTop,behavior:'smooth'}); }); });
+    q('#ltMonth').addEventListener('change',function(){ LT.figs=null; showFigs(); q('#ltFigNote').textContent='Read the figures for this month.'; });
   }
   function sendMail(){
     var p=pane('messages'), v=p.querySelector('#stfTpl').value, to=p.querySelector('#stfTo').value.split(/[\s,;]+/).filter(function(x){ return /@/.test(x); }), out=p.querySelector('#stfMailOut');
@@ -11341,7 +11452,7 @@ tick();setInterval(tick,5000);})();
       Notification.requestPermission().then(function(pm){ if(pm==='granted') subscribe().catch(function(){}); }).catch(function(){}); };
     document.addEventListener('pointerup',ask,true); document.addEventListener('keyup',ask,true); }
   // notification taps open the right page
-  function route(q){ var v=q.get('open'); if(!v) return; var go=function(){ if(F.showView) F.showView(v==='perf'?'perf':(v==='board'?'board':(v==='community'?'community':'metrics'))); var c=q.get('chat'); if(c){ var n=0, t=setInterval(function(){ var it=document.querySelector('.chat-item[data-t="'+c.replace(/[^\w-]/g,'')+'"]'); if(it){ clearInterval(t); it.click(); } else if(++n>40) clearInterval(t); },250); } };
+  function route(q){ var v=q.get('open'); if(!v) return; var go=function(){ if(F.showView) F.showView(v==='perf'?'perf':(v==='calendar'?'calendar':(v==='board'?'board':(v==='community'?'community':'metrics')))); var c=q.get('chat'); if(c){ var n=0, t=setInterval(function(){ var it=document.querySelector('.chat-item[data-t="'+c.replace(/[^\w-]/g,'')+'"]'); if(it){ clearInterval(t); it.click(); } else if(++n>40) clearInterval(t); },250); } };
     var w=0, t2=setInterval(function(){ var app=$('appView'); if(app&&!app.hidden&&F.showView){ clearInterval(t2); setTimeout(go,300); } else if(++w>80) clearInterval(t2); },250); }
   try{ var q0=new URLSearchParams(location.search); if(q0.get('open')){ route(q0); if(history.replaceState) history.replaceState(null,'',location.pathname); } }catch(e){}
   var app0=$('appView'); if(app0) new MutationObserver(function(){ if(!app0.hidden) setTimeout(invite,1500); }).observe(app0,{attributes:true,attributeFilter:['hidden']});

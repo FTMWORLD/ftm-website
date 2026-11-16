@@ -7,6 +7,11 @@
                             push_test | push_clear | community_hide | community_show | email (own message)
    broadcast {segment, channel:'email'|'push', subject,title,text,button,link | title,body, dry?, id?, template?:'topup2000'}
                             segments: paying | free | no_account | attention | small (an account below 2,000) | everyone; sends in batches, resumable by id
+   letter_list | letter_get {id} | letter_save {id?, month, title, intro, did, changed, next, sign, figs} | letter_delete {id}
+   letter_langs {id, segment}   the languages of the members who will get it, and which translations are ready
+   letter_translate {id, lang}  translate once into one language (kept until the letter changes)
+   letter_preview {id, lang}    the email as a member in that language receives it
+   letter_send {id, segment, dry?}   in batches, once per member, each in their own language
    log                      the last staff actions
    team | team_add {email, role, name} | team_role {email, role} | team_remove {email}   owners only
    Every action is written to the staff log. */
@@ -17,6 +22,7 @@ const Engine = require('../_lib/engineClient');
 const P = require('../_lib/push');
 const Notices = require('../_lib/notices');
 const Tpl = require('../_lib/passwordEmail');
+const Letter = require('../_lib/letter');
 
 const CRAWL = 'staff/crawl.json', LOG = 'staff/log.json';
 function within(ms, p) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), ms))]); }
@@ -118,6 +124,17 @@ async function findUser(admin, q) {
   const mid = Object.keys(idx.members).find(k => String(idx.members[k].nickname || '').toLowerCase() === n || String(idx.members[k].lb || '').toLowerCase() === n);
   return mid ? users.find(u => P.midOf(u.id) === mid) || null : null;
 }
+async function segmentList(admin, seg) {
+  const [users, prof] = await Promise.all([allUsers(admin), allProfiles(admin)]);
+  let list, smallMap = null;
+  if (seg === 'paying') list = users.filter(u => (prof[u.id] || []).indexOf('auto') !== -1);
+  else if (seg === 'free') list = users.filter(u => !(prof[u.id] || []).length);
+  else if (seg === 'everyone') list = users;
+  else if (seg === 'small') { const cr = await crawl(admin, false); smallMap = {}; (cr.customers || []).forEach(c => { const sm = smallOf(c.accounts); if (sm.length) smallMap[c.uid] = sm; }); list = users.filter(u => smallMap[u.id]); }
+  else if (seg === 'no_account' || seg === 'attention') { const cr = await crawl(admin, false); const ids = new Set((cr.customers || []).filter(c => seg === 'no_account' ? (c.accounts && !c.accounts.length) : (c.accounts || []).some(a => !(a.status === 'ACTIVE' || a.status === 'PAUSED' && a.reason === 'PAUSED'))).map(c => c.uid)); list = users.filter(u => ids.has(u.id)); }
+  else return null;
+  return { list: list.filter(u => u.email), smallMap };
+}
 async function customer360(admin, u) {
   const prof = await admin.from('profiles').select('products').eq('id', u.id).maybeSingle();
   const products = (prof && prof.data && prof.data.products) || [];
@@ -142,7 +159,7 @@ module.exports = async function handler(req, res) {
     const role = me ? await StaffLib.role(admin, me) : null;
     if (!role) return res.status(403).json({ ok: false, error: 'STAFF_ONLY' });
     const op = String(body.op || ''), by = me.email;
-    if (role === 'support' && op === 'broadcast') return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
+    if (role === 'support' && (op === 'broadcast' || op.indexOf('letter_') === 0)) return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
     if (op.indexOf('team') === 0 && role !== 'owner') return res.status(403).json({ ok: false, error: 'OWNERS_ONLY' });
 
     if (op === 'team') {
@@ -256,15 +273,8 @@ module.exports = async function handler(req, res) {
 
     if (op === 'broadcast') {
       const channel = body.channel === 'push' ? 'push' : 'email', seg = String(body.segment || '');
-      const [users, prof] = await Promise.all([allUsers(admin), allProfiles(admin)]);
-      let list, smallMap = null;
-      if (seg === 'paying') list = users.filter(u => (prof[u.id] || []).indexOf('auto') !== -1);
-      else if (seg === 'free') list = users.filter(u => !(prof[u.id] || []).length);
-      else if (seg === 'everyone') list = users;
-      else if (seg === 'small') { const cr = await crawl(admin, false); smallMap = {}; (cr.customers || []).forEach(c => { const sm = smallOf(c.accounts); if (sm.length) smallMap[c.uid] = sm; }); list = users.filter(u => smallMap[u.id]); }
-      else if (seg === 'no_account' || seg === 'attention') { const cr = await crawl(admin, false); const ids = new Set((cr.customers || []).filter(c => seg === 'no_account' ? (c.accounts && !c.accounts.length) : (c.accounts || []).some(a => !(a.status === 'ACTIVE' || a.status === 'PAUSED' && a.reason === 'PAUSED'))).map(c => c.uid)); list = users.filter(u => ids.has(u.id)); }
-      else return res.status(400).json({ ok: false, error: 'UNKNOWN_SEGMENT' });
-      list = list.filter(u => u.email);
+      const sl = await segmentList(admin, seg); if (!sl) return res.status(400).json({ ok: false, error: 'UNKNOWN_SEGMENT' });
+      const list = sl.list, smallMap = sl.smallMap;
       if (body.dry) return res.status(200).json({ ok: true, count: list.length });
       const subject = clean(body.subject, 120), title = clean(body.title, 80), text = cleanLong(body.text, 4000), pbody = clean(body.body, 160);
       const tpl = body.template === 'topup2000' ? 'topup2000' : '';
@@ -285,6 +295,61 @@ module.exports = async function handler(req, res) {
       const left = list.filter(u => st.done.indexOf(u.id) === -1).length;
       if (!left) await logIt(admin, by, 'broadcast_' + (tpl || channel), seg + ' (' + list.length + ')', tpl ? 'Why we recommend 2,000 or more' : channel === 'email' ? subject : title + ': ' + pbody);
       return res.status(200).json({ ok: true, id, total: list.length, sent: st.sent, failed: st.failed, skipped: st.skipped || 0, left });
+    }
+
+    if (op.indexOf('letter_') === 0) {
+      if (op === 'letter_list') { const ix = await Letter.readIndex(admin); return res.status(200).json({ ok: true, items: ix.items }); }
+      if (op === 'letter_save') {
+        const month = /^20\d\d-(0[1-9]|1[0-2])$/.test(String(body.month || '')) ? body.month : '';
+        const title = clean(body.title, 90), intro = cleanLong(body.intro, 2500); if (!month || !title || !intro) return res.status(400).json({ ok: false, error: 'LETTER_INCOMPLETE' });
+        let L = body.id ? await Letter.get(admin, body.id) : null; if (body.id && !L) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+        if (L && L.sent && L.sent.sent) return res.status(409).json({ ok: false, error: 'ALREADY_SENT' });
+        const fg = body.figs || {}, fnum = v => (v === null || v === undefined || v === '' || !isFinite(+v)) ? null : +v;
+        const figs = { month_pct: fnum(fg.month_pct), ytd_pct: fnum(fg.ytd_pct), trades: fnum(fg.trades) === null ? null : Math.round(+fg.trades), win_pct: fnum(fg.win_pct), account: clean(fg.account, 24), at: clean(fg.at, 30) };
+        const next = { month, title, intro, did: cleanLong(body.did, 2500), changed: cleanLong(body.changed, 2500), next: cleanLong(body.next, 2500), sign: clean(body.sign, 60) || 'FTM', figs };
+        const now = new Date().toISOString();
+        if (!L) L = { id: Date.now().toString(36) + crypto.randomBytes(3).toString('hex'), created: now, v: 0, status: 'draft' };
+        const changed = ['month', 'title', 'intro', 'did', 'changed', 'next', 'sign'].some(k => L[k] !== next[k]) || JSON.stringify(L.figs || {}) !== JSON.stringify(figs);
+        Object.assign(L, next, { updated: now, by }); if (changed) L.v = (L.v || 0) + 1;
+        await Letter.save(admin, L); await logIt(admin, by, 'letter_save', Letter.monthName(month), title);
+        return res.status(200).json({ ok: true, letter: L });
+      }
+      const L = await Letter.get(admin, body.id); if (!L) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      if (op === 'letter_get') return res.status(200).json({ ok: true, letter: L });
+      if (op === 'letter_delete') { if (L.sent && L.sent.sent) return res.status(409).json({ ok: false, error: 'ALREADY_SENT' }); const ix = await Letter.readIndex(admin); ix.items = ix.items.filter(x => x.id !== L.id); await P.write(admin, 'letters/index.json', ix); await logIt(admin, by, 'letter_delete', Letter.monthName(L.month), L.title); return res.status(200).json({ ok: true }); }
+      if (op === 'letter_preview') {
+        const lang = Letter.LANG_EN[body.lang] ? body.lang : 'en', W = (await Letter.wordsFor(admin, L, lang)) || null;
+        const w = W || Letter.words(L), used = W ? lang : 'en';
+        return res.status(200).json({ ok: true, lang: used, ready: !!W, subject: w.subject, html: Letter.html(L, w, me.user_metadata && (me.user_metadata.full_name || me.user_metadata.name) || '', used) });
+      }
+      if (op === 'letter_translate') {
+        if (!Letter.LANG_EN[body.lang]) return res.status(400).json({ ok: false, error: 'UNKNOWN_LANGUAGE' });
+        if (!process.env.ANTHROPIC_API_KEY && body.lang !== 'en') return res.status(503).json({ ok: false, error: 'TRANSLATION_NOT_CONFIGURED' });
+        const r = await Letter.prepare(admin, L, body.lang); return res.status(200).json({ ok: true, lang: r.lang, cached: r.cached });
+      }
+      const seg = String(body.segment || 'paying'), sl = await segmentList(admin, seg); if (!sl || seg === 'small') return res.status(400).json({ ok: false, error: 'UNKNOWN_SEGMENT' });
+      const boxes = {}; await pool(sl.list, 12, async u => { boxes[u.id] = await P.getBox(admin, P.midOf(u.id)).catch(() => null); });
+      if (op === 'letter_langs') {
+        const count = {}; sl.list.forEach(u => { const l = Letter.langOf(u, boxes[u.id]); count[l] = (count[l] || 0) + 1; });
+        const langs = await pool(Object.keys(count), 8, async l => ({ lang: l, name: Letter.LANG_EN[l], members: count[l], ready: l === 'en' || !!(await Letter.wordsFor(admin, L, l)) }));
+        return res.status(200).json({ ok: true, total: sl.list.length, langs: langs.sort((a, b) => b.members - a.members) });
+      }
+      if (op === 'letter_send') {
+        const st = L.sent && L.sent.segment === seg ? L.sent : { segment: seg, done: [], sent: 0, failed: 0, langs: {}, started: new Date().toISOString(), v: L.v };
+        if (body.dry) return res.status(200).json({ ok: true, total: sl.list.length, left: sl.list.filter(u => st.done.indexOf(u.id) === -1).length });
+        const done = new Set(st.done), todo = sl.list.filter(u => !done.has(u.id)).slice(0, 60), t0 = Date.now();
+        await pool(todo, 6, async u => {
+          if (Date.now() - t0 > 45000) return;
+          try { const r = await Letter.sendTo(admin, L, u); if (r.via) { st.sent++; st.langs[r.lang] = (st.langs[r.lang] || 0) + 1; } else st.failed++; } catch (e) { st.failed++; }
+          st.done.push(u.id);
+        });
+        const left = sl.list.filter(u => st.done.indexOf(u.id) === -1).length;
+        L.sent = st; L.status = left ? 'sending' : 'sent'; if (!left) st.finished = new Date().toISOString();
+        await Letter.save(admin, L);
+        if (!left) await logIt(admin, by, 'letter_send', seg + ' (' + sl.list.length + ')', Letter.monthName(L.month) + ': ' + L.title);
+        return res.status(200).json({ ok: true, total: sl.list.length, sent: st.sent, failed: st.failed, left, langs: st.langs });
+      }
+      return res.status(400).json({ ok: false, error: 'UNKNOWN_OP' });
     }
 
     if (op === 'log') { const L = await P.read(admin, LOG, { items: [] }); return res.status(200).json({ ok: true, items: L.items.slice(-100).reverse() }); }

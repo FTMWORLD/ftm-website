@@ -159,4 +159,4 @@ async function sendResetEmail(admin, email, opts) {
     () => admin.auth.resetPasswordForEmail(email, { redirectTo: SITE() + '/' }));
 }
 
-module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html };
+module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html, shell };
