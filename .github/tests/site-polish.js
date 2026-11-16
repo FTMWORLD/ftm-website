@@ -19,5 +19,11 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   const q=await b.newPage({viewport:{width:390,height:844}}); await q.goto(BASE+'/'); await q.waitForTimeout(800);
   ok(await q.evaluate(()=>[...document.querySelectorAll('.how-steps li')].filter(li=>getComputedStyle(li).display!=='none').length===4),'phone: the 4 steps are shown');
   ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top<L[L.length-1].getBoundingClientRect().top; }),'phone: timeline starts at the top with Day 1');
-  await q.close(); await b.close();
+  await q.close();
+  const d=await b.newPage({viewport:{width:390,height:844}}); await d.route('**/api/v1/**',r=>r.fulfill({status:404,contentType:'application/json',body:'{"ok":false}'})); await d.goto(BASE+'/'); await d.waitForTimeout(800);
+  await d.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok')});F.session={email:'t@x.com',products:['auto'],name:'T'};}); await d.evaluate(()=>FTM.openArea('auto')).catch(()=>{}); await d.waitForTimeout(1000);
+  const iv=await d.evaluate(()=>{ const kp=[...document.querySelectorAll('#appView .app-tile.kp[data-tip]>span:first-of-type')].map(l=>getComputedStyle(l,'::after').content); const lb=[...document.querySelectorAll('#appView .app-view[data-view="metrics"] .app-label')].map(l=>getComputedStyle(l,'::after').content); return kp.concat(lb); });
+  ok(iv.length>=8&&iv.every(c=>c==='"i"'),'every dashboard figure shows its ⓘ definition marker ('+iv.length+')');
+  ok(await d.evaluate(()=>{ const t=[...document.querySelectorAll('#appView .app-tile.kp[data-tip]')].map(x=>x.getAttribute('data-tip')).join(' | '); return /linked together, so deposits and withdrawals do not change it/.test(t)&&/fall of the closed balance/.test(t); }),'Profit this year and Max drawdown definitions match how the engine calculates them');
+  await d.close(); await b.close();
   console.log(fails?'FAILED: '+fails:'SITE POLISH OK'); process.exit(fails?1:0); })();
