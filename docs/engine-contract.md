@@ -4,7 +4,42 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-16 — SMALL ACCOUNTS NEVER OVER-RISKED; HK50 COPIES SIZED RIGHT; RISK BUDGET OFF (this commit; live 01:21 Berlin, owner's yes in the operator chat, API restarted)
+## 2026-11-16 (night) — THE COPY SIZE FOLLOWS THE ACCOUNT BALANCE (RE-BASE) (this commit; migration 044 and live 01:52 Berlin, owner's yes for each, API restarted)
+
+- WEBSITE: nothing to change. No customer API field changed. Customers' return figures, the leaderboard, the statistics and
+  start dates do NOT move on a re-base (proven).
+- Owner's decision (16 Nov) after FTM MACHINE's backtest. Sizing fixed at activation never compounds: 500 USD Balanced from
+  2020 to 2025 ends at 1,941 with fixed sizing and at 15,059 with a monthly re-base. Over rolling 24-month windows: median
+  +96 % fixed, +204 % re-based monthly, +216 % for the master.
+- Migration 044 (applied with the owner's yes) adds to risk_profiles:
+  - sizing_reference_balance (NULL means size on customer_reference_balance, exactly as before) and sizing_rebased_at.
+  - A trigger: writing customer_reference_balance (activation, switch-off, a restore) clears the sizing balance.
+- New src/services/rebase.js:
+  - The planner, the claim guard and the small-account rule size on COALESCE(sizing, reference).
+  - Operator button "re-base" on /api/v1/operator/ = POST /api/v1/operator/accounts/:id/rebase {why: DEPOSIT | WITHDRAWAL |
+    OPERATOR} (master token), for use after a deposit or a withdrawal.
+  - Monthly run: days 1-3 of each Berlin month, every ACTIVE account once, to its balance (up or down).
+    .env COPY_REBASE_MONTHLY=ON; the first run is 1 Dec.
+  - Kill switches: COPY_REBASE_MONTHLY=OFF, COPY_REBASE_OPERATOR=OFF.
+- Hard guards (a refusal changes nothing; every refusal except BUSY raises [ALERT] REBASE_REFUSED):
+  - the account is ACTIVE and connected;
+  - the balance reading is under 5 minutes old and in the reference currency;
+  - no OPEN copy is waiting (otherwise BUSY: tried again later);
+  - the new value is 0.2x-5x of the current base.
+- Every change writes the audit line SIZING_REBASED {before, after, why, small_account_before/after}. Open copies are never
+  touched.
+- The 2,000 USD small-account line follows the sizing base: a re-base to 2,000 or more leaves the rule, below 2,000 enters
+  it.
+- Gate:
+  - new scripts/verify-rebase.js (11 checks; real DB, rolled back): the guards; the Berlin month; one audit line, the
+    reference and the start date unchanged; the planner and the claim guard follow the new base; returns and every
+    leaderboard identical; open copies untouched; the 2,000 line both ways; the trigger; monthly OFF / day 4 / day 1 once
+    / no second run; the switches.
+  - scripts/rebase-dry-run.js: the 7 Nov dry run for every ACTIVE account.
+  - verify-point-value and verify-small-min-lot now stay meaningful after their own deploy: they compare with the 3x rule
+    through its kill-switch value instead of "the live code".
+
+## 2026-11-16 — SMALL ACCOUNTS NEVER OVER-RISKED; HK50 COPIES SIZED RIGHT; RISK BUDGET OFF (commit c83080b; live 01:21 Berlin, owner's yes in the operator chat, API restarted)
 
 - WEBSITE: nothing to change. No API field changed.
 - Owner's decision (16 Nov) after FTM MACHINE's calibrated backtest. Method: real ticks plus 1-minute data, a fresh account
