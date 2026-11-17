@@ -5,7 +5,7 @@ const fs=require('fs'), path=require('path'); const BASE=process.argv[2]||'http:
 const html=fs.readFileSync(path.join(__dirname,'../../index.html'),'utf8'), perf=fs.readFileSync(path.join(__dirname,'../../performance.html'),'utf8');
 ok(!/class="trust-head">\s*<div class="marquee"/.test(html),'the "Your money, working around the clock" headline is calm and complete (no sideways scroll)');
 ok(!/\.how-steps\{display:none!important\}/.test(html),'"How FTM MACHINE works" keeps its steps on phones');
-ok(!/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline reads Day 1 to Year 5 on phones');
+ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises from Day 1 at the bottom on phones');
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
 ok(/class="pf-foot"/.test(perf)&&/href="\/terms.html"/.test(perf)&&/Invest today, secure tomorrow\./.test(perf),'performance page has the FTM footer with Terms and Privacy');
@@ -18,7 +18,13 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   await p.close();
   const q=await b.newPage({viewport:{width:390,height:844}}); await q.goto(BASE+'/'); await q.waitForTimeout(800);
   ok(await q.evaluate(()=>[...document.querySelectorAll('.how-steps li')].filter(li=>getComputedStyle(li).display!=='none').length===4),'phone: the 4 steps are shown');
-  ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top<L[L.length-1].getBoundingClientRect().top; }),'phone: timeline starts at the top with Day 1');
+  ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top>L[L.length-1].getBoundingClientRect().top&&L[0].querySelector('.d').getBoundingClientRect().left<L[L.length-1].querySelector('.d').getBoundingClientRect().left; }),'phone: timeline rises from Day 1 at the bottom to Year 5 at the top');
+  ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('liveLine').getAttribute('points'); }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
+  ok(await q.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'phone: no sideways scroll with the moved chart');
+  await q.setViewportSize({width:1280,height:800}); await q.waitForTimeout(300);
+  ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'); return !!c.closest('.auto-art-col')&&c.offsetHeight>300&&document.querySelector('.busy-chart').hidden; }),'laptop: the FTM MACHINE chart stays in Auto Trading');
+  await q.setViewportSize({width:360,height:740}); await q.waitForTimeout(300);
+  ok(await q.evaluate(()=>!!document.querySelector('.live-card').closest('.busy-chart')&&document.documentElement.scrollWidth<=innerWidth),'small phone: chart under "Made for busy people", no sideways scroll');
   await q.close();
   const d=await b.newPage({viewport:{width:390,height:844}}); await d.route('**/api/v1/**',r=>r.fulfill({status:404,contentType:'application/json',body:'{"ok":false}'})); await d.goto(BASE+'/'); await d.waitForTimeout(800);
   await d.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok')});F.session={email:'t@x.com',products:['auto'],name:'T'};}); await d.evaluate(()=>FTM.openArea('auto')).catch(()=>{}); await d.waitForTimeout(1000);

@@ -54,5 +54,9 @@
  {
   "date": "2026-11-17",
   "text": "Trade statistics now also show when FTM started trading on the account, its last trade, days without trading, the longest pause, open trades, trades this week and month, markets traded and lots traded."
+ },
+ {
+  "date": "2026-11-17",
+  "text": "Homepage on phones: the FTM MACHINE chart now sits under \"Made for busy people\", and the FTM Investment timeline rises from Day 1 at the bottom to Year 5 at the top."
  }
 ]
