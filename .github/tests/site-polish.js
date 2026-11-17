@@ -9,6 +9,7 @@ ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises fro
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
 ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
+ok(/<b>4\.5<\/b> out of 5 based on <b>Performance<\/b>/.test(html)&&!/12,400/.test(html),'the FTM score line reads "based on Performance"');
 ok(/<h2>Join other people worldwide<\/h2>/.test(html)&&!/50K\+ people|cta\.title/.test(html),'the closing headline reads "Join other people worldwide" in every language');
 ok(!/Power of MT5|derived indices|Explore FTM MT5/.test(html),'the "Power of MT5 with 24/7 trading" block is gone on every screen');
 ok(/class="bubble me">Hi, how do I set up FTM MACHINE\?</.test(html),'the support chat example is about setting up FTM MACHINE');
