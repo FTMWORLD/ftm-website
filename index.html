@@ -2464,6 +2464,15 @@ h3.has-tip{cursor:help}
 @media (max-width:380px){.rc-tb{font-size:12px}.rc-tb th{font-size:10px;letter-spacing:.03em}.rc-tb th,.rc-tb td{padding:7px 3px}.rc-net b{font-size:20px}}
 @media (max-width:600px){.rc{padding:14px 12px}.rc-t{font-size:18px}.rc-tb{font-size:13px}.rc-tb th,.rc-tb td{padding:8px 4px}.rc-tb:not(.rc-wk) th:nth-child(1),.rc-tb:not(.rc-wk) td:nth-child(1){display:none}.rc-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.rc-net{padding:14px}.rc-net b{font-size:22px}}
 .fd-list>*,.fd-post{min-width:0}
+.ss-modal{position:fixed;inset:0;z-index:2147483000;background:rgba(11,20,64,.55);display:flex;align-items:center;justify-content:center;padding:16px}.ss-modal[hidden]{display:none}body.ss-lock{overflow:hidden}
+.ss-card{position:relative;width:min(640px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#fff;border-radius:22px;box-shadow:0 30px 80px -30px rgba(11,20,64,.6);padding:26px 24px 22px}.ss-card h3{margin:0 0 14px;font-size:22px;color:#0b1440}
+.ss-x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:0;background:#EEF1F8;color:#0b1440;font-size:22px;cursor:pointer}
+.ss-sub{color:var(--muted);margin:0}
+.ss-hero{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:14px;background:#E9F8EF;margin:0 0 16px}.ss-hero>i{flex:none;width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.5);animation:stfPulse 2.2s ease-out infinite}.ss-hero.bad{background:#FDECEE}.ss-hero.bad>i{background:#E5323E;animation:none}.ss-hero b{display:block;color:#0b1440;font-size:15px}.ss-hero span{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.ss-list{display:grid;gap:14px}.ss-rh{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 6px}.ss-rh b{font-size:14px;color:#0b1440;display:flex;align-items:center;gap:8px}.ss-rh em{width:8px;height:8px;border-radius:50%;background:#22c55e}.ss-rh em.bad{background:#E5323E}.ss-rh span{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ss-bars{display:flex;gap:1px;height:28px}.ss-bars i{flex:1;min-width:0;border-radius:2px;background:#22c55e}.ss-bars i.nd{background:#e3e6f0}.ss-bars i.mid{background:#D4AF37}.ss-bars i.bad{background:#E5323E}.ss-bars i:hover{filter:brightness(1.15)}
+.ss-axis{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:8px}
+@media (max-width:600px){.ss-modal{align-items:flex-end;padding:0}.ss-card{border-radius:22px 22px 0 0;padding:22px 16px 18px;max-height:88vh}.ss-bars{height:24px;gap:0}.ss-bars i{border-radius:0;margin-right:1px}}
 .fd-post.ftm{border-color:#ecd68b;background:linear-gradient(180deg,#fffcf2,#fff 60%)}
 .fd-h{display:flex;align-items:center;gap:10px}.fd-h .avatar{width:42px;height:42px;font-size:15px;cursor:pointer;flex:none}.fd-h .who{flex:1;min-width:0;line-height:1.25}.fd-h .who b{cursor:pointer;color:#0b1440;font-size:15px}.fd-h .who small{display:block;color:#8a90a6;font-size:12.5px;font-weight:600;margin-top:2px}
 .fd-pin{color:#8a6d12;font-weight:800}.ftm-av{display:grid;place-items:center;background:#0b1440!important;border-radius:12px!important}.ftm-av svg{width:24px;height:24px}
@@ -4747,7 +4756,7 @@ body.op-lock{overflow:hidden}
       <div>
         <h4>About</h4><ul><li><a href="#company">Who we are</a></li><li><a href="#company">Why choose us</a></li></ul>
         <h4>Investment</h4><ul><li><a href="#invest">How it works</a></li><li><a href="#ivCalc">Profit share calculator</a></li><li><a href="#invest" class="js-login">Investor log in</a></li></ul>
-        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#ask" class="js-foot-ask">Ask here</a></li><li><a href="#support" class="um-live">Chat with FTM support</a></li><li><a href="mailto:ftmwebnation@gmail.com">Contact us</a></li></ul>
+        <h4>Learning &amp; support</h4><ul><li><a href="#support">Help centre</a></li><li><a href="#ask" class="js-foot-ask">Ask here</a></li><li><a href="#support" class="um-live">Chat with FTM support</a></li><li><a href="mailto:ftmwebnation@gmail.com">Contact us</a></li><li><a href="#status" class="js-status">Service status</a></li></ul>
       </div>
       <div>
         <h4>Partner</h4><ul><li><a href="#partner">Deriv affiliate via FTM</a></li><li><a href="#partner">Introducing broker</a></li><li><a href="#partner">Payment agent</a></li><li><a href="#partner">Partner login</a></li></ul>
@@ -11007,7 +11016,7 @@ tick();setInterval(tick,5000);})();
   var menus=[]; document.querySelectorAll('.um-ai').forEach(function(ai){ var m=ai.parentNode; if(menus.indexOf(m)===-1) menus.push(m); });
   menus.forEach(function(m){ var ai=m.querySelector('.um-ai'), live=m.querySelector('.um-live'), mail=m.querySelector('a[href^="mailto:"].um-i'); if(!ai||m.querySelector('.um-sup')) return;
     var sup=document.createElement('button'); sup.type='button'; sup.className='um-i um-sup'; sup.setAttribute('aria-expanded','false'); sup.innerHTML='<span>'+tr('Customer support')+'</span><i class="um-chev"></i>';
-    var box=document.createElement('div'); box.className='um-sub'; box.hidden=true; m.insertBefore(sup,ai); m.insertBefore(box,ai); [ai,live,mail].forEach(function(x){ if(x) box.appendChild(x); });
+    var box=document.createElement('div'); box.className='um-sub'; box.hidden=true; m.insertBefore(sup,ai); m.insertBefore(box,ai); [ai,live,mail].forEach(function(x){ if(x) box.appendChild(x); }); var st=document.createElement('button'); st.type='button'; st.className='um-i js-status'; st.textContent=tr('Service status'); box.appendChild(st);
     sup.addEventListener('click',function(e){ e.stopPropagation(); box.hidden=!box.hidden; sup.setAttribute('aria-expanded',box.hidden?'false':'true'); }); });
   function sync(){ var F=window.FTM; if(!F||!F.data) return; var A=F.data.accounts||[], on=A.some(function(a){ return a.active&&!a.isMaster&&!a.isPreview; }), paid=!F.planFree&&!!F.planStatus&&!/CANCEL|EXPIRED|UNPAID/i.test(F.planStatus||'');
     document.querySelectorAll('.um-act,.um-actd').forEach(function(b){ if(on){ if(!b.classList.contains('um-actd')){ b.classList.remove('um-act'); b.classList.add('um-actd'); b.textContent=tr('FTM MACHINE ACTIVATED'); } } else if(b.classList.contains('um-actd')){ b.classList.remove('um-actd'); b.classList.add('um-act'); b.textContent=tr('Activate FTM MACHINE'); } });
@@ -11274,6 +11283,32 @@ tick();setInterval(tick,5000);})();
         var app=document.getElementById('appView'); if(app) app.hidden=true; document.documentElement.classList.remove('app-open');
         var l=document.querySelector('.js-login'); if(l) l.click(); setTimeout(function(){ var er=document.getElementById('authError'); if(er){ er.classList.remove('ok'); er.textContent=tr('For your security you were signed out. Log in again.'); er.hidden=false; } },300); } }); }).catch(function(){}); };
   setInterval(function(){ if(!document.hidden) F.loginCheck(); },10*60000);
+})();
+</script>
+<script>
+(function(){
+  var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }, esc=function(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var NAMES={web:'Website',login:'Log in and accounts',engine:'FTM MACHINE engine',email:'Emails',pay:'Payments',ask:'Ask here'}, box=null;
+  function close(){ if(box){ box.hidden=true; document.body.classList.remove('ss-lock'); } }
+  function open(){
+    if(!box){ box=document.createElement('div'); box.id='ssModal'; box.className='ss-modal'; box.setAttribute('role','dialog'); box.setAttribute('aria-modal','true');
+      box.innerHTML='<div class="ss-card"><button type="button" class="ss-x" aria-label="'+esc(tr('Close'))+'">&times;</button><div class="ss-body"></div></div>'; document.body.appendChild(box);
+      box.addEventListener('click',function(e){ if(e.target===box||e.target.closest('.ss-x')) close(); }); document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&box&&!box.hidden) close(); }); }
+    box.hidden=false; document.body.classList.add('ss-lock'); var b=box.querySelector('.ss-body'); b.innerHTML='<h3>'+esc(tr('Service status'))+'</h3><p class="ss-sub">'+esc(tr('Checking…'))+'</p>';
+    fetch('/api/v1/status?history=1',{cache:'no-store'}).then(function(r){ return r.json(); }).then(function(j){ render(b,j); }).catch(function(){ b.innerHTML='<h3>'+esc(tr('Service status'))+'</h3><p class="ss-sub">'+esc(tr('The status could not be loaded. Please try again.'))+'</p>'; });
+  }
+  function render(b,j){ var loc=window.FTM_LOCALE||'en-GB', last=j.last||{}, comp=last.comp||{}, keys=j.components||Object.keys(NAMES), down=keys.filter(function(k){ return comp[k]===false; });
+    var dt=function(d){ var a=d.split('-'); return new Date(+a[0],+a[1]-1,+a[2]).toLocaleDateString(loc,{day:'numeric',month:'short',year:'numeric'}); };
+    var head=!j.last?'<div class="ss-hero"><i></i><div><b>'+esc(tr('Service status'))+'</b><span>'+esc(tr('The first hourly check is on its way.'))+'</span></div></div>'
+      :'<div class="ss-hero'+(down.length?' bad':'')+'"><i></i><div><b>'+esc(tr(down.length?'Some FTM services have a problem. We are working on it.':'All FTM services are running.'))+'</b><span>'+esc(tr('Checked every hour.'))+' '+esc(tr('Last check:'))+' '+esc(new Date(last.t).toLocaleString(loc,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}))+'</span></div></div>';
+    var rows=keys.map(function(k){ var n=0, bad=0; (j.days||[]).forEach(function(d){ n+=d.n||0; bad+=(d.bad&&d.bad[k])||0; }); var up=n?((n-bad)/n*100):null;
+      var bars=(j.days||[]).map(function(d){ var x=(d.bad&&d.bad[k])||0, cls=!d.n?'nd':(x===0?'ok':(x<=2?'mid':'bad')), tip=dt(d.d)+': '+(!d.n?tr('Not checked'):(x===0?tr('No problems found'):tr('{} checks with a problem').replace('{}',x)));
+        return '<i class="'+cls+'" data-tip="'+esc(tip)+'"></i>'; }).join('');
+      return '<div class="ss-row"><div class="ss-rh"><b><em class="'+(comp[k]===false?'bad':'ok')+'"></em>'+esc(tr(NAMES[k]||k))+'</b><span>'+(up!=null?esc(tr('{}% uptime').replace('{}',(Math.floor(up*100)/100).toFixed(2))):'')+'</span></div><div class="ss-bars">'+bars+'</div></div>'; }).join('');
+    b.innerHTML='<h3>'+esc(tr('Service status'))+'</h3>'+head+'<div class="ss-list">'+rows+'</div><div class="ss-axis"><span>'+esc(tr('90 days ago'))+'</span><span>'+esc(tr('Today'))+'</span></div>'; }
+  document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.js-status,a[href="#status"]'); if(!t) return; e.preventDefault(); document.querySelectorAll('.um-btn[aria-expanded="true"]').forEach(function(x){ x.click(); }); open(); });
+  if(location.hash==='#status') setTimeout(open,600);
+  window.FTM=window.FTM||{}; window.FTM.openStatus=open;
 })();
 </script>
 </body>

@@ -41,9 +41,30 @@ function must(r, what) {
   if (!r.ok) throw new Error(what + ' answered ' + r.status);
 }
 
+/* Public service status (?history=1): what members see on the Service status page. The hourly watchdog run (?alert=1)
+   records each check per day in the private community bucket (status/history.json, 90 days); the page reads that record,
+   so opening it never runs the checks again. Only component names and ok/not ok are public, never details. */
+const COMPONENTS = [['web', ['Website homepage', 'Trust engine page']], ['login', ['Login service (Supabase)', 'Customer database (Supabase)']], ['engine', ['FTM MACHINE engine']], ['email', ['Emails']], ['pay', ['Payments (Stripe webhook)', 'Payment backup check (Stripe key)']], ['ask', ['Ask here chat (Anthropic)']]];
+const HIST = 'status/history.json';
+function admin() { const { createClient } = require('@supabase/supabase-js'); return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY); }
+function compOf(results) { const c = {}; COMPONENTS.forEach(([k, names]) => { c[k] = names.every(n => { const r = results.find(x => x.name === n); return !r || r.ok; }); }); return c; }
+async function record(results) {
+  const P = require('../_lib/push'), a = admin(), h = await P.read(a, HIST, { days: {} }), now = new Date(), d = now.toISOString().slice(0, 10), comp = compOf(results);
+  const day = h.days[d] || { n: 0, bad: {} }; day.n++; Object.keys(comp).forEach(k => { if (!comp[k]) day.bad[k] = (day.bad[k] || 0) + 1; }); h.days[d] = day;
+  Object.keys(h.days).sort().slice(0, -90).forEach(k => { delete h.days[k]; });
+  h.last = { t: now.toISOString(), comp }; await P.write(a, HIST, h);
+}
+async function history(res) {
+  let h = { days: {} }; try { h = await require('../_lib/push').read(admin(), HIST, { days: {} }); } catch (e) { console.error('status history', e.message); }
+  const days = []; for (let i = 89; i >= 0; i--) { const d = new Date(Date.now() - i * 864e5).toISOString().slice(0, 10), x = h.days[d]; days.push(x ? { d, n: x.n, bad: x.bad } : { d, n: 0, bad: {} }); }
+  res.setHeader('cache-control', 'public, max-age=60');
+  return res.status(200).json({ ok: true, last: h.last || null, components: COMPONENTS.map(c => c[0]), days });
+}
+
 module.exports = async function handler(req, res) {
   const site = (process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
   const env = process.env;
+  if (req.query && req.query.history === '1') return history(res);
 
   const results = await Promise.all([
     check('Website homepage', async () => must(await get(site + '/'), 'Homepage')),
@@ -113,6 +134,7 @@ module.exports = async function handler(req, res) {
     }
   }
 
+  if (req.query && req.query.alert === '1') { try { await record(results); } catch (e) { console.error('status record', e.message); } }
   if (down.length) console.error('Watchdog:', down.map(d => d.name + ': ' + d.detail).join(' | '));
   res.setHeader('cache-control', 'no-store');
   res.status(down.length ? 503 : 200).json(body);

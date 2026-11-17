@@ -110,6 +110,10 @@ this section wins.
 - Then emails each result to every confirmed login once (`results/mail-<key>.json`), labels from the site's i18n files in the member's language, times in Berlin time; calls itself again until done.
 - Test: `.github/tests/news-results.js`. Also fixed: feed posts now shrink to the screen (min-width:0), so small phones fit.
 
+### Service status page + CI fix (17 November 2026, daily review)
+- `/api/v1/status?history=1` (public, cached 60 s) returns six components (web, login, engine, email, pay, ask), the last hourly result and 90 days of counts; it never runs the checks. The hourly watchdog (`?alert=1`) records each run in the community bucket `status/history.json`. Page: footer link `.js-status` / `#status`, Customer support menu, `FTM.openStatus()`. Test: `.github/tests/service-status.js`.
+- GitHub Actions: all workflows pinned to `ubuntu-24.04` (ubuntu-latest became 26.04 on 16 Nov; Playwright 1.56 cannot install a browser there).
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the
