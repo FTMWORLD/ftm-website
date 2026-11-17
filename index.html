@@ -550,6 +550,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
     .cal-head,.cal-grid{min-width:520px}
   }
 
+.ts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 28px;margin-top:6px}.ts-grid h4{margin:6px 0 2px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#B8902A;font-weight:800}.ts-grid dd{margin:0;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}.ts-grid dt{min-width:0}
+@media (max-width:1100px){.ts-grid{grid-template-columns:1fr 1fr}}@media (max-width:700px){.ts-grid{grid-template-columns:1fr}}
   .px-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.px-two>*{min-width:0}
   @media(max-width:860px){.px-two{grid-template-columns:1fr}}
   .px-heat{display:grid;grid-template-columns:44px repeat(12,minmax(0,1fr)) 56px;gap:3px;font-variant-numeric:tabular-nums}
@@ -4127,6 +4129,11 @@ body.op-lock{overflow:hidden}
             <div class="app-card"><h3>Worst periods</h3><dl class="mg" id="pxWorst"></dl></div>
             <div class="app-card"><h3>Best periods</h3><dl class="mg" id="pxBest"></dl></div>
           </div>
+          <div class="app-card ts-card">
+            <h3>Trade statistics</h3>
+            <p class="hint">Every closed trade of this account, counted the way MT5 counts them.</p>
+            <div class="ts-grid"><div><h4>Trades</h4><dl class="mg" id="pxTrades"></dl></div><div><h4>How often</h4><dl class="mg" id="pxFreq"></dl></div><div><h4>Streaks and timing</h4><dl class="mg" id="pxHabit"></dl></div></div>
+          </div>
         </div>
       </section>
 
@@ -7170,7 +7177,7 @@ body.op-lock{overflow:hidden}
           var bal=(va&&va.balance!=null)?va.balance:(M?M.balance:null), cur=(va&&va.currency)||(F.data.account&&F.data.account.currency);
           el('dtmBal').textContent=bal!=null&&isFinite(bal)?(F.moneyIn?F.moneyIn(bal,2,cur):money(bal,2)):'—';
           var pr=String((va&&va.riskTier)||(es&&es.riskRange&&es.riskRange.profile)||'').toUpperCase().replace(/_.*$/,'');
-          el('dtmRisk').textContent=pr==='GROWTH'?tr('Growth')+' 2×':pr==='BALANCED'?tr('Balanced'):pr==='CONSERVATIVE'?tr('Conservative'):'—';
+          el('dtmRisk').textContent=pr==='GROWTH'?tr('Growth'):pr==='BALANCED'?tr('Balanced'):pr==='CONSERVATIVE'?tr('Conservative'):'—';
           el('dtmAcct').textContent=va?((va.isMaster||va.isPreview)?tr('FTM master account'):tr('Account')+' '+(va.number||'')):''; })();
         dayModal.hidden=false;
         document.body.style.overflow='hidden';
@@ -7297,6 +7304,22 @@ body.op-lock{overflow:hidden}
       var bt=tr.reduce(function(a,x){return x.p>a?x.p:a;},tr.length?tr[0].p:0), wt=tr.reduce(function(a,x){return x.p<a?x.p:a;},tr.length?tr[0].p:0);
       facts('pxWorst',[['Worst trade',pc(wt)],['Worst day',pc(worst(D).r)+' · '+dS(worst(D).k)],['Worst week',pc(worst(W).r)+' · '+dS(worst(W).k)],['Worst month',pc(worst(M).r)+' · '+mS(worst(M).k||'2000-01')]]);
       facts('pxBest',[['Best trade',pc(bt)],['Best day',pc(best(D).r)+' · '+dS(best(D).k)],['Best week',pc(best(W).r)+' · '+dS(best(W).k)],['Best month',pc(best(M).r)+' · '+mS(best(M).k||'2000-01')]]);
+      (function(){ var ES=F.es?F.es():null, TX=m.tradeX||{}, loc=window.FTM_LOCALE||'en-GB', n2=function(v,d){ return (+v).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}); };
+        var wins=cov.filter(function(t){ return t.pl>0.004; }).length, losses=cov.filter(function(t){ return t.pl<-0.004; }).length;
+        var total=ES&&ES.tradesClosed!=null?ES.tradesClosed:cov.length; if(ES&&ES.wins!=null) wins=ES.wins; if(ES&&ES.losses!=null) losses=ES.losses;
+        var even=Math.max(0,total-wins-losses), wl=wins+losses, wp=ES&&ES.winRatePct!=null?ES.winRatePct:(wl?wins/wl*100:0), lp=wl?100-wp:0;
+        var dur=function(ms){ if(ms==null||!isFinite(ms)) return '—'; var mi=Math.max(0,Math.round(ms/60000)), d=Math.floor(mi/1440), h=Math.floor(mi%1440/60), mm=mi%60; return d?d+'d '+h+'h':h+'h '+mm+'m'; };
+        var span=function(k){ if(!cov.length) return 1; var a=new Date(cov[0].closeTime), b=new Date(); if(k==='w'){ var ma=new Date(a.getFullYear(),a.getMonth(),a.getDate()-((a.getDay()+6)%7)), mb=new Date(b.getFullYear(),b.getMonth(),b.getDate()-((b.getDay()+6)%7)); return Math.max(1,Math.round((mb-ma)/6048e5)+1); } return Math.max(1,(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth()+1); };
+        var dayMax=ord.d.reduce(function(a,k){ return G.d[k].n>(a?G.d[a].n:-1)?k:a; },null);
+        var wd=[0,0,0,0,0,0,0]; cov.forEach(function(t){ wd[new Date(t.closeTime).getDay()]++; }); var wdi=wd.indexOf(Math.max.apply(null,wd));
+        var wdName=new Date(2024,0,7+wdi).toLocaleDateString(loc,{weekday:'long'});
+        var hold=cov.filter(function(t){ return t.openTime&&t.closeTime>=t.openTime; }).map(function(t){ return t.closeTime-t.openTime; });
+        var sym={}; cov.forEach(function(t){ if(t.symbol) sym[t.symbol]=(sym[t.symbol]||0)+1; }); var top=Object.keys(sym).sort(function(a,b){ return sym[b]-sym[a]; })[0];
+        var cnt=function(n,p){ return n2(n,0)+(p!=null?' · '+n2(p,2)+'%':''); };
+        facts('pxTrades',[['Total trades',n2(total,0)],['Winning trades',cnt(wins,wp)],['Losing trades',cnt(losses,lp)],['Break-even trades',n2(even,0)],['Long trades, won',cnt(TX.longs||0,TX.longs?TX.longWon/TX.longs*100:null)],['Short trades, won',cnt(TX.shorts||0,TX.shorts?TX.shortWon/TX.shorts*100:null)]]);
+        facts('pxFreq',[['Trading days',n2(ord.d.length,0)],['Trades per trading day',ord.d.length?n2(cov.length/ord.d.length,2):'—'],['Trades per week',n2(cov.length/span('w'),2)],['Trades per month',n2(cov.length/span('m'),2)],['Most trades in one day',dayMax?n2(G.d[dayMax].n,0)+' · '+dS(new Date(dayMax+'T00:00:00').getTime()):'—'],['Busiest weekday',cov.length?wdName+' · '+n2(wd[wdi],0):'—']]);
+        facts('pxHabit',[['Most wins in a row',n2(TX.winRun||0,0)],['Most losses in a row',n2(TX.lossRun||0,0)],['Average time in a trade',hold.length?dur(hold.reduce(function(a,x){ return a+x; },0)/hold.length):'—'],['Longest trade',hold.length?dur(Math.max.apply(null,hold)):'—'],['Shortest trade',hold.length?dur(Math.min.apply(null,hold)):'—'],['Most traded market',top?top+' · '+n2(sym[top]/cov.length*100,2)+'%':'—']]);
+      })();
     }
     F.renderPerfX=renderPerfX;
 

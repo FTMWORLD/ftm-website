@@ -34,7 +34,7 @@ const dayKey=nov.find(k=>k)||''; await p.evaluate(k=>{ const c=document.querySel
 const v=await p.evaluate(()=>{ const m=document.getElementById('dayTradesModal'), box=m.querySelector('.mdl-box').getBoundingClientRect(), W=document.documentElement.clientWidth;
   return {open:!m.hidden, logo:!!m.querySelector('.dtm-band .mark svg')&&/FTM/.test(m.querySelector('.dtm-logo').textContent), bal:document.getElementById('dtmBal').textContent, risk:document.getElementById('dtmRisk').textContent, acct:document.getElementById('dtmAcct').textContent, rows:m.querySelectorAll('#dayTradesRows tr').length, fit:box.left>=-1&&box.right<=W+1, sw:document.documentElement.scrollWidth<=W }; });
 ok(v.open&&v.logo,'['+label+'] the day opens with the FTM logo band');
-ok(v.bal==='$'+bal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})&&v.risk==='Growth 2×'&&/Account 2022/.test(v.acct),'['+label+'] balance from the engine, risk profile and account: '+v.bal+' · '+v.risk+' · '+v.acct);
+ok(v.bal==='$'+bal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})&&v.risk==='Growth'&&/Account 2022/.test(v.acct),'['+label+'] balance from the engine, risk profile and account: '+v.bal+' · '+v.risk+' · '+v.acct);
 ok(v.rows>=1&&v.fit&&v.sw,'['+label+'] trades listed, fits the screen');
 if(process.env.SHOT_DIR) await p.locator('#dayTradesModal .mdl-box').screenshot({path:process.env.SHOT_DIR+'/dtm-'+label.replace(/ /g,'_')+'.png'});
 await p.click('#dayTradesRows tr'); await p.waitForTimeout(400);

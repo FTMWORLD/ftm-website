@@ -118,6 +118,9 @@ this section wins.
 - `#dayTradesModal` (.dtm): navy band with the FTM logo, the account (or FTM master account) and close; Balance (viewed account's engine balance) and Risk profile tiles; phone rows show market + P/L, then direction, size, open → close.
 - `F.openTradeModal(t, back)`: the optional `back` runs when the trade details close; the calendar passes one so it returns to the day. Escape on the trade details stops there (stopImmediatePropagation). Test: `.github/tests/calendar-day.js`.
 
+### Trade statistics on Performance (17 November 2026, owner request)
+- `.ts-card` after Worst/Best periods (renderPerfX): total/wins/losses from engine stats (trades_closed, wins, losses, win_rate_pct), the rest counted from the closed-trade history in the viewer's local time (trades per week/month = closed trades / calendar weeks or months from the first trade to now). Test: `.github/tests/trade-stats.js`. Calendar day pop-up shows the profile as "Growth" (owner: no 2×).
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the
