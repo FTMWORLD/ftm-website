@@ -8,6 +8,7 @@ ok(!/\.how-steps\{display:none!important\}/.test(html),'"How FTM MACHINE works" 
 ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises from Day 1 at the bottom on phones');
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
+ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
 ok(/class="pf-foot"/.test(perf)&&/href="\/terms.html"/.test(perf)&&/Invest today, secure tomorrow\./.test(perf),'performance page has the FTM footer with Terms and Privacy');
 ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the market shown');
 (async()=>{ const b=await pw.chromium.launch();
@@ -21,8 +22,10 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top>L[L.length-1].getBoundingClientRect().top&&L[0].querySelector('.d').getBoundingClientRect().left<L[L.length-1].querySelector('.d').getBoundingClientRect().left; }),'phone: timeline rises from Day 1 at the bottom to Year 5 at the top');
   ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('liveLine').getAttribute('points'); }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
   ok(await q.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'phone: no sideways scroll with the moved chart');
+  ok(await q.evaluate(()=>{ const c=[...document.querySelectorAll('.mk-stack .mk-card')]; return c.length===5&&c.every(x=>x.querySelector('.phone')); }),'phone: Markets shows 5 market cards, each with its phone');
   ok(await q.evaluate(()=>{ const v=[...document.querySelectorAll('.perf-grid .perf-tile')].filter(x=>getComputedStyle(x).display!=='none').map(x=>x.querySelector('span').textContent); return v.length===2&&!v.some(x=>/Trades open|Risk profiles/.test(x)); }),'phone: Performance shows 2 tiles, without "Trades open at a time" and "Risk profiles"');
   await q.setViewportSize({width:1280,height:800}); await q.waitForTimeout(300);
+  ok(await q.evaluate(()=>document.querySelectorAll('.market-list .market-text').length===5&&document.querySelectorAll('.market-stage .phone').length===5),'laptop: Markets shows 5 markets, each with its phone');
   ok(await q.evaluate(()=>[...document.querySelectorAll('.perf-grid .perf-tile')].filter(x=>getComputedStyle(x).display!=='none').length===4),'laptop: Performance keeps its 4 tiles');
   ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'); return !!c.closest('.auto-art-col')&&c.offsetHeight>300&&document.querySelector('.busy-chart').hidden; }),'laptop: the FTM MACHINE chart stays in Auto Trading');
   await q.setViewportSize({width:360,height:740}); await q.waitForTimeout(300);
