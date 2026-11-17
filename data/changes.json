@@ -50,5 +50,9 @@
  {
   "date": "2026-11-17",
   "text": "Performance has a new Trade statistics section: winning, losing, long and short trades, trades per day, week and month, the busiest day, streaks, time in a trade and the most traded market."
+ },
+ {
+  "date": "2026-11-17",
+  "text": "Trade statistics now also show when FTM started trading on the account, its last trade, days without trading, the longest pause, open trades, trades this week and month, markets traded and lots traded."
  }
 ]

@@ -44,7 +44,14 @@ ok(g['Trading days']===String(days)&&g['Trades per trading day']===(11/days).toF
 ok(g['Most wins in a row']===String(best)&&g['Most losses in a row']===String(lbest),'['+label+'] streaks: '+best+' wins, '+lbest+' losses in a row');
 ok(g['Average time in a trade']==='0h 45m'&&g['Longest trade']==='0h 45m'&&g['Shortest trade']==='0h 45m'&&g['Most traded market']===top+' · '+pc(sym[top]/11*100),'['+label+'] timing and most traded market');
 ok(/\w/.test(g['Busiest weekday'])&&/\d{1,2} \w{3} \d{4}/.test(g['Most trades in one day']),'['+label+'] busiest weekday and busiest day: '+g['Busiest weekday']+' / '+g['Most trades in one day']);
-ok(V.cols===(label==='laptop'?3:1)&&V.fit&&V.sw,'['+label+'] '+V.cols+' column(s), fits the screen');
+{ const opens=closeT.map(t=>t-45*60e3), evs=opens.concat(closeT), d0=t=>{ const x=new Date(t); return new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime(); };
+  const first=Math.min(...evs), lastOpen=Math.max(...opens), today=d0(Date.now()), nDays=Math.round((today-d0(first))/864e5)+1, act=new Set(evs.map(d0)).size, idle=nDays-act;
+  const ds=[...new Set(evs.map(d0))].sort((a,b)=>a-b); let pause=0; for(let i=1;i<ds.length;i++) pause=Math.max(pause,Math.round((ds[i]-ds[i-1])/864e5)-1); pause=Math.max(pause,Math.round((today-ds[ds.length-1])/864e5));
+  const lots=tr.reduce((a,x)=>a+x[3],0);
+  ok(g['Trading since']===new Date(first).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})&&g['Last trade'].indexOf(new Date(lastOpen).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}))===0,'['+label+'] trading since and last trade: '+g['Trading since']+' / '+g['Last trade']);
+  ok(g['Days without trading']===idle+' · '+pc(idle/nDays*100)&&g['Longest pause (days)']===String(pause)&&g['Days since the last trade']===String(Math.round((today-d0(lastOpen))/864e5))&&g['Open trades now']==='0'&&g['Trades this month']===String(closeT.filter(t=>t>=new Date(new Date().getFullYear(),new Date().getMonth(),1).getTime()).length)&&/^\d+$/.test(g['Trades this week']),'['+label+'] days without trading '+g['Days without trading']+', longest pause '+g['Longest pause (days)']+', days since last '+g['Days since the last trade']);
+  ok(g['Markets traded']===String(Object.keys(sym).length)&&g['Total lots traded']===lots.toFixed(2)&&g['Average lot size']===(lots/11).toFixed(2),'['+label+'] markets, total and average lots'); }
+ok(V.cols===(label==='laptop'?2:1)&&V.fit&&V.sw,'['+label+'] '+V.cols+' column(s), fits the screen');
 if(process.env.SHOT_DIR) await p.locator('.ts-card').screenshot({path:process.env.SHOT_DIR+'/ts-'+label+'.png'});
 ok(!errs.length,'['+label+'] no script errors '+errs.join(' | ')); await p.close(); }
 await b.close(); console.log(fails?fails+' BROKEN':'ALL OK'); process.exit(fails?1:0); })();
