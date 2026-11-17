@@ -11,6 +11,7 @@ ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm o
 ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
 ok(/<b>4\.5<\/b> out of 5 based on <b>Performance<\/b>/.test(html)&&!/12,400/.test(html),'the FTM score line reads "based on Performance"');
 ok(/<h2>Join other people worldwide<\/h2>/.test(html)&&!/50K\+ people|cta\.title/.test(html),'the closing headline reads "Join other people worldwide" in every language');
+ok(!/Trade the way you want|platforms\.title/.test(html),'the "Trade the way you want" heading is gone');
 ok(!/Power of MT5|derived indices|Explore FTM MT5/.test(html),'the "Power of MT5 with 24/7 trading" block is gone on every screen');
 ok(/class="bubble me">Hi, how do I set up FTM MACHINE\?</.test(html),'the support chat example is about setting up FTM MACHINE');
 ok((html.match(/class="tile face f\d+"/g)||[]).length===10&&[1,2,3,4,5,6,7,8,9,10].every(i=>fs.existsSync(path.join(__dirname,'../../faces/'+i+'.webp'))),'"Join other people worldwide" is surrounded by 10 smiling faces');
