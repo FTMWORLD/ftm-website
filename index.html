@@ -1504,7 +1504,9 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .mobile-menu .mm-links{padding:0 0 10px 8px;display:grid}
   .mobile-menu .mm-links a{border-bottom:0;padding:10px 8px;font-weight:500;color:var(--text);border-left:2px solid var(--line)}
   .mobile-menu .mm-lang .mobile-lang{padding:0 0 12px}
-  .mobile-menu .mm-start{justify-content:center;text-align:center;color:#fff;margin-bottom:8px}
+  .mobile-menu .mm-start{justify-content:center;text-align:center;color:#fff;margin:22px 0 0}
+  .mobile-menu .mm-free{margin-top:12px}
+  .mobile-menu .mm-start,.mobile-menu .mm-free{min-height:54px;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
   .sale-banner{display:table;margin:0 auto 28px;padding:8px 18px;border-radius:30px;background:#16a34a;color:#fff;font-size:15px;text-align:center}
   .sale-banner{animation:saleWiggle 3s ease-in-out infinite;transform-origin:50% 0}
   @keyframes saleWiggle{0%,82%,100%{transform:rotate(0)}85%{transform:rotate(-3deg)}88%{transform:rotate(3deg)}91%{transform:rotate(-2deg)}94%{transform:rotate(1.5deg)}97%{transform:rotate(-.5deg)}}
@@ -3218,9 +3220,6 @@ body.op-lock{overflow:hidden}
   </nav>
 </div>
 <div class="mobile-menu" id="mobileMenu">
-  <a class="btn btn-red js-start mm-start" href="#get-started" data-i18n="btn.start">Get started</a>
-  <button type="button" class="btn mm-login js-login">Log in</button>
-  <button type="button" class="btn mm-free js-signup">Create a free account</button>
   <details class="mm-sec"><summary>Auto Trading</summary><div class="mm-links"><a href="#auto">FTM MACHINE</a><a href="#how">How it works</a><a href="#pricing">Subscription plans</a><a href="/performance.html">Performance record</a></div></details>
   <details class="mm-sec"><summary>Investment</summary><div class="mm-links"><a href="#invest">Investment</a><a href="#ivCalc">Work out your share</a><a href="#faq" class="js-faq">Frequently asked questions</a></div></details>
   <details class="mm-sec"><summary>Performance</summary><div class="mm-links"><a href="/performance.html">Trust engine</a><a href="/performance.html#mk-all">Portfolio</a><a href="/performance.html#mk-gold">Gold</a><a href="/performance.html#mk-btc">Bitcoin</a><a href="/performance.html#mk-jpy">USD/JPY</a><a href="/performance.html#mk-ndx">US Tech 100</a><a href="/performance.html#mk-boom">Boom 1000</a><a href="/performance.html#mk-hk">HK50</a></div></details>
@@ -3231,6 +3230,8 @@ body.op-lock{overflow:hidden}
   <details class="mm-sec mm-lang"><summary>Language</summary>
   <div class="mobile-lang" id="mobileLang"><label class="lang-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg><input type="search" id="mobileLangSearch" placeholder="Search language" autocomplete="off" spellcheck="false" aria-label="Search language"></label></div>
   </details>
+  <a class="btn btn-red js-start mm-start" href="#get-started" data-i18n="btn.start">Get started</a>
+  <button type="button" class="btn mm-free js-signup">Create a free account</button>
 </div>
 
 <main id="top">
