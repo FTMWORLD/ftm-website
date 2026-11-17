@@ -11160,7 +11160,7 @@ tick();setInterval(tick,5000);})();
 <script>
 (function(){
   var mq=window.matchMedia('(max-width:700px)'), open={};
-  var IDS=['pxYears','pxHeat','pxWhist','pxWeeks','pxDist','pxHold','pxDD','pxWorst','pxBest'];
+  var IDS=['pxYears','pxHeat','pxWhist','pxWeeks','pxDist','pxHold','pxDD','pxWorst','pxBest','pxTrades'];
   function setup(){
     IDS.forEach(function(id){ var el=document.getElementById(id); if(!el) return; var card=el.closest('.app-card'); if(!card||card._mf) return; var h=card.querySelector(':scope>h3'); if(!h) return;
       card._mf=1; card.classList.add('m-fold'); h.setAttribute('role','button'); h.setAttribute('tabindex','0'); h.setAttribute('aria-expanded','false');
