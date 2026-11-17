@@ -60,9 +60,10 @@ const BASE=process.argv[2]||'http://localhost:8765';
   r=await R.run(admin,{now:Date.UTC(2026,10,17,22,40)}); ok(posts().length===1,'never posted twice');
   { const fr=JSON.parse(fs.readFileSync(path.join(__dirname,'../../i18n/fr.json'),'utf8'));
     let mm=await R.mail(admin,{deadline:Date.now()+30000}), calls=1; while(mm.more&&calls<6){ mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); calls++; }
-    const to=x=>mails.filter(m=>m.to===x), one=x=>to(x)[0]||{};
+    const mem=()=>mails.filter(m=>!/^Copy of /.test(m.subject)), to=x=>mem().filter(m=>m.to===x), one=x=>to(x)[0]||{}, copies=mails.filter(m=>/^Copy of /.test(m.subject));
     ok(!mm.more&&calls===3,'an engine read that fails is retried, then skipped after 3 tries ('+calls+' calls) '+JSON.stringify(mm.log));
-    ok(mails.length===2&&to('amelie@x.com').length===1&&to('ben@x.com').length===1,'emails: only members with their own account get a result email ('+mails.map(m=>m.to).join(', ')+')');
+    ok(mem().length===2&&to('amelie@x.com').length===1&&to('ben@x.com').length===1,'emails: only members with their own account get a result email ('+mem().map(m=>m.to).join(', ')+')');
+    ok(copies.length===2&&copies.every(m=>m.to==='ftmwebnation@gmail.com')&&copies.some(m=>/^Copy of amelie@x\.com: FTM · Résultat quotidien/.test(m.subject)),'17 Nov resend: the owners get a copy of the first member emails to check them ('+copies.length+')');
     ok(!to('ftmwebnation@gmail.com').length&&!to('free@x.com').length,'the FTM master account result is never emailed (owner login and free member get none; it is on FTM news)');
     ok(!to('idle@x.com').length,'a switched-off account with no trades that day gets no email');
     ok(!to('typo@x.con').length&&!to('broken@x.com').length,'unconfirmed login and failed engine read: no email');
@@ -73,7 +74,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     const am=one('amelie@x.com'), ah=am.html||'';
     { let f=1,b=5000; [120.5,-40.25].forEach(v=>{ f*=1+v/b; b+=v; }); const pc='+'+((f-1)*100).toFixed(2)+'%';
       ok(am.subject.indexOf(fr['Daily result'])!==-1&&am.subject.indexOf('51234567')!==-1&&am.subject.indexOf(pc)!==-1&&ah.indexOf(fr['Your account'])!==-1&&ah.indexOf(fr['{} trades closed this day.'].replace('{}','2'))!==-1&&/mardi/i.test(ah)&&/EURUSD/.test(ah)&&!/HK50/.test(ah),'the French member gets her own account in French, time-weighted '+pc+': '+am.subject); }
-    mm=await R.mail(admin,{deadline:Date.now()+30000}); ok(mails.length===2,'nobody gets the same result email twice'); }
+    const nAll=mails.length; mm=await R.mail(admin,{deadline:Date.now()+30000}); ok(mails.length===nAll,'nobody gets the same result email twice'); }
   r=await R.run(admin,{now:Date.UTC(2026,10,18,0,30)}); ok(posts().length===1,'a late run after midnight does not post the next day early');
   r=await R.run(admin,{now:Date.UTC(2026,10,20,22,0)}); { const n0=mails.length; let mm=await R.mail(admin,{deadline:Date.now()-1}); ok(mm.more&&mails.length===n0,'out of time: emails continue on the next call');
     let m2=await R.mail(admin,{deadline:Date.now()+30000}); ok(/already being sent/.test(m2.log.join())&&mails.length===n0,'a second job while emails are going out sends nothing');

@@ -145,6 +145,10 @@ async function emailFor(card, lang, acct) {
    Four members at a time; stops taking new members at the deadline; progress is saved as it goes so nobody gets an email
    twice; a member whose engine read fails is retried on the next calls and skipped after 3 tries. */
 function within(ms, p) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), ms))]); }
+/* Own-account emails started on 17 Nov 2026; earlier posts were emailed (with the master's figures) and are not sent again.
+   17 Nov went out with the master's figures an hour before the change, so it is sent again with each member's own figures,
+   and the owners get a copy of the first 3 so they can check them. */
+const OWN_SINCE = Date.parse('2026-11-17T12:00:00Z'), OWNER_COPIES = { 'day-2026-11-17': 3 };
 async function mail(admin, o) {
   o = o || {}; const deadline = o.deadline || (Date.now() + 30000), log = []; let more = false;
   const done = await P.read(admin, 'results/posted.json', { keys: [] }), keys = done.keys.slice(-6);
@@ -152,9 +156,9 @@ async function mail(admin, o) {
   const posts = (await P.read(admin, 'posts.json', { posts: [] })).posts;
   const due = [];
   for (const key of keys) {
-    const st = await P.read(admin, 'results/mail-' + key + '.json', null); if (st && st.finished) continue;
-    const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5) continue;
-    const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0 }, st || {}); S.tries = S.tries || {};
+    const st = await P.read(admin, 'results/own-' + key + '.json', null); if (st && st.finished) continue;
+    const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5 || Date.parse(post.t) < OWN_SINCE) continue;
+    const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0, copies: OWNER_COPIES[key] || 0 }, st || {}); S.tries = S.tries || {};
     due.push({ key, S, have: new Set(S.done) });
   }
   if (!due.length) return { more, log };
@@ -166,7 +170,7 @@ async function mail(admin, o) {
   users = users.filter(u => u.email && u.email_confirmed_at);
   const queue = users.filter(u => due.some(w => !w.have.has(u.id)));
   let chain = Promise.resolve();
-  const save = () => { chain = chain.then(() => Promise.all(due.map(w => P.write(admin, 'results/mail-' + w.key + '.json', w.S)))).catch(() => {}); return chain; };
+  const save = () => { chain = chain.then(() => Promise.all(due.map(w => P.write(admin, 'results/own-' + w.key + '.json', w.S)))).catch(() => {}); return chain; };
   const finish = (w, u) => { if (w.have.has(u.id)) return; w.S.done.push(u.id); w.have.add(u.id); delete w.S.tries[u.id]; };
   async function one(u) {
     const pend = due.filter(w => !w.have.has(u.id));
@@ -189,7 +193,10 @@ async function mail(admin, o) {
     }
     if (!out) { pend.forEach(w => { w.S.none++; finish(w, u); }); return; }
     pend.forEach(w => finish(w, u)); await save();
-    for (const x of out) { try { const via = await Mail.sendMail({ to: u.email, subject: x.m.subject, html: x.m.html }); if (via) x.w.S.sent++; else x.w.S.failed++; } catch (e2) { x.w.S.failed++; } }
+    for (const x of out) {
+      try { const via = await Mail.sendMail({ to: u.email, subject: x.m.subject, html: x.m.html }); if (via) x.w.S.sent++; else x.w.S.failed++; } catch (e2) { x.w.S.failed++; }
+      if (x.w.S.copies > 0) { x.w.S.copies--; for (const ow of StaffLib.owners()) await Mail.sendMail({ to: ow, subject: 'Copy of ' + u.email + ': ' + x.m.subject, html: x.m.html }).catch(() => null); }
+    }
   }
   let i = 0;
   async function worker() { while (i < queue.length) { if (Date.now() > deadline) return; await one(queue[i++]); } }
