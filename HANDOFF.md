@@ -58,7 +58,9 @@ this section wins.
   `i18n/_tools/` has the source strings, the build and register scripts and a README on adding a
   language. Urdu, Persian, Arabic and Hebrew switch the page to right-to-left. These are machine
   translations: before launch they should be checked by native speakers, especially risk and
-  legal wording. Terms and Privacy stay English (the footer says English prevails).
+  legal wording. Terms and Privacy are translated into all 49 languages since 17 Nov 2026 by
+  `legal-i18n.js` from `i18n/legal/<code>.json` (language picker in the top bar, a note that the English
+  version applies, test `.github/tests/legal-i18n.js`). They should get a native-speaker legal review.
   A search box above the language list (desktop and phone menu) for the 50-entry menu is merged and live.
 - **Engine "deploy A" hand-over implemented (commit `4956016`):** every amount is in the
   account's own currency via `FTM.moneyIn` (never a guessed EUR/USD; a missing currency shows

@@ -41,6 +41,12 @@
   .crumb a{color:var(--muted);text-decoration:none}
   .crumb a:hover{color:var(--ink)}
   .crumb b{color:var(--ink)}
+  .lg-sel{appearance:none;-webkit-appearance:none;font:inherit;font-size:13.5px;font-weight:700;color:#fff;background:rgba(255,255,255,.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='3'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center/12px;border:1px solid rgba(212,175,55,.55);border-radius:999px;padding:8px 30px 8px 14px;max-width:170px;cursor:pointer}
+  .lg-sel option{color:#0b1640;background:#fff}
+  .lg-note{max-width:1192px;margin:12px auto 0;padding:10px 14px;font-size:13px;line-height:1.5;color:#5b6280;background:#fff8e6;border:1px solid #f0dca0;border-radius:12px}
+  .lg-note a{color:#0b1640;font-weight:700}
+  @media (max-width:1240px){.lg-note{margin-left:24px;margin-right:24px}}
+  @media (max-width:900px){.lg-sel{order:2}}
 
   .layout{max-width:1240px;margin:0 auto;padding:20px 24px 120px;display:grid;grid-template-columns:260px 1fr;gap:40px;align-items:start}
 
@@ -439,5 +445,6 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
     if(n)try{window.va('event',{name:n,data:d});}catch(x){}
   },true);
 </script>
+<script src="/legal-i18n.js" defer></script>
 </body>
 </html>

@@ -11,6 +11,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - New messages built in JavaScript go in `i18n/_tools/source_strings_js.json`.
   Names, codes and brands that must stay English go in `i18n/_tools/keep_english.json`.
 - Keep HTML tags and `{}` placeholders exactly as in the English key. Details: `i18n/_tools/README.md`.
+- terms.html and privacy.html are translated by `legal-i18n.js` from `i18n/legal/<code>.json` (key = the English text or block). When you change their text, add the new translation to every `i18n/legal/<code>.json`; the checker covers them.
 
 ## Before pushing
 - Check every inline script in `index.html` and `performance.html` still parses.
@@ -87,4 +88,3 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Subscriptions are not refundable. FTM makes no satisfaction guarantee or "promise" of any kind. This is final and is not to be argued or discussed, on the site, in Ask here, or in proposals.
 
 ## Reminders for the owner
-- Translate terms.html and privacy.html into all 49 languages when the owner has more credits (owner asked on 12 Nov 2026 to be reminded; English only until then).

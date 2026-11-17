@@ -16,6 +16,7 @@ from html.parser import HTMLParser
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PAGES = ['index.html']
+LEGAL_PAGES = ['terms.html', 'privacy.html']
 ATTRS = ['placeholder', 'aria-label', 'title', 'alt']
 SKIP = {'script', 'style', 'noscript', 'textarea', 'code', 'pre'}
 INLINE = {'a', 'b', 'i', 'em', 'strong', 'span', 'br', 'small', 'u'}
@@ -148,6 +149,16 @@ def main():
             if key in keep or not needs_words(key) or has(key): continue
             if kind == 'block' and all(p in keep or not needs_words(p) or has(p) for p in parts): continue
             missing.setdefault(key, set()).add(code)
+    # Terms and Privacy: translated by legal-i18n.js from i18n/legal/<code>.json.
+    legal = []
+    for p in LEGAL_PAGES: legal += collect(os.path.join(ROOT, p))
+    legal += [('text', norm(k), None) for k in json.load(open(os.path.join(ROOT, 'i18n/_tools/source_strings_legal.json'), encoding='utf-8'))]
+    for code in langs:
+        lp = os.path.join(ROOT, 'i18n', 'legal', code + '.json')
+        has = matcher(json.load(open(lp, encoding='utf-8')) if os.path.exists(lp) else {})
+        for kind, key, parts in legal:
+            if key in keep or not needs_words(key) or has(key): continue
+            missing.setdefault('[legal] ' + key, set()).add(code)
     if '--json' in args:
         print(json.dumps(sorted(missing), ensure_ascii=False, indent=1)); return
     if '--list' in args:
