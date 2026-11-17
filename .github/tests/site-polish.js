@@ -9,9 +9,10 @@ ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises fro
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
 ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
+ok(/<h2>Join other people worldwide<\/h2>/.test(html)&&!/50K\+ people|cta\.title/.test(html),'the closing headline reads "Join other people worldwide" in every language');
 ok(!/Power of MT5|derived indices|Explore FTM MT5/.test(html),'the "Power of MT5 with 24/7 trading" block is gone on every screen');
 ok(/class="bubble me">Hi, how do I set up FTM MACHINE\?</.test(html),'the support chat example is about setting up FTM MACHINE');
-ok((html.match(/class="tile face f\d+"/g)||[]).length===10&&[1,2,3,4,5,6,7,8,9,10].every(i=>fs.existsSync(path.join(__dirname,'../../faces/'+i+'.webp'))),'"Join 50K+ people worldwide" is surrounded by 10 smiling faces');
+ok((html.match(/class="tile face f\d+"/g)||[]).length===10&&[1,2,3,4,5,6,7,8,9,10].every(i=>fs.existsSync(path.join(__dirname,'../../faces/'+i+'.webp'))),'"Join other people worldwide" is surrounded by 10 smiling faces');
 ok(/class="pf-foot"/.test(perf)&&/href="\/terms.html"/.test(perf)&&/Invest today, secure tomorrow\./.test(perf),'performance page has the FTM footer with Terms and Privacy');
 ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the market shown');
 (async()=>{ const b=await pw.chromium.launch();
