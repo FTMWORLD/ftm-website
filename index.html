@@ -1726,6 +1726,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .cta .tile{position:absolute;width:96px;height:96px;background:rgba(212,175,55,.10);border:1px solid rgba(212,175,55,.28);border-radius:6px}
   @media (prefers-reduced-motion:no-preference){.cta .tile{animation:ctaTile 7s ease-in-out infinite}.cta .tile:nth-child(2n){animation-delay:-2.3s}.cta .tile:nth-child(3n){animation-delay:-4.6s}}
   @keyframes ctaTile{0%,100%{opacity:.35}50%{opacity:1;box-shadow:0 0 30px rgba(212,175,55,.25)}}
+  .cta .tile.face{width:104px;height:104px;padding:0;overflow:hidden;border-radius:22px;border:2px solid rgba(212,175,55,.55);background:#152a7a;box-shadow:0 14px 34px rgba(0,0,0,.35);animation:ctaFace 8s ease-in-out infinite}
+  .cta .tile.face img{width:100%;height:100%;object-fit:cover;display:block}
+  .cta .tile.face:nth-of-type(2n){animation-delay:-2.7s}.cta .tile.face:nth-of-type(3n){animation-delay:-5.3s}
+  @keyframes ctaFace{0%,100%{transform:translateY(0);box-shadow:0 14px 34px rgba(0,0,0,.35)}50%{transform:translateY(-8px);box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 26px rgba(212,175,55,.28)}}
+  @media (prefers-reduced-motion:reduce){.cta .tile.face{animation:none}}
+  @media (max-width:1100px){.cta .tile.face{width:84px;height:84px;border-radius:18px}}
+  @media (max-width:760px){.cta{padding-block:118px!important}.cta .tile.face{width:58px;height:58px;border-radius:14px}.cta .tile.f2,.cta .tile.f7{display:none}
+    .cta .f1{left:4%!important;top:4%!important}.cta .f5{left:30%!important;top:8%!important}.cta .f10{right:30%!important;top:3%!important}.cta .f6{right:4%!important;top:6%!important}
+    .cta .f3{left:4%!important;bottom:5%!important}.cta .f4{left:30%!important;bottom:3%!important}.cta .f9{right:30%!important;bottom:6%!important}.cta .f8{right:4%!important;bottom:4%!important}}
   .cta .btn{background:var(--red)!important;color:#fff!important}
   .cta h2{color:#fff;font-size:clamp(44px,7vw,84px);letter-spacing:-.04em;position:relative;max-width:820px;margin:0 auto 32px}
   .cta .btn{position:relative}
@@ -3640,7 +3649,7 @@ body.op-lock{overflow:hidden}
   <div class="container">
     <div class="feature">
       <div><h3 data-i18n="support.title">Get answers when you need them</h3><p>Our support team is available around the clock, wherever you are.</p><a class="link" href="mailto:ftmwebnation@gmail.com">Contact us <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
-      <div class="feature-art"><div class="online"><i></i>FTM Support is online</div><div class="bubble me">Hi, how do I withdraw to my bank?</div><div class="bubble them">Hi Sam! Go to Cashier, choose Withdraw, and pick Bank transfer.</div></div>
+      <div class="feature-art"><div class="online"><i></i>FTM Support is online</div><div class="bubble me">Hi, how do I set up FTM MACHINE?</div><div class="bubble them">Hi Sam! Choose a plan, then connect your MT5 account in your dashboard. FTM MACHINE starts trading for you.</div></div>
     </div>
   </div>
 </section>
@@ -3648,7 +3657,7 @@ body.op-lock{overflow:hidden}
 
 <section class="cta">
   <div class="cta-grid"></div>
-  <span class="tile" style="left:4%;top:12%"></span><span class="tile" style="left:18%;top:60%"></span><span class="tile" style="left:30%;top:20%"></span><span class="tile" style="right:6%;top:18%"></span><span class="tile" style="right:22%;top:70%"></span><span class="tile" style="right:36%;top:8%"></span><span class="tile" style="left:8%;bottom:8%"></span><span class="tile" style="right:10%;bottom:10%"></span>
+  <span class="tile face f1" style="left:4%;top:10%"><img src="/faces/1.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f2" style="left:13%;top:43%"><img src="/faces/2.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f3" style="left:5%;bottom:9%"><img src="/faces/3.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f4" style="left:21%;bottom:4%"><img src="/faces/4.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f5" style="left:20%;top:5%"><img src="/faces/5.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f6" style="right:4%;top:12%"><img src="/faces/6.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f7" style="right:13%;top:45%"><img src="/faces/7.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f8" style="right:5%;bottom:7%"><img src="/faces/8.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f9" style="right:21%;bottom:5%"><img src="/faces/9.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span><span class="tile face f10" style="right:20%;top:4%"><img src="/faces/10.webp" alt="" width="104" height="104" loading="lazy" decoding="async"></span>
   <div class="container">
     <h2 data-i18n="cta.title">Join 50K+ people worldwide</h2>
     <a class="btn btn-dark js-start" href="#get-started" data-i18n="btn.start">Get started</a>

@@ -9,6 +9,8 @@ ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises fro
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
 ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
+ok(/class="bubble me">Hi, how do I set up FTM MACHINE\?</.test(html),'the support chat example is about setting up FTM MACHINE');
+ok((html.match(/class="tile face f\d+"/g)||[]).length===10&&[1,2,3,4,5,6,7,8,9,10].every(i=>fs.existsSync(path.join(__dirname,'../../faces/'+i+'.webp'))),'"Join 50K+ people worldwide" is surrounded by 10 smiling faces');
 ok(/class="pf-foot"/.test(perf)&&/href="\/terms.html"/.test(perf)&&/Invest today, secure tomorrow\./.test(perf),'performance page has the FTM footer with Terms and Privacy');
 ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the market shown');
 (async()=>{ const b=await pw.chromium.launch();
@@ -22,6 +24,8 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top>L[L.length-1].getBoundingClientRect().top&&L[0].querySelector('.d').getBoundingClientRect().left<L[L.length-1].querySelector('.d').getBoundingClientRect().left; }),'phone: timeline rises from Day 1 at the bottom to Year 5 at the top');
   ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('liveLine').getAttribute('points'); }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
   ok(await q.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'phone: no sideways scroll with the moved chart');
+  await q.evaluate(()=>document.querySelector('.cta').scrollIntoView({behavior:'instant',block:'center'})); await q.waitForTimeout(1500);
+  ok(await q.evaluate(()=>{ const f=[...document.querySelectorAll('.cta .tile.face')].filter(x=>getComputedStyle(x).display!=='none'); const h=document.querySelector('.cta h2').getBoundingClientRect(), b=document.querySelector('.cta .btn').getBoundingClientRect(); return f.length===8&&f.every(x=>{ const r=x.getBoundingClientRect(), im=x.querySelector('img'); return im.complete&&im.naturalWidth>0&&(r.bottom<=h.top||r.top>=b.bottom); }); }),'phone: 8 faces above and below the headline, none covering the text or button');
   ok(await q.evaluate(()=>{ const c=[...document.querySelectorAll('.mk-stack .mk-card')]; return c.length===5&&c.every(x=>x.querySelector('.phone')); }),'phone: Markets shows 5 market cards, each with its phone');
   ok(await q.evaluate(()=>{ const v=[...document.querySelectorAll('.perf-grid .perf-tile')].filter(x=>getComputedStyle(x).display!=='none').map(x=>x.querySelector('span').textContent); return v.length===2&&!v.some(x=>/Trades open|Risk profiles/.test(x)); }),'phone: Performance shows 2 tiles, without "Trades open at a time" and "Risk profiles"');
   await q.setViewportSize({width:1280,height:800}); await q.waitForTimeout(300);
