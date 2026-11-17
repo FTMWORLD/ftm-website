@@ -7,7 +7,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
 (async()=>{
   process.env.SUPABASE_SERVICE_ROLE_KEY='k'; process.env.SUPABASE_URL='https://x.supabase.co';
   const files={}, now=new Date().toISOString();
-  // s1 owner (sees only the master), c1 French member with her own account, e1 English member with his own account,
+  // s1 owner login (the master + its own EUR 10,000 copying account), c1 French member with her own account, e1 English member with his own account,
   // f1 free member (master preview only), i1 member whose account is switched off and has no trades, z1 engine read fails, x1 unconfirmed
   const users={tokS:{id:'s1',email:'ftmwebnation@gmail.com',email_confirmed_at:now,created_at:now},tokC:{id:'c1',email:'amelie@x.com',email_confirmed_at:now,created_at:now,user_metadata:{ftm_lang:'fr'}},
     tokE:{id:'e1',email:'ben@x.com',email_confirmed_at:now,created_at:now},tokF:{id:'f1',email:'free@x.com',email_confirmed_at:now,created_at:now},tokI:{id:'i1',email:'idle@x.com',email_confirmed_at:now,created_at:now},
@@ -31,9 +31,9 @@ const BASE=process.argv[2]||'http://localhost:8765';
   const bal=100000+deals.reduce((a,d)=>a+d[1],0);
   // each member's own accounts (deposit, deals); the master m1 is what s1 and free members see
   const own={a1:{dep:5000,deals:[[U(10,17,9,5),120.5,'EURUSD','BUY'],[U(10,17,14,40),-40.25,'XAUUSD','SELL'],[U(10,19,10,0),60,'EURUSD','BUY']]},
-    a2:{dep:20000,deals:[[U(10,17,12,0),-75,'NVDA','BUY']]}, a3:{dep:1000,deals:[[U(10,3,9,0),10,'EURUSD','BUY']]}};
+    a2:{dep:20000,deals:[[U(10,17,12,0),-75,'NVDA','BUY']]}, a3:{dep:1000,deals:[[U(10,3,9,0),10,'EURUSD','BUY']]}, a4:{dep:10000,deals:[[U(10,17,10,30),45,'XAUUSD','BUY']]}};
   own.m1={dep:100000,deals};
-  const ACC={s1:[{account_id:'m1',view_only:true,is_master:true,currency:'USD',display_status:'ACTIVE'}],f1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'}],
+  const ACC={s1:[{account_id:'m1',view_only:true,is_master:true,currency:'USD',display_status:'ACTIVE'},{account_id:'a4',account_number:'10000',currency:'EUR',is_trading:true,display_status:'ACTIVE'}],f1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'}],
     c1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'},{account_id:'a1',account_number:'51234567',currency:'USD',is_trading:true,display_status:'ACTIVE'}],
     e1:[{account_id:'a2',account_number:'70011',currency:'USD',is_trading:true,display_status:'ACTIVE'}], i1:[{account_id:'a3',account_number:'333',currency:'USD',is_trading:false,display_status:'PAUSED'}]};
   const engCalls=[];
@@ -62,9 +62,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
     let mm=await R.mail(admin,{deadline:Date.now()+30000}), calls=1; while(mm.more&&calls<6){ mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); calls++; }
     const mem=()=>mails.filter(m=>!/^Copy of /.test(m.subject)), to=x=>mem().filter(m=>m.to===x), one=x=>to(x)[0]||{}, copies=mails.filter(m=>/^Copy of /.test(m.subject));
     ok(!mm.more&&calls===3,'an engine read that fails is retried, then skipped after 3 tries ('+calls+' calls) '+JSON.stringify(mm.log));
-    ok(mem().length===2&&to('amelie@x.com').length===1&&to('ben@x.com').length===1,'emails: only members with their own account get a result email ('+mem().map(m=>m.to).join(', ')+')');
-    ok(copies.length===2&&copies.every(m=>m.to==='ftmwebnation@gmail.com')&&copies.some(m=>/^Copy of amelie@x\.com: FTM · Résultat quotidien/.test(m.subject)),'17 Nov resend: the owners get a copy of the first member emails to check them ('+copies.length+')');
-    ok(!to('ftmwebnation@gmail.com').length&&!to('free@x.com').length,'the FTM master account result is never emailed (owner login and free member get none; it is on FTM news)');
+    ok(mem().length===4&&to('amelie@x.com').length===1&&to('ben@x.com').length===1,'emails: only members with their own account get a result email ('+mem().map(m=>m.to).join(', ')+')');
+    { const fo=to('ftmwebnation@gmail.com'), ms=fo.find(m=>/FTM master account/.test(m.html)), o4=fo.find(m=>/ · 10000 · /.test(m.subject));
+      ok(fo.length===2&&ms&&/HK50/.test(ms.html)&&/\+\$1,627\.29/.test(ms.subject)&&/open=community/.test(ms.html)&&o4&&/XAUUSD/.test(o4.html)&&/€/.test(o4.subject),'the FTM owner email gets the master account and its own 10,000 account, nothing else ('+fo.map(m=>m.subject).join(' | ')+')');
+      ok(!copies.length&&!fo.some(m=>/51234567|70011|amelie|ben@/.test(m.subject+m.html)),'the FTM owner email never gets a customer\'s result'); }
+    ok(!to('free@x.com').length,'the master result is not emailed to customers (free member gets none; it is on FTM news)');
     ok(!to('idle@x.com').length,'a switched-off account with no trades that day gets no email');
     ok(!to('typo@x.con').length&&!to('broken@x.com').length,'unconfirmed login and failed engine read: no email');
     ok(engCalls.filter(c=>/^c1 /.test(c)&&/\/m1\//.test(c)).length===0,'the master history is never read for a member email');
@@ -80,7 +82,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     let m2=await R.mail(admin,{deadline:Date.now()+30000}); ok(/already being sent/.test(m2.log.join())&&mails.length===n0,'a second job while emails are going out sends nothing');
     for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
     const nw=mails.slice(n0), am=nw.filter(m=>m.to==='amelie@x.com'), bn=nw.filter(m=>m.to==='ben@x.com');
-    ok(!mm.more&&nw.length===4&&am.length===2&&bn.length===2&&am.some(m=>m.subject.indexOf('51234567')!==-1&&/Résultat hebdomadaire/.test(m.subject)),'Friday: each member gets their own day and week ('+nw.map(m=>m.to.split('@')[0]+':'+m.subject.slice(6,30)).join(' | ')+')'); }
+    ok(!mm.more&&nw.length===8&&nw.filter(m=>m.to==='ftmwebnation@gmail.com').length===4&&am.length===2&&bn.length===2&&am.some(m=>m.subject.indexOf('51234567')!==-1&&/Résultat hebdomadaire/.test(m.subject)),'Friday: each member gets their own day and week ('+nw.map(m=>m.to.split('@')[0]+':'+m.subject.slice(6,30)).join(' | ')+')'); }
   P=posts(); const wk=(P.find(x=>x.res==='week-2026-11-20')||{}).card||{};
   ok(P.length===3&&P.some(x=>x.res==='day-2026-11-20')&&wk.k==='week'&&wk.from==='2026-11-14'&&wk.to==='2026-11-20','Friday: the day and the week (Saturday 14 to Friday 20)');
   ok(wk.n===7&&wk.days.length===5&&wk.days[0].date==='2026-11-14'&&wk.days.find(x=>x.date==='2026-11-18').n===1,'the week lists every day with trades ('+wk.days.map(x=>x.date.slice(8)+':'+x.n).join(' ')+')');

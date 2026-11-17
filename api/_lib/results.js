@@ -5,7 +5,8 @@
    Posts carry a `card` the feed draws in the FTM design, in each member's language and local time; `x` is a short text
    for share links. Never posts the same period twice.
    Emails: each member gets the same day/week/month result for THEIR OWN accounts (read from the engine as that member),
-   never the master account's; members with no account of their own get no result email (FTM news has the master). */
+   never the master account's or another member's; members with no account of their own get no result email (FTM news has
+   the master). The FTM owner logins get the master account and their own accounts. */
 const crypto = require('crypto');
 const P = require('./push');
 const StaffLib = require('./staff');
@@ -75,6 +76,12 @@ function cardFor(key, h, cur) {
 }
 /* A member's own accounts: never the FTM master account or the master preview free accounts see. */
 function ownAccounts(A) { return (A || []).filter(a => a && a.accountId && !a.isMaster && !a.isPreview); }
+/* What a login is emailed: its own accounts; the FTM owner logins also get the master account (first), never anyone else's. */
+function mailAccounts(A, isOwner) {
+  const own = ownAccounts(A); if (!isOwner) return own;
+  const m = (A || []).find(a => a && a.accountId && a.isMaster) || (A || []).find(a => a && a.accountId && a.isPreview);
+  return m ? [m].concat(own) : own;
+}
 
 /* One run. Posts what is due at this local time; o.force posts today's day result now (staff/test). */
 async function run(admin, o) {
@@ -145,10 +152,8 @@ async function emailFor(card, lang, acct) {
    Four members at a time; stops taking new members at the deadline; progress is saved as it goes so nobody gets an email
    twice; a member whose engine read fails is retried on the next calls and skipped after 3 tries. */
 function within(ms, p) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), ms))]); }
-/* Own-account emails started on 17 Nov 2026; earlier posts were emailed (with the master's figures) and are not sent again.
-   17 Nov went out with the master's figures an hour before the change, so it is sent again with each member's own figures,
-   and the owners get a copy of the first 3 so they can check them. */
-const OWN_SINCE = Date.parse('2026-11-17T12:00:00Z'), OWNER_COPIES = { 'day-2026-11-17': 3 };
+/* Own-account emails started on 17 Nov 2026; earlier posts were emailed (with the master's figures) and are not sent again. */
+const OWN_SINCE = Date.parse('2026-11-17T12:00:00Z');
 async function mail(admin, o) {
   o = o || {}; const deadline = o.deadline || (Date.now() + 30000), log = []; let more = false;
   const done = await P.read(admin, 'results/posted.json', { keys: [] }), keys = done.keys.slice(-6);
@@ -158,7 +163,7 @@ async function mail(admin, o) {
   for (const key of keys) {
     const st = await P.read(admin, 'results/own-' + key + '.json', null); if (st && st.finished) continue;
     const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5 || Date.parse(post.t) < OWN_SINCE) continue;
-    const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0, copies: OWNER_COPIES[key] || 0 }, st || {}); S.tries = S.tries || {};
+    const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0 }, st || {}); S.tries = S.tries || {};
     due.push({ key, S, have: new Set(S.done) });
   }
   if (!due.length) return { more, log };
@@ -177,12 +182,12 @@ async function mail(admin, o) {
     let out;
     try {
       out = await within(20000, (async () => {
-        const own = ownAccounts((await H.accounts(u)).mapped);
+        const own = mailAccounts((await H.accounts(u)).mapped, StaffLib.owners().indexOf(String(u.email || '').toLowerCase()) !== -1);
         if (!own.length) return null;
         const lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null)), list = [];
         for (const acct of own) {
           const h = await H.load(u, acct), cur = acct.currency || 'USD';
-          for (const w of pend) { const card = cardFor(w.key, h, cur); if (card.n || acct.active) list.push({ w, m: await emailFor(card, lang, acct) }); }
+          for (const w of pend) { const card = cardFor(w.key, h, cur); const mst = acct.isMaster || acct.isPreview; if (mst || card.n || acct.active) list.push({ w, m: await emailFor(card, lang, mst ? null : acct) }); }
         }
         return list;
       })());
@@ -195,7 +200,6 @@ async function mail(admin, o) {
     pend.forEach(w => finish(w, u)); await save();
     for (const x of out) {
       try { const via = await Mail.sendMail({ to: u.email, subject: x.m.subject, html: x.m.html }); if (via) x.w.S.sent++; else x.w.S.failed++; } catch (e2) { x.w.S.failed++; }
-      if (x.w.S.copies > 0) { x.w.S.copies--; for (const ow of StaffLib.owners()) await Mail.sendMail({ to: ow, subject: 'Copy of ' + u.email + ': ' + x.m.subject, html: x.m.html }).catch(() => null); }
     }
   }
   let i = 0;
@@ -210,4 +214,4 @@ async function mail(admin, o) {
   return { more, log };
 }
 
-module.exports = { run, mail, emailFor, cardFor, ownAccounts, parts, midnight, dayCard, periodCard, TZ };
+module.exports = { run, mail, emailFor, cardFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
