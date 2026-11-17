@@ -393,7 +393,7 @@ module.exports = async function handler(req, res) {
       const saves = (soc.saves && soc.saves[me]) || [];
       const outPost = x => ({ id: x.id, author: x.ftm ? { mid: x.a, nickname: 'FTM', ftm: true } : who(x.a), text: x.x, imgs: postImgs(x), img: postImgs(x)[0] || null, t: x.t, edited: !!x.ed, saved: saves.indexOf(x.id) !== -1, tags: tagsOf(x.x),
         poll: x.poll ? { options: x.poll.o.map(o => ({ text: o.t, votes: o.v.length })), total: x.poll.o.reduce((n, o) => n + o.v.length, 0), mine: x.poll.o.findIndex(o => o.v.indexOf(me) !== -1) } : null,
-        likes: (x.lk || []).filter(m => !hidden.has(m)).length, liked: (x.lk || []).indexOf(me) !== -1, pinned: !!x.pin, mine: x.a === me, can_delete: x.a === me || staff,
+        card: x.card || null, likes: (x.lk || []).filter(m => !hidden.has(m)).length, liked: (x.lk || []).indexOf(me) !== -1, pinned: !!x.pin, mine: x.a === me, can_delete: x.a === me || staff,
         comments: (x.c || []).filter(c => !hidden.has(c.a)).map(c => ({ id: c.id, author: c.ftm ? { mid: c.a, nickname: 'FTM', ftm: true } : who(c.a), text: c.x, t: c.t, mine: c.a === me, likes: (c.lk || []).length, liked: (c.lk || []).indexOf(me) !== -1, can_delete: c.a === me || x.a === me || staff })) });
       const find = id => P.posts.filter(x => x.id === String(id || ''))[0];
       if (action === 'feed') {

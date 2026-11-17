@@ -105,6 +105,11 @@ this section wins.
 - FTM staff › Customers › open a customer › each account card › "Export trades (CSV)" (owners and staff). Read-only: op export_trades in api/v1/staff.js, history via api/_lib/accountHistory.js (shared with the Letter). The FTM master account is on every customer's page (it is their preview account), so look up the FTM owner login or any customer to export it.
 - Columns: position, open/close time (UTC), symbol, side, volume, open/close price, sl, tp, comment, magic (empty when the engine's customer API does not send them), commission, swap, net profit, balance at open and after close (from the engine's full deal history through ftm-calc.js), close reason, closed by, copied by FTM.
 
+### Automatic results on FTM news + email (17 November 2026, owner request)
+- `api/v1/news-cron.js` (Vercel crons 21:00 and 22:00 UTC; the one that is 23:00 in Europe/Berlin acts) runs `api/_lib/results.js`: posts the FTM master account's day (every trade closed that Berlin day, net and % via ftm-calc.js seg, like the Calendar pop-up), on Fridays also the week (Saturday-Friday), on the 1st also last month. Never twice (`results/posted.json`). Posts carry `card`; the feed draws it (rcHTML in index.html) in the viewer's language and local time; it shows in For you, Following and FTM news.
+- Then emails each result to every confirmed login once (`results/mail-<key>.json`), labels from the site's i18n files in the member's language, times in Berlin time; calls itself again until done.
+- Test: `.github/tests/news-results.js`. Also fixed: feed posts now shrink to the screen (min-width:0), so small phones fit.
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the

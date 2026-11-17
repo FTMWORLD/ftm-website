@@ -58,6 +58,14 @@
     {
       "path": "/api/v1/letter-cron",
       "schedule": "23 9 * * *"
+    },
+    {
+      "path": "/api/v1/news-cron",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/v1/news-cron",
+      "schedule": "0 22 * * *"
     }
   ],
   "rewrites": [
@@ -93,6 +101,9 @@
       "maxDuration": 30
     },
     "api/v1/letter-cron.js": {
+      "maxDuration": 60
+    },
+    "api/v1/news-cron.js": {
       "maxDuration": 60
     }
   }

@@ -64,4 +64,4 @@ async function send(admin, o) {
   if (changed) await write(admin, 'push/' + mid + '.json', box).catch(() => {});
   return reached;
 }
-module.exports = { vapid, midOf, getBox, read, write, send, KINDS, BUCKET };
+module.exports = { vapid, midOf, getBox, read, write, send, tr, KINDS, BUCKET };
