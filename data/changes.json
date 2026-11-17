@@ -90,5 +90,9 @@
  {
   "date": "2026-11-17",
   "text": "Homepage: the \"Trade the way you want\" heading is removed."
+ },
+ {
+  "date": "2026-11-17",
+  "text": "Homepage: the \"Defined risk on every trade\" card now shows a gold trade with its take profit, current price, entry and stop loss, the take profit twice as far as the stop loss."
  }
 ]

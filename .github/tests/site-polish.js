@@ -36,6 +36,9 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   await q.setViewportSize({width:1280,height:800}); await q.waitForTimeout(300);
   ok(await q.evaluate(()=>document.querySelectorAll('.market-list .market-text').length===5&&document.querySelectorAll('.market-stage .phone').length===5),'laptop: Markets shows 5 markets, each with its phone');
   ok(await q.evaluate(()=>[...document.querySelectorAll('.perf-grid .perf-tile')].filter(x=>getComputedStyle(x).display!=='none').length===4),'laptop: Performance keeps its 4 tiles');
+  await q.evaluate(()=>document.querySelector('.tp-card').scrollIntoView({behavior:'instant',block:'center'})); await q.waitForTimeout(400);
+  ok(await q.evaluate(()=>{ const c=document.querySelector('.tp-card'), cr=c.getBoundingClientRect(), y=k=>c.querySelector('.px-'+k).getBoundingClientRect().top; const tp=y('tp'), en=y('en'), sl=y('sl'), now=y('now');
+    return tp<now&&now<en&&en<sl&&(en-tp)>1.8*(sl-en)&&[...c.querySelectorAll('.kv,.px,.lb')].every(e=>{ const r=e.getBoundingClientRect(); return r.bottom<=cr.bottom&&r.right<=cr.right&&r.left>=cr.left; }); }),'laptop: trade card shows take profit, price, entry and stop loss, with take profit twice as far as stop loss, all inside the card');
   ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'); return !!c.closest('.auto-art-col')&&c.offsetHeight>300&&document.querySelector('.busy-chart').hidden; }),'laptop: the FTM MACHINE chart stays in Auto Trading');
   await q.setViewportSize({width:360,height:740}); await q.waitForTimeout(300);
   ok(await q.evaluate(()=>!!document.querySelector('.live-card').closest('.busy-chart')&&document.documentElement.scrollWidth<=innerWidth),'small phone: chart under "Made for busy people", no sideways scroll');
