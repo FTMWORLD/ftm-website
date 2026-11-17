@@ -101,6 +101,10 @@ this section wins.
 - `api/v1/letter-cron.js` (Vercel cron daily 09:23 UTC) runs `api/_lib/letterAuto.js`: on the 1st writes last month's letter (engine master account, read as the FTM owner login; text by the Anthropic API from the figures and `data/changes.json`, checked for unknown figures, promises, "traders", broker names, else plain text), emails owners a preview, schedules 2nd 09:00 UTC. Then translates and sends to every confirmed login, once each, posts FTM news, phone notification. Calls itself again when it runs out of time. A staff draft for the month is sent instead. Staff console › Letter: Hold/Release, "Write last month's now".
 - Test: `.github/tests/letter-auto.js`.
 
+### Staff trade export (17 November 2026, asked by the FTM MACHINE research session for a backtest comparison)
+- FTM staff › Customers › open a customer › each account card › "Export trades (CSV)" (owners and staff). Read-only: op export_trades in api/v1/staff.js, history via api/_lib/accountHistory.js (shared with the Letter). The FTM master account is on every customer's page (it is their preview account), so look up the FTM owner login or any customer to export it.
+- Columns: position, open/close time (UTC), symbol, side, volume, open/close price, sl, tp, comment, magic (empty when the engine's customer API does not send them), commission, swap, net profit, balance at open and after close (from the engine's full deal history through ftm-calc.js), close reason, closed by, copied by FTM.
+
 ### Waiting on the owner (do not build these on your own)
 
 1. Approved translations of the two new English sentences (the Growth icon sentence and the

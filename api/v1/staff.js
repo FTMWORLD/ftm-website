@@ -3,6 +3,7 @@
                             read for every paying customer as that customer), money under copy, problems with suggested fixes
    lookup {q}               one customer: email, account number, client ID (FTM-...), Community or leaderboard nickname
    account_stats {uid, account_id}   the engine statistics of one account
+   export_trades {uid, account_id}   every closed position with balance at open (owners and staff; read-only)
    act {uid, do, ...}       reset_email | login_email | password_email | confirm_email | signout_all | repair_plan |
                             push_test | push_clear | community_hide | community_show | email (own message)
    broadcast {segment, channel:'email'|'push', subject,title,text,button,link | title,body, dry?, id?, template?:'topup2000'}
@@ -232,6 +233,23 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, customer: await customer360(admin, u) });
     }
 
+    if (op === 'export_trades') {
+      if (role === 'support') return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
+      const r = await admin.auth.admin.getUserById(String(body.uid || '')); const u = r.data && r.data.user; if (!u) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
+      const H = require('../_lib/accountHistory'), A = (await H.accounts(u)).mapped, m = A.find(a => String(a.accountId) === String(body.account_id || ''));
+      if (!m) return res.status(404).json({ ok: false, error: 'ACCOUNT_NOT_FOUND' });
+      const h = await H.load(u, m), pick = (o, ks) => { for (const k of ks) if (o && o[k] != null && o[k] !== '') return o[k]; return null; };
+      const outDeal = {}; h.rawHistory.forEach(d => { if (String(d.entry || '').toUpperCase() === 'OUT' && d.position_ref) outDeal[d.position_ref] = d; });
+      const rows = h.closed.map((t, i) => { const raw = h.rawTrades[i] || {}, d = outDeal[t.positionRef] || {};
+        return { position: t.positionRef, open_time: t.openTime ? new Date(t.openTime).toISOString() : null, close_time: t.closeTime ? new Date(t.closeTime).toISOString() : null, symbol: t.symbol, side: t.dir, volume: t.lots,
+          open_price: t.open, close_price: t.close, sl: pick(raw, ['sl', 'stop_loss', 'sl_price']) ?? pick(d, ['sl', 'stop_loss']), tp: pick(raw, ['tp', 'take_profit', 'tp_price']) ?? pick(d, ['tp', 'take_profit']),
+          comment: pick(raw, ['comment']) ?? pick(d, ['comment']), magic: pick(raw, ['magic', 'magic_number']) ?? pick(d, ['magic', 'magic_number']),
+          commission: t.commission, swap: t.swap, net_profit: t.pl, balance_at_open: t.openTime ? +h.M.balAt(t.openTime).toFixed(2) : null, balance_after_close: t.closeTime ? +h.M.balAt(t.closeTime + 1).toFixed(2) : null,
+          close_reason: t.closeReason, closed_by: t.closedBy, copied_by_ftm: t.copiedByFtm };
+      }).sort((a, b) => String(a.close_time).localeCompare(String(b.close_time)));
+      await logIt(admin, by, 'export_trades', u.email, (m.number || m.accountId) + ' (' + rows.length + ' trades)');
+      return res.status(200).json({ ok: true, account: { number: m.number, currency: m.currency, master: !!m.isMaster }, rows });
+    }
     if (op === 'account_stats') {
       const r = await admin.auth.admin.getUserById(String(body.uid || '')); const u = r.data && r.data.user; if (!u) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       const id = String(body.account_id || '').replace(/[^\w-]/g, ''); const s = await eng(u, '/api/v1/customer/accounts/' + id + '/stats', 15000);

@@ -7,14 +7,14 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   const files={}, mails=[], pushes=[], now=new Date().toISOString(); let aiText=null, writes=0;
   const users={s1:{id:'s1',email:'ftmwebnation@gmail.com',email_confirmed_at:now,created_at:now},c1:{id:'c1',email:'amelie@x.com',email_confirmed_at:now,created_at:now,user_metadata:{full_name:'Amélie Roux',ftm_lang:'fr'}},
     c2:{id:'c2',email:'jo@x.com',email_confirmed_at:now,created_at:now},c3:{id:'c3',email:'typo@x.con',created_at:now}};
-  const fake={createClient:()=>({auth:{admin:{listUsers:async()=>({data:{users:Object.values(users)}}),getUserById:async id=>({data:{user:users[id]}})}},
+  const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:t==='tokS'?users.s1:(t==='tokC'?users.c2:null)}}),admin:{listUsers:async()=>({data:{users:Object.values(users)}}),getUserById:async id=>({data:{user:users[id]}})}},
     storage:{getBucket:async()=>({error:null}),createBucket:async()=>({}),from:()=>({download:async p=>files[p]?{data:{text:async()=>files[p]}}:{error:{message:'nf'}},upload:async(p,b)=>{ files[p]=b.toString(); return {error:null}; },remove:async()=>({}),list:async()=>({data:[]})})}})};
   const T=(d)=>new Date(Date.UTC(2026,d[0],d[1],d[2]||12)).toISOString();
   // master: deposit 10,000 (1 Oct); Oct +200; Nov +510 then -107.10  =>  Nov = 1.05*0.99-1 = +3.95%, since 1 Jan = 1.02*1.05*0.99-1 = +6.0290%
   const deals=[[T([9,5]),200],[T([10,10]),510],[T([10,20]),-107.1]];
   const hist=[{type:'BALANCE',time:T([9,1,8]),profit:10000,net:10000}].concat(deals.map((d,i)=>({type:'SELL',entry:'OUT',ticket:'t'+i,time:d[0],profit:d[1],net:d[1]})));
   const engine={callEngine:async(p,o)=>{ if(/\/customer\/accounts$/.test(p)) return {ok:true,status:200,body:{ok:true,accounts:[{account_id:'m1',preview:true,view_only:true,currency:'USD',balance:'10602.9',equity:'10602.9',display_status:'ACTIVE'}]}};
-    if(/\/m1\/stats/.test(p)) return {ok:true,status:200,body:{ok:true,history:hist.slice().reverse(),history_total:hist.length,deposits_total:10000,withdrawals_total:0}};
+    if(/\/m1\/stats/.test(p)) return {ok:true,status:200,body:{ok:true,history:hist.slice().reverse().map(r=>r.entry==='OUT'?Object.assign({position_ref:'p'+r.ticket.slice(1),comment:'FTM 3.7',magic:34686},r):r),history_total:hist.length,deposits_total:10000,withdrawals_total:0}};
     if(/\/m1\/history/.test(p)) return {ok:true,status:200,body:{ok:true,trades:deals.map((d,i)=>({symbol:'XAUUSD',side:'BUY',volume:'1',opened_at:new Date(Date.parse(d[0])-3600e3).toISOString(),closed_at:d[0],net_profit:String(d[1]),position_ref:'p'+i})),page:{offset:0,limit:200,total:3}}};
     return {ok:false,status:404,body:{error:'NF'}}; }};
   class FakeAnthropic{ constructor(){ this.beta={messages:{create:async o=>{
@@ -61,5 +61,12 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   ok(ix.items.length===1&&ix.items[0].id==='staffdraft1'&&ix.items[0].status==='scheduled','a letter staff wrote for the month is sent instead of a new one');
   r=await Auto.run(admin,{now:Date.UTC(2027,1,2,10),deadline:Date.now()-1}); ok(r.more&&mails.length===0,'out of time: it stops and continues on the next call');
   r=await Auto.run(admin,{now:Date.UTC(2027,1,2,10),deadline:Date.now()+30000}); ok(!r.more&&mails.length===3&&/January, by Gospel/.test(mails[0].html),'the next call finishes the send');
+  // 5. staff trade export (read-only): every closed position with the balance at open
+  const SH=require(path.join(__dirname,'../../api/v1/staff.js'));
+  const sc=(tok,body)=>new Promise(res=>{ const r={s:0,setHeader(){},status(c){this.s=c;return this;},json(j){res([this.s,j]);}}; SH({method:'POST',headers:{authorization:'Bearer '+tok},body},r); });
+  let x=await sc('tokC',{op:'export_trades',uid:'s1',account_id:'m1'}); ok(x[0]===403,'a customer cannot export trades');
+  x=await sc('tokS',{op:'export_trades',uid:'s1',account_id:'m1'}); const R=(x[1]||{}).rows||[];
+  ok(x[0]===200&&R.length===3&&R[0].balance_at_open===10000&&R[1].balance_at_open===10200&&R[2].balance_at_open===10710&&R[2].balance_after_close===10602.9,'export: 3 trades with the balance at open and after close '+JSON.stringify(R.map(r=>[r.balance_at_open,r.balance_after_close])));
+  ok(R[1].comment==='FTM 3.7'&&R[1].magic===34686&&R[1].symbol==='XAUUSD'&&R[1].net_profit===510,'export: symbol, profit, and comment/magic when the engine sends them');
   console.log(fails?fails+' BROKEN':'ALL OK'); process.exit(fails?1:0);
 })().catch(e=>{ console.error(e); process.exit(1); });

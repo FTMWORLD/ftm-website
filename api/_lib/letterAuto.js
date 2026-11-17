@@ -6,21 +6,15 @@
    A letter staff saved for that month themselves is sent instead of writing a new one. */
 const crypto = require('crypto');
 const P = require('./push');
-const Engine = require('./engineClient');
 const Letter = require('./letter');
 const Mail = require('./mail');
 const StaffLib = require('./staff');
-const Calc = require('../../ftm-calc.js');
+const H = require('./accountHistory');
 
 const SEND_HOUR = 9;
 const BAD = /guarantee|promise|risk[- ]free|sure profit|certain(ly)? (profit|gain)|trader|fundednext|deriv|ftmo|you will (make|earn|gain)|double your/i;
 
 function within(ms, p) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), ms))]); }
-async function eng(u, path, ms) {
-  const r = await within(ms || 12000, Engine.callEngine(path, { authSubject: u.id, authEmail: u.email, timeoutMs: (ms || 12000) - 500 }));
-  if (!r.ok) throw new Error('engine ' + path.split('?')[0] + ': ' + ((r.body && r.body.error) || r.status));
-  return r.body;
-}
 async function allUsers(admin) {
   const out = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); out.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; } return out;
 }
@@ -32,26 +26,9 @@ async function masterFigures(admin, ym, users) {
   const owners = StaffLib.owners();
   const reader = users.find(u => owners.indexOf(String(u.email || '').toLowerCase()) !== -1 && u.email_confirmed_at) || users.find(u => u.email_confirmed_at);
   if (!reader) throw new Error('NO_READER');
-  const acc = await eng(reader, '/api/v1/customer/accounts');
-  const A = (acc.accounts || []).map(Calc.mapAccount), m = A.find(a => a.isMaster) || A.find(a => a.isPreview);
+  const A = (await H.accounts(reader)).mapped, m = A.find(a => a.isMaster) || A.find(a => a.isPreview);
   if (!m || !m.accountId) throw new Error('NO_MASTER_ACCOUNT');
-  const id = encodeURIComponent(m.accountId);
-  let j = await eng(reader, '/api/v1/customer/accounts/' + id + '/stats?limit=2000', 20000);
-  if (j && j.pending) throw new Error('STATS_PENDING');
-  const key = r => String(r.ticket || r.deal || r.id || '') + '|' + (r.time || r.closed_at || '') + '|' + (r.type || '') + '|' + (r.net != null ? r.net : r.profit);
-  for (let pg = 0; pg < 25 && j.history && +j.history_total > j.history.length; pg++) {
-    const k = await eng(reader, '/api/v1/customer/accounts/' + id + '/stats?limit=2000&offset=' + j.history.length, 20000);
-    const seen = new Set(j.history.map(key)), add = (k.history || []).filter(r => !seen.has(key(r))); if (!add.length) break; j.history = j.history.concat(add);
-  }
-  const es = Calc.mapStats(j, m.accountId);
-  let closed = [];
-  for (let off = 0, pg = 0; pg < 200; pg++) {
-    const h = await eng(reader, '/api/v1/customer/accounts/' + id + '/history?limit=200&offset=' + off, 15000);
-    closed = closed.concat((h.trades || []).map(Calc.mapExecution)); const p = h.page || {};
-    if (p.offset == null || p.limit == null || p.total == null || p.offset + p.limit >= p.total) break; off = p.offset + p.limit;
-  }
-  const data = { accounts: [m], account: { currency: m.currency || null, deposits: es.deposits != null ? es.deposits : (m.deposits || 0), withdrawals: es.withdrawals != null ? es.withdrawals : (m.withdrawals || 0) }, closed, open: [] };
-  const M = Calc.build({ data, live: m, es, flows: es.flows });
+  const { closed, M } = await H.load(reader, m);
   const a0 = String(ym).split('-').map(Number), a = Date.UTC(a0[0], a0[1] - 1, 1), z = Date.UTC(a0[0], a0[1], 1), y0 = Date.UTC(a0[0], 0, 1);
   const inM = closed.filter(t => t.closeTime >= a && t.closeTime < z && t.pl != null), wins = inM.filter(t => t.pl > 0).length;
   return { month_pct: +M.seg(a, z).pct.toFixed(4), ytd_pct: +M.seg(y0, z).pct.toFixed(4), trades: inM.length, win_pct: inM.length ? wins / inM.length * 100 : null, account: String(m.number || 'MASTER'), at: new Date().toISOString() };
