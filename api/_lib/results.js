@@ -3,7 +3,9 @@
    them; on Fridays also the week (Saturday to Friday); on the 1st also last month. Figures from the FTM engine through
    ftm-calc.js (the dashboards' own calculation). Each post appears in Community (For you, Following and FTM news).
    Posts carry a `card` the feed draws in the FTM design, in each member's language and local time; `x` is a short text
-   for share links. Never posts the same period twice. */
+   for share links. Never posts the same period twice.
+   Emails: each member gets the same day/week/month result for THEIR OWN accounts (read from the engine as that member),
+   never the master account's; members with no account of their own get no result email (FTM news has the master). */
 const crypto = require('crypto');
 const P = require('./push');
 const StaffLib = require('./staff');
@@ -63,6 +65,17 @@ function periodCard(k, h, cur, from, to, label) {
   return card;
 }
 
+/* The card of one period key (day-YYYY-MM-DD, week-YYYY-MM-DD = the Friday, month-YYYY-MM) for one account's history. */
+function cardFor(key, h, cur) {
+  const p = key.split('-').map(Number), k = key.split('-')[0];
+  if (k === 'day') return dayCard(h, cur, p[1], p[2], p[3]);
+  if (k === 'week') { const s = addDays(p[1], p[2], p[3], -6); return periodCard('week', h, cur, s, addDays(p[1], p[2], p[3], 1), 'week of ' + s[2] + ' ' + MONTHS[s[1] - 1] + ' to ' + p[3] + ' ' + MONTHS[p[2] - 1] + ' ' + p[1]); }
+  const nm = p[2] === 12 ? [p[1] + 1, 1, 1] : [p[1], p[2] + 1, 1];
+  return periodCard('month', h, cur, [p[1], p[2], 1], nm, MONTHS[p[2] - 1] + ' ' + p[1]);
+}
+/* A member's own accounts: never the FTM master account or the master preview free accounts see. */
+function ownAccounts(A) { return (A || []).filter(a => a && a.accountId && !a.isMaster && !a.isPreview); }
+
 /* One run. Posts what is due at this local time; o.force posts today's day result now (staff/test). */
 async function run(admin, o) {
   o = o || {}; const now = o.now || Date.now(), lp = parts(now, TZ), log = [];
@@ -77,10 +90,7 @@ async function run(admin, o) {
   const { m: acct, h, reader } = await master(admin), cur = acct.currency || 'USD';
   const Pst = await P.read(admin, 'posts.json', { posts: [] }); let t0 = Date.now();
   for (const w of todo) {
-    let card;
-    if (w.key.indexOf('day-') === 0) card = dayCard(h, cur, y, m, d);
-    else if (w.key.indexOf('week-') === 0) { const s = addDays(y, m, d, -6); card = periodCard('week', h, cur, s, addDays(y, m, d, 1), 'week of ' + s[2] + ' ' + MONTHS[s[1] - 1] + ' to ' + d + ' ' + MONTHS[m - 1] + ' ' + y); }
-    else { const nm = w.pm === 12 ? [w.py + 1, 1, 1] : [w.py, w.pm + 1, 1]; card = periodCard('month', h, cur, [w.py, w.pm, 1], nm, MONTHS[w.pm - 1] + ' ' + w.py); }
+    const card = cardFor(w.key, h, cur);
     const x = card.x; delete card.x;
     Pst.posts.push({ id: Date.now().toString(36) + crypto.randomBytes(3).toString('hex'), a: P.midOf(reader.id), x, t: new Date(t0++).toISOString(), lk: [], c: [], ftm: true, card, res: w.key });
     done.keys.push(w.key); log.push('posted ' + w.key);
@@ -93,7 +103,7 @@ async function run(admin, o) {
 /* The same result as an email, in the member's language (labels from the site's i18n files), times in FTM time (Berlin). */
 const LOCALE = { zh: 'zh-CN', 'zh-tw': 'zh-TW', en: 'en-GB' };
 function e(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-async function emailFor(card, lang) {
+async function emailFor(card, lang, acct) {
   const loc = LOCALE[lang] || lang, t = x => P.tr(lang, x);
   const M = v => { const n = +v || 0; let a; try { a = Math.abs(n).toLocaleString(loc, { style: 'currency', currency: card.cur || 'USD', currencyDisplay: 'narrowSymbol', minimumFractionDigits: 2, maximumFractionDigits: 2 }); } catch (x) { a = Math.abs(n).toFixed(2) + ' ' + (card.cur || ''); } return (n > 0 ? '+' : n < 0 ? '-' : '') + a; };
   const PC = v => { const n = +v || 0; return (n > 0 ? '+' : n < 0 ? '-' : '') + Math.abs(n).toFixed(2) + '%'; }, col = v => v > 0 ? '#1f8a5b' : v < 0 ? '#b4232c' : '#0b1640';
@@ -122,38 +132,75 @@ async function emailFor(card, lang) {
   }
   const netCol = v => v > 0 ? '#6ee7a8' : v < 0 ? '#ff8a92' : '#ffffff';
   const body = '<div' + (['ar', 'he', 'fa', 'ur'].indexOf(lang) !== -1 ? ' dir="rtl"' : '') + '>'
-    + '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#B8902A;font-weight:bold;">' + e(await t('FTM master account')) + '</p>'
+    + '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#B8902A;font-weight:bold;">' + e(acct ? (await t('Your account')) + (acct.number ? ' · ' + acct.number : '') : await t('FTM master account')) + '</p>'
     + '<p style="margin:0 0 4px;font-size:20px;font-weight:bold;color:#0b1640;">' + e(head) + '</p>' + (sub ? '<p style="margin:0 0 8px;font-size:14px;color:#6b7194;">' + e(sub) + '</p>' : '') + table
     + '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="background-color:#0b1640;border-radius:14px;margin:16px 0 6px;"><tr><td style="padding:16px 18px;color:#E3B62F;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;">' + e(await t('Net P&L')) + '</td>'
     + '<td align="right" style="padding:16px 18px;"><p style="margin:0;font-size:26px;font-weight:bold;color:' + netCol(card.net) + ';font-family:Arial,Helvetica,sans-serif;">' + e(M(card.net)) + '</p><p style="margin:2px 0 0;font-size:14px;font-weight:bold;color:' + netCol(card.pct) + ';">' + e(PC(card.pct)) + '</p></td></tr></table>'
-    + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=community" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t('FTM news')) + ' &rarr;</a></td></tr></table></div>';
-  return { subject: 'FTM · ' + (await t(kind)) + ': ' + head + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body) };
+    + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=' + (acct ? 'calendar' : 'community') + '" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t(acct ? 'Calendar' : 'FTM news')) + ' &rarr;</a></td></tr></table></div>';
+  return { subject: 'FTM · ' + (await t(kind)) + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body) };
 }
-/* Emails every confirmed login the result posts of the last 3 days they have not had yet; stops at the deadline. */
+/* Emails every confirmed login the result of THEIR OWN accounts for each period posted in the last 3 days that they
+   have not had yet: the same calculation as the post, on their own history read from the engine as them. Never the master
+   account (that is on FTM news). An account with no trades in the period gets an email only while it is trading.
+   Four members at a time; stops taking new members at the deadline; progress is saved as it goes so nobody gets an email
+   twice; a member whose engine read fails is retried on the next calls and skipped after 3 tries. */
+function within(ms, p) { return Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), ms))]); }
 async function mail(admin, o) {
-  o = o || {}; const deadline = o.deadline || (Date.now() + 40000), log = []; let more = false;
+  o = o || {}; const deadline = o.deadline || (Date.now() + 30000), log = []; let more = false;
   const done = await P.read(admin, 'results/posted.json', { keys: [] }), keys = done.keys.slice(-6);
   if (!keys.length) return { more, log };
   const posts = (await P.read(admin, 'posts.json', { posts: [] })).posts;
-  const Letter = require('./letter');
-  let users = null;
+  const due = [];
   for (const key of keys) {
     const st = await P.read(admin, 'results/mail-' + key + '.json', null); if (st && st.finished) continue;
     const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5) continue;
-    if (!users) { users = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; } users = users.filter(u => u.email && u.email_confirmed_at); }
-    const S = st || { done: [], sent: 0, failed: 0 }, have = new Set(S.done), cache = {};
-    for (const u of users) {
-      if (have.has(u.id)) continue; if (Date.now() > deadline) { more = true; break; }
-      const lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null));
-      try { const m = cache[lang] || (cache[lang] = await emailFor(post.card, lang)); const via = await Mail.sendMail({ to: u.email, subject: m.subject, html: m.html }); if (via) S.sent++; else S.failed++; } catch (x) { S.failed++; }
-      S.done.push(u.id); have.add(u.id);
-      if (S.done.length % 20 === 0) await P.write(admin, 'results/mail-' + key + '.json', S);
-    }
-    if (!more) S.finished = new Date().toISOString();
-    await P.write(admin, 'results/mail-' + key + '.json', S); log.push('emailed ' + key + ': ' + S.sent + (more ? ' so far' : ''));
-    if (more) break;
+    const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0 }, st || {}); S.tries = S.tries || {};
+    due.push({ key, S, have: new Set(S.done) });
   }
+  if (!due.length) return { more, log };
+  const lock = await P.read(admin, 'results/mail-lock.json', null);
+  if (!o.chain && lock && lock.until > Date.now()) return { more: false, log: ['emails already being sent'] };
+  await P.write(admin, 'results/mail-lock.json', { until: deadline + 40000 });
+  const Letter = require('./letter');
+  let users = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; }
+  users = users.filter(u => u.email && u.email_confirmed_at);
+  const queue = users.filter(u => due.some(w => !w.have.has(u.id)));
+  let chain = Promise.resolve();
+  const save = () => { chain = chain.then(() => Promise.all(due.map(w => P.write(admin, 'results/mail-' + w.key + '.json', w.S)))).catch(() => {}); return chain; };
+  const finish = (w, u) => { if (w.have.has(u.id)) return; w.S.done.push(u.id); w.have.add(u.id); delete w.S.tries[u.id]; };
+  async function one(u) {
+    const pend = due.filter(w => !w.have.has(u.id));
+    let out;
+    try {
+      out = await within(20000, (async () => {
+        const own = ownAccounts((await H.accounts(u)).mapped);
+        if (!own.length) return null;
+        const lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null)), list = [];
+        for (const acct of own) {
+          const h = await H.load(u, acct), cur = acct.currency || 'USD';
+          for (const w of pend) { const card = cardFor(w.key, h, cur); if (card.n || acct.active) list.push({ w, m: await emailFor(card, lang, acct) }); }
+        }
+        return list;
+      })());
+    } catch (e) {
+      pend.forEach(w => { const n = (w.S.tries[u.id] || 0) + 1; w.S.tries[u.id] = n; if (n >= 3) { w.S.failed++; finish(w, u); } });
+      console.error('result email', String(e && e.message || e).slice(0, 120));
+      return;
+    }
+    if (!out) { pend.forEach(w => { w.S.none++; finish(w, u); }); return; }
+    pend.forEach(w => finish(w, u)); await save();
+    for (const x of out) { try { const via = await Mail.sendMail({ to: u.email, subject: x.m.subject, html: x.m.html }); if (via) x.w.S.sent++; else x.w.S.failed++; } catch (e2) { x.w.S.failed++; } }
+  }
+  let i = 0;
+  async function worker() { while (i < queue.length) { if (Date.now() > deadline) return; await one(queue[i++]); } }
+  await Promise.all([0, 1, 2, 3].map(worker));
+  for (const w of due) {
+    if (users.every(u => w.have.has(u.id))) w.S.finished = new Date().toISOString(); else more = true;
+    log.push('emailed ' + w.key + ': ' + w.S.sent + ' sent, ' + w.S.none + ' with no account of their own, ' + w.S.failed + ' failed' + (w.S.finished ? '' : ' so far'));
+  }
+  await save();
+  await P.write(admin, 'results/mail-lock.json', { until: more ? Date.now() + 40000 : 0 });
   return { more, log };
 }
 
-module.exports = { run, mail, emailFor, parts, midnight, dayCard, periodCard, TZ };
+module.exports = { run, mail, emailFor, cardFor, ownAccounts, parts, midnight, dayCard, periodCard, TZ };
