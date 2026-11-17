@@ -42,5 +42,9 @@
  {
   "date": "2026-11-17",
   "text": "Service status: one page shows whether every FTM service is running now, with 90 days of hourly checks. Find it at the bottom of the homepage and in Customer support."
+ },
+ {
+  "date": "2026-11-17",
+  "text": "Calendar: a day's pop-up now carries the FTM logo, the account's balance and its risk profile. Closing a trade's details takes you back to that day, not to the calendar."
  }
 ]

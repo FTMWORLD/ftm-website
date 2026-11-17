@@ -481,6 +481,15 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .cal-sum{display:flex;gap:22px;margin-left:auto;flex-wrap:wrap}
   .cal-sum span{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
   .cal-sum b{display:block;font-size:19px;font-variant-numeric:tabular-nums;color:var(--ink);margin-top:2px}
+.dtm{padding:0!important;overflow:hidden}.dtm-band{display:flex;align-items:center;gap:12px;padding:14px 16px 14px 22px;background:linear-gradient(135deg,#0B1440,#152a7a);box-shadow:inset 0 -2px 0 #D4AF37}
+.dtm-logo{display:flex;align-items:center;gap:9px;color:#fff;font-weight:800;font-size:19px;letter-spacing:.01em}.dtm-logo .mark{width:32px;height:32px;border-radius:9px;background:var(--blue,#1F3A93);display:grid;place-items:center}.dtm-logo .mark svg{width:20px;height:20px}
+.dtm-acct{flex:1;min-width:0;text-align:right;color:#cfd6f3;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dtm-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:20px;line-height:1;cursor:pointer}.dtm-x:hover{background:rgba(255,255,255,.24)}
+.dtm-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:22px 26px 6px}.dtm-tt{min-width:0}.dtm-tt h3{margin:0}.dtm-tt .hint{margin:4px 0 0}
+.dtm-stats{flex:none;display:grid;grid-template-columns:auto auto;gap:8px}.dtm-stats>div{background:#F7F8FB;border:1px solid var(--line);border-radius:12px;padding:9px 12px;min-width:0}.dtm-stats span{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:800}.dtm-stats b{display:block;margin-top:3px;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dtm .dtm-tbl{margin:10px 26px 0!important}.dtm .day-net{margin:14px 26px 26px}
+@media (max-width:700px){#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open){column-gap:0!important;row-gap:3px!important;align-items:baseline}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td{display:inline-block!important;border:0!important;padding:0!important}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td::before{display:none!important}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(3){order:1;flex:0 0 calc(100% - 120px)!important;font-size:15px!important;font-weight:800!important;color:var(--ink)!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(6){order:2;flex:0 0 120px!important;text-align:right!important;font-size:15px!important;font-weight:800!important}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(4),#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(5),#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(1),#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(2){font-size:12.5px!important;color:#6b7194!important;font-weight:600!important;flex:0 0 auto!important}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(4){order:3}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(5){order:4}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(1){order:5}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(2){order:6}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(5)::before,#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(1)::before{display:inline!important;content:'\00B7'!important;margin:0 6px!important;color:#b4b9c9!important;font-size:12.5px!important}#dayTradesModal .app-scroll table.app-trades tbody tr.cx:not(.open) td:nth-child(2)::before{display:inline!important;content:'\2192'!important;margin:0 5px!important;color:#b4b9c9!important;font-size:12.5px!important}}
+@media (max-width:640px){.dtm-head{flex-direction:column;align-items:stretch;padding:18px 16px 4px;gap:12px}.dtm-stats{grid-template-columns:1fr 1fr}.dtm .dtm-tbl{margin:8px 16px 0!important}.dtm .day-net{margin:12px 16px 18px}.dtm-band{padding:12px 12px 12px 16px}}
   .day-net{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:12px;margin-top:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,#0B1440,#152a7a);color:#fff}.day-net[hidden]{display:none}.day-net span{grid-row:1/3;white-space:nowrap;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#E3B62F}.day-net b{text-align:end;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}.day-net em{text-align:end;font-style:normal;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;opacity:.9}.day-net .up{color:#4ade80}.day-net .dn{color:#ff8a93}
   @media (max-width:700px){.cal-top{row-gap:16px}.cal-top h2{flex:1 1 auto;text-align:center;min-width:0}.cal-sum{order:4;margin-left:0;flex:1 1 auto;gap:20px;flex-wrap:nowrap;min-width:0}.cal-sum>div{min-width:0}.cal-sum>div:nth-child(-n+2){display:none}#calUnit{order:5;margin-left:auto;align-self:center;flex:none}}
   .cal-wrap{display:grid;grid-template-columns:1.25fr 1fr;gap:20px;align-items:stretch}
@@ -4666,11 +4675,13 @@ body.op-lock{overflow:hidden}
 </div>
 
 <div class="mdl" id="dayTradesModal" hidden>
-  <div class="mdl-box" role="dialog" aria-modal="true" aria-labelledby="dayTradesTitle" style="width:min(620px,100%)">
-    <button class="auth-close" id="dayTradesClose" aria-label="Close">&times;</button>
-    <h3 id="dayTradesTitle">Trades</h3>
-    <p class="hint" id="dayTradesHint">&mdash;</p>
-    <div class="app-scroll" style="margin-top:12px"><table class="app-trades">
+  <div class="mdl-box dtm" role="dialog" aria-modal="true" aria-labelledby="dayTradesTitle" style="width:min(680px,100%)">
+    <div class="dtm-band"><span class="dtm-logo"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span><b>FTM</b></span><span class="dtm-acct" id="dtmAcct"></span><button class="dtm-x" id="dayTradesClose" aria-label="Close">&times;</button></div>
+    <div class="dtm-head">
+      <div class="dtm-tt"><h3 id="dayTradesTitle">Trades</h3><p class="hint" id="dayTradesHint">&mdash;</p></div>
+      <div class="dtm-stats"><div><span>Balance</span><b id="dtmBal" class="fz-nw">&mdash;</b></div><div><span>Risk profile</span><b id="dtmRisk">&mdash;</b></div></div>
+    </div>
+    <div class="app-scroll dtm-tbl"><table class="app-trades">
       <thead><tr><th>Opened</th><th>Closed</th><th>Market</th><th>Direction</th><th>Size</th><th>P/L</th></tr></thead>
       <tbody id="dayTradesRows"></tbody>
     </table></div>
@@ -6262,7 +6273,9 @@ body.op-lock{overflow:hidden}
       set('mClosedHint', recent.length ? 'Your '+recent.length+' most recently closed trade'+(recent.length===1?'':'s')+'. Click a row for details.' : 'No trades closed yet.');
     }
 
-    function openTradeModal(t){
+    var tradeBack=null;
+    function openTradeModal(t,back){
+      tradeBack=typeof back==='function'?back:null;
       var box=document.getElementById('tradeModalBody'); if(!box)return;
       var openD=t.openTime==null?'\u2014':new Date(t.openTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
       var closeD=new Date(t.closeTime).toLocaleString((window.FTM_LOCALE||'en-GB'),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
@@ -6290,10 +6303,10 @@ body.op-lock{overflow:hidden}
     F.openTradeModal = openTradeModal;
     (function(){
       var modal=document.getElementById('tradeModal'), closeBtn=document.getElementById('tradeModalClose');
-      function shut(){ modal.hidden=true; document.body.style.overflow=''; }
+      function shut(){ modal.hidden=true; document.body.style.overflow=''; var b=tradeBack; tradeBack=null; if(b) b(); }
       if(closeBtn)closeBtn.addEventListener('click',shut);
       if(modal)modal.addEventListener('click',function(e){ if(e.target===modal)shut(); });
-      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modal && !modal.hidden)shut(); });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && modal && !modal.hidden){ e.stopImmediatePropagation(); shut(); } });
       var clM=document.getElementById('clMore'), clL=document.getElementById('clLess');
       if(clM) clM.addEventListener('click',function(){ clShow+=20; drawClosed(); });
       var clF=document.getElementById('clFilter'); if(clF) clF.addEventListener('change',function(){ clShow=5; drawClosed(); });
@@ -7153,6 +7166,12 @@ body.op-lock{overflow:hidden}
         }).join('');
         var dn=el('dayNet'); if(dn){ var net=trades.reduce(function(a,t){ return a+(+t.pl||0); },0), e2=new Date(d); e2.setDate(e2.getDate()+1); var sg=F.metrics?F.metrics().seg(d.getTime(),e2.getTime()):null;
           var nv=el('dayNetV'); nv.textContent=signed(net,2); nv.className=net>0?'up':(net<0?'dn':''); var np=el('dayNetP'); np.textContent=sg&&isFinite(sg.pct)?(sg.pct>0?'+':'')+sg.pct.toFixed(2)+'%':''; np.className=nv.className; dn.hidden=!trades.length; }
+        (function(){ var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }, va=F.viewedAccount&&F.viewedAccount(), es=F.es?F.es():null, M=F.metrics?F.metrics():null;
+          var bal=(va&&va.balance!=null)?va.balance:(M?M.balance:null), cur=(va&&va.currency)||(F.data.account&&F.data.account.currency);
+          el('dtmBal').textContent=bal!=null&&isFinite(bal)?(F.moneyIn?F.moneyIn(bal,2,cur):money(bal,2)):'—';
+          var pr=String((va&&va.riskTier)||(es&&es.riskRange&&es.riskRange.profile)||'').toUpperCase().replace(/_.*$/,'');
+          el('dtmRisk').textContent=pr==='GROWTH'?tr('Growth')+' 2×':pr==='BALANCED'?tr('Balanced'):pr==='CONSERVATIVE'?tr('Conservative'):'—';
+          el('dtmAcct').textContent=va?((va.isMaster||va.isPreview)?tr('FTM master account'):tr('Account')+' '+(va.number||'')):''; })();
         dayModal.hidden=false;
         document.body.style.overflow='hidden';
       }
@@ -7170,7 +7189,7 @@ body.op-lock{overflow:hidden}
       }
       if(dayRows)dayRows.addEventListener('click',function(e){
         var row=e.target.closest('.tr-click'); if(!row)return;
-        var t=dayCache[+row.dataset.i]; if(t && F.openTradeModal){ shutDay(); F.openTradeModal(t); }
+        var t=dayCache[+row.dataset.i]; if(t && F.openTradeModal){ dayModal.hidden=true; F.openTradeModal(t,function(){ dayModal.hidden=false; document.body.style.overflow='hidden'; var r=dayRows.querySelector('[data-i="'+row.dataset.i+'"]'); if(r) r.focus({preventScroll:true}); }); }
       });
     })();
 
