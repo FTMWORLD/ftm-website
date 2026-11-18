@@ -30,6 +30,7 @@ jobs:
           node .github/tests/legal-i18n.js http://localhost:8765
           node .github/tests/statement-range.js http://localhost:8765
           node .github/tests/community-as.js http://localhost:8765
+          node .github/tests/password-change.js http://localhost:8765
           node .github/tests/free-board.js http://localhost:8765
           node .github/tests/letter.js http://localhost:8765
           node .github/tests/letter-auto.js

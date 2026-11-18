@@ -2246,6 +2246,7 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 @keyframes stSpin{to{transform:rotate(360deg)}}
 .st-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .st-bar[hidden]{display:none!important}
+.pw-fields{display:contents}.pw-fields[hidden]{display:none!important}
 .st-range{display:flex;align-items:center;gap:6px}.st-range[hidden]{display:none!important}
 .st-range input{height:36px;border-radius:99px;border:1px solid rgba(11,20,64,.16);padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;min-width:0}
 .st-range .st-to{color:var(--muted,#6b7393);font-weight:700}
@@ -4788,12 +4789,15 @@ body.op-lock{overflow:hidden}
         <label for="pwCur">Current password</label>
         <input type="password" id="pwCur" autocomplete="current-password">
       </div>
+      <div id="pwFields" class="pw-fields">
       <label for="pwNew">New password</label>
       <input type="password" id="pwNew" autocomplete="new-password">
       <label for="pwNew2">Repeat new password</label>
       <input type="password" id="pwNew2" autocomplete="new-password">
+      </div>
       <p class="auth-error" id="pwErr" hidden></p>
       <button class="btn btn-red" type="button" id="pwSave">Save new password</button>
+      <button class="btn btn-red" type="button" id="pwSend" hidden>Email me the link</button>
       <p class="hint" id="pwOk" hidden>Password changed. Use it the next time you log in.</p>
       <p class="hint" id="pwSkipRow" hidden style="margin-top:14px;text-align:center"><a href="#" id="pwSkip">Skip for now, keep using the emailed code</a></p>
     </div>
@@ -5711,8 +5715,9 @@ body.op-lock{overflow:hidden}
     }
 
     var pendingPwSuccess = null;
+    function pwEmailMode(on){ var f=document.getElementById('pwFields'), sv=document.getElementById('pwSave'), sd=document.getElementById('pwSend'); if(f) f.hidden=!!on; if(sv) sv.hidden=!!on; if(sd){ sd.hidden=!on; sd.disabled=false; } }
     function promptSetPassword(r, invited){
-      close();
+      close(); pwEmailMode(false);
       var pwm=document.getElementById('pwModal');
       document.getElementById('pwTitle').textContent = invited ? 'Welcome to FTM — create your password' : 'Set a password for next time';
       var paidWelcome = !!(r.products&&r.products.length) && !!(window.FTM.auth.fromPaymentEmail && window.FTM.auth.fromPaymentEmail());
@@ -5845,7 +5850,7 @@ body.op-lock{overflow:hidden}
         }
         close();
         var pwm=document.getElementById('pwModal');
-        document.getElementById('pwTitle').textContent='Reset your password';
+        pwEmailMode(false); document.getElementById('pwTitle').textContent='Reset your password';
         document.querySelector('#pwModal .hint').textContent='Choose a new password for your FTM account.';
         pendingPwSuccess=function(){ window.FTM.auth.restoreSession().then(function(r){ if(r){ window.FTM=window.FTM||{}; FTM.session={email:r.email,products:r.products,name:r.name||''}; enter(r.email,r.products,false,r.name); } }).catch(function(){}); };
         document.getElementById('pwCurRow').hidden=true;
@@ -5905,8 +5910,18 @@ body.op-lock{overflow:hidden}
     document.querySelectorAll('.js-pw').forEach(function(b){ b.addEventListener('click',function(){
       ['pwCur','pwNew','pwNew2'].forEach(function(i){document.getElementById(i).value='';});
       document.getElementById('pwErr').hidden=true; document.getElementById('pwOk').hidden=true;
-      pwm.hidden=false; setTimeout(function(){document.getElementById(LIVE?'pwNew':'pwCur').focus();},40);
+      if(LIVE){ pwEmailMode(true); document.getElementById('pwSkipRow').hidden=true; document.getElementById('pwTitle').textContent='Change password';
+        document.querySelector('#pwModal .hint').textContent='For your safety, we email you a link to change your password. Open it on any device and choose your new password there.'; }
+      pwm.hidden=false; setTimeout(function(){document.getElementById(LIVE?'pwSend':'pwCur').focus();},40);
     }); });
+    document.getElementById('pwSend').addEventListener('click',function(){
+      var sd=this, mail=(window.FTM&&FTM.session&&FTM.session.email)||'', tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; }; if(!mail||sd.disabled) return; sd.disabled=true;
+      var ok=document.getElementById('pwOk'), er=document.getElementById('pwErr'); er.hidden=true;
+      fetch('/api/v1/auth-email',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:mail,mode:'reset'})}).then(function(r){ if(!r.ok) throw new Error('send'); return r.json(); }).then(function(){
+        ok.textContent=tr('We emailed a link to {}. Open it to choose your new password. Your current password keeps working until then.').replace('{}',mail); ok.hidden=false;
+        setTimeout(function(){ sd.disabled=false; },60000);
+      }).catch(function(){ sd.disabled=false; pwErr(tr('We could not send the email. Please try again in a few minutes.')); });
+    });
     function pwClose(){ pwm.hidden=true; }
     document.getElementById('pwClose').addEventListener('click',pwClose);
     pwm.addEventListener('click',function(e){ if(e.target===pwm)pwClose(); });
