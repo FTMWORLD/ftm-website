@@ -15,6 +15,7 @@
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
    FTM staff = a login on @ftmwealthnation.com, the FTM mailbox ftmwebnation@gmail.com, or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
+   Owners choose per post and comment: as FTM (body.as === 'ftm') or as their own profile (default).
    Staff area (action 'staff', ops check/overview/email/post) also needs a confirmed email.
    Data lives in a private Supabase Storage bucket "community" (JSON files), reachable only through this function.
    Members are addressed by an opaque id (mid), never by their login id or email. */
@@ -183,9 +184,9 @@ module.exports = async function handler(req, res) {
     const ping = async (m, o) => { if (!m || m === me) return; try { await within(5000, Push.send(admin, Object.assign({ mid: m }, o)), 'push'); } catch (e) { console.error('push hook', e.message); } };
 
     if (action === 'me') {
-      const paid = await isPaid(admin, user.id);
+      const paid = await isPaid(admin, user.id), isOwner = (await StaffLib.role(admin, user)) === 'owner';
       let dirty = false;
-      if (paid && !mine) {
+      if ((paid || isOwner) && !mine) {
         const used = new Set(Object.keys(idx.members).map(k => String(idx.members[k].nickname).toLowerCase()));
         let nick = 'member_' + me.slice(0, 4); for (let i = 1; used.has(nick.toLowerCase()) && i < 12; i++) nick = 'member_' + me.slice(i, i + 4 + Math.floor(i / 4));
         mine = idx.members[me] = { since: nowIso, nickname: nick, bio: '', country: '', visible: true, auto: true, updated: nowIso }; dirty = true;
@@ -387,7 +388,8 @@ module.exports = async function handler(req, res) {
     }
 
     if (['feed', 'post', 'like', 'comment', 'delpost', 'delcomment', 'pin', 'notifs', 'vote', 'bookmark', 'edit', 'clike', 'trending'].indexOf(action) !== -1) {
-      const staff = ['owner', 'staff'].indexOf(await StaffLib.role(admin, user)) !== -1;
+      const role = await StaffLib.role(admin, user), staff = ['owner', 'staff'].indexOf(role) !== -1, owner = role === 'owner';
+      const asFtm = staff && (!owner || body.as === 'ftm');
       const P = await S.read('posts.json', { posts: [] });
       const who = m => { const x = idx.members[m] || {}; return { mid: m, nickname: x.nickname || '', av: x.av || null, country: x.country || '', sub: !!x.sub }; };
       const saves = (soc.saves && soc.saves[me]) || [];
@@ -406,7 +408,7 @@ module.exports = async function handler(req, res) {
         else if (sc !== 'all') L = L.filter(x => x.a === sc && !x.ftm);
         if (body.before) L = L.filter(x => x.t < String(body.before));
         L.sort((a, b) => ((b.pin ? 1 : 0) - (a.pin ? 1 : 0)) || String(b.t).localeCompare(String(a.t)));
-        return res.status(200).json({ ok: true, staff, posts: L.slice(0, 30).map(outPost), more: L.length > 30 });
+        return res.status(200).json({ ok: true, staff, owner, posts: L.slice(0, 30).map(outPost), more: L.length > 30 });
       }
       if (action === 'trending') {
         const since = new Date(Date.now() - 14 * 864e5).toISOString(), cnt = {};
@@ -421,8 +423,8 @@ module.exports = async function handler(req, res) {
       if (action === 'notifs') {
         const nb = await S.read('notif/' + me + '.json', { items: [], read: '' }), prev = nb.read || '';
         const ftmItems = P.posts.filter(x => x.ftm && x.a !== me && x.t > (mine && mine.since || '')).slice(-30).map(x => ({ k: 'ftm', by: x.a, post: x.id, x: Array.from(x.x || '').slice(0, 90).join(''), t: x.t }));
-        const items = nb.items.concat(ftmItems).filter(n => !hidden.has(n.by) && (n.k === 'ftm' || idx.members[n.by])).sort((a, b) => String(b.t).localeCompare(String(a.t))).slice(0, 60)
-          .map(n => ({ kind: n.k, by: n.k === 'ftm' ? { mid: n.by, nickname: 'FTM', ftm: true } : who(n.by), post: n.post || null, text: n.x || '', t: n.t, unread: n.t > prev }));
+        const items = nb.items.concat(ftmItems).filter(n => !hidden.has(n.by) && (n.k === 'ftm' || n.f || idx.members[n.by])).sort((a, b) => String(b.t).localeCompare(String(a.t))).slice(0, 60)
+          .map(n => ({ kind: n.k, by: (n.k === 'ftm' || n.f) ? { mid: n.by, nickname: 'FTM', ftm: true } : who(n.by), post: n.post || null, text: n.x || '', t: n.t, unread: n.t > prev }));
         if (body.read) { nb.read = new Date().toISOString(); await S.write('notif/' + me + '.json', nb); }
         return res.status(200).json({ ok: true, items, unread: items.filter(n => n.unread).length });
       }
@@ -436,7 +438,7 @@ module.exports = async function handler(req, res) {
         if (!staff && (LINKS.test(text) || SELLING.test(text) || (pollIn && pollIn.some(o => LINKS.test(o))))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
         const now = Date.now(), hits = (postsSent.get(me) || []).filter(t => now - t < 864e5); if (!staff && hits.length >= 20) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
         const id = now.toString(36) + crypto.randomBytes(3).toString('hex'), x = { id, a: me, x: text, t: new Date().toISOString(), lk: [], c: [] };
-        if (staff) x.ftm = true;
+        if (asFtm) x.ftm = true;
         const bufs = [];
         for (const img of images) {
           const mm = img.match(/^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/); if (!mm) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
@@ -479,9 +481,9 @@ module.exports = async function handler(req, res) {
         const text = cleanLong(body.text, 600); if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
         if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
         if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
-        x.c = x.c || []; const c = { id: Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), a: me, x: text, t: new Date().toISOString() }; if (staff) c.ftm = true;
+        x.c = x.c || []; const c = { id: Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), a: me, x: text, t: new Date().toISOString() }; if (asFtm) c.ftm = true;
         x.c.push(c); if (x.c.length > 200) x.c = x.c.slice(-200);
-        await S.write('posts.json', P); if (x.a !== me && !x.ftm) { await notify(x.a, { k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') }); await ping(x.a, { kind: 'social', tag: 'cmt-' + x.id, url: '/?open=community', title: '{} commented on your post', body: Array.from(text).slice(0, 140).join(''), args: { title: [pushNick()] } }); }
+        await S.write('posts.json', P); if (x.a !== me && !x.ftm) { await notify(x.a, Object.assign({ k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') }, asFtm ? { f: 1 } : {})); await ping(x.a, { kind: 'social', tag: 'cmt-' + x.id, url: '/?open=community', title: '{} commented on your post', body: Array.from(text).slice(0, 140).join(''), args: { title: [asFtm ? 'FTM' : pushNick()] } }); }
         return res.status(200).json({ ok: true, post: outPost(x) });
       }
       if (action === 'delpost') {

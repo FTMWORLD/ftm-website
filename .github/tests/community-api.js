@@ -1,6 +1,6 @@
 // Community service: two members find each other, follow, message, block; rules for names, links and free accounts. Run: node .github/tests/community-api.js
 const Module=require('module'); const orig=Module._load;
-const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'},'tokS':{id:'00000000-0000-4000-8000-0000000000ff',email:'team@ftmwealthnation.com',email_confirmed_at:'2026-01-01T00:00:00Z'}};
+const files={}, users={'tokA':{id:'00000000-0000-4000-8000-00000000000a'},'tokB':{id:'00000000-0000-4000-8000-00000000000b'},'tokF':{id:'00000000-0000-4000-8000-00000000000f'},'tokS':{id:'00000000-0000-4000-8000-0000000000ff',email:'team@ftmwealthnation.com',email_confirmed_at:'2026-01-01T00:00:00Z'},'tokO':{id:'00000000-0000-4000-8000-0000000000ee',email:'ftmwebnation@gmail.com',email_confirmed_at:'2026-01-01T00:00:00Z'}};
 const paid={'00000000-0000-4000-8000-00000000000a':['auto'],'00000000-0000-4000-8000-00000000000b':['auto']};
 const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}})},
   from:()=>({select:()=>({eq:(c,id)=>({maybeSingle:async()=>({data:{products:paid[id]||[]}})})})}),
@@ -93,6 +93,17 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
     ok(g[0]===200&&g[1]['Content-Type']==='image/jpeg'&&g[2]&&g[2][0]===0xFF,'the picture is served as an image'); }
   r=await call('tokF',{action:'members'}); ok(r[1].members.every(m=>m.seen),'members show when they were last active');
   r=await call('tokA',{action:'save',nickname:'Tanaya',visible:false}); r=await call('tokF',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Tanaya'),'a hidden profile disappears from Discover');
+  // the owner chooses: comment and post as their own profile (default) or as FTM; other staff always post as FTM
+  r=await call('tokO',{action:'me'}); ok(r[0]===200&&r[1].profile.nickname,'the owner always has a personal Community profile ('+r[1].profile.nickname+')');
+  await call('tokO',{action:'save',nickname:'Gmarine',visible:true});
+  r=await call('tokO',{action:'feed'}); ok(r[1].owner===true,'the feed tells the owner they can switch'); { const tp=r[1].posts[0].id;
+    r=await call('tokS',{action:'feed'}); ok(r[1].owner===false,'other staff cannot switch');
+    r=await call('tokO',{action:'comment',id:tp,text:'what a day !!'}); let c=r[1].post.comments.slice(-1)[0]; ok(!c.author.ftm&&c.author.nickname==='Gmarine','owner comment without a choice shows their own profile ('+c.author.nickname+')');
+    r=await call('tokO',{action:'comment',id:tp,text:'Thank you all',as:'ftm'}); c=r[1].post.comments.slice(-1)[0]; ok(c.author.ftm&&c.author.nickname==='FTM','owner comment "as FTM" shows FTM');
+    r=await call('tokO',{action:'comment',id:tp,text:'Me again',as:'me'}); c=r[1].post.comments.slice(-1)[0]; ok(!c.author.ftm&&c.author.nickname==='Gmarine','owner comment "as me" shows Gmarine'); }
+  r=await call('tokO',{action:'post',text:'Morning from Gmarine',as:'me'}); ok(r[0]===200&&!r[1].post.author.ftm&&r[1].post.author.nickname==='Gmarine','owner post as their own profile');
+  r=await call('tokO',{action:'post',text:'FTM update',as:'ftm'}); ok(r[0]===200&&r[1].post.author.ftm,'owner post as FTM');
+  r=await call('tokS',{action:'post',text:'Staff note',as:'me'}); ok(r[0]===200&&r[1].post.author.ftm,'other staff still post as FTM even if they ask otherwise');
   r=await call('bad',{action:'me'}); ok(r[0]===401,'no login, no access');
   console.log(fails?'FAILED: '+fails:'COMMUNITY OK'); process.exit(fails?1:0);
 })();

@@ -2584,6 +2584,8 @@ h3.has-tip{cursor:help}
 .fd-cmts{display:grid;gap:8px;margin-top:10px}.fd-call{border:0;background:none;padding:0;text-align:start;font:inherit;font-size:13.5px;font-weight:700;color:#5b6378;cursor:pointer}
 .fd-c{display:flex;gap:8px;align-items:flex-start}.fd-c .avatar{width:30px;height:30px;font-size:11px;flex:none;cursor:pointer}.fd-cb{background:#f2f4fa;border-radius:16px;padding:7px 12px;min-width:0;max-width:100%}.fd-cb b{font-size:13px;color:#0b1440;cursor:pointer}.fd-cb p{margin:1px 0 0;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;color:#1d2442}
 .fd-cm{font-size:11.5px;color:#8a90a6;font-weight:600;margin:3px 0 0 12px}.fd-cm button{border:0;background:none;font:inherit;font-weight:700;color:#8a90a6;cursor:pointer;padding:0;margin-inline-start:8px}.fd-cm button:hover{color:#c81e2b}
+.fdc-as{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px;padding:0 0 12px;border-bottom:1px solid var(--line)}.fdc-as[hidden]{display:none!important}.fdc-asl{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}.fdc-ast{display:inline-flex;gap:4px;padding:4px;border-radius:99px;background:#f2f4fa}.fdc-ast button{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px 0 4px;border:0;border-radius:99px;background:transparent;font:inherit;font-size:13.5px;color:var(--muted);cursor:pointer;max-width:170px}.fdc-ast button b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fdc-ast button .avatar{width:26px;height:26px;font-size:10px;flex:none}.fdc-ast button .ftm-av{border-radius:8px!important}.fdc-ast button .ftm-av svg{width:16px;height:16px}.fdc-ast button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 4px rgba(11,20,64,.14)}
+.fd-asflip{padding:0;border:0;background:none;cursor:pointer;border-radius:50%;flex:none;line-height:0}.fd-asflip .ftm-av svg{width:16px;height:16px}.fd-asflip .ftm-av{border-radius:9px!important}
 .fd-cform{display:flex;gap:8px;align-items:center;margin-top:10px}.fd-cform .avatar{width:30px;height:30px;font-size:11px;flex:none}.fd-cform input{flex:1;min-width:0;border:1px solid var(--line);background:#f6f7fb;border-radius:99px;padding:9px 14px;font:inherit;font-size:14.5px}.fd-cform input:focus{outline:none;border-color:#D4AF37;background:#fff}.fd-cform button{border:0;background:#0b1440;color:#fff;border-radius:99px;padding:8px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:none}
 .fd-empty{text-align:center;padding:40px 16px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:20px}.fd-empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
 .fd-more{display:block;margin:16px auto 0;border:1px solid var(--line);background:#fff;border-radius:99px;padding:10px 22px;font:inherit;font-weight:700;color:#152a7a;cursor:pointer}.fd-more[hidden]{display:none}
@@ -4298,6 +4300,7 @@ body.op-lock{overflow:hidden}
 
           <div class="ctab" data-tab="feed">
             <div class="app-card fd-compose" id="fdCompose">
+              <div class="fdc-as" id="fdAs" hidden><span class="fdc-asl">Posting as</span><div class="fdc-ast" role="group" aria-label="Posting as"><button type="button" data-as="me" aria-pressed="true"><span class="avatar" id="fdAsAv">?</span><b id="fdAsNm"></b></button><button type="button" data-as="ftm" aria-pressed="false"><span class="avatar ftm-av"><svg viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l5-5 4 3 7-8"/></svg></span><b>FTM</b></button></div></div>
               <div class="fdc-top"><span class="avatar" id="fdMe">?</span><textarea id="fdText" rows="2" maxlength="2000" placeholder="Share something with the community…"></textarea></div>
               <div class="fdc-prev" id="fdPrev" hidden></div>
               <div class="fdc-poll" id="fdPoll" hidden><div id="fdPollOpts"></div><div class="fdc-pf"><button type="button" class="fdc-tool" id="fdPollAdd">+ <span>Add option</span></button><button type="button" class="fdc-tool" id="fdPollX">Remove poll</button></div></div>
@@ -8424,7 +8427,8 @@ body.op-lock{overflow:hidden}
       return '<div class="rc rc-'+c.k+'"><div class="rc-k">'+esc(tr2(c.k==='day'?'Daily result':c.k==='week'?'Weekly result':'Monthly result'))+' · '+esc(tr2('FTM master account'))+'</div>'+body+net+'</div>'; }
     function postHTML(p){
       var cm=p.comments||[], showAll=!!FD.open[p.id], list=showAll?cm:cm.slice(-2), long=(p.text||'').length>420||(p.text||'').split('\n').length>6;
-      var meAv=avSpan({id:CM.mid,name:P.handle||'?',av:P.av},'');
+      var asF=FD.owner&&FD.as==='ftm', meAv=asF?FTMAV:avSpan({id:CM.mid,name:P.handle||'?',av:P.av},'');
+      if(FD.owner) meAv='<button type="button" class="fd-asflip" data-asflip title="'+esc(tr2('Switch profile'))+'" aria-label="'+esc(tr2('Switch profile'))+' · '+esc(asF?'FTM':(P.handle||''))+'">'+meAv+'</button>';
       return '<article class="fd-post'+(p.author.ftm?' ftm':'')+'" data-pid="'+esc(p.id)+'">'+
         '<div class="fd-h">'+auAv(p.author,'')+'<div class="who">'+auName(p.author)+'<small>'+esc(ago(p.t))+(p.edited?' · '+esc(tr2('Edited')):'')+(p.pinned?' · <span class="fd-pin">'+esc(tr2('Pinned'))+'</span>':'')+'</small></div><button type="button" class="fd-kebab" data-pmenu aria-label="'+esc(tr2('More options'))+'">&#8943;</button></div>'+
         rcHTML(p.card)+(p.text&&!p.card?'<div class="fd-text'+(long&&!FD.full[p.id]?' clamp':'')+'">'+tagify(p.text)+'</div>'+(long?'<button type="button" class="fd-seemore" data-see>'+esc(tr2(FD.full[p.id]?'See less':'See more'))+'</button>':''):'')+
@@ -8439,13 +8443,14 @@ body.op-lock{overflow:hidden}
     function renderFeed(force){ var L=el('fdList'); if(!L) return; if(FD.editing&&!force) return; if(!force&&L.contains(document.activeElement)&&/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
       setH(L, FD.posts.length?FD.posts.map(postHTML).join(''):'<div class="fd-empty"><b>'+esc(tr2('No posts yet.'))+'</b>'+esc(tr2('Be the first to share something with the community.'))+'</div>');
       el('fdMore').hidden=!FD.more;
-      var me=el('fdMe'); if(me){ setH(me,avatarIn({id:CM.mid,av:P.av,name:P.handle||'?'})); me.classList.toggle('has-img',!!P.av); }
+      var me=el('fdMe'), asF=FD.owner&&FD.as==='ftm'; if(me){ setH(me,asF?FTMAV.replace(/^<span[^>]*>|<\/span>$/g,''):avatarIn({id:CM.mid,av:P.av,name:P.handle||'?'})); me.classList.toggle('has-img',!asF&&!!P.av); me.classList.toggle('ftm-av',asF); }
+      var asB=el('fdAs'); if(asB){ asB.hidden=!FD.owner; if(FD.owner){ var aa=el('fdAsAv'); setH(aa,avatarIn({id:CM.mid,av:P.av,name:P.handle||'?'})); aa.classList.toggle('has-img',!!P.av); el('fdAsNm').textContent=P.handle||''; [].forEach.call(asB.querySelectorAll('[data-as]'),function(b){ b.setAttribute('aria-pressed',String(b.dataset.as===FD.as)); }); } }
       var ro=el('fdRo'), can=FD.staff||CM.paid; if(!can&&LIVE()){ if(!ro){ ro=document.createElement('p'); ro.className='fd-ro'; ro.id='fdRo'; el('fdCompose').appendChild(ro); } ro.textContent=tr2('Posting is for subscribers. You can read, like and follow.'); } else if(ro) ro.remove();
       el('fdText').disabled=LIVE()&&!can; }
     function feedLoad(force,append){ if(!LIVE()){ renderFeed(); return Promise.resolve(); } if(FD.busy&&!force) return Promise.resolve(); FD.busy=true;
       var before=append&&FD.posts.length?FD.posts[FD.posts.length-1].t:undefined;
       if(!append) trending();
-      return capi('feed',{scope:FD.scope,before:before}).then(function(j){ FD.busy=false; FD.staff=!!j.staff; FD.posts=append?FD.posts.concat(j.posts):j.posts; FD.more=!!j.more; renderFeed(); }).catch(function(){ FD.busy=false; renderFeed(); }); }
+      return capi('feed',{scope:FD.scope,before:before}).then(function(j){ FD.busy=false; FD.staff=!!j.staff; FD.owner=!!j.owner; FD.posts=append?FD.posts.concat(j.posts):j.posts; FD.more=!!j.more; renderFeed(); }).catch(function(){ FD.busy=false; renderFeed(); }); }
     F.feedLoad=feedLoad;
     function setScope(sc,label){ FD.scope=sc; var std=['all','following','ftm','saved'].indexOf(sc)!==-1;
       document.querySelectorAll('#fdFilters [data-sc]').forEach(function(x){ x.classList.toggle('on',x.dataset.sc===sc); });
@@ -8456,7 +8461,10 @@ body.op-lock{overflow:hidden}
     function upd(p){ for(var i=0;i<FD.posts.length;i++) if(FD.posts[i].id===p.id) FD.posts[i]=p; renderFeed(true); }
     function fderr(e){ var x=el('fdErr'); x.textContent=cerr(e); x.hidden=false; }
     (function(){ var ta=el('fdText'), btn=el('fdPost'), file=el('fdFile'); if(!ta) return;
-      FD.imgs=[]; FD.poll=null;
+      FD.imgs=[]; FD.poll=null; try{ FD.as=localStorage.getItem('ftm-as')==='ftm'?'ftm':'me'; }catch(e){ FD.as='me'; }
+      function setAs(v){ FD.as=v==='ftm'?'ftm':'me'; try{ localStorage.setItem('ftm-as',FD.as); }catch(e){} var keep=document.activeElement&&document.activeElement.closest&&document.activeElement.closest('[data-cform]'), kp=keep&&keep.closest('[data-pid]')&&keep.closest('[data-pid]').dataset.pid, kv=keep&&keep.querySelector('input')?keep.querySelector('input').value:''; renderFeed(true); if(kp){ var f2=document.querySelector('[data-pid="'+kp+'"] [data-cform] input'); if(f2){ f2.value=kv; f2.focus(); } } }
+      el('fdAs').addEventListener('click',function(e){ var b=e.target.closest('[data-as]'); if(b) setAs(b.dataset.as); });
+      document.addEventListener('click',function(e){ var b=e.target.closest&&e.target.closest('[data-asflip]'); if(!b||!FD.owner) return; e.preventDefault(); setAs(FD.as==='ftm'?'me':'ftm'); });
       function prev(){ var P2=el('fdPrev'); P2.hidden=!FD.imgs.length; P2.className='fdc-prev n'+FD.imgs.length; P2.innerHTML=FD.imgs.map(function(d,i){ return '<span><img src="'+d+'" alt=""><button type="button" data-rm="'+i+'" aria-label="'+esc(tr2('Remove photo'))+'">&times;</button></span>'; }).join(''); }
       function pollDraw(){ var b=el('fdPoll'); b.hidden=!FD.poll; if(!FD.poll) return; el('fdPollOpts').innerHTML=FD.poll.map(function(v,i){ return '<input type="text" maxlength="80" data-po="'+i+'" placeholder="'+esc(tr2('Option {}').replace('{}',i+1))+'" value="'+esc(v)+'">'; }).join(''); el('fdPollAdd').hidden=FD.poll.length>=4; }
       el('fdPollBtn').addEventListener('click',function(){ if(!FD.poll){ FD.poll=['','']; pollDraw(); var f=document.querySelector('#fdPollOpts input'); if(f) f.focus(); } else { FD.poll=null; pollDraw(); } sync(); });
@@ -8474,7 +8482,7 @@ body.op-lock{overflow:hidden}
       function reset(){ ta.value=''; FD.imgs=[]; FD.poll=null; prev(); pollDraw(); sync(); }
       btn.addEventListener('click',function(){ var t=ta.value.trim(); if(!t&&!FD.imgs.length) return; var po=FD.poll?FD.poll.map(function(v){ return v.trim(); }).filter(Boolean):null;
         if(!LIVE()){ FD.posts.unshift({id:'l'+Date.now(),author:{mid:CM.mid||'me',nickname:P.handle||'You',av:P.av},text:t,imgs:FD.imgs.slice(),t:new Date().toISOString(),likes:0,liked:false,comments:[],mine:true,can_delete:true,poll:po?{options:po.map(function(x){ return {text:x,votes:0}; }),total:0,mine:-1}:null}); reset(); renderFeed(true); return; }
-        btn.disabled=true; capi('post',{text:t,images:FD.imgs.length?FD.imgs:undefined,poll:po?{options:po}:undefined}).then(function(j){ reset(); FD.posts.unshift(j.post); renderFeed(true); }).catch(function(e){ fderr(e); sync(); }); });
+        btn.disabled=true; capi('post',{as:FD.owner?FD.as:undefined,text:t,images:FD.imgs.length?FD.imgs:undefined,poll:po?{options:po}:undefined}).then(function(j){ reset(); FD.posts.unshift(j.post); renderFeed(true); }).catch(function(e){ fderr(e); sync(); }); });
       el('fdFilters').addEventListener('click',function(e){ var b=e.target.closest('[data-sc]'); if(!b) return; setScope(b.dataset.sc); });
       el('fdTrend').addEventListener('click',function(e){ var b=e.target.closest('[data-tag]'); if(b) setScope('#'+b.dataset.tag); });
       el('fdScopeX').addEventListener('click',function(){ setScope('all'); });
@@ -8513,7 +8521,7 @@ body.op-lock{overflow:hidden}
         if(!p.liked){ p.liked=true; p.likes++; var lb=art.querySelector('[data-like]'); if(lb){ lb.classList.add('on'); } setTimeout(function(){ renderFeed(true); },820); act('like',{id:pid}); } });
       L.addEventListener('submit',function(e){ var f=e.target.closest('[data-cform]'); if(!f) return; e.preventDefault(); var inp=f.querySelector('input'), v=inp.value.trim(), pid=f.closest('[data-pid]').dataset.pid; if(!v) return;
         if(!LIVE()){ var p=FD.posts.filter(function(x){return x.id===pid;})[0]; p.comments.push({id:'c'+Date.now(),author:{mid:CM.mid||'me',nickname:P.handle||'You'},text:v,t:new Date().toISOString(),can_delete:true}); inp.value=''; renderFeed(true); return; }
-        inp.disabled=true; capi('comment',{id:pid,text:v}).then(function(j){ inp.value=''; inp.disabled=false; upd(j.post); var a=document.querySelector('[data-pid="'+pid+'"] [data-cform] input'); if(a) a.focus(); }).catch(function(er){ inp.disabled=false; fderr(er); }); });
+        inp.disabled=true; capi('comment',{id:pid,text:v,as:FD.owner?FD.as:undefined}).then(function(j){ inp.value=''; inp.disabled=false; upd(j.post); var a=document.querySelector('[data-pid="'+pid+'"] [data-cform] input'); if(a) a.focus(); }).catch(function(er){ inp.disabled=false; fderr(er); }); });
       document.addEventListener('click',function(e){ if(!e.target.closest('.fd-menu')&&!e.target.closest('[data-pmenu]')) document.querySelectorAll('.fd-menu').forEach(function(m){ m.remove(); }); });
       (function(){ var pop=document.createElement('div'); pop.className='emo-pop fd-cpop'; pop.id='fdCPop'; pop.hidden=true; document.body.appendChild(pop); var inp=null, form=null, cur=0;
         var TABS=[['Stickers',STICKERS]].concat(EMO_SETS.filter(function(x){ return x[1]; }));
