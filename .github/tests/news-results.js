@@ -83,11 +83,23 @@ const BASE=process.argv[2]||'http://localhost:8765';
     for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
     const nw=mails.slice(n0), am=nw.filter(m=>m.to==='amelie@x.com'), bn=nw.filter(m=>m.to==='ben@x.com');
     ok(!mm.more&&nw.length===8&&nw.filter(m=>m.to==='ftmwebnation@gmail.com').length===4&&am.length===2&&bn.length===2&&am.some(m=>m.subject.indexOf('51234567')!==-1&&/Résultat hebdomadaire/.test(m.subject)),'Friday: each member gets their own day and week ('+nw.map(m=>m.to.split('@')[0]+':'+m.subject.slice(6,30)).join(' | ')+')'); }
+    { const bw=mails.filter(m=>m.to==='ben@x.com'&&/Weekly result/.test(m.subject)).slice(-1)[0]||{}, h=bw.html||'';
+      ok(/By market/.test(h)&&/Winning trades/.test(h)&&/Markets traded/.test(h)&&/NVDA/.test(h)&&/Won/.test(h)&&!/<td[^>]*>Monday/.test(h)&&!/Opened/.test(h),'Friday: the weekly email is a summary (result, trades, winning trades, markets traded, by market), not every trade'); }
   P=posts(); const wk=(P.find(x=>x.res==='week-2026-11-20')||{}).card||{};
   ok(P.length===3&&P.some(x=>x.res==='day-2026-11-20')&&wk.k==='week'&&wk.from==='2026-11-14'&&wk.to==='2026-11-20','Friday: the day and the week (Saturday 14 to Friday 20)');
   ok(wk.n===7&&wk.days.length===5&&wk.days[0].date==='2026-11-14'&&wk.days.find(x=>x.date==='2026-11-18').n===1,'the week lists every day with trades ('+wk.days.map(x=>x.date.slice(8)+':'+x.n).join(' ')+')');
-  r=await R.run(admin,{now:Date.UTC(2026,11,1,22,0)}); P=posts(); const mo=(P.find(x=>x.res==='month-2026-11')||{}).card||{};
-  ok(mo.k==='month'&&mo.n===7&&mo.from==='2026-11-01'&&mo.best&&mo.worst&&mo.win!=null,'1 December: last month (November) is posted '+JSON.stringify({n:mo.n,win:mo.win,best:mo.best&&mo.best.date,worst:mo.worst&&mo.worst.date}));
+  r=await R.run(admin,{now:Date.UTC(2026,10,29,22,0)}); ok(!posts().some(x=>x.res==='month-2026-11'),'29 November: no month yet');
+  r=await R.run(admin,{now:Date.UTC(2026,10,30,22,0)}); P=posts(); const mo=(P.find(x=>x.res==='month-2026-11')||{}).card||{};
+  ok(mo.k==='month'&&mo.n===7&&mo.from==='2026-11-01'&&mo.to==='2026-11-30'&&mo.best&&mo.worst&&mo.win!=null,'30 November 23:00 (last day of the month): the month is posted '+JSON.stringify({n:mo.n,win:mo.win,best:mo.best&&mo.best.date,worst:mo.worst&&mo.worst.date}));
+  { const n0=mails.length; let mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
+    const ms=mails.slice(n0).filter(m=>/Monthly statement|Relevé mensuel/.test(m.subject)), b=ms.find(m=>m.to==='ben@x.com')||{}, h=b.html||'';
+    ok(ms.length>=3&&ms.some(m=>m.to==='amelie@x.com'&&/Relevé mensuel/.test(m.subject))&&/Monthly statement: November 2026 · 70011/.test(b.subject||''),'every member with an account gets the monthly statement in their language ('+ms.map(m=>m.to.split('@')[0]).join(', ')+')');
+    ok(/Opening balance/.test(h)&&/\$20,000\.00/.test(h)&&/Closing balance/.test(h)&&/\$19,925\.00/.test(h)&&/Trading result/.test(h)&&/-\$75\.00/.test(h)&&/Highest balance/.test(h)&&/Lowest balance/.test(h),'the statement email has opening and closing balance, trading result, highest and lowest balance (his own figures)');
+    ok((h.match(/background:#D4AF37;border-radius:3px 3px 0 0/g)||[]).length>=13&&/Lowest balance.{0,300}\$19,925\.00/.test(h)&&/open=statement&amp;from=2026-11-01&amp;to=2026-11-30|open=statement&from=2026-11-01&to=2026-11-30/.test(h)&&/Download your statement \(PDF\)/.test(h),'a day-by-day balance chart (30 days) and a button that opens the PDF statement for November'); }
+  if(process.env.SHOT_DIR){ const L2=m=>mails.filter(x=>x.to==='ben@x.com'&&m.test(x.subject)).slice(-1)[0]; fs.writeFileSync(path.join(process.env.SHOT_DIR,'mail-week.html'),(L2(/Weekly/)||{}).html||''); fs.writeFileSync(path.join(process.env.SHOT_DIR,'mail-month.html'),(L2(/Monthly statement/)||{}).html||''); }
+  { const n0=mails.length; let sm=await R.samples(admin); const S2=mails.slice(n0);
+    ok(S2.length===4&&S2.every(m=>m.to==='ftmwebnation@gmail.com'&&/^SAMPLE · /.test(m.subject))&&S2.filter(m=>/Weekly result/.test(m.subject)).length===2&&S2.filter(m=>/Monthly statement|Monthly result/.test(m.subject)).length===2,'samples: the owner gets the weekly summary and the monthly statement of the master and his own account, nobody else ('+S2.map(m=>m.subject.slice(9,40)).join(' | ')+')');
+    sm=await R.samples(admin); ok(mails.length===n0+4&&/less than 10 minutes/.test(sm.log.join()),'samples are sent at most once per 10 minutes'); }
   r=await R.run(admin,{now:Date.UTC(2027,6,2,21,0)}); ok(posts().some(x=>x.res==='day-2027-07-02')&&posts().some(x=>x.res==='week-2027-07-02'),'summer time: posted at 21:00 UTC = 23:00 Berlin');
   // Community: the result posts show in For you, Following and FTM news, with the card
   const CH=require(path.join(__dirname,'../../api/v1/community.js'));

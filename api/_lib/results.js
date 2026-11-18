@@ -1,6 +1,8 @@
 /* FTM news: the FTM master account's results, posted automatically (daily job /api/v1/news-cron, see vercel.json).
    Every day at 23:00 (FTM time, Europe/Berlin) the day's closed trades and result, exactly as the client-area Calendar shows
-   them; on Fridays also the week (Saturday to Friday); on the 1st also last month. Figures from the FTM engine through
+   them; on Fridays also the week (Saturday to Friday, a summary: result, trades, winning trades, markets); on the last day of
+   the month at 23:00 also that month (the email is the member's monthly statement: balances, deposits, withdrawals, return,
+   highest and lowest balance, a day-by-day balance chart, markets, and a button that opens the PDF statement). Figures from the FTM engine through
    ftm-calc.js (the dashboards' own calculation). Each post appears in Community (For you, Following and FTM news).
    Posts carry a `card` the feed draws in the FTM design, in each member's language and local time; `x` is a short text
    for share links. Never posts the same period twice.
@@ -60,10 +62,29 @@ function periodCard(k, h, cur, from, to, label) {
   for (let i = 0; i < 32; i++) { const s = midnight(cur3[0], cur3[1], cur3[2], TZ); if (s >= z) break; const nx = addDays(cur3[0], cur3[1], cur3[2], 1), e = midnight(nx[0], nx[1], nx[2], TZ);
     const n = T.filter(t => t.closeTime >= s && t.closeTime < e).length; if (n) { const g = h.M.seg(s, e); days.push({ date: ymd(cur3[0], cur3[1], cur3[2]), n, pl: +g.pl.toFixed(2), pct: +g.pct.toFixed(4) }); } cur3 = nx; }
   const best = days.length ? days.reduce((p, q) => q.pct > p.pct ? q : p) : null, worst = days.length ? days.reduce((p, q) => q.pct < p.pct ? q : p) : null;
-  const card = { k, from: ymd(from[0], from[1], from[2]), to: ymd(...addDays(to[0], to[1], to[2], -1)), cur, net: +sg.pl.toFixed(2), pct: +sg.pct.toFixed(4), n: T.length, win: T.length ? +(wins / T.length * 100).toFixed(1) : null,
+  const byM = {}; T.forEach(t => { const q = t.symbol || '—'; const x = byM[q] || (byM[q] = { s: q, n: 0, w: 0, pl: 0 }); x.n++; if (t.pl > 0) x.w++; x.pl += +t.pl; });
+  const mk = Object.keys(byM).map(q => ({ s: q, n: byM[q].n, w: byM[q].w, pl: +byM[q].pl.toFixed(2) })).sort((p, q) => q.pl - p.pl);
+  const card = { k, mk, wins, from: ymd(from[0], from[1], from[2]), to: ymd(...addDays(to[0], to[1], to[2], -1)), cur, net: +sg.pl.toFixed(2), pct: +sg.pct.toFixed(4), n: T.length, win: T.length ? +(wins / T.length * 100).toFixed(1) : null,
     days: k === 'week' ? days : undefined, best: best ? { date: best.date, pct: best.pct, pl: best.pl } : null, worst: worst ? { date: worst.date, pct: worst.pct, pl: worst.pl } : null, tdays: days.length };
   card.x = 'FTM MACHINE · ' + label + ': ' + T.length + ' trade' + (T.length === 1 ? '' : 's') + ', net ' + money(sg.pl, cur) + ' (' + pct(sg.pct) + ').';
   return card;
+}
+
+/* A month statement for one account: opening and closing balance, deposits, withdrawals, trading result, the time-weighted
+   return (seg), highest and lowest balance with dates and the end-of-day balance of every day, all from the engine history
+   through ftm-calc.js (the same numbers as the statement PDF in the client area). */
+function statementFor(h, y, m) {
+  const a = midnight(y, m, 1, TZ), nm = m === 12 ? [y + 1, 1, 1] : [y, m + 1, 1], z = midnight(nm[0], nm[1], nm[2], TZ), M = h.M;
+  const open = M.balAt(a), close = M.balAt(z), sg = M.seg(a, z);
+  let dep = 0, wd = 0; ((h.es && h.es.flows) || []).forEach(f => { if (f.t >= a && f.t < z) { if (f.amt > 0) dep += f.amt; else wd -= f.amt; } });
+  const adj = close - open - dep + wd - sg.pl;
+  let inM = (M.curve || []).filter(p => p.t >= a && p.t < z).map(p => [p.t, p.v]); const fresh = Math.abs(open) < 0.005 && inM.some(p => Math.abs(p[1]) >= 0.005);
+  if (fresh) while (inM.length && Math.abs(inM[0][1]) < 0.005) inM.shift();
+  const pts = fresh ? inM : [[a, open]].concat(inM);
+  const hi = pts.reduce((q, p) => p[1] > q[1] ? p : q, pts[0]), lo = pts.reduce((q, p) => p[1] < q[1] ? p : q, pts[0]);
+  const daysB = []; let dd = [y, m, 1]; for (let i = 0; i < 31; i++) { const s0 = midnight(dd[0], dd[1], dd[2], TZ); if (s0 >= z) break; const nx = addDays(dd[0], dd[1], dd[2], 1); const de = Math.min(midnight(nx[0], nx[1], nx[2], TZ), Date.now()); daysB.push({ date: ymd(dd[0], dd[1], dd[2]), v: (fresh && de <= pts[0][0]) ? null : +M.balAt(de).toFixed(2) }); dd = nx; }
+  return { open: +open.toFixed(2), close: +close.toFixed(2), dep: +dep.toFixed(2), wd: +wd.toFixed(2), pl: +sg.pl.toFixed(2), pct: +sg.pct.toFixed(4), adj: Math.abs(adj) >= 0.005 ? +adj.toFixed(2) : 0,
+    hi: { v: +hi[1].toFixed(2), t: hi[0] }, lo: { v: +lo[1].toFixed(2), t: lo[0] }, days: daysB, from: ymd(y, m, 1), to: ymd(...addDays(nm[0], nm[1], nm[2], -1)) };
 }
 
 /* The card of one period key (day-YYYY-MM-DD, week-YYYY-MM-DD = the Friday, month-YYYY-MM) for one account's history. */
@@ -91,7 +112,7 @@ async function run(admin, o) {
   const done = await P.read(admin, 'results/posted.json', { keys: [] }), want = [];
   want.push({ key: 'day-' + ymd(y, m, d) });
   if (wd === 5) want.push({ key: 'week-' + ymd(y, m, d) });
-  if (d === 1) { const pm = m === 1 ? 12 : m - 1, py = m === 1 ? y - 1 : y; want.push({ key: 'month-' + py + '-' + String(pm).padStart(2, '0'), py, pm }); }
+  if (addDays(y, m, d, 1)[2] === 1) want.push({ key: 'month-' + y + '-' + String(m).padStart(2, '0') });
   const todo = want.filter(w => done.keys.indexOf(w.key) === -1);
   if (!todo.length) return { log: ['already posted ' + want.map(w => w.key).join(', ')] };
   const { m: acct, h, reader } = await master(admin), cur = acct.currency || 'USD';
@@ -119,7 +140,13 @@ async function emailFor(card, lang, acct) {
   let tzName = ''; try { tzName = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, timeZoneName: 'short' }).formatToParts(card.rows && card.rows[0] ? card.rows[0].c : Date.now()).find(p => p.type === 'timeZoneName').value; } catch (x) { tzName = ''; }
   const TH = x => '<td style="padding:8px 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#6b7194;font-weight:bold;border-bottom:1px solid #e6e9f2;white-space:nowrap;">' + e(x) + '</td>';
   const TD = (x, c, b) => '<td style="padding:9px 6px;font-size:14px;color:' + (c || '#0b1640') + ';' + (b ? 'font-weight:bold;' : '') + 'border-bottom:1px solid #e6e9f2;white-space:nowrap;">' + e(x) + '</td>';
-  const kind = card.k === 'day' ? 'Daily result' : card.k === 'week' ? 'Weekly result' : 'Monthly result';
+  const kind = card.k === 'day' ? 'Daily result' : card.k === 'week' ? 'Weekly result' : card.st ? 'Monthly statement' : 'Monthly result';
+  const summaryTiles = async () => { const tile = (l, v, s2, c) => '<td width="33%" valign="top" style="padding:12px 10px;background:#f7f8fb;border-radius:10px;"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7194;font-weight:bold;">' + e(l) + '</p><p style="margin:4px 0 0;font-size:18px;font-weight:bold;color:' + (c || '#0b1640') + ';">' + e(v) + '</p>' + (s2 ? '<p style="margin:2px 0 0;font-size:12px;color:#6b7194;">' + e(s2) + '</p>' : '') + '</td>';
+    const w = card.wins != null ? card.wins : Math.round((card.win || 0) * card.n / 100);
+    return '<table width="100%" cellpadding="0" cellspacing="6" style="margin:6px 0 0;"><tr>' + tile(await t('Trades'), card.n) + tile(await t('Winning trades'), card.n ? w + ' / ' + card.n : '—', card.n ? Math.round(w / card.n * 100) + '%' : '', card.n ? '#1f8a5b' : '') + tile(await t('Markets traded'), (card.mk || []).length) + '</tr></table>'; };
+  const marketTable = async () => { if (!card.mk || !card.mk.length) return '';
+    return '<p style="margin:16px 0 4px;font-size:12px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;color:#6b7194;">' + e(await t('By market')) + '</p><table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr>' + TH(await t('Market')) + TH(await t('Trades')) + TH(await t('Won')) + TH('P/L') + '</tr>'
+      + card.mk.map(x => '<tr>' + TD(x.s) + TD(x.n) + TD(x.w + ' / ' + x.n) + TD(M(x.pl), col(x.pl), true) + '</tr>').join('') + '</table>'; };
   let head, sub = '', table = '';
   if (card.k === 'day') {
     head = D(card.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -129,13 +156,24 @@ async function emailFor(card, lang, acct) {
   } else if (card.k === 'week') {
     head = D(card.from, { day: 'numeric', month: 'short' }) + ' – ' + D(card.to, { day: 'numeric', month: 'long', year: 'numeric' });
     sub = card.n === 1 ? await t('One trade closed this week.') : (await t('{} trades closed this week.')).replace('{}', card.n);
-    if (card.days && card.days.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Day')) + TH(await t('Trades')) + TH('P/L') + TH('%') + '</tr>'
-      + card.days.map(x => '<tr>' + TD(D(x.date, { weekday: 'long', day: 'numeric', month: 'short' })) + TD(x.n) + TD(M(x.pl), col(x.pl), true) + TD(PC(x.pct), col(x.pct), true) + '</tr>').join('') + '</table>';
+    table = await summaryTiles() + await marketTable();
+  } else if (card.st) {
+    const st = card.st, dl = ms => { try { return new Date(ms).toLocaleDateString(loc, { timeZone: TZ, day: 'numeric', month: 'short', year: 'numeric' }); } catch (x) { return ''; } };
+    head = D(card.from, { month: 'long', year: 'numeric' }); sub = D(st.from, { day: 'numeric', month: 'short', year: 'numeric' }) + ' – ' + D(st.to, { day: 'numeric', month: 'short', year: 'numeric' });
+    const row = (l, v, c, b) => '<tr><td style="padding:9px 0;font-size:14px;color:#46507a;border-bottom:1px solid #e6e9f2;' + (b ? 'font-weight:bold;color:#0b1640;' : '') + '">' + e(l) + '</td><td align="right" style="padding:9px 0;font-size:14px;font-weight:bold;white-space:nowrap;color:' + (c || '#0b1640') + ';border-bottom:1px solid #e6e9f2;">' + e(v) + '</td></tr>';
+    const SG = v => (v > 0 ? '+' : v < 0 ? '-' : '') + M(Math.abs(v)).replace(/^[+-]/, '');
+    table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 12px;">' + row(await t('Opening balance'), M(st.open).replace(/^\+/, '')) + row(await t('Deposits'), SG(st.dep), '#1f8a5b') + row(await t('Withdrawals'), SG(-st.wd), st.wd ? '#b4232c' : '')
+      + row(await t('Trading result'), SG(st.pl), col(st.pl)) + (st.adj ? row(await t('Dividends, tax & adjustments'), SG(st.adj), col(st.adj)) : '') + row(await t('Closing balance'), M(st.close).replace(/^\+/, ''), '', true) + '</table>';
+    const tile = (l, v, s2, c) => '<td width="33%" valign="top" style="padding:12px 10px;background:#f7f8fb;border-radius:10px;"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7194;font-weight:bold;">' + e(l) + '</p><p style="margin:4px 0 0;font-size:17px;font-weight:bold;color:' + (c || '#0b1640') + ';">' + e(v) + '</p>' + (s2 ? '<p style="margin:2px 0 0;font-size:12px;color:#6b7194;">' + e(s2) + '</p>' : '') + '</td>';
+    table += '<table width="100%" cellpadding="0" cellspacing="6" style="margin:0 0 6px;"><tr>' + tile(await t('Return'), PC(st.pct), '', col(st.pct)) + tile(await t('Highest balance'), M(st.hi.v).replace(/^\+/, ''), dl(st.hi.t)) + tile(await t('Lowest balance'), M(st.lo.v).replace(/^\+/, ''), dl(st.lo.t)) + '</tr></table>';
+    const vs = st.days.filter(x => x.v != null).map(x => x.v), mn = Math.min.apply(null, vs), mx = Math.max.apply(null, vs), base = mn - Math.max((mx - mn) * 0.6, Math.abs(mx) * 0.01, 1), rg = mx - base;
+    table += '<p style="margin:14px 0 6px;font-size:12px;font-weight:bold;letter-spacing:.06em;text-transform:uppercase;color:#6b7194;">' + e(await t('Account balance')) + '</p>'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:2px 0;height:110px;"><tr valign="bottom">' + st.days.map(x => '<td valign="bottom" style="height:110px;padding:0;" title="' + e(D(x.date, { day: 'numeric', month: 'short' }) + (x.v == null ? '' : ': ') + (x.v == null ? '' : M(x.v).replace(/^\+/, ''))) + '">' + (x.v == null ? '' : '<div style="height:' + Math.max(3, Math.round(104 * (x.v - base) / rg)) + 'px;background:#D4AF37;border-radius:3px 3px 0 0;font-size:0;line-height:0;">&nbsp;</div>') + '</td>').join('') + '</tr></table>'
+      + '<table width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 0;"><tr><td style="font-size:11px;color:#6b7194;">' + e(D(st.from, { day: 'numeric', month: 'short' })) + '</td><td align="right" style="font-size:11px;color:#6b7194;">' + e(D(st.to, { day: 'numeric', month: 'short' })) + '</td></tr></table>';
+    table += await marketTable();
   } else {
     head = D(card.from, { month: 'long', year: 'numeric' });
-    const tile = (l, v, s2, c) => '<td width="25%" valign="top" style="padding:12px 8px;background:#f7f8fb;border-radius:10px;"><p style="margin:0;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7194;font-weight:bold;">' + e(l) + '</p><p style="margin:4px 0 0;font-size:18px;font-weight:bold;color:' + (c || '#0b1640') + ';">' + e(v) + '</p>' + (s2 ? '<p style="margin:2px 0 0;font-size:12px;color:#6b7194;">' + e(s2) + '</p>' : '') + '</td>';
-    table = '<table width="100%" cellpadding="0" cellspacing="6" style="margin:6px 0 0;"><tr>' + tile(await t('Trades'), card.n) + tile(await t('Winning trades'), card.win != null ? Math.round(card.win) + '%' : '—')
-      + tile(await t('Best day'), card.best ? PC(card.best.pct) : '—', card.best ? D(card.best.date, { day: 'numeric', month: 'short' }) : '', card.best ? col(card.best.pct) : '') + tile(await t('Worst day'), card.worst ? PC(card.worst.pct) : '—', card.worst ? D(card.worst.date, { day: 'numeric', month: 'short' }) : '', card.worst ? col(card.worst.pct) : '') + '</tr></table>';
+    table = await summaryTiles() + await marketTable();
   }
   const netCol = v => v > 0 ? '#6ee7a8' : v < 0 ? '#ff8a92' : '#ffffff';
   const body = '<div' + (['ar', 'he', 'fa', 'ur'].indexOf(lang) !== -1 ? ' dir="rtl"' : '') + '>'
@@ -143,7 +181,7 @@ async function emailFor(card, lang, acct) {
     + '<p style="margin:0 0 4px;font-size:20px;font-weight:bold;color:#0b1640;">' + e(head) + '</p>' + (sub ? '<p style="margin:0 0 8px;font-size:14px;color:#6b7194;">' + e(sub) + '</p>' : '') + table
     + '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="background-color:#0b1640;border-radius:14px;margin:16px 0 6px;"><tr><td style="padding:16px 18px;color:#E3B62F;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;">' + e(await t('Net P&L')) + '</td>'
     + '<td align="right" style="padding:16px 18px;"><p style="margin:0;font-size:26px;font-weight:bold;color:' + netCol(card.net) + ';font-family:Arial,Helvetica,sans-serif;">' + e(M(card.net)) + '</p><p style="margin:2px 0 0;font-size:14px;font-weight:bold;color:' + netCol(card.pct) + ';">' + e(PC(card.pct)) + '</p></td></tr></table>'
-    + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=' + (acct ? 'calendar' : 'community') + '" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t(acct ? 'Calendar' : 'FTM news')) + ' &rarr;</a></td></tr></table></div>';
+    + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=' + (card.st && acct ? 'statement&from=' + card.st.from + '&to=' + card.st.to : (acct ? 'calendar' : 'community')) + '" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t(card.st && acct ? 'Download your statement (PDF)' : (acct ? 'Calendar' : 'FTM news'))) + ' &rarr;</a></td></tr></table></div>';
   return { subject: 'FTM · ' + (await t(kind)) + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body) };
 }
 /* Emails every confirmed login the result of THEIR OWN accounts for each period posted in the last 3 days that they
@@ -187,7 +225,10 @@ async function mail(admin, o) {
         const lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null)), list = [];
         for (const acct of own) {
           const h = await H.load(u, acct), cur = acct.currency || 'USD';
-          for (const w of pend) { const card = cardFor(w.key, h, cur); const mst = acct.isMaster || acct.isPreview; if (mst || card.n || acct.active) list.push({ w, m: await emailFor(card, lang, mst ? null : acct) }); }
+          for (const w of pend) { const card = cardFor(w.key, h, cur), mst = acct.isMaster || acct.isPreview;
+            if (/^month-/.test(w.key)) { const q = w.key.split('-'); card.st = statementFor(h, +q[1], +q[2]); }
+            const moved = card.st && (card.st.dep || card.st.wd || card.st.close || card.st.open);
+            if (mst || card.n || acct.active || moved) list.push({ w, m: await emailFor(card, lang, mst ? null : acct) }); }
         }
         return list;
       })());
@@ -214,4 +255,29 @@ async function mail(admin, o) {
   return { more, log };
 }
 
-module.exports = { run, mail, emailFor, cardFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
+/* Samples for the owners: the weekly summary (last completed week) and the monthly statement (this month so far) of the
+   owner login's own accounts (the master and its copying account), emailed only to the owner mailboxes, at most once per
+   10 minutes. Called by /api/v1/news-cron?sample=1. */
+async function samples(admin) {
+  const lock = await P.read(admin, 'results/sample-lock.json', null);
+  if (lock && Date.now() - Date.parse(lock.at) < 10 * 60e3) return { log: ['samples were sent less than 10 minutes ago'] };
+  await P.write(admin, 'results/sample-lock.json', { at: new Date().toISOString() });
+  const owners = StaffLib.owners(), log = [], Letter = require('./letter');
+  const users = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; }
+  const now = Date.now(), lp = parts(now, TZ); let fri = [lp.y, lp.m, lp.d]; for (let i = 0; i < 7 && new Date(Date.UTC(fri[0], fri[1] - 1, fri[2])).getUTCDay() !== 5; i++) fri = addDays(fri[0], fri[1], fri[2], -1);
+  const wk = 'week-' + ymd(fri[0], fri[1], fri[2]), mo = 'month-' + lp.y + '-' + String(lp.m).padStart(2, '0');
+  for (const u of users.filter(x => x.email && x.email_confirmed_at && owners.indexOf(String(x.email).toLowerCase()) !== -1)) {
+    const A = mailAccounts((await H.accounts(u)).mapped, true), lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null));
+    for (const acct of A) {
+      const h = await H.load(u, acct), cur = acct.currency || 'USD', mst = acct.isMaster || acct.isPreview;
+      for (const key of [wk, mo]) {
+        const card = cardFor(key, h, cur); if (/^month-/.test(key)) card.st = statementFor(h, lp.y, lp.m);
+        const m = await emailFor(card, lang, mst ? null : acct);
+        await Mail.sendMail({ to: u.email, subject: 'SAMPLE · ' + m.subject, html: m.html }); log.push('sample ' + key + ' ' + (mst ? 'master' : acct.number || acct.accountId) + ' -> ' + u.email);
+      }
+    }
+  }
+  return { log };
+}
+
+module.exports = { run, mail, samples, emailFor, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };

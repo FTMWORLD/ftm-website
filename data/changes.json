@@ -150,5 +150,13 @@
  {
   "date": "2026-11-18",
   "text": "Account statements show the exact dates they cover (from and to) at the top and on the chart, also for All time, a year or a month."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Your monthly statement now arrives by email on the last day of every month at 23:00, with a button to download the PDF. The Friday email is now a short weekly summary: result, trades, winning trades and markets."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Statements show the full FTM logo, and when trades are open, the open trades, floating P/L and equity."
  }
 ]

@@ -37,7 +37,7 @@ const stats={ok:true,history:hist.slice().sort((a,b)=>a.time<b.time?1:-1),histor
     const r0=await p.evaluate(()=>({h:document.getElementById('stRange').hidden,f:document.getElementById('stFrom').value,t:document.getElementById('stTo').value,min:document.getElementById('stFrom').min}));
     ok(!r0.h&&r0.f==='2026-09-02'&&r0.min==='2026-09-02'&&/^\d{4}-\d{2}-\d{2}$/.test(r0.t),'['+label+'] Custom dates shows From and To, starting at the first activity '+JSON.stringify(r0));
     await p.fill('#stFrom','2026-09-20'); await p.fill('#stTo','2026-10-31');
-    const S=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return {sum:Object.fromEntries([...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent])),rows:[...d.querySelectorAll('table:last-of-type tbody tr')].filter(r=>!/^[+\-]?\$?0\.00$/.test(r.cells[2].textContent.trim())).length,head:(d.querySelector('.hd p')||{}).textContent,file:FTM._stFile}; });
+    const S=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return {sum:Object.fromEntries([...d.querySelectorAll('.sum div')].map(x=>[x.querySelector('span').textContent,x.querySelector('b').textContent])),rows:[...d.querySelectorAll('table:last-of-type tbody tr')].filter(r=>!/^[+\-]?\$?0\.00$/.test(r.cells[2].textContent.trim())).length,head:(d.querySelector('.sh .shd')||{}).textContent,file:FTM._stFile}; });
     const num=s=>+String(s||'').replace(/[^0-9.\-]/g,'').replace(/^-?\$?/,m=>m)||0;
     const open=10000+250, inRange=[-120,400,-80,310], close=open-500+inRange.reduce((a,x)=>a+x,0);
     ok(Math.abs(num(S.sum['Opening balance'])-open)<0.01&&Math.abs(num(S.sum['Closing balance'])-close)<0.01,'['+label+'] opening and closing balance are those of 20 Sep and 31 Oct '+JSON.stringify(S.sum));
@@ -50,12 +50,13 @@ const stats={ok:true,history:hist.slice().sort((a,b)=>a.time<b.time?1:-1),histor
     ok(C&&C.k[0]===(C.pct>0?'+':C.pct<0?'-':'')+Math.abs(C.pct).toFixed(2)+'%','['+label+'] its return is the time-weighted % of exactly those days, from the shared calculation ('+(C&&C.k[0])+')');
     ok(C&&C.k[1]==='$10,530.00'&&C.k[2]==='$9,950.00','['+label+'] highest and lowest balance of the period '+JSON.stringify(C&&C.k));
     ok(C&&C.dots===1&&C.red===1&&/Withdrawal/.test(C.legend),'['+label+'] the withdrawal on 20 Oct is marked on the chart and in the legend');
-    const R=await p.evaluate(()=>{ const sel=document.getElementById('stPeriod'), out={}; ['2026-10','all'].forEach(v=>{ sel.value=v; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); out[v]={rg:(d.querySelector('.hd p.rg')||{}).textContent||'', sh:(d.querySelector('.sh .shd')||{}).textContent||''}; }); sel.value='custom'; return out; });
+    const R=await p.evaluate(()=>{ const sel=document.getElementById('stPeriod'), out={}; ['2026-10','all'].forEach(v=>{ sel.value=v; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); out[v]={hp:d.querySelectorAll('.hd p').length, logo:!!d.querySelector('.hd .lg svg rect')&&!!d.querySelector('.hd .lg svg path'), rg:(d.querySelector('.sh .shd')||{}).textContent||'', sh:(d.querySelector('.sh .shd')||{}).textContent||''}; }); sel.value='custom'; return out; });
     const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}).replace('Sep ','Sept ');
-    ok(/^1 Oct 2026 – 31 Oct 2026$/.test(R['2026-10'].rg)&&R['2026-10'].sh===R['2026-10'].rg,'['+label+'] a month statement shows its exact dates at the top and on the chart: '+R['2026-10'].rg);
+    ok(/^1 Oct 2026 – 31 Oct 2026$/.test(R['2026-10'].rg)&&R['2026-10'].hp===0&&R.all.hp===0,'['+label+'] the header is only the FTM logo and Account statement; the exact dates are on the Performance chart: '+R['2026-10'].rg);
+    ok(R.all.logo&&R['2026-10'].logo,'['+label+'] the header logo is the full FTM mark (blue square with the gold chart line) drawn in the statement, so it always prints');
     ok(/^2 Sept? 2026 – /.test(R.all.rg)&&R.all.sh===R.all.rg,'['+label+'] an All time statement shows from the first activity to today: '+R.all.rg);
     await p.fill('#stFrom','2026-11-10'); await p.fill('#stTo','2026-11-01');
-    const sw=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return d.querySelector('.hd p').textContent; });
+    const sw=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return d.querySelector('.sh .shd').textContent; });
     ok(/1 Nov\.? 2026.*10 Nov\.? 2026/.test(sw),'['+label+'] dates entered the wrong way round are swapped: '+sw);
     const lay=await p.evaluate(()=>{ const W=document.documentElement.clientWidth, el=[...document.querySelectorAll('#stPeriod,#stFrom,#stTo,#stDl')].map(e=>e.getBoundingClientRect()), c=document.querySelector('.act-log').getBoundingClientRect();
       return {inside:el.every(r=>r.width>0&&r.left>=c.left-1&&r.right<=c.right+1),sw:document.documentElement.scrollWidth,W}; });
