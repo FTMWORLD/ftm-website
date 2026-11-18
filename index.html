@@ -5706,6 +5706,7 @@ body.op-lock{overflow:hidden}
       FTM.session={email:mail,products:products,name:name||keepName};
       if(products && products.length) FTM.openArea(products[0]);
       else FTM.openArea('auto');
+      if(FTM.showView && !(products && products[0]==='invest')) FTM.showView('metrics');
       if(first) toast('Password set. Use it next time you log in. You can change it any time with Change password.');
       if(LIVE && products && products.length && !window.__ftmWelcomed && window.FTM.auth && window.FTM.auth.getAccessToken){
         window.__ftmWelcomed=1;
@@ -9293,6 +9294,7 @@ body.op-lock{overflow:hidden}
       else if(has && F.render){ F.render();
         if(F.header){ var onI=document.querySelector('.app-nav-item.is-on'); F.header(onI?onI.dataset.view:'metrics'); }
         if(F.redrawAllViews)F.redrawAllViews(); }
+      if(p==='auto' && F.showView && !A.querySelector('.app-view:not([hidden])')) F.showView('metrics');
     };
     function toPlans(e){
       e.preventDefault(); $('appView').hidden=true; document.body.style.overflow='';
@@ -10014,7 +10016,7 @@ tick();setInterval(tick,5000);})();
   function ago(iso){ if(!iso) return 'never'; var s=(Date.now()-Date.parse(iso))/1000; if(s<90) return 'just now'; if(s<5400) return Math.round(s/60)+' min ago'; if(s<172800) return Math.round(s/3600)+' h ago'; return Math.round(s/86400)+' days ago'; }
   function toEUR(amount,cur){ if(!FX||!FX.rates) return null; var r=FX.rates, c=String(cur||'').toUpperCase(); if(!r[c]||!r.EUR) return null; return amount/r[c]*r.EUR; }
   function flash(el,msg,bad){ el.className='stf-out'+(bad?' bad':''); el.innerHTML=msg; }
-  function remove(){ if(nav) nav.remove(); if(view) view.remove(); nav=view=null; D=null; }
+  function remove(){ var wasOn=!!(view&&!view.hidden); if(nav) nav.remove(); if(view) view.remove(); nav=view=null; D=null; if(wasOn&&F().showView) F().showView('metrics'); }
   var TABS=[['board','Board'],['problems','Problems'],['accounts','Accounts'],['customers','Customers'],['messages','Messages'],['letter','Letter'],['health','Health'],['activity','Activity'],['team','Team']];
   function build(){
     var host=document.querySelector('#appView .app-nav'), content=document.querySelector('#appView .app-content'); if(!host||!content||nav) return;

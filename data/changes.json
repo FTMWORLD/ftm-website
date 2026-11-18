@@ -130,5 +130,13 @@
  {
   "date": "2026-11-18",
   "text": "Performance: the year table no longer shows a \"Dividends, tax & adjustments\" note under End."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Change password now emails you a link; you choose the new password from that link, so nobody who learns your password can lock you out."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Logging in again always opens the Dashboard with your figures (it could show an empty page before)."
  }
 ]
