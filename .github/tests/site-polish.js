@@ -5,7 +5,7 @@ const fs=require('fs'), path=require('path'); const BASE=process.argv[2]||'http:
 const html=fs.readFileSync(path.join(__dirname,'../../index.html'),'utf8'), perf=fs.readFileSync(path.join(__dirname,'../../performance.html'),'utf8');
 ok(!/class="trust-head">\s*<div class="marquee"/.test(html),'the "Your money, working around the clock" headline is calm and complete (no sideways scroll)');
 ok(!/\.how-steps\{display:none!important\}/.test(html),'"How FTM MACHINE works" keeps its steps on phones');
-ok(/\.inv-tl\{[^}]*column-reverse/.test(html),'the investment timeline rises from Day 1 at the bottom on phones');
+ok(!/inv-tl|Everything is paid out|tl-graph/.test(html),'the investment timeline (Day 1 … End of year 5) is removed on phone and laptop');
 ok(!/'-'\+money\(avgL,2\)/.test(html),'the calendar never shows "-0.00 avg loss day"');
 ok(!/Where wealthy people interact/.test(html),'Community subtitle is the calm one');
 ok(!/Derived Indices|Synthetic indices|>Vol 75 </.test(html),'Derived Indices is gone from Markets, the menus and the footer');
@@ -26,7 +26,6 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   await p.close();
   const q=await b.newPage({viewport:{width:390,height:844}}); await q.goto(BASE+'/'); await q.waitForTimeout(800);
   ok(await q.evaluate(()=>[...document.querySelectorAll('.how-steps li')].filter(li=>getComputedStyle(li).display!=='none').length===4),'phone: the 4 steps are shown');
-  ok(await q.evaluate(()=>{ const L=[...document.querySelectorAll('.inv-tl li')]; return L.length>1&&L[0].getBoundingClientRect().top>L[L.length-1].getBoundingClientRect().top&&L[0].querySelector('.d').getBoundingClientRect().left<L[L.length-1].querySelector('.d').getBoundingClientRect().left; }),'phone: timeline rises from Day 1 at the bottom to Year 5 at the top');
   ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('liveLine').getAttribute('points'); }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
   ok(await q.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'phone: no sideways scroll with the moved chart');
   ok(await q.evaluate(()=>{ const m=document.getElementById('mobileMenu'), k=[...m.children]; const st=m.querySelector('.mm-start'), fr=m.querySelector('.mm-free'), last=m.querySelector('.mm-sec:last-of-type'); return !m.querySelector('.js-login')&&st&&fr&&k.indexOf(st)>k.indexOf(last)&&k.indexOf(fr)===k.indexOf(st)+1; }),'phone menu: no Log in button; Get started and Create a free account sit at the bottom');
