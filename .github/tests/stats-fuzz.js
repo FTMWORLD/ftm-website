@@ -217,7 +217,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       eq(c[yi('Return')],sg.pct,0.0051,'Year '+yr+' return');
       eq(c[yi('Start')],O.balAt(a),0.005,'Year '+yr+' start balance');
       eq(c[yi('End')],O.balAt(z),0.005,'Year '+yr+' end balance');
-      { const nums=['Start','Net deposits','Profit','Dividends, tax & adjustments'].map(h=>yi(h)>=0?num(c[yi(h)]):0); ok(Math.abs(nums.reduce((x,v)=>x+v,0)-num(c[yi('End')]))<=0.011,'Year '+yr+' adds up: start + net deposits + profit + adjustments = end ('+c.join(' | ')+')'); }
+      { let aj=0; acc.rows.forEach(r=>{ if(!r.entry&&r.type!=='BALANCE'&&r.t>=a&&r.t<z) aj+=r.net; }); const nums=['Start','Net deposits','Profit'].map(h=>yi(h)>=0?num(c[yi(h)]):0); ok(Math.abs(nums.reduce((x,v)=>x+v,0)+aj-num(c[yi('End')]))<=0.011,'Year '+yr+' adds up: start + net deposits + profit + the year\'s dividends, tax & adjustments (from the history; not shown in the table) = end ('+c.join(' | ')+' | adj '+aj.toFixed(2)+')'); }
       if(yi('Profit')>=0) eq(c[yi('Profit')],sg.pl,0.005,'Year '+yr+' profit');
       if(yi('Net deposits')>=0){ let nd=0; acc.rows.forEach(r=>{ if(r.type==='BALANCE'&&r.t>=a&&r.t<z) nd+=r.net; }); eq(c[yi('Net deposits')],nd,0.005,'Year '+yr+' net deposits'); } });
     { const L=V.dd1.map(x=>Math.abs(num(x))).filter(x=>!isNaN(x)); if(L.length) eq(Math.max(...L),O.dd,0.0051,'Deepest drawdown in the list = Max drawdown'); else ok(O.dd<0.01,'Drawdown list empty but Max drawdown is '+O.dd.toFixed(2)); }
