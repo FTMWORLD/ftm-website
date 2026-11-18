@@ -55,9 +55,9 @@ function pct(v) { if (v == null || !isFinite(+v)) return '—'; const n = +v; re
 function html(L, W, name, lang) {
   const f = L.figs || {}, rtl = RTL.has(lang), dir = rtl ? ' dir="rtl"' : '', al = rtl ? 'right' : 'left';
   const H3 = t => '<p style="font-size:18px;font-weight:bold;color:#0b1640;margin:28px 0 10px;">' + esc(t) + '</p>';
-  const cell = (label, value, up) => '<td width="25%" valign="top" style="padding:14px 10px;text-align:center;"><p style="margin:0;font-size:22px;font-weight:bold;color:' + (up === true ? '#E3B62F' : '#ffffff') + ';font-family:Arial,Helvetica,sans-serif;">' + esc(value) + '</p><p style="margin:6px 0 0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#aab3d6;">' + esc(label) + '</p></td>';
+  const cell = (label, value, up) => '<td width="25%" valign="top" style="padding:14px 10px;text-align:center;"><p style="margin:0;font-size:22px;font-weight:bold;color:' + (up === true ? '#E3B62F' : '#ffffff') + ';font-family:Arial,Helvetica,sans-serif;">' + Tpl.keep(esc(value)) + '</p><p style="margin:6px 0 0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#aab3d6;">' + Tpl.keep(esc(label)) + '</p></td>';
   const hasFigs = f.month_pct != null || f.ytd_pct != null;
-  const figs = hasFigs ? '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="background-color:#0b1640;border-radius:14px;margin:8px 0 6px;"><tr>'
+  const figs = hasFigs ? '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="' + Tpl.NAVY + 'border-radius:14px;margin:8px 0 6px;"><tr>'
     + cell(W.f_month, pct(f.month_pct), +f.month_pct > 0) + cell(W.f_ytd, pct(f.ytd_pct), +f.ytd_pct > 0) + cell(W.f_trades, f.trades != null ? String(f.trades) : '—') + cell(W.f_win, f.win_pct != null ? Math.round(f.win_pct) + '%' : '—')
     + '</tr></table><p style="font-size:12px;line-height:1.5;color:#777;margin:0 0 6px;">' + esc(W.f_src) + '</p>' : '';
   const first = name ? String(name).split(' ')[0] : '';

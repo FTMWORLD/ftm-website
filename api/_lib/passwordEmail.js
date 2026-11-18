@@ -27,19 +27,26 @@ async function makeLink(admin, email, free) {
 
 function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
+/* Dark mode: Gmail on phones flips light and dark colours. Navy areas also carry the colour as a background image (never
+   flipped) and text on navy is wrapped in keep() (screen + difference blend, undone only inside Gmail), so FTM keeps its own
+   colours; Apple Mail and others are told the email is designed in light colours. */
+const NAVY = 'background-color:#0b1640;background-image:linear-gradient(#0b1640,#0b1640);';
+function keep(h) { return '<span class="gm-s"><span class="gm-d">' + h + '</span></span>'; }
+const HEAD = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">'
+  + '<style>:root{color-scheme:light only;supported-color-schemes:light}u + .body .gm-s{background:#000;mix-blend-mode:screen;display:inline-block}u + .body .gm-d{background:#000;mix-blend-mode:difference;display:inline-block}</style></head><body class="body" style="margin:0;padding:0;background:#ffffff;">';
 /* shell(title, body, {head:true}) puts the title in the navy header, gold, on the right (statements and result emails). */
 function shell(title, body, o) {
   o = o || {}; const cs = o.head ? ' colspan="2"' : '';
-  return '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#ffffff;">'
-    + '<tr><td bgcolor="#0b1640" style="background-color:#0b1640;padding:22px 24px;"><table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="34" height="34" alt="" style="display:block;border-radius:8px;"></td><td style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:.02em;">FTM</td></tr></table></td>'
-    + (o.head ? '<td align="right" bgcolor="#0b1640" style="background-color:#0b1640;padding:22px 24px;color:#E3B62F;font-size:19px;font-weight:bold;text-align:right;">' + esc(title) + '</td>' : '') + '</tr>'
+  return HEAD + '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#ffffff;">'
+    + '<tr><td bgcolor="#0b1640" style="' + NAVY + 'padding:22px 24px;"><table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="34" height="34" alt="" style="display:block;border-radius:8px;"></td><td style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:.02em;">' + keep('FTM') + '</td></tr></table></td>'
+    + (o.head ? '<td align="right" bgcolor="#0b1640" style="' + NAVY + 'padding:22px 24px;color:#E3B62F;font-size:19px;font-weight:bold;text-align:right;">' + keep(esc(title)) + '</td>' : '') + '</tr>'
     + '<tr><td' + cs + ' style="height:4px;background:#D4AF37;background-image:linear-gradient(90deg,#D4AF37,#f3d77a,#D4AF37);font-size:0;line-height:0;">&nbsp;</td></tr>'
     + '<tr><td' + cs + ' style="padding:' + (o.head ? '28px' : '34px') + ' 24px 8px;">' + (o.head ? '' : '<p style="font-size:26px;font-weight:bold;color:#0b1640;margin:0 0 16px;">' + esc(title) + '</p>') + body + '</td></tr>'
-    + '<tr><td' + cs + ' align="center" bgcolor="#0b1640" style="background-color:#0b1640;padding:28px 20px;">'
-    + '<p style="margin:0 0 14px;color:#D4AF37;font-size:18px;font-weight:bold;letter-spacing:.04em;">Invest today, secure tomorrow.</p>'
-    + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="38" height="38" alt="" style="display:block;border-radius:9px;"></td><td style="color:#ffffff;font-size:26px;font-weight:bold;">FTM</td></tr></table>'
-    + '<p style="margin:16px 0 0;color:#9aa3c7;font-size:11px;line-height:1.5;">Trading involves risk; past results do not guarantee future returns.<br>Follow The Market Ltd. · You get this email because of your FTM account. '
-    + '<a href="mailto:ftmwebnation@gmail.com?subject=Unsubscribe" style="color:#9aa3c7;">Unsubscribe</a></p></td></tr></table>';
+    + '<tr><td' + cs + ' align="center" bgcolor="#0b1640" style="' + NAVY + 'padding:28px 20px;">'
+    + '<p style="margin:0 0 14px;color:#D4AF37;font-size:18px;font-weight:bold;letter-spacing:.04em;">' + keep('Invest today, secure tomorrow.') + '</p>'
+    + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="38" height="38" alt="" style="display:block;border-radius:9px;"></td><td style="color:#ffffff;font-size:26px;font-weight:bold;">' + keep('FTM') + '</td></tr></table>'
+    + '<p style="margin:16px 0 0;color:#9aa3c7;font-size:11px;line-height:1.5;">' + keep('Trading involves risk; past results do not guarantee future returns.<br>Follow The Market Ltd. · You get this email because of your FTM account. '
+    + '<a href="mailto:ftmwebnation@gmail.com?subject=Unsubscribe" style="color:#9aa3c7;">Unsubscribe</a>') + '</p></td></tr></table></body></html>';
 }
 const P = (t, small) => '<p style="font-size:' + (small ? '14px' : '16px') + ';line-height:1.55;color:' + (small ? '#555' : '#333') + ';margin:0 0 14px;">' + t + '</p>';
 const BTN = (href, label) => '<table cellpadding="0" cellspacing="0" style="margin:22px 0 26px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="' + esc(href) + '" style="display:inline-block;padding:15px 30px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + esc(label) + '</a></td></tr></table>';
@@ -162,4 +169,4 @@ async function sendResetEmail(admin, email, opts) {
     () => admin.auth.resetPasswordForEmail(email, { redirectTo: SITE() + '/' }));
 }
 
-module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html, shell };
+module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html, shell, keep, NAVY };

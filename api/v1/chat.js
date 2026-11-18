@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- FTM emails looked washed out in dark mode (until 18 Nov): phone mail apps flip colours in dark mode. Fixed: the navy header, result box and footer keep FTM's navy with white and gold text in every app. In the Gmail phone app the white middle part is still darkened by Gmail itself; the figures stay readable.
 - Comment disappeared or was sent alone when adding an emoji (until 18 Nov): the picker opened on Stickers, and a sticker replaced the text and sent at once. Fixed for everyone: the picker opens on emoji, emoji and stickers are added to what you wrote, and nothing is sent until you press Send. A comment you are writing also stays when the feed refreshes.
 - Long comment lists: each post shows its 2 most liked comments (and yours just sent); 'View all N comments' opens the rest in a scrolling list, 'Show less' folds it again.
 - Client area empty after logging in again (until 18 Nov): if a page that only staff have was open when logging out, the next log in showed no page until Dashboard was tapped. Fixed for everyone: every log in now opens the Dashboard with its figures. Nothing to do.
