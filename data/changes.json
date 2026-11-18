@@ -158,5 +158,9 @@
  {
   "date": "2026-11-18",
   "text": "Statements show the full FTM logo, and when trades are open, the open trades, floating P/L and equity."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Community: each post shows its two most liked comments with a View all button, and adding an emoji or sticker to a comment keeps your text until you press Send."
  }
 ]

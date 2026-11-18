@@ -1,4 +1,6 @@
-// Community comments: emoji picker and stickers (laptop + phone). A sticker sends at once and shows large. Run: node .github/tests/comment-emoji.js (site on :8765)
+// Community comments: emoji picker and stickers (laptop + phone). Emoji and stickers go into the text; nothing is sent until
+// Send is pressed; a comment being written survives a feed refresh; a sticker alone shows large; a post shows 2 comments and
+// "View all" (then a scrolling list and Show less). Run: node .github/tests/comment-emoji.js (site on :8765)
 let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');}
 const BASE=process.argv[2]||'http://localhost:8765'; let fails=0; const ok=(c,m)=>{ console.log((c?'OK     ':'BROKEN ')+m); if(!c) fails++; };
 (async()=>{ const b=await pw.chromium.launch();
@@ -24,15 +26,33 @@ const BASE=process.argv[2]||'http://localhost:8765'; let fails=0; const ok=(c,m)
     const form=await p.$('[data-cform]'); const pid=await form.evaluate(f=>f.closest('[data-pid]').dataset.pid);
     await form.$eval('[data-cemo]',b=>b.scrollIntoView({block:'center'})); await (await form.$('[data-cemo]')).click(); await p.waitForTimeout(200);
     const pop=await p.evaluate(()=>{ const q=document.getElementById('fdCPop'); const r=q.getBoundingClientRect(); return {open:!q.hidden,inView:r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight,stk:q.querySelectorAll('.emo-grid.stk [data-emo]').length,tabs:q.querySelectorAll('[data-et]').length}; });
-    ok(pop.open&&pop.inView&&pop.stk>=20&&pop.tabs>=4,'['+label+'] picker opens fully on screen with stickers and emoji tabs '+JSON.stringify(pop));
+    ok(pop.open&&pop.inView&&pop.tabs>=4&&pop.stk===0,'['+label+'] picker opens fully on screen, on the emoji tab (not stickers) '+JSON.stringify(pop));
     if(process.env.SHOT_DIR) await p.screenshot({path:require('path').join(process.env.SHOT_DIR,'cemo-'+label+'.png')});
-    await p.click('#fdCPop [data-et="1"]'); await p.click('#fdCPop .emo-grid [data-emo]');
-    const v=await form.$eval('input',i=>i.value); ok(/\p{Extended_Pictographic}/u.test(v),'['+label+'] an emoji goes into the comment ('+v+')');
-    await form.$eval('input',i=>{ i.value=''; });
-    await p.click('#fdCPop [data-et="0"]'); await p.click('#fdCPop .emo-grid.stk [data-emo="🚀"]'); await p.waitForTimeout(400);
-    const big=await p.evaluate(pid=>{ const a=document.querySelector('[data-pid="'+pid+'"]'); const c=[...a.querySelectorAll('.fd-c')].pop(); return c?{t:c.innerText,big:!!c.querySelector('.fd-cbig'),fs:parseFloat(getComputedStyle(c.querySelector('p')).fontSize)}:null; },pid);
-    ok(big&&/🚀/.test(big.t)&&big.big&&big.fs>=30,'['+label+'] a sticker is sent at once and shown large '+JSON.stringify(big));
-    ok(await p.evaluate(()=>document.getElementById('fdCPop').hidden),'['+label+'] picker closes after sending');
+    await form.$eval('input',i=>{ i.value='Great call '; i.setSelectionRange(11,11); });
+    await p.click('#fdCPop .emo-grid [data-emo]'); await p.waitForTimeout(150);
+    let v=await p.evaluate(pid=>document.querySelector('[data-pid="'+pid+'"] [data-cform] input').value,pid);
+    ok(/^Great call \p{Extended_Pictographic}/u.test(v)&&post.comments.length===0,'['+label+'] an emoji is added after the text, the text stays, nothing is sent ('+v+')');
+    await p.click('#fdCPop [data-et="0"]'); await p.click('#fdCPop .emo-grid.stk [data-emo="🚀"]'); await p.waitForTimeout(150);
+    v=await p.evaluate(pid=>document.querySelector('[data-pid="'+pid+'"] [data-cform] input').value,pid);
+    ok(/^Great call .*🚀$/u.test(v)&&post.comments.length===0,'['+label+'] a sticker is added too, still nothing sent ('+v+')');
+    await p.evaluate(()=>FTM.feedLoad(true)); await p.waitForTimeout(500);
+    v=await p.evaluate(pid=>document.querySelector('[data-pid="'+pid+'"] [data-cform] input').value,pid);
+    ok(/^Great call .*🚀$/u.test(v),'['+label+'] the comment being written survives a feed refresh');
+    await p.evaluate(()=>{ document.getElementById('fdCPop').hidden=true; }); await p.evaluate(pid=>{ const f=document.querySelector('[data-pid="'+pid+'"] [data-cform]'); f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})); },pid); await p.waitForTimeout(400);
+    ok(post.comments.length===1&&/^Great call .*🚀$/u.test(post.comments[0].text),'['+label+'] Send sends the text, emoji and sticker together as one comment');
+    await p.evaluate(pid=>{ const i=document.querySelector('[data-pid="'+pid+'"] [data-cform] input'); i.value='🚀'; const f=i.closest('form'); f.requestSubmit?f.requestSubmit():f.dispatchEvent(new Event('submit',{cancelable:true,bubbles:true})); },pid); await p.waitForTimeout(400);
+    const big=await p.evaluate(pid=>{ const a=document.querySelector('[data-pid="'+pid+'"]'); const c=[...a.querySelectorAll('.fd-c')].filter(x=>/🚀/.test(x.innerText)&&!/Great/.test(x.innerText)).pop(); return c?{big:!!c.querySelector('.fd-cbig'),fs:parseFloat(getComputedStyle(c.querySelector('p')).fontSize)}:null; },pid);
+    ok(big&&big.big&&big.fs>=30,'['+label+'] a sticker sent on its own shows large '+JSON.stringify(big));
+    // many comments: 2 shown, the rest behind "View all"
+    for(let k=0;k<48;k++) post.comments.push({id:'x'+k,author:{mid:'m'+(k%5+3),nickname:'Member'+k},text:'Comment number '+k,t:new Date(Date.now()-k*6e4).toISOString(),mine:false,likes:k===30?9:(k===7?4:0),liked:false,can_delete:false});
+    await p.evaluate(()=>{ if(document.activeElement) document.activeElement.blur(); return FTM.feedLoad(true); }); await p.waitForTimeout(600);
+    let c=await p.evaluate(pid=>{ const a=document.querySelector('[data-pid="'+pid+'"]'); return {n:a.querySelectorAll('.fd-c').length, txt:[...a.querySelectorAll('.fd-c p')].map(x=>x.textContent), btn:(a.querySelector('[data-call]')||{}).textContent||'', after:!!a.querySelector('.fd-c ~ [data-call]')}; },pid);
+    ok(c.n===3&&/50/.test(c.btn)&&c.after&&c.txt.includes('Comment number 30')&&c.txt.includes('Comment number 7')&&c.txt.includes('🚀'),'['+label+'] 50 comments: the 2 most liked show (plus the one you just sent), then a "View all 50 comments" button '+JSON.stringify({n:c.n,txt:c.txt,btn:c.btn}));
+    await p.evaluate(pid=>document.querySelector('[data-pid="'+pid+'"] [data-call]').click(),pid); await p.waitForTimeout(300);
+    c=await p.evaluate(pid=>{ const a=document.querySelector('[data-pid="'+pid+'"]'), sc=a.querySelector('.fd-cscroll'); return {n:a.querySelectorAll('.fd-c').length, scroll:!!sc&&sc.scrollHeight>sc.clientHeight&&sc.clientHeight<=Math.min(440,innerHeight*0.6)+1, less:!!a.querySelector('[data-cless]')}; },pid);
+    ok(c.n===50&&c.scroll&&c.less,'['+label+'] View all opens every comment in a scrolling list with Show less '+JSON.stringify(c));
+    await p.evaluate(pid=>document.querySelector('[data-pid="'+pid+'"] [data-cless]').click(),pid); await p.waitForTimeout(300);
+    ok(await p.evaluate(pid=>document.querySelectorAll('[data-pid="'+pid+'"] .fd-c').length,pid)===3,'['+label+'] Show less goes back to the short list');
     ok(!errs.length,'['+label+'] no script errors '+errs.join(' | '));
     await p.close(); }
   await b.close(); console.log(fails?'FAILED: '+fails:'COMMENT EMOJI OK'); process.exit(fails?1:0); })();
