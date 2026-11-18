@@ -49,6 +49,17 @@ const BASE=process.argv[2]||'http://localhost:8765';
   ok(/Your account is secured/.test(r.html) && users.u1.app_metadata.ftm_revoked_at && users.u1.app_metadata.ftm_devices.length===0, '"This wasn\'t me" signs every device out and forgets the devices');
   r=await call(L,{headers:{authorization:'Bearer '+jwt(now-60)},body:{device:'device-aaaa1111'}}); ok(r.j&&r.j.signout===true, 'sessions from before "This wasn\'t me" are signed out on the website');
   r=await call(L,{headers:{authorization:'Bearer '+jwt(now+120)},body:{device:'device-cccc3333'}}); ok(r.j&&!r.j.signout, 'logging in again afterwards works');
+  // Your devices: list them, and sign out every other device while this one stays
+  const T=now+300, ua={mac:'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15) Safari/605', and:'Mozilla/5.0 (Linux; Android 14) Chrome/120 Mobile'};
+  await call(L,{headers:{authorization:'Bearer '+jwt(T),'user-agent':ua.mac,'x-vercel-ip-city':'Berlin','x-vercel-ip-country':'DE'},body:{device:'device-dddd4444'}});
+  await call(L,{headers:{authorization:'Bearer '+jwt(T),'user-agent':ua.and,'x-vercel-ip-city':'Accra','x-vercel-ip-country':'GH'},body:{device:'device-eeee5555'}});
+  r=await call(L,{headers:{authorization:'Bearer '+jwt(T)},body:{device:'device-dddd4444',op:'list'}});
+  { const D=(r.j&&r.j.devices)||[]; ok(D.length===3&&D[0].current&&D[0].name==='Safari on Mac'&&/Berlin, Germany/.test(D[0].where)&&D.filter(d=>d.current).length===1&&D.some(d=>d.name==='Chrome on Android'&&/Accra/.test(d.where))&&!D.some(d=>d.id), 'Your devices: every device with its place, this device first and marked, no device ids sent ('+D.map(d=>d.name+(d.current?'*':'')).join(', ')+')'); }
+  r=await call(L,{headers:{authorization:'Bearer '+jwt(T)},body:{device:'device-dddd4444',op:'signout_others'}});
+  ok(r.j&&r.j.ok&&r.j.signed_out===2&&users.u1.app_metadata.ftm_devices.length===1&&users.u1.app_metadata.ftm_devices[0].id==='device-dddd4444', 'sign out all other devices: the 2 others are forgotten, this one stays');
+  r=await call(L,{headers:{authorization:'Bearer '+jwt(now-30)},body:{device:'device-eeee5555'}}); ok(r.j&&r.j.signout===true, 'the other devices (logged in before) are signed out on the website');
+  r=await call(L,{headers:{authorization:'Bearer '+jwt(now-30)},body:{device:'device-dddd4444'}}); ok(r.j&&!r.j.signout, 'this device stays logged in (same session)');
+  r=await call(L,{headers:{authorization:'Bearer '+jwt(T)},body:{device:'device-dddd4444',op:'list'}}); ok(r.j&&r.j.devices.length===1&&r.j.devices[0].current, 'afterwards only this device is listed');
   Module._load=orig;
   // website: menu item, sheet, invitation, iPhone guidance
   const {chromium,devices}=(()=>{try{return require('playwright');}catch(e){return require('/opt/node-tools/node_modules/playwright');}})(); const b=await chromium.launch();

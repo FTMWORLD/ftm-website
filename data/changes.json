@@ -138,5 +138,9 @@
  {
   "date": "2026-11-18",
   "text": "Logging in again always opens the Dashboard with your figures (it could show an empty page before)."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "New in the account menu: Your devices. See every device your account is logged in on and sign all the others out with one tap."
  }
 ]

@@ -6,6 +6,9 @@
      - If the member pressed "This wasn't me" after this session started: {signout:true} and the website signs out.
    GET ?notme=<signed link>: signs every device out (all sessions older than now are refused by the website),
      forgets the known devices and emails a link to choose a new password.
+   POST {device, op:'list'}: the member's devices (name, place, first and last seen, which one is this device).
+   POST {device, op:'signout_others'}: every other device is signed out (their sessions are revoked and refused by the
+     website) and forgotten, so logging in there again needs the password and sends a new-device email; this device stays.
    Known devices live in the login's app_metadata.ftm_devices (only the server can write it). */
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
@@ -50,7 +53,7 @@ module.exports = async function handler(req, res) {
     if (parts.length !== 4 || sign(uid + '.' + dev + '.' + exp) !== sig || Date.now() > +exp) return page('This link has expired', 'For your security this link works for 7 days. If you think someone else used your account, open FTM, choose "Forgot password" and set a new one.');
     try {
       const g = await admin.auth.admin.getUserById(uid); const user = g && g.data && g.data.user; if (!user) return page('Account not found', 'We could not find this FTM account.');
-      const meta = Object.assign({}, user.app_metadata || {}, { ftm_revoked_at: new Date().toISOString(), ftm_devices: [] });
+      const meta = Object.assign({}, user.app_metadata || {}, { ftm_revoked_at: new Date().toISOString(), ftm_devices: [], ftm_keep: null });
       await admin.auth.admin.updateUserById(uid, { app_metadata: meta });
       await sendResetEmail(admin, user.email, {}).catch(e => console.error('notme reset', e.message));
       console.log('login-alert notme', uid.slice(0, 8));
@@ -62,9 +65,23 @@ module.exports = async function handler(req, res) {
   try {
     const { user, tok } = await userFromToken(admin, req); if (!user) return res.status(401).json({ ok: false, error: 'UNAUTHORIZED' });
     const meta = Object.assign({}, user.app_metadata || {}), cl = claims(tok);
-    if (meta.ftm_revoked_at && cl.iat && cl.iat * 1000 < Date.parse(meta.ftm_revoked_at)) return res.status(200).json({ ok: true, signout: true });
-    const dev = String(body.device || ''); if (!/^[a-z0-9-]{8,64}$/i.test(dev)) return res.status(400).json({ ok: false, error: 'BAD_DEVICE' });
+    const dev = String(body.device || '');
+    if (meta.ftm_revoked_at && cl.iat && cl.iat * 1000 < Date.parse(meta.ftm_revoked_at) && !(meta.ftm_keep && dev === meta.ftm_keep)) return res.status(200).json({ ok: true, signout: true });
+    if (!/^[a-z0-9-]{8,64}$/i.test(dev)) return res.status(400).json({ ok: false, error: 'BAD_DEVICE' });
     const devices = Array.isArray(meta.ftm_devices) ? meta.ftm_devices.slice() : [], now = new Date().toISOString();
+    if (body.op === 'list') {
+      const out = devices.map(d => ({ name: d.name, where: d.where, first: d.first, last: d.id === dev ? now : d.last, current: d.id === dev }))
+        .sort((a, b) => (b.current - a.current) || String(b.last).localeCompare(String(a.last)));
+      return res.status(200).json({ ok: true, devices: out });
+    }
+    if (body.op === 'signout_others') {
+      const mine = devices.find(d => d.id === dev) || { id: dev, name: device(req.headers['user-agent']), where: place(req), first: now };
+      mine.last = now; meta.ftm_devices = [mine]; meta.ftm_revoked_at = now; meta.ftm_keep = dev;
+      await admin.auth.admin.updateUserById(user.id, { app_metadata: meta });
+      try { if (admin.auth.admin.signOut) await admin.auth.admin.signOut(tok, 'others'); } catch (e) { console.error('signout others', e.message); }
+      console.log('login-alert signout_others', user.id.slice(0, 8), devices.length - 1);
+      return res.status(200).json({ ok: true, signed_out: Math.max(0, devices.length - (devices.some(d => d.id === dev) ? 1 : 0)) });
+    }
     const known = devices.find(d => d.id === dev), name = device(req.headers['user-agent']), where = place(req);
     if (known) {
       if (Date.now() - Date.parse(known.last || 0) > 6 * 3600e3) { known.last = now; meta.ftm_devices = devices; await admin.auth.admin.updateUserById(user.id, { app_metadata: meta }); }
