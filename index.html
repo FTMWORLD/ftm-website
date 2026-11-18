@@ -2766,9 +2766,9 @@ html.cw-lock,html.cw-lock body{overflow:hidden}
 .cv-head .cv-controls .cv-zoom-btns{margin-top:0}
 .cv-head>*{min-width:0;max-width:100%}.cv-head .cv-controls{row-gap:8px}.cv-head .cv-controls .tf{max-width:100%;flex-wrap:wrap}
 #appView .app-view[data-view="metrics"] #mCurve{height:340px}
-.yr-tbl td{white-space:nowrap;vertical-align:middle;font-variant-numeric:tabular-nums}.yr-tbl td b{font-weight:700}.yr-tbl td.yr-end small{display:block;font-size:11.5px;font-weight:600;color:var(--muted);margin:3px 0 0 auto;white-space:normal;max-width:13em;line-height:1.35}.yr-tbl td.yr-ret b{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(47,174,116,.1)}.yr-tbl td.yr-ret.pl-down b{background:rgba(226,71,90,.1)}
+.yr-tbl td{white-space:nowrap;vertical-align:middle;font-variant-numeric:tabular-nums}.yr-tbl td b{font-weight:700}.yr-tbl td.yr-ret b{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(47,174,116,.1)}.yr-tbl td.yr-ret.pl-down b{background:rgba(226,71,90,.1)}
 @media (min-width:701px){.yr-tbl{width:100%}.yr-tbl th{white-space:nowrap;vertical-align:bottom}.yr-tbl th:not(:first-child),.yr-tbl td:not(:first-child){text-align:right;padding-left:18px}.yr-tbl th:last-child,.yr-tbl td:last-child{padding-right:2px}.yr-tbl td:first-child{font-size:15px}}
-@media (max-width:700px){.yr-tbl td.yr-end small{display:block;max-width:none;margin:2px 0 0;text-align:right}.app-scroll table.yr-tbl tbody tr.cx:not(.open) td.yr-end small{display:none}.app-scroll table.yr-tbl tbody tr td:nth-child(6){order:1}.app-scroll table.yr-tbl tbody tr td:nth-child(5){order:2}.app-scroll table.yr-tbl tbody tr td:nth-child(n+2):not(:nth-child(5)):not(:nth-child(6)){order:3}.app-scroll table.yr-tbl tbody tr.cx:not(.open) td:nth-child(n+2){display:none!important}.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(5),.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(6){display:flex!important}.yr-tbl td.yr-ret b{padding:2px 9px}}
+@media (max-width:700px){.app-scroll table.yr-tbl tbody tr td:nth-child(6){order:1}.app-scroll table.yr-tbl tbody tr td:nth-child(5){order:2}.app-scroll table.yr-tbl tbody tr td:nth-child(n+2):not(:nth-child(5)):not(:nth-child(6)){order:3}.app-scroll table.yr-tbl tbody tr.cx:not(.open) td:nth-child(n+2){display:none!important}.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(5),.app-scroll table.yr-tbl#pxYears tbody tr.cx:not(.open) td:nth-child(6){display:flex!important}.yr-tbl td.yr-ret b{padding:2px 9px}}
 @media (max-width:600px){.cv-head .cv-controls{width:100%;flex-wrap:wrap;column-gap:6px;row-gap:8px}.cv-head .cv-controls #curveTF{flex:1 0 100%}
 .cv-head .cv-controls #curveUnit{flex:0 0 auto;flex-wrap:nowrap;padding:3px;gap:2px}.cv-head .cv-controls #curveUnit button{padding:5px 8px;font-size:12.5px}
 .cv-head .cv-controls #cvCmp{flex:1 1 0;min-width:0;width:0;margin:0;height:36px;padding:0 24px 0 10px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;letter-spacing:-.01em;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b1440' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center}
@@ -7384,14 +7384,14 @@ body.op-lock{overflow:hidden}
       function ret(k){ return ord[k].map(function(key){ var b=bounds(k,key), a=b[0].getTime(), z=b[1].getTime(), sg=m.seg(a,z); return {k:key,r:sg.pct,pl:sg.pl,s:m.balAt(a),e:m.balAt(z),n:G[k][key].n}; }); }
       var Y=ret('y'), M=ret('m'), W=ret('w'), D=ret('d');
 
-      var CVy=m.curve||[], hasAdj=CVy.some(function(p){return p.adj;});
+      var CVy=m.curve||[];
       var inY=function(y,f){ var a=new Date(+y.k,0,1).getTime(), z=new Date(+y.k+1,0,1).getTime(), t=0; CVy.forEach(function(p){ if(p.t>=a&&p.t<z&&f(p)) t+=p.flow; }); return t; };
       var sg2=function(n){ return (n>0?'+':(n<0?'-':''))+money(Math.abs(n),2); };
       var z0=function(v){ return Math.abs(v)<0.005?0:v; };
       el('pxYears').innerHTML='<thead><tr><th>Year</th><th>Start</th><th>Net deposits</th><th>Profit</th><th>End</th><th>Return</th><th>Profitable months</th></tr></thead><tbody>'+
         (has?Y.slice().reverse().map(function(y){ var ms=M.filter(function(x){return x.k.slice(0,4)===y.k;}), up=ms.filter(function(x){return x.r>0;}).length;
-          var nd=z0(inY(y,function(p){return p.flow&&!p.adj;})), aj=z0(inY(y,function(p){return p.adj;}));
-          return '<tr><td><b>'+y.k+'</b></td><td>'+money(z0(y.s),2)+'</td><td>'+(nd?sg2(nd):money(0,2))+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'"><b>'+sg2(z0(y.pl))+'</b></td><td class="yr-end"><b>'+money(z0(y.e),2)+'</b>'+(hasAdj&&aj?'<small><span>Dividends, tax &amp; adjustments</span> '+sg2(aj)+'</small>':'')+'</td><td class="yr-ret '+(y.r>=0?'pl-up':'pl-down')+'"><b>'+pc(y.r)+'</b></td><td>'+up+' / '+ms.length+'</td></tr>';}).join('')
+          var nd=z0(inY(y,function(p){return p.flow&&!p.adj;}));
+          return '<tr><td><b>'+y.k+'</b></td><td>'+money(z0(y.s),2)+'</td><td>'+(nd?sg2(nd):money(0,2))+'</td><td class="'+(y.pl>0?'pl-up':(y.pl<0?'pl-down':''))+'"><b>'+sg2(z0(y.pl))+'</b></td><td class="yr-end"><b>'+money(z0(y.e),2)+'</b></td><td class="yr-ret '+(y.r>=0?'pl-up':'pl-down')+'"><b>'+pc(y.r)+'</b></td><td>'+up+' / '+ms.length+'</td></tr>';}).join('')
          :'<tr>'+new Array(8).join('<td>&mdash;</td>')+'</tr>')+'</tbody>';
 
       var mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];

@@ -50,7 +50,7 @@ TROUBLESHOOTING (solved customer problems; keep adding to this list)
 - Commission & swap looked too small: only the opening commission was counted. Fixed: it is now the sum of commission, swap and fees on every trade deal.
 - A trade that was closed in parts (partial close) counted as several trades, and its opening commission was counted more than once. Fixed: one position = one trade, everywhere.
 - Sessions (Sydney, Tokyo, London, New York) added up to more than the total because a trade in an overlap hour was counted in two sessions. Fixed: each trade belongs to one session, so they add up to the total.
-- Dividends and tax on index trades: shown as 'Dividends, tax & adjustments' in Capital flows, the year table and the statement. They change the balance but are not trading profit.
+- Dividends and tax on index trades: shown as 'Dividends, tax & adjustments' in Capital flows and the statement (not in the year table). They change the balance but are not trading profit.
 - Year table: Start + Net deposits + Profit (+ adjustments) = End, to the cent. Months or periods before the account existed show a dash, not 0.00%.
 - Sharpe ratio: the yearly return divided by the yearly ups and downs, from daily time-weighted returns; shown after 30 days.
 - Calendar: a day where a trade was only opened (opening commission, nothing closed) had no cell, so the days did not add up to the month. Fixed: every day the balance changed by trading has a cell; days and weeks add up to the month.

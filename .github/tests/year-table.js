@@ -1,4 +1,4 @@
-// Year by year (Performance): a classic statement table. Seven columns on one header line, no "-$0.00", dividends shown under End,
+// Year by year (Performance): a classic statement table. Seven columns on one header line, no "-$0.00", no dividends note under End (owner, 18 Nov),
 // phone rows show year, return and end balance. Run: node .github/tests/year-table.js (site on :8765). Fixture from audit-master.js.
 let fails=0; const ok=(c,m)=>{ console.log((c?'OK     ':'BROKEN ')+m); if(!c) fails++; };
 const DIV=process.env.YT_DIV!=='0';
@@ -34,7 +34,7 @@ const L=await p.evaluate(()=>{ const t=document.getElementById('pxYears'); retur
 ok(L.head.join('|')==='Year|Start|Net deposits|Profit|End|Return|Profitable months','laptop: seven classic columns '+L.head.join(' | '));
 ok(Math.max(...L.hs)<=Math.min(...L.hs)+1&&Math.max(...L.hs)<34,'laptop: every heading on one line '+L.hs.join(','));
 ok(!L.cells.some(c=>/(^|\s)[-\u2212][$€£]?0\.00(\s|$)/.test(c)),'no "-0.00" anywhere '+L.cells.join(' | '));
-ok(DIV?/Dividends, tax & adjustments \+\$12\.64/.test(L.adj):!L.adj,'dividends, tax & adjustments shown under End only when there are some ('+L.adj+')');
+ok(!L.adj&&!L.cells.some(c=>/Dividends, tax/.test(c)),'no "Dividends, tax & adjustments" note in the year table, even when there are some ('+(L.adj||'none')+')');
 await p.setViewportSize({width:390,height:844}); await p.waitForTimeout(500);
 await p.evaluate(()=>{ const c=document.getElementById('pxYears').closest('.app-card'); if(c.offsetHeight<90) c.querySelector('h3').click(); }); await p.waitForTimeout(400);
 const ph=await p.evaluate(()=>{ const tr=document.querySelector('#pxYears tbody tr'); return [...tr.children].filter(td=>getComputedStyle(td).display!=='none').map(td=>({r:td.getBoundingClientRect(),t:(td.querySelector('b')||td).textContent.trim()})).sort((x,y)=>(Math.round(x.r.top)-Math.round(y.r.top))||(x.r.left-y.r.left)).map(x=>x.t); });
