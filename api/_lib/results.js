@@ -95,6 +95,8 @@ function cardFor(key, h, cur) {
   const nm = p[2] === 12 ? [p[1] + 1, 1, 1] : [p[1], p[2] + 1, 1];
   return periodCard('month', h, cur, [p[1], p[2], 1], nm, MONTHS[p[2] - 1] + ' ' + p[1]);
 }
+/* The member's name as they gave it (full name, else first and last name); empty when unknown. */
+function nameOf(u) { const m = (u && u.user_metadata) || {}; return String(m.full_name || m.name || [m.first_name, m.last_name].filter(Boolean).join(' ') || '').replace(/\s+/g, ' ').trim().slice(0, 60); }
 /* A member's own accounts: never the FTM master account or the master preview free accounts see. */
 function ownAccounts(A) { return (A || []).filter(a => a && a.accountId && !a.isMaster && !a.isPreview); }
 /* What a login is emailed: its own accounts; the FTM owner logins also get the master account (first), never anyone else's. */
@@ -131,7 +133,7 @@ async function run(admin, o) {
 /* The same result as an email, in the member's language (labels from the site's i18n files), times in FTM time (Berlin). */
 const LOCALE = { zh: 'zh-CN', 'zh-tw': 'zh-TW', en: 'en-GB' };
 function e(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
-async function emailFor(card, lang, acct) {
+async function emailFor(card, lang, acct, who) {
   const loc = LOCALE[lang] || lang, t = x => P.tr(lang, x);
   const M = v => { const n = +v || 0; let a; try { a = Math.abs(n).toLocaleString(loc, { style: 'currency', currency: card.cur || 'USD', currencyDisplay: 'narrowSymbol', minimumFractionDigits: 2, maximumFractionDigits: 2 }); } catch (x) { a = Math.abs(n).toFixed(2) + ' ' + (card.cur || ''); } return (n > 0 ? '+' : n < 0 ? '-' : '') + a; };
   const PC = v => { const n = +v || 0; return (n > 0 ? '+' : n < 0 ? '-' : '') + Math.abs(n).toFixed(2) + '%'; }, col = v => v > 0 ? '#1f8a5b' : v < 0 ? '#b4232c' : '#0b1640';
@@ -177,12 +179,12 @@ async function emailFor(card, lang, acct) {
   }
   const netCol = v => v > 0 ? '#6ee7a8' : v < 0 ? '#ff8a92' : '#ffffff';
   const body = '<div' + (['ar', 'he', 'fa', 'ur'].indexOf(lang) !== -1 ? ' dir="rtl"' : '') + '>'
-    + '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#B8902A;font-weight:bold;">' + e(acct ? (await t('Your account')) + (acct.number ? ' · ' + acct.number : '') : await t('FTM master account')) + '</p>'
+    + '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#B8902A;font-weight:bold;">' + e(acct ? (who || await t('Your account')) + (acct.number ? ' · ' + acct.number : '') : await t('FTM master account')) + '</p>'
     + '<p style="margin:0 0 4px;font-size:20px;font-weight:bold;color:#0b1640;">' + e(head) + '</p>' + (sub ? '<p style="margin:0 0 8px;font-size:14px;color:#6b7194;">' + e(sub) + '</p>' : '') + table
     + '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="background-color:#0b1640;border-radius:14px;margin:16px 0 6px;"><tr><td style="padding:16px 18px;color:#E3B62F;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;">' + e(await t('Net P&L')) + '</td>'
     + '<td align="right" style="padding:16px 18px;"><p style="margin:0;font-size:26px;font-weight:bold;color:' + netCol(card.net) + ';font-family:Arial,Helvetica,sans-serif;">' + e(M(card.net)) + '</p><p style="margin:2px 0 0;font-size:14px;font-weight:bold;color:' + netCol(card.pct) + ';">' + e(PC(card.pct)) + '</p></td></tr></table>'
     + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=' + (card.st && acct ? 'statement&from=' + card.st.from + '&to=' + card.st.to : (acct ? 'calendar' : 'community')) + '" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t(card.st && acct ? 'Download your statement (PDF)' : (acct ? 'Calendar' : 'FTM news'))) + ' &rarr;</a></td></tr></table></div>';
-  return { subject: 'FTM · ' + (await t(kind)) + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body) };
+  return { subject: 'FTM · ' + (await t(kind)) + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body, { head: true }) };
 }
 /* Emails every confirmed login the result of THEIR OWN accounts for each period posted in the last 3 days that they
    have not had yet: the same calculation as the post, on their own history read from the engine as them. Never the master
@@ -228,7 +230,7 @@ async function mail(admin, o) {
           for (const w of pend) { const card = cardFor(w.key, h, cur), mst = acct.isMaster || acct.isPreview;
             if (/^month-/.test(w.key)) { const q = w.key.split('-'); card.st = statementFor(h, +q[1], +q[2]); }
             const moved = card.st && (card.st.dep || card.st.wd || card.st.close || card.st.open);
-            if (mst || card.n || acct.active || moved) list.push({ w, m: await emailFor(card, lang, mst ? null : acct) }); }
+            if (mst || card.n || acct.active || moved) list.push({ w, m: await emailFor(card, lang, mst ? null : acct, nameOf(u)) }); }
         }
         return list;
       })());
@@ -272,7 +274,7 @@ async function samples(admin) {
       const h = await H.load(u, acct), cur = acct.currency || 'USD', mst = acct.isMaster || acct.isPreview;
       for (const key of [wk, mo]) {
         const card = cardFor(key, h, cur); if (/^month-/.test(key)) card.st = statementFor(h, lp.y, lp.m);
-        const m = await emailFor(card, lang, mst ? null : acct);
+        const m = await emailFor(card, lang, mst ? null : acct, nameOf(u));
         await Mail.sendMail({ to: u.email, subject: 'SAMPLE · ' + m.subject, html: m.html }); log.push('sample ' + key + ' ' + (mst ? 'master' : acct.number || acct.accountId) + ' -> ' + u.email);
       }
     }

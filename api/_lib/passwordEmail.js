@@ -27,12 +27,15 @@ async function makeLink(admin, email, free) {
 
 function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
 
-function shell(title, body) {
+/* shell(title, body, {head:true}) puts the title in the navy header, gold, on the right (statements and result emails). */
+function shell(title, body, o) {
+  o = o || {}; const cs = o.head ? ' colspan="2"' : '';
   return '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#ffffff;">'
-    + '<tr><td bgcolor="#0b1640" style="background-color:#0b1640;padding:22px 24px;"><table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="34" height="34" alt="" style="display:block;border-radius:8px;"></td><td style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:.02em;">FTM</td></tr></table></td></tr>'
-    + '<tr><td style="height:4px;background:#D4AF37;background-image:linear-gradient(90deg,#D4AF37,#f3d77a,#D4AF37);font-size:0;line-height:0;">&nbsp;</td></tr>'
-    + '<tr><td style="padding:34px 24px 8px;"><p style="font-size:26px;font-weight:bold;color:#0b1640;margin:0 0 16px;">' + esc(title) + '</p>' + body + '</td></tr>'
-    + '<tr><td align="center" bgcolor="#0b1640" style="background-color:#0b1640;padding:28px 20px;">'
+    + '<tr><td bgcolor="#0b1640" style="background-color:#0b1640;padding:22px 24px;"><table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="34" height="34" alt="" style="display:block;border-radius:8px;"></td><td style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:.02em;">FTM</td></tr></table></td>'
+    + (o.head ? '<td align="right" bgcolor="#0b1640" style="background-color:#0b1640;padding:22px 24px;color:#E3B62F;font-size:19px;font-weight:bold;text-align:right;">' + esc(title) + '</td>' : '') + '</tr>'
+    + '<tr><td' + cs + ' style="height:4px;background:#D4AF37;background-image:linear-gradient(90deg,#D4AF37,#f3d77a,#D4AF37);font-size:0;line-height:0;">&nbsp;</td></tr>'
+    + '<tr><td' + cs + ' style="padding:' + (o.head ? '28px' : '34px') + ' 24px 8px;">' + (o.head ? '' : '<p style="font-size:26px;font-weight:bold;color:#0b1640;margin:0 0 16px;">' + esc(title) + '</p>') + body + '</td></tr>'
+    + '<tr><td' + cs + ' align="center" bgcolor="#0b1640" style="background-color:#0b1640;padding:28px 20px;">'
     + '<p style="margin:0 0 14px;color:#D4AF37;font-size:18px;font-weight:bold;letter-spacing:.04em;">Invest today, secure tomorrow.</p>'
     + '<table cellpadding="0" cellspacing="0"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="38" height="38" alt="" style="display:block;border-radius:9px;"></td><td style="color:#ffffff;font-size:26px;font-weight:bold;">FTM</td></tr></table>'
     + '<p style="margin:16px 0 0;color:#9aa3c7;font-size:11px;line-height:1.5;">Trading involves risk; past results do not guarantee future returns.<br>Follow The Market Ltd. · You get this email because of your FTM account. '

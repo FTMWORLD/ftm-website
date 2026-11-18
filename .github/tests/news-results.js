@@ -10,7 +10,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   // s1 owner login (the master + its own EUR 10,000 copying account), c1 French member with her own account, e1 English member with his own account,
   // f1 free member (master preview only), i1 member whose account is switched off and has no trades, z1 engine read fails, x1 unconfirmed
   const users={tokS:{id:'s1',email:'ftmwebnation@gmail.com',email_confirmed_at:now,created_at:now},tokC:{id:'c1',email:'amelie@x.com',email_confirmed_at:now,created_at:now,user_metadata:{ftm_lang:'fr'}},
-    tokE:{id:'e1',email:'ben@x.com',email_confirmed_at:now,created_at:now},tokF:{id:'f1',email:'free@x.com',email_confirmed_at:now,created_at:now},tokI:{id:'i1',email:'idle@x.com',email_confirmed_at:now,created_at:now},
+    tokE:{id:'e1',email:'ben@x.com',email_confirmed_at:now,created_at:now,user_metadata:{full_name:'Ben Okafor'}},tokF:{id:'f1',email:'free@x.com',email_confirmed_at:now,created_at:now},tokI:{id:'i1',email:'idle@x.com',email_confirmed_at:now,created_at:now},
     tokZ:{id:'z1',email:'broken@x.com',email_confirmed_at:now,created_at:now},tokX:{id:'x1',email:'typo@x.con',created_at:now}};
   const byId=id=>Object.values(users).find(u=>u.id===id);
   const fake={createClient:()=>({auth:{getUser:async t=>({data:{user:users[t]||null}}),admin:{listUsers:async()=>({data:{users:Object.values(users)}}),getUserById:async id=>({data:{user:byId(id)}})}},
@@ -72,7 +72,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     ok(engCalls.filter(c=>/^c1 /.test(c)&&/\/m1\//.test(c)).length===0,'the master history is never read for a member email');
     const ben=one('ben@x.com'), bh=ben.html||'';
     ok(/^FTM · Daily result: Tuesday,? 17 November 2026 · 70011 · -\$75\.00 \(-0\.38%\)$/.test(ben.subject),'email subject = his own account and figures: '+ben.subject);
-    ok(/Your account · 70011/.test(bh)&&/NVDA/.test(bh)&&/-\$75\.00/.test(bh)&&!/HK50/.test(bh)&&!/FTM master account/.test(bh)&&/open=calendar/.test(bh)&&/Invest today, secure tomorrow\./.test(bh)&&/email-logo\.png/.test(bh),'email: his own trades and net P&L, not the master; link to his Calendar; FTM footer and logo');
+    ok(/Ben Okafor · 70011/.test(bh)&&/color:#E3B62F;font-size:19px;font-weight:bold;text-align:right;">Daily result</.test(bh)&&!/font-size:26px;font-weight:bold;color:#0b1640;margin:0 0 16px;">Daily result/.test(bh)&&/NVDA/.test(bh)&&/-\$75\.00/.test(bh)&&!/HK50/.test(bh)&&!/FTM master account/.test(bh)&&/open=calendar/.test(bh)&&/Invest today, secure tomorrow\./.test(bh)&&/email-logo\.png/.test(bh),'email: his name and account number, the title in the navy header on the right, his own trades and net P&L, not the master; link to his Calendar; FTM footer and logo');
     const am=one('amelie@x.com'), ah=am.html||'';
     { let f=1,b=5000; [120.5,-40.25].forEach(v=>{ f*=1+v/b; b+=v; }); const pc='+'+((f-1)*100).toFixed(2)+'%';
       ok(am.subject.indexOf(fr['Daily result'])!==-1&&am.subject.indexOf('51234567')!==-1&&am.subject.indexOf(pc)!==-1&&ah.indexOf(fr['Your account'])!==-1&&ah.indexOf(fr['{} trades closed this day.'].replace('{}','2'))!==-1&&/mardi/i.test(ah)&&/EURUSD/.test(ah)&&!/HK50/.test(ah),'the French member gets her own account in French, time-weighted '+pc+': '+am.subject); }
