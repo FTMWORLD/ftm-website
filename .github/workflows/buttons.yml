@@ -28,6 +28,7 @@ jobs:
           node .github/tests/comment-emoji.js http://localhost:8765
           node .github/tests/site-polish.js http://localhost:8765
           node .github/tests/legal-i18n.js http://localhost:8765
+          node .github/tests/statement-range.js http://localhost:8765
           node .github/tests/free-board.js http://localhost:8765
           node .github/tests/letter.js http://localhost:8765
           node .github/tests/letter-auto.js

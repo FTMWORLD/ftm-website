@@ -122,5 +122,9 @@
  {
   "date": "2026-11-18",
   "text": "Homepage: the faces around \"Join other people worldwide\" now show each person's whole face."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Account statements: besides All time, a year or a month, you can now choose your own dates (Custom dates: From and To)."
  }
 ]

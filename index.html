@@ -2246,6 +2246,11 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 @keyframes stSpin{to{transform:rotate(360deg)}}
 .st-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .st-bar[hidden]{display:none!important}
+.st-range{display:flex;align-items:center;gap:6px}.st-range[hidden]{display:none!important}
+.st-range input{height:36px;border-radius:99px;border:1px solid rgba(11,20,64,.16);padding:0 12px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#fff;min-width:0}
+.st-range .st-to{color:var(--muted,#6b7393);font-weight:700}
+@media (max-width:640px){.st-bar{width:100%}.st-range{flex:1 1 100%;order:2;gap:4px}.st-range input{flex:1 1 0;width:0;padding:0 6px 0 10px;font-size:13px;letter-spacing:-.01em}.st-bar .st-dl{order:3}}
+@media (max-width:380px){.st-range input{padding:0 4px 0 8px;font-size:12.5px}}
 .st-bar select{height:36px;border-radius:99px;border:1px solid rgba(11,20,64,.16);padding:0 30px 0 14px;font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);background:#fff}
 .st-dl{display:inline-flex;align-items:center;gap:7px;background:#0B1440;color:#fff;border:1px solid #0B1440}
 .st-dl svg{width:16px;height:16px;color:#E3B62F}
@@ -4518,7 +4523,7 @@ body.op-lock{overflow:hidden}
           </div>
           <div class="app-card act-log">
             <div class="al-head"><div><h3>Account activity</h3><p class="hint">Every trade, deposit and withdrawal on this account.</p></div>
-              <div class="st-bar"><select id="stPeriod" aria-label="Statement period"></select><button type="button" class="btn btn-navy btn-sm st-dl" id="stDl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Download statement</span></button></div>
+              <div class="st-bar"><select id="stPeriod" aria-label="Statement period"></select><span class="st-range" id="stRange" hidden><input type="date" id="stFrom" aria-label="From"><span class="st-to" aria-hidden="true">–</span><input type="date" id="stTo" aria-label="To"></span><button type="button" class="btn btn-navy btn-sm st-dl" id="stDl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Download statement</span></button></div>
               <div class="tf" id="alTabs"><button class="is-on" data-k="all">All</button><button data-k="trade">Trades</button><button data-k="in">Deposits</button><button data-k="out">Withdrawals</button></div></div>
             <ul class="al-list" id="alList"></ul>
             <div class="xp-row" id="alXp" hidden><button type="button" class="xp-btn" id="alMore"><span>Show more</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button><button type="button" class="xp-btn xp-up" id="alLess" hidden><span>Show less</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 15 6-6 6 6"/></svg></button></div>
@@ -10869,7 +10874,15 @@ tick();setInterval(tick,5000);})();
     document.querySelectorAll('[data-tip]').forEach(function(el){ if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0'); });
   })();
   (function(){
-    var sel=$('stPeriod'), btn=$('stDl'); if(!sel||!btn) return;
+    var sel=$('stPeriod'), btn=$('stDl'), rng=$('stRange'), iFrom=$('stFrom'), iTo=$('stTo'); if(!sel||!btn) return;
+    function iso(t){ var d=new Date(t); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+    function day(v,add){ var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||''); return m?new Date(+m[1],+m[2]-1,+m[3]+(add||0)).getTime():null; }
+    var picked=false;
+    function range(){ var E=events().ev, lo=E.length?iso(E[0].t):iso(Date.now()), hi=iso(Date.now());
+      if(iFrom&&iTo){ iFrom.min=iTo.min=lo; iFrom.max=iTo.max=hi; if(!picked||!iFrom.value||!iTo.value){ iFrom.value=lo; iTo.value=hi; } }
+      if(rng) rng.hidden=sel.value!=='custom'; }
+    sel.addEventListener('change',range);
+    [iFrom,iTo].forEach(function(x){ if(x) x.addEventListener('change',function(){ picked=true; }); });
     function esc(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
     function events(){
       var d=F.data||{}, es=F.es&&F.es(), ev=[];
@@ -10886,12 +10899,15 @@ tick();setInterval(tick,5000);})();
       var E=events().ev, seen={}, opts=['<option value="all">'+esc(tr('All time'))+'</option>'];
       var yrs={}; E.forEach(function(e){ yrs[new Date(e.t).getFullYear()]=1; }); Object.keys(yrs).sort().reverse().forEach(function(yk){ opts.push('<option value="Y'+yk+'">'+yk+'</option>'); });
       for(var i=E.length-1;i>=0;i--){ var dt=new Date(E[i].t), k=dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2); if(seen[k]) continue; seen[k]=1; opts.push('<option value="'+k+'">'+esc(dt.toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}))+'</option>'); }
-      var cur=sel.value; sel.innerHTML=opts.join(''); if(cur && sel.querySelector('option[value="'+cur+'"]')) sel.value=cur; else if(opts.length>1) sel.selectedIndex=1;
-      btn.disabled=!E.length; sel.closest('.st-bar').hidden=!E.length;
+      opts.push('<option value="custom">'+esc(tr('Custom dates'))+'</option>');
+      var cur=sel.value; sel.innerHTML=opts.join(''); if(cur && sel.querySelector('option[value="'+cur+'"]')) sel.value=cur; else if(opts.length>2) sel.selectedIndex=1; else sel.selectedIndex=0;
+      btn.disabled=!E.length; sel.closest('.st-bar').hidden=!E.length; range();
     }
     function build(){
       var all=events(), E=all.ev, v=sel.value, a=-Infinity, b=Infinity, label=tr('All time');
       if(v.charAt(0)==='Y'){ var yy=+v.slice(1); a=new Date(yy,0,1).getTime(); b=new Date(yy+1,0,1).getTime(); label=String(yy); }
+      else if(v==='custom'){ var f1=iFrom&&iFrom.value, t1=iTo&&iTo.value; if(!day(f1)) f1=E.length?iso(E[0].t):iso(Date.now()); if(!day(t1)) t1=iso(Date.now()); if(f1>t1){ var sw=f1; f1=t1; t1=sw; }
+        a=day(f1); b=day(t1,1); var dl=function(t){ return new Date(t).toLocaleDateString((window.FTM_LOCALE||undefined),{day:'numeric',month:'short',year:'numeric'}); }; label=dl(a)+' – '+dl(day(t1)); v='C'+f1.replace(/-/g,'')+'-'+t1.replace(/-/g,''); }
       else if(v!=='all'){ var y=+v.slice(0,4), mo=+v.slice(5,7)-1; a=new Date(y,mo,1).getTime(); b=new Date(y,mo+1,1).getTime(); label=new Date(y,mo,1).toLocaleDateString((window.FTM_LOCALE||undefined),{month:'long',year:'numeric'}); }
       var rows=E.filter(function(e){return e.t>=a&&e.t<b;}), before=E.filter(function(e){return e.t<a;});
       var open=before.length?before[before.length-1].after:all.start, close=rows.length?rows[rows.length-1].after:open;
@@ -10922,7 +10938,7 @@ tick();setInterval(tick,5000);})();
         '<table><thead><tr><th>'+esc(tr('Date'))+'</th><th>'+esc(tr('Details'))+'</th><th class="n">'+esc(tr('Amount'))+'</th><th class="n">'+esc(tr('Running balance'))+'</th></tr></thead><tbody>'+
         rows.map(function(e){ return '<tr><td>'+esc(fd(e.t))+'</td><td>'+esc(det(e))+'</td><td class="n '+(e.amt>0?'up':(e.amt<0?'dn':''))+'">'+S(e.amt)+'</td><td class="n">'+M(e.after)+'</td></tr>'; }).join('')+
         '</tbody></table><div class="motto">Invest today, secure tomorrow.</div><div class="ft"><span>'+esc(tr('Figures come straight from the FTM engine.'))+'</span><span>'+esc(tr('Trades'))+': '+nT+' · '+esc(tr('Win rate'))+': '+(nT?(nW/nT*100).toFixed(2):'0.00')+'%</span></div></body></html>';
-      F._stFile='FTM-statement-'+(v==='all'?'all-time':(v.charAt(0)==='Y'?v.slice(1):v))+'.pdf';
+      F._stFile='FTM-statement-'+(v==='all'?'all-time':(v.charAt(0)==='Y'?v.slice(1):(v.charAt(0)==='C'?v.slice(1,9)+'-to-'+v.slice(10):v)))+'.pdf';
       return h;
     }
     F.statementHtml=build;
