@@ -43,6 +43,12 @@ const stats={ok:true,history:hist.slice().sort((a,b)=>a.time<b.time?1:-1),histor
     ok(Math.abs(num(S.sum['Opening balance'])-open)<0.01&&Math.abs(num(S.sum['Closing balance'])-close)<0.01,'['+label+'] opening and closing balance are those of 20 Sep and 31 Oct '+JSON.stringify(S.sum));
     ok(/500/.test(S.sum['Withdrawals'])&&/0\.00/.test(S.sum['Deposits'])&&Math.abs(Math.abs(num(S.sum['Trading result']))-510)<0.01&&S.rows===5,'['+label+'] only the activity of those days: 4 trades (+510.00) and the 500 withdrawal ('+S.rows+' rows with an amount)');
     ok(/20 Sept?\.? 2026/.test(S.head)&&/31 Oct\.? 2026/.test(S.head)&&S.file==='FTM-statement-20260920-to-20261031.pdf','['+label+'] the statement and file name show the dates: '+S.head+' · '+S.file);
+    const C=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); const pf=d.querySelector('.pf'); if(!pf) return null; const k=[...pf.querySelectorAll('.pf-k>div')].map(x=>x.querySelector('b').textContent);
+      const a=new Date(2026,8,20).getTime(), z=new Date(2026,10,1).getTime(), sg=FTM.metrics().seg(a,z); return {k, line:!!pf.querySelector('svg path[stroke]'), dots:pf.querySelectorAll('svg circle').length, red:pf.querySelectorAll('svg circle[fill="#c81e2b"]').length, pct:sg.pct, legend:pf.querySelector('.pf-n').textContent}; });
+    ok(C&&C.line,'['+label+'] the statement has a chart of the balance over the chosen period');
+    ok(C&&C.k[0]===(C.pct>0?'+':C.pct<0?'-':'')+Math.abs(C.pct).toFixed(2)+'%','['+label+'] its return is the time-weighted % of exactly those days, from the shared calculation ('+(C&&C.k[0])+')');
+    ok(C&&C.k[1]==='$10,530.00'&&C.k[2]==='$9,950.00','['+label+'] highest and lowest balance of the period '+JSON.stringify(C&&C.k));
+    ok(C&&C.dots===1&&C.red===1&&/Withdrawal/.test(C.legend),'['+label+'] the withdrawal on 20 Oct is marked on the chart and in the legend');
     await p.fill('#stFrom','2026-11-10'); await p.fill('#stTo','2026-11-01');
     const sw=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return d.querySelector('.hd p').textContent; });
     ok(/1 Nov\.? 2026.*10 Nov\.? 2026/.test(sw),'['+label+'] dates entered the wrong way round are swapped: '+sw);

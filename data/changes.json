@@ -142,5 +142,9 @@
  {
   "date": "2026-11-18",
   "text": "New in the account menu: Your devices. See every device your account is logged in on and sign all the others out with one tap."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Account statements now include a Performance chart: your balance through the period you choose, deposits and withdrawals marked, the period's return and the highest and lowest balance."
  }
 ]
