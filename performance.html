@@ -154,6 +154,7 @@ section{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .sec-head .eyebrow{color:var(--blue)}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:22px;min-width:0}
 .chart{width:100%;overflow-x:auto}
+.chart-cap{margin:8px 0 0 20px;font-size:12.5px;line-height:1.45;color:var(--muted)}
 .chart svg{display:block;width:100%;height:auto;min-width:560px}
 .pf-foot{width:100vw;margin:56px 0 -64px calc(50% - 50vw);background:#0b1640;color:#c9cfe6;border-top:3px solid #D4AF37}
 .pf-in{max-width:1100px;margin:0 auto;padding:34px 20px 30px;display:grid;justify-items:center;gap:12px;text-align:center}
@@ -163,6 +164,7 @@ section{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .pf-copy{margin:0;font-size:12px;color:#8b93b8}
 svg text{font-family:var(--font);font-size:11px;fill:var(--muted)}
 @media (max-width:600px){.chart{overflow:visible;padding-left:26px;box-sizing:border-box}.chart svg{min-width:0;overflow:visible}.chart svg text{font-size:26px}.chart svg text[style*="font-size"]{font-size:26px!important}}
+@media (max-width:600px){.chart:has(>svg.sm){padding-left:0}.chart svg.sm text,.chart svg.sm text[style*="font-size"]{font-size:16px!important}.chart-cap{margin-left:0}}
 .legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted);margin-bottom:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
 .note{font-size:14px;color:var(--muted)}
@@ -1116,8 +1118,7 @@ function weeks(p){
    h+=`<text x="${L}" y="120" style="fill:${css('--ink')};font-size:13px;font-weight:700">Size of the average week</text>`;
    h+=`<rect x="${L}" y="132" width="${bw*au/mx}" height="34" rx="6" fill="${css('--up')}" fill-opacity=".85" data-tip="Average winning week ${pct(au,2)}"/><text x="${L+10}" y="154" style="fill:#fff;font-size:13px;font-weight:700">Winning week ${pct(au,2)}</text>`;
    h+=`<rect x="${L}" y="176" width="${bw*ad/mx}" height="34" rx="6" fill="${css('--down')}" fill-opacity=".85" data-tip="Average losing week ${pct(-ad,2)}"/><text x="${L+10}" y="198" style="fill:#fff;font-size:13px;font-weight:700">Losing week ${pct(-ad,2)}</text>`;
-   h+=`<text x="${L}" y="238" style="font-size:12px">${su>=.5?'More':'Fewer'} weeks win than lose, and the average win is ${au>ad?'larger':'smaller'} than the average loss.</text>`;
-   $('c-whist').innerHTML=`<svg viewBox="0 0 ${Wd} ${Hd}" role="img" aria-label="Winning weeks versus losing weeks" style="min-width:300px">${h}</svg>`;bindTips($('c-whist'));}
+   $('c-whist').innerHTML=`<svg class="sm" viewBox="0 0 ${Wd} 222" role="img" aria-label="Winning weeks versus losing weeks" style="min-width:300px">${h}</svg><p class="chart-cap">${su>=.5?'More':'Fewer'} weeks win than lose, and the average win is ${au>ad?'larger':'smaller'} than the average loss.</p>`;bindTips($('c-whist'));}
   const vals=w.map(x=>x[1]),up=vals.filter(v=>v>0),dn=vals.filter(v=>v<=0),best=w.reduce((a,b)=>b[1]>a[1]?b:a),worst=w.reduce((a,b)=>b[1]<a[1]?b:a),avg=a=>a.reduce((s,v)=>s+v,0)/a.length;
   let s=0,ms=0;vals.forEach(v=>{s=v<=0?s+1:0;ms=Math.max(ms,s)});
   $('f-weeks').innerHTML=[['Weeks tested',n],['Profitable weeks',up.length+' ('+Math.round(up.length/n*100)+'%)'],['Average winning week',pct(avg(up),2)],['Average losing week',pct(avg(dn),2)],['Best week',pct(best[1])+' · '+wk(best[0])],['Worst week',pct(worst[1])+' · '+wk(worst[0])],['Weeks above +10%',vals.filter(v=>v>10).length],['Weeks below -10%',vals.filter(v=>v<-10).length],['Longest run of losing weeks',ms]].map(([a,b])=>`<div><span>${a}</span><span>${b}</span></div>`).join('');
@@ -1125,9 +1126,9 @@ function weeks(p){
 }
 
 function bars(el,counts,labels,colorFn,aria,unit){
-  const W=520,H=270,L=8,B=62,mx=Math.max(...counts),bw=(W-2*L)/counts.length;let h='';
-  counts.forEach((v,i)=>{const x=L+i*bw,hh=(H-24-B)*v/mx;h+=`<rect x="${x+2}" y="${H-B-hh}" width="${bw-4}" height="${hh}" rx="3" fill="${colorFn(i)}" fill-opacity=".85" data-tip="${labels[i]}: ${v.toLocaleString('en-US')} ${unit}"/><text x="${x+bw/2}" y="${H-B-hh-5}" text-anchor="middle" font-size="10" style="fill:${css('--ink')};font-weight:600">${v.toLocaleString('en-US')}</text><text transform="translate(${x+bw/2-4},${H-B+12}) rotate(45)" font-size="10">${labels[i]}</text>`});
-  $(el).innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}" style="min-width:300px">${h}</svg>`;bindTips($(el));
+  const W=520,H=270,L=34,R=8,B=66,mx=Math.max(...counts),bw=(W-L-R)/counts.length,kf=v=>v>=1000?(v/1000).toFixed(v>=10000?0:1)+'k':v.toLocaleString('en-US');let h='';
+  counts.forEach((v,i)=>{const x=L+i*bw,hh=(H-24-B)*v/mx;h+=`<rect x="${x+2}" y="${H-B-hh}" width="${bw-4}" height="${hh}" rx="3" fill="${colorFn(i)}" fill-opacity=".85" data-tip="${labels[i]}: ${v.toLocaleString('en-US')} ${unit}"/><text x="${x+bw/2}" y="${H-B-hh-5}" text-anchor="middle" font-size="10" style="fill:${css('--ink')};font-weight:600">${kf(v)}</text><text transform="translate(${x+bw/2+3},${H-B+12}) rotate(-45)" text-anchor="end" font-size="10">${labels[i]}</text>`});
+  $(el).innerHTML=`<svg class="sm" viewBox="0 0 ${W} ${H}" role="img" aria-label="${aria}" style="min-width:300px">${h}</svg>`;bindTips($(el));
 }
 
 function trades(p){
