@@ -146,5 +146,9 @@
  {
   "date": "2026-11-18",
   "text": "Account statements now include a Performance chart: your balance through the period you choose, deposits and withdrawals marked, the period's return and the highest and lowest balance."
+ },
+ {
+  "date": "2026-11-18",
+  "text": "Account statements show the exact dates they cover (from and to) at the top and on the chart, also for All time, a year or a month."
  }
 ]

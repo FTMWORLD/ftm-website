@@ -50,6 +50,10 @@ const stats={ok:true,history:hist.slice().sort((a,b)=>a.time<b.time?1:-1),histor
     ok(C&&C.k[0]===(C.pct>0?'+':C.pct<0?'-':'')+Math.abs(C.pct).toFixed(2)+'%','['+label+'] its return is the time-weighted % of exactly those days, from the shared calculation ('+(C&&C.k[0])+')');
     ok(C&&C.k[1]==='$10,530.00'&&C.k[2]==='$9,950.00','['+label+'] highest and lowest balance of the period '+JSON.stringify(C&&C.k));
     ok(C&&C.dots===1&&C.red===1&&/Withdrawal/.test(C.legend),'['+label+'] the withdrawal on 20 Oct is marked on the chart and in the legend');
+    const R=await p.evaluate(()=>{ const sel=document.getElementById('stPeriod'), out={}; ['2026-10','all'].forEach(v=>{ sel.value=v; const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); out[v]={rg:(d.querySelector('.hd p.rg')||{}).textContent||'', sh:(d.querySelector('.sh .shd')||{}).textContent||''}; }); sel.value='custom'; return out; });
+    const today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}).replace('Sep ','Sept ');
+    ok(/^1 Oct 2026 – 31 Oct 2026$/.test(R['2026-10'].rg)&&R['2026-10'].sh===R['2026-10'].rg,'['+label+'] a month statement shows its exact dates at the top and on the chart: '+R['2026-10'].rg);
+    ok(/^2 Sept? 2026 – /.test(R.all.rg)&&R.all.sh===R.all.rg,'['+label+'] an All time statement shows from the first activity to today: '+R.all.rg);
     await p.fill('#stFrom','2026-11-10'); await p.fill('#stTo','2026-11-01');
     const sw=await p.evaluate(()=>{ const d=document.createElement('div'); d.innerHTML=FTM.statementHtml(); return d.querySelector('.hd p').textContent; });
     ok(/1 Nov\.? 2026.*10 Nov\.? 2026/.test(sw),'['+label+'] dates entered the wrong way round are swapped: '+sw);
