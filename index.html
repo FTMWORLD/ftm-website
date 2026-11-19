@@ -10139,13 +10139,23 @@ tick();setInterval(tick,5000);})();
       (pb.length?'<div class="stf-pbs">'+pb.map(function(p){ var f=FIX[p.fix]||FIX.lookup; return '<div class="stf-pb s'+p.sev+'"><div><b>'+esc(p.title)+'</b><span>'+esc(p.email)+(p.detail?' · '+esc(p.detail):'')+'</span></div><div class="stf-pba">'+
         (p.fix!=='lookup'?'<button type="button" class="btn btn-sm btn-gold" data-a="fix" data-f="'+esc(f[1])+'" data-uid="'+esc(p.uid)+'" data-email="'+esc(p.email)+'">'+esc(f[0])+'</button>':'')+'<button type="button" class="btn btn-sm btn-dark" data-a="open" data-q="'+esc(p.email)+'">Open customer</button></div><div class="stf-out" hidden></div></div>'; }).join('')+'</div>':'<p class="stf-note">Nothing needs attention right now.</p>')+'</div>';
   }
+  var freeFilter='';
+  function freeCard(){ var all=D.free||[], q=freeFilter.toLowerCase(), F=all.filter(function(u){ return !q||[u.email,u.name].join(' ').toLowerCase().indexOf(q)!==-1; }), d=function(x){ return x?new Date(x).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—'; };
+    return '<div class="app-card stf-card stf-free"><div class="stf-ttl"><h3>Free accounts <small>'+F.length+' of '+all.length+'</small></h3><button type="button" class="btn btn-sm btn-dark" data-a="csvfree">Download CSV</button></div>'+
+      '<div class="stf-filt"><input type="search" id="stfFF" placeholder="Search email or name…" value="'+esc(freeFilter)+'"></div>'+
+      '<div class="app-scroll"><table class="stf-tbl stf-fr"><thead><tr><th>Email</th><th>Name</th><th>Joined</th><th>Last login</th></tr></thead><tbody>'+
+      (F.length?F.slice(0,500).map(function(u){ return '<tr data-a="open" data-q="'+esc(u.email)+'"><td><b>'+esc(u.email)+'</b>'+(u.confirmed?'':'<small>Email not confirmed</small>')+'</td><td>'+esc(u.name||'—')+'</td><td>'+esc(d(u.joined))+'</td><td>'+esc(d(u.last))+'</td></tr>'; }).join('')+(F.length>500?'<tr><td colspan="4">Showing the newest 500. Search to find others, or download the CSV.</td></tr>':''):'<tr><td colspan="4">No free accounts match.</td></tr>')+'</tbody></table></div></div>'; }
+  function csvFree(){ var rows=[['email','name','joined','last_login','email_confirmed']].concat((D.free||[]).map(function(u){ return [u.email,u.name,u.joined,u.last,u.confirmed?'yes':'no']; }));
+    var txt=rows.map(function(r){ return r.map(function(v){ v=v==null?'':String(v); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(','); }).join('\n');
+    var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/csv'})); a.download='ftm-free-accounts-'+new Date().toISOString().slice(0,10)+'.csv'; document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },500); }
   function renderAccounts(){
     var A=(D.accounts||[]).filter(function(a){ var q=acctFilter.toLowerCase(); return (!acctStatus||a.status===acctStatus)&&(!q||[a.email,a.number,a.broker,a.server,a.status,a.tier].join(' ').toLowerCase().indexOf(q)!==-1); });
     var st=Object.keys(D.by_status||{});
     pane('accounts').innerHTML='<div class="app-card stf-card"><div class="stf-ttl"><h3>Connected accounts <small>'+A.length+' of '+(D.accounts||[]).length+'</small></h3><button type="button" class="btn btn-sm btn-dark" data-a="csv">Download CSV</button></div>'+
       '<div class="stf-filt"><input type="search" id="stfAF" placeholder="Search email, account, broker…" value="'+esc(acctFilter)+'"><select id="stfAS"><option value="">Every status</option>'+st.map(function(x){ return '<option'+(x===acctStatus?' selected':'')+'>'+esc(x)+'</option>'; }).join('')+'</select></div>'+
       '<div class="app-scroll"><table class="stf-tbl stf-acc"><thead><tr><th>Customer</th><th>Account</th><th>Status</th><th>Balance</th><th>Equity</th><th>Floating</th><th>Open</th><th>Risk</th></tr></thead><tbody>'+
-      (A.length?A.map(function(a){ return '<tr data-a="open" data-q="'+esc(a.email)+'"><td><b>'+esc(a.email)+'</b></td><td>'+esc(a.number||'—')+'<small>'+esc([a.broker,a.mode].filter(Boolean).join(' · '))+'</small></td><td><span class="stf-st '+(a.status==='ACTIVE'?'ok':(a.status==='PAUSED'?'mid':'bad'))+'">'+esc(a.status||'—')+'</span></td><td>'+m2(a.balance,a.currency)+'</td><td>'+m2(a.equity,a.currency)+'</td><td class="'+(a.floating>=0?'pl-up':'pl-down')+'">'+m2(a.floating)+'</td><td>'+n0(a.open)+'</td><td>'+esc(a.tier||'—')+'</td></tr>'; }).join(''):'<tr><td colspan="8">No accounts match.</td></tr>')+'</tbody></table></div></div>';
+      (A.length?A.map(function(a){ return '<tr data-a="open" data-q="'+esc(a.email)+'"><td><b>'+esc(a.email)+'</b></td><td>'+esc(a.number||'—')+'<small>'+esc([a.broker,a.mode].filter(Boolean).join(' · '))+'</small></td><td><span class="stf-st '+(a.status==='ACTIVE'?'ok':(a.status==='PAUSED'?'mid':'bad'))+'">'+esc(a.status||'—')+'</span></td><td>'+m2(a.balance,a.currency)+'</td><td>'+m2(a.equity,a.currency)+'</td><td class="'+(a.floating>=0?'pl-up':'pl-down')+'">'+m2(a.floating)+'</td><td>'+n0(a.open)+'</td><td>'+esc(a.tier||'—')+'</td></tr>'; }).join(''):'<tr><td colspan="8">No accounts match.</td></tr>')+'</tbody></table></div></div>'+freeCard();
+    var ff=$('#stfFF'); if(ff) ff.addEventListener('input',function(){ freeFilter=ff.value; var pos=ff.selectionStart; renderAccounts(); var n=$('#stfFF'); n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} });
     var af=$('#stfAF'); af.addEventListener('input',function(){ acctFilter=af.value; var pos=af.selectionStart; renderAccounts(); var n=$('#stfAF'); n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} });
     $('#stfAS').addEventListener('change',function(e){ acctStatus=e.target.value; renderAccounts(); });
   }
@@ -10198,6 +10208,7 @@ tick();setInterval(tick,5000);})();
     if(a==='tab'){ go(t.dataset.t); return; }
     if(a==='refresh'||a==='reload'){ t.disabled=true; load(true).then(function(){ t.disabled=false; }); return; }
     if(a==='csv'){ csv(); return; }
+    if(a==='csvfree'){ csvFree(); return; }
     if(a==='open'){ lookup(t.dataset.q); return; }
     if(a==='fix'){ var f=t.dataset.f, out=t.closest('.stf-pb').querySelector('.stf-out');
       if(f.indexOf('tpl:')===0){ var T=TPL[f.slice(4)]; if(!window.confirm('Send "'+T.subject+'" to '+t.dataset.email+'?')) return; out.hidden=false; flash(out,'Sending…'); S(Object.assign({op:'act',uid:t.dataset.uid,do:'email'},T)).then(function(j){ flash(out,'✓ '+esc(j.message)); }).catch(function(x){ flash(out,'Not sent ('+esc(x.code||x.message)+').',true); }); return; }

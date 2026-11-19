@@ -225,7 +225,8 @@ module.exports = async function handler(req, res) {
       stats.conversion = stats.customers ? Math.round(stats.paying / stats.customers * 1000) / 10 : 0;
       if (role === 'support') pay = null;
       return res.status(200).json({ ok: true, role, at: cr.at, crawl_ms: cr.ms, stats, days, money, by_status: count(a => a.status), by_tier: count(a => a.tier), by_broker: count(a => a.broker), payments: pay,
-        accounts: accounts.sort((a, b) => b.equity - a.equity), problems: problems(users, prof, cr) });
+        accounts: accounts.sort((a, b) => b.equity - a.equity), problems: problems(users, prof, cr),
+        free: users.filter(u => !(prof[u.id] || []).length).map(u => { const m = u.user_metadata || {}; return { uid: u.id, email: u.email || '', name: String(m.full_name || m.name || [m.first_name, m.last_name].filter(Boolean).join(' ') || '').slice(0, 60), joined: u.created_at || null, last: u.last_sign_in_at || null, confirmed: !!u.email_confirmed_at }; }).sort((a, b) => String(b.joined || '').localeCompare(String(a.joined || ''))) });
     }
 
     if (op === 'lookup') {

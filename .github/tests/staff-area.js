@@ -41,6 +41,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   users.tokH.created_at=now;
   ok(r[0]===200&&d.stats.paying===3&&d.stats.accounts===2&&d.stats.trading===1&&d.money.USD&&d.money.USD.equity===1012.5,'board: paying customers, connected accounts (master preview left out), money under copy '+JSON.stringify(d.stats&&{p:d.stats.paying,a:d.stats.accounts}));
   ok(d.days.length===30&&d.days[29].signups===5,'board: sign-ups per day for 30 days');
+  { const fe=(d.free||[]).map(x=>x.email); ok(Array.isArray(d.free)&&fe.length===d.stats.free&&!fe.includes('tanaya@x.com')&&(d.free||[]).every(x=>x.email&&'joined' in x&&'last' in x),'board: the free accounts list (every login without a plan, with email, name, joined, last login) '+fe.join(',')); }
   ok(!(d.problems||[]).some(x=>x.kind==='billing'),'billing EXEMPT (FTM house accounts) is not a problem');
   const kinds=(d.problems||[]).map(x=>x.kind).sort().join(',');
   ok(/account/.test(kinds)&&/renewal/.test(kinds)&&(d.problems||[]).some(x=>x.kind==='account'&&/4701/.test(x.title)),'problems: account needing attention and plans ending soon are found ('+kinds+')');
@@ -82,6 +83,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   const DASH={ok:true,at:new Date().toISOString(),crawl_ms:2100,stats:{customers:128,paying:41,investors:2,free:85,new_1d:3,new_7d:19,new_30d:60,active_1d:44,active_7d:90,paying_with_account:38,accounts:52,trading:47,open_positions:31,real:40,demo:12,community:57,online:6,posts_7d:14,conversion:32},
     days:Array.from({length:30},(_,i)=>({d:new Date(Date.now()-(29-i)*864e5).toISOString().slice(0,10),signups:i%5,logins:i%7})),money:{USD:{balance:1234567.89,equity:1240000.5,floating:5432.1,accounts:40},EUR:{balance:20000,equity:20100,floating:100,accounts:12}},
     by_status:{ACTIVE:47,ACTION_REQUIRED:3,PAUSED:2},by_tier:{GROWTH:30,BALANCED:15,CONSERVATIVE:7},by_broker:{DERIV:50,Exness:2},payments:{mtd:{EUR:12495},d30:{EUR:18990},d90:{EUR:40900},count30:9,plans:{Annual:12,'5 Years':4,Lifetime:2},recent:[{at:new Date().toISOString(),email:'tanaya@x.com',plan:'Annual',amount:499,currency:'EUR'}]},
+    free:[{uid:'f1',email:'freebie@x.com',name:'Free Person',joined:'2026-11-10T09:00:00Z',last:'2026-11-18T10:00:00Z',confirmed:true},{uid:'f2',email:'quiet@x.com',name:'',joined:'2026-11-01T09:00:00Z',last:null,confirmed:false}],
     accounts:[{email:'tanaya@x.com',uid:'c1',number:'2022',broker:'DERIV',mode:'REAL',currency:'USD',balance:500,equity:512.5,floating:12.5,open:1,status:'ACTIVE',tier:'GROWTH'},{email:'marine@x.com',uid:'c2',number:'4701',broker:'DERIV',mode:'REAL',currency:'USD',balance:500,equity:500,floating:0,open:0,status:'ACTION_REQUIRED',tier:'BALANCED'}],
     problems:[{sev:3,kind:'account',uid:'c2',email:'marine@x.com',title:'Account 4701: Check your password',detail:'LOGIN_FAILED',fix:'lookup'},{sev:2,kind:'no_account',uid:'c3',email:'new@x.com',title:'Paid, but no trading account connected',detail:'Customer since 2026-11-01',fix:'email_connect'}]};
   const CUST={ok:true,customer:{uid:'c1',email:'tanaya@x.com',name:'Tanaya Rao',created:'2026-10-01T00:00:00Z',last_login:new Date().toISOString(),confirmed:true,products:['auto'],client_id:'FTM-0DDE-4EC966',kyc:{country:'IN',full_name:'Tanaya Rao'},billing:{status:'ACTIVE',period_end:'2027-10-01T00:00:00Z'},
@@ -123,6 +125,9 @@ const BASE=process.argv[2]||'http://localhost:8765';
     await p.click('.stf-pb button[data-f="tpl:connect"]'); await p.waitForTimeout(400); ok(sent.includes('s:act:email'),'['+label+'] a problem is fixed with one click (email sent)');
     await p.click('.stf-tabs [data-t="accounts"]'); await p.waitForTimeout(300);
     await p.fill('#stfAF','4701'); await p.waitForTimeout(200); ok(await p.evaluate(()=>document.querySelectorAll('.stf-acc tbody tr').length===1),'['+label+'] Accounts: search filters the list');
+    { const fr=await p.evaluate(()=>{ const c=document.querySelector('.stf-free'); return c?{h:c.querySelector('h3').textContent, rows:[...c.querySelectorAll('tbody tr')].map(r=>r.innerText.replace(/\s+/g,' '))}:null; });
+      ok(fr&&/Free accounts\s*2 of 2/.test(fr.h)&&/freebie@x\.com/.test(fr.rows[0])&&/Free Person/.test(fr.rows[0])&&/quiet@x\.com Email not confirmed/.test(fr.rows[1]),'['+label+'] Accounts: Free accounts are listed under the connected accounts with email, name, joined and last login '+JSON.stringify(fr));
+      await p.fill('#stfFF','quiet'); await p.waitForTimeout(200); ok(await p.evaluate(()=>document.querySelectorAll('.stf-free tbody tr').length===1),'['+label+'] Free accounts: search filters the list'); await p.fill('#stfFF',''); await p.waitForTimeout(150); }
     await p.click('.stf-acc tbody tr'); await p.waitForTimeout(500);
     const cv=await p.evaluate(()=>{ const c=document.querySelector('.stf-cust'); return c?{t:c.innerText.slice(0,2000),acts:c.querySelectorAll('[data-a="act"]').length}:null; });
     ok(cv&&/FTM-0DDE-4EC966/.test(cv.t)&&/Chrome on Windows/.test(cv.t)&&/DerivSVG-Server-02/.test(cv.t)&&cv.acts>=8,'['+label+'] clicking an account opens the customer: login, plan, payments, accounts, devices, fixes');
