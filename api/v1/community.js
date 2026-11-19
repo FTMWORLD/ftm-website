@@ -160,14 +160,12 @@ module.exports = async function handler(req, res) {
   const action = String(body.action || '');
   try {
     const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-    const user = await userFromToken(admin, req);
+    const S = store(admin);
+    const [user] = await Promise.all([userFromToken(admin, req), S.ready()]);
     if (!user) return res.status(401).json({ ok: false, error: 'NOT_LOGGED_IN' });
-    const S = store(admin); await S.ready();
     const me = midOf(user.id);
-    const idx = await S.read('index.json', { members: {} });
-    const soc = await S.read('social.json', { follows: {}, blocks: {} });
+    const [idx, soc, pres] = await Promise.all([S.read('index.json', { members: {} }), S.read('social.json', { follows: {}, blocks: {} }), S.read('presence.json', {})]);
     let mine = idx.members[me] || null;
-    const pres = await S.read('presence.json', {});
     const nowIso = new Date().toISOString();
     if (mine && (!pres[me] || Date.parse(nowIso) - Date.parse(pres[me]) > 60000)) { pres[me] = nowIso; S.write('presence.json', pres).catch(() => {}); }
     const follows = soc.follows[me] || [], blocks = soc.blocks[me] || [];
@@ -181,6 +179,8 @@ module.exports = async function handler(req, res) {
     const notify = async (m, n) => { if (!m || m === me) return; const p = 'notif/' + m + '.json', nb = await S.read(p, { items: [], read: '' }); n.t = new Date().toISOString(); nb.items = nb.items.filter(z => !(z.k === n.k && z.by === n.by && z.post === n.post && n.k !== 'comment')); nb.items.push(n); if (nb.items.length > 100) nb.items = nb.items.slice(-100); await S.write(p, nb); };
     const okTarget = m => m && m !== me && idx.members[m] && idx.members[m].visible && !hidden.has(m);
     const pushNick = () => (mine && mine.nickname) || 'A member';
+    const circle = () => { const set = new Set(follows); Object.keys(soc.follows).forEach(k => { if ((soc.follows[k] || []).indexOf(me) !== -1) set.add(k); }); return [...set].filter(k => k !== me && idx.members[k] && !hidden.has(k)).slice(0, 300); };
+    const tellCircle = async what => { if (!mine || !mine.visible) return; try { await within(6000, Promise.all(circle().map(k => notify(k, { k: 'profile', by: me, x: what }))), 'circle'); } catch (e) { console.error('circle notify', e.message); } };
     const ping = async (m, o) => { if (!m || m === me) return; try { await within(5000, Push.send(admin, Object.assign({ mid: m }, o)), 'push'); } catch (e) { console.error('push hook', e.message); } };
 
     if (action === 'me') {
@@ -207,8 +207,10 @@ module.exports = async function handler(req, res) {
       const taken = Object.keys(idx.members).some(k => k !== me && String(idx.members[k].nickname).toLowerCase() === nick.toLowerCase());
       if (taken) return res.status(409).json({ ok: false, error: 'NICKNAME_TAKEN' });
       if (LINKS.test(bio) || SELLING.test(bio)) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+      const changed = !mine || mine.nickname !== nick || (mine.bio || '') !== bio || (mine.country || '') !== country;
       idx.members[me] = Object.assign({}, mine || { since: new Date().toISOString() }, { nickname: nick, bio, country, visible, vis_set: true, auto: false, updated: new Date().toISOString() });
-      await S.write('index.json', idx);
+      await S.write('index.json', idx); mine = idx.members[me];
+      if (changed) await tellCircle('profile');
       return res.status(200).json({ ok: true, profile: { nickname: nick, bio, country, visible, since: idx.members[me].since } });
     }
 
@@ -221,7 +223,7 @@ module.exports = async function handler(req, res) {
       if (buf.length > 300000 || buf[0] !== 0xFF || buf[1] !== 0xD8) return res.status(400).json({ ok: false, error: 'IMAGE_INVALID' });
       const r = await within(8000, admin.storage.from(BUCKET).upload('avatars/' + me + '.jpg', buf, { upsert: true, contentType: 'image/jpeg', cacheControl: '0' }), 'avatar upload');
       if (r.error) throw new Error('AVATAR: ' + r.error.message);
-      mine.av = Date.now().toString(36); await S.write('index.json', idx);
+      mine.av = Date.now().toString(36); await S.write('index.json', idx); await tellCircle('photo');
       return res.status(200).json({ ok: true, av: mine.av });
     }
 
@@ -269,17 +271,16 @@ module.exports = async function handler(req, res) {
       if (!mine || !mine.nickname) return res.status(400).json({ ok: false, error: 'PROFILE_FIRST' });
       if (!okTarget(m)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
-      if (!(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
       if (LINKS.test(text) || SELLING.test(text)) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+      const p = 'threads/' + pair(me, m) + '.json', [paidNow, th] = await Promise.all([isPaid(admin, user.id), S.read(p, { msgs: [] })]);
+      if (!paidNow) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
       const now = Date.now(), hits = (sent.get(me) || []).filter(t => now - t < 864e5); if (hits.length >= 200) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
       hits.push(now); sent.set(me, hits);
-      const at = new Date().toISOString(), p = 'threads/' + pair(me, m) + '.json';
-      const th = await S.read(p, { msgs: [] }), nm = { f: me, x: text, t: at };
+      const at = new Date().toISOString(), nm = { f: me, x: text, t: at };
       const q = body.reply ? th.msgs.filter(x => x.t === String(body.reply) && !x.d)[0] : null; if (q) nm.q = { f: q.f, x: Array.from(q.x).slice(0, 90).join(''), t: q.t };
       th.msgs.push(nm); if (th.msgs.length > 500) th.msgs = th.msgs.slice(-500);
-      await S.write(p, th);
-      for (const [a, b] of [[me, m], [m, me]]) { const ib = await S.read('inbox/' + a + '.json', { threads: {} }); ib.threads[b] = Object.assign({}, ib.threads[b], { last: text.slice(0, 120), from: me, t: at }, a === me ? { read: at } : {}); await S.write('inbox/' + a + '.json', ib); }
-      await ping(m, { kind: 'messages', tag: 'msg-' + me, url: '/?open=community&chat=' + me, title: 'New message from {}', body: Array.from(text).slice(0, 140).join(''), args: { title: [pushNick()] }, urgency: 'high' });
+      const inbox = async (a, b) => { const ib = await S.read('inbox/' + a + '.json', { threads: {} }); ib.threads[b] = Object.assign({}, ib.threads[b], { last: text.slice(0, 120), from: me, t: at }, a === me ? { read: at } : {}); await S.write('inbox/' + a + '.json', ib); };
+      await Promise.all([S.write(p, th), inbox(me, m), inbox(m, me), ping(m, { kind: 'messages', tag: 'msg-' + me, url: '/?open=community&chat=' + me, title: 'New message from {}', body: Array.from(text).slice(0, 140).join(''), args: { title: [pushNick()] }, urgency: 'high' })]);
       return res.status(200).json({ ok: true, message: outMsg(nm, me) });
     }
 

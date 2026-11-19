@@ -22,6 +22,8 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Community message took a moment to appear after Send: it now shows instantly (small clock while it is delivered). If it says 'Not sent. Tap to try again.', the connection dropped; tap it to resend.
+- Community: people are notified when someone they follow, or who follows them, changes their profile photo or profile (Notifications tab).
 - Community photo uploaded cut in the wrong place: choosing a photo (profile or post) now opens an editor first. Drag to move, pinch or use the slider to zoom, the round arrow rotates; posts can be Original, Square, Portrait or Wide. Only the part inside the frame is uploaded after 'Use photo'.
 - Discover: the 'Follows you' label looked like a tall, off-centre blob next to the counts. It is now a small centred pill beside the member's country, and the card shows the member's FTM profit % (Since joining leaderboard) next to followers and following.
 - FTM emails looked washed out in dark mode (until 18 Nov): phone mail apps flip colours in dark mode. Fixed: the navy header, result box and footer keep FTM's navy with white and gold text in every app. In the Gmail phone app the white middle part is still darkened by Gmail itself; the figures stay readable.

@@ -47,7 +47,9 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   await A.bringToFront(); await tab(A,'discover'); await A.waitForTimeout(1500);
   ok(/Marine/.test(await A.textContent('#cMembers')),'Tanaya sees Marine in Discover');
   await A.click('#cMembers [data-msg]'); await A.waitForTimeout(500);
-  await A.fill('#cChatInput','Hello Marine, how is your gold trade?'); await A.press('#cChatInput','Enter'); await A.waitForTimeout(700);
+  await A.fill('#cChatInput','Hello Marine, how is your gold trade?'); await A.press('#cChatInput','Enter');
+  ok(await A.evaluate(()=>/Hello Marine/.test(document.getElementById('cChatLog').textContent)&&document.getElementById('cChatInput').value===''),'the message shows in the chat the moment Send is pressed (no waiting for the server)');
+  await A.waitForTimeout(700); ok(!(await A.evaluate(()=>!!document.querySelector('#cChatLog .bub.sending'))),'once delivered, the message is no longer marked as sending');
   ok(/Hello Marine/.test(await A.textContent('#cChatLog')),'Tanaya\'s message appears in her chat');
   await B.bringToFront(); await B.waitForTimeout(4600);
   ok(await B.evaluate(()=>document.querySelector('#cTabs [data-tab="messages"]').classList.contains('has-unread')),'Marine gets an unread mark on Messages');
@@ -150,6 +152,13 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   if(process.env.FEED_SHOTS) await V.screenshot({path:process.env.FEED_SHOTS+'/shared_post_phone.png'});
   await V.close();
   if(process.env.FEED_SHOTS){ const S=process.env.FEED_SHOTS; await A.screenshot({path:S+'/feed_laptop.png'}); await A.setViewportSize({width:390,height:844}); await A.waitForTimeout(300); await A.evaluate(()=>document.querySelector('#fdList').scrollIntoView()); await A.screenshot({path:S+'/feed_phone.png'}); await tab(A,'notifs'); await A.waitForTimeout(600); await A.screenshot({path:S+'/notifs_phone.png'}); }
+  // followers hear about profile changes
+  await B.bringToFront(); await tab(B,'discover'); await B.waitForTimeout(500);
+  if(!(await B.evaluate(()=>{ const f=[...document.querySelectorAll('#cMembers [data-follow]')].find(x=>/Tanaya/.test(x.closest('.mem').textContent)); return f&&f.classList.contains('on'); }))){ await B.evaluate(()=>{ const f=[...document.querySelectorAll('#cMembers [data-follow]')].find(x=>/Tanaya/.test(x.closest('.mem').textContent)); f&&f.click(); }); await B.waitForTimeout(900); }
+  await A.bringToFront(); await tab(A,'profile'); await A.fill('#cBio','Gold, indices and patience'); await A.click('#cSave'); await A.waitForTimeout(900);
+  await B.bringToFront(); await tab(B,'notifs'); await B.evaluate(()=>FTM.notifsLoad&&FTM.notifsLoad(true)); await B.waitForTimeout(1200);
+  ok(/Tanaya\s*updated their profile\./.test(await B.textContent('#ntList')),'a follower is notified when the person they follow updates their profile');
+  ok(!/Marine\s*updated their profile/.test(await A.evaluate(()=>document.getElementById('ntList').textContent)),'nobody is notified about their own change');
   ok(!A.errs.length && !B.errs.length,'no script errors '+(A.errs[0]||B.errs[0]||''));
   await b.close(); console.log(fails?'FAILED: '+fails:'COMMUNITY LIVE OK'); process.exit(fails?1:0);
 })();

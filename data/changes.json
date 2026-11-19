@@ -182,5 +182,13 @@
  {
   "date": "2026-11-19",
   "text": "Community photos: when you choose a profile photo or a photo for a post, an editor opens first so you can move, zoom and rotate it, and choose the shape (round for the profile photo; Original, Square, Portrait or Wide for posts)."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Community messages now appear in the chat the moment you press Send; if the connection drops, the message says 'Not sent' and one tap sends it again."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Community: when someone you follow, or someone who follows you, changes their profile photo or profile, you get a notification."
  }
 ]
