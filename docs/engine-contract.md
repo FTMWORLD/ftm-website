@@ -4,7 +4,54 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-16 (night, 2) — A DEPOSIT OR WITHDRAWAL RE-BASES THE COPY SIZE BY ITSELF (this commit; live 02:10 Berlin, owner's yes, API restarted)
+## 2026-11-19 — COPY STOPS FROM THE COPY'S OWN FILL: INSTALLED, SWITCHED OFF (this commit; installed 05:15 Berlin with the owner's click, API restarted; COPY_STOP_MODE=ABSOLUTE = unchanged behaviour)
+
+- WEBSITE: nothing to change. No API field changed. Nothing about trading changes while the switch is ABSOLUTE.
+- Root cause (measured, 21 days, 95 copies): SL / TP were copied as the master's ABSOLUTE prices. Deriv (customers) and IC Markets
+  (master) quote differently (US Tech gap -30..+42 points), so a copy's stop sat 0.56x-1.54x of the planned distance from its
+  own fill: 5 copies stopped out on trades the master won (-141.33 USD), and up to 54 % more money at risk than planned.
+- New src/services/copy-stops.js, used by the claim route (routes/execution-nodes.js) only with .env COPY_STOP_MODE=DISTANCE
+  (optionally COPY_STOP_DISTANCE_ACCOUNTS for a proof):
+  - the OPEN is sent as before; at its fill the engine records ONE follow-up stop change for that account (event
+    FTM-STOP-RECONCILE, the welcome trade's pattern);
+  - one rule from then on: offset = copy fill - master open (frozen at the fill); copy SL = master's current SL + offset + the
+    existing cushion on the original distance; copy TP = master's current TP + offset; every master trail uses it;
+  - a stop change whose copy has no recorded fill yet waits (deferral); hard guards at the claim: G-STOP-CONSISTENT,
+    G-STOP-WIDTH (<= 1.10x), G-STOP-OFFSET, and G-GAP (an OPEN is not sent when the master's market moved > 50 % of the stop
+    distance, fresh price feed only); refusals keep the copy's stops and alert;
+  - welcome trades, first-trade catch-up copies and group copies are not touched;
+  - SIZE CLASS (owner 19 Nov, installed 05:30 with his click): an account whose sizing base is under COPY_SMALL_ACCOUNT_USD
+    (2,000 USD, the minimum-lot line) keeps today's stops even in DISTANCE mode unless .env COPY_STOP_DISTANCE_SMALL=ON (OFF).
+    By class, never by account id: every present and future small account alike. Per-account check (21 days,
+    scripts/copy-stops-per-account.js): NOT proven better for the small accounts, so they stay as they are;
+  - every claim records the placement stop next to the computed one (ack copy_stops; log line COPY_STOPS).
+- Dry run scripts/copy-stops-dry-run.js: all 95 copies at 1.05x with DISTANCE, 0 guard refusals.
+- Gate: new scripts/verify-copy-stops.js (20 checks on the real claim and result routes, rolled back) and, from 18 Nov,
+  scripts/verify-alert-tiers.js (21 checks). verify-leaderboard L9, verify-rebase R5, verify-account-stats T3b and
+  verify-first-trade A0 no longer depend on live data or on the day they run.
+- Next, each with the owner's yes: live proof on the demo account, then all accounts.
+
+## 2026-11-18 — ONLY WHAT MATTERS REACHES THE PHONE; A DEAD MASTER CHART IS SEEN IN 20 MINUTES AND RESTARTED ONCE (this commit; live 18:40 Berlin, owner's yes for each, no API restart)
+
+- WEBSITE: nothing to change.
+- Incident: the master's XAUUSD / USTEC / USDJPY charts (FTM MACHINE 3.7 on MT5_Master) stopped at the Friday 13 Nov close and
+  stayed dead until 18 Nov 18:17 (EA threads blocked; revived by a controlled restart with their stale state moved aside).
+  EA_SILENT did fire, but 1,629 Telegram pushes in 6 days (a repeated relogin line) buried it and it resolved itself at every
+  daily market break.
+- scripts/basic-alerts.js 0.10.0 + new src/services/alert-tiers.js:
+  - CRITICAL -> Telegram + email once, then only when still true after 1 h / 6 h / 24 h / every 24 h (with the duration), one
+    RESOLVED; a repeated critical event at most once an hour ("+N more"). EXEC_FAILED is critical.
+  - WARNING -> one daily summary (08:00 Berlin). INFO -> the log only.
+  - CHART_DEAD_<terminal>_<symbol> (replaces the 2-hour EA_SILENT): nothing written for 20 minutes while the market has been
+    open that whole time; a market break pauses it instead of resolving it.
+  - Automatic recovery (switch file C:\FTM\ops\FTM_CHART_AUTO_RESTART_ON.txt): after 60 min of open market the terminal is
+    restarted ONCE through the watchdog (state backed up, dead charts' state older than 12 h moved aside, login file written);
+    never twice in 6 h, never with an order in flight.
+- Noise fixes: the relogin task can read the price-feed login (FTM_FEED mirrored) and reports a missing entry once per launch;
+  the hourly client-area test uses its fake login (the demo login belongs to the daily new-customer test) and prunes its
+  first_trades rows; [ALERT] codes may contain digits.
+
+## 2026-11-16 (night, 2) — A DEPOSIT OR WITHDRAWAL RE-BASES THE COPY SIZE BY ITSELF (commit a97fa2f; live 02:10 Berlin, owner's yes, API restarted)
 
 - WEBSITE: nothing to change. No API field changed. Returns, leaderboard and start dates are untouched, as for every re-base.
 - Owner's decision (16 Nov): no one has to report a top-up. Per-trade sizing on the live balance was considered and NOT taken
