@@ -71,7 +71,7 @@ function trades(w, h, part, parts) {
     <div class="kick" style="margin-top:56px">Today's trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
     <div style="margin-top:30px;display:grid;grid-template-columns:122px 1fr 100px 118px 210px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Time</span><span>Market</span><span>Lots</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
-    <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are copied to members' accounts of any size.</div>` : ''}</div>${FOOT}`;
+    <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
