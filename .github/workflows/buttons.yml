@@ -22,6 +22,7 @@ jobs:
           node .github/tests/buttons.js http://localhost:8765
           node .github/tests/figures.js http://localhost:8765
           node .github/tests/compare-markets.js http://localhost:8765
+          node .github/tests/menu-avatar.js http://localhost:8765
           node .github/tests/layout.js http://localhost:8765
           node .github/tests/community-api.js
           node .github/tests/leaderboard-community.js

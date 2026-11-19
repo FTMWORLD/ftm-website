@@ -170,5 +170,9 @@
  {
   "date": "2026-11-19",
   "text": "Risk level card: under the drawdown it now says Very healthy (green), Healthy or Risky, depending on where the drop sits against your profile's normal range."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Client-area menu: the round picture beside your name now shows your Community photo (or the first letter of your name if you have no photo yet)."
  }
 ]
