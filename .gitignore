@@ -13,3 +13,7 @@ social/intro2/vo_track.wav
 social/intro2/mus_track.wav
 social/intro2/*.mp4
 social/intro2/*.timing.json
+social/videos/*/video.mp4
+social/videos/*/*.timing.json
+social/videos/*/f*.png
+social/videos/*/vo/*.wav
