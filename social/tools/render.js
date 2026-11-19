@@ -87,7 +87,7 @@ function card(w, h) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);
     await p.waitForTimeout(250);
-    await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.close();
+    await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.screenshot({ path: `${outDir}/${name}-${tag}.jpg`, type: 'jpeg', quality: 92 }); await p.close();
   }
   await b.close(); console.log('ok', name);
 })();
