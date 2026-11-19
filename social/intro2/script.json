@@ -1,16 +1,72 @@
 [
- {"id":"ada","vo":"Meet Ada. She's a nurse. Her alarm rings at six a.m., every single day.","see":"Ada asleep in bed at dawn; the alarm clock on the bedside table shakes and rings at 6:00; she sits up and stretches."},
- {"id":"tom","vo":"Meet Tom. He works at a bank. Meetings from morning to night.","see":"Tom at his office desk, laptop open; a wall clock spins fast from morning to evening; meeting bubbles pop up around him."},
- {"id":"worry","vo":"Both of them worry about the same thing: the future. Their savings grow slowly. Prices grow faster.","see":"Ada and Tom side by side, each with a thought bubble: a small piggy bank barely growing, next to a price tag climbing fast."},
- {"id":"time","vo":"They know the markets could help. But who has time to watch charts all day?","see":"Market charts flicker in the background; Ada and Tom glance at their watches and shake their heads."},
- {"id":"leo","vo":"Leo tried. He wakes up at three in the morning to catch a trade. Tired at work, nervous all day.","see":"Night scene with a moon: Leo in bed lit by his phone screen showing a chart; clock reads 3:00; he yawns."},
- {"id":"mia","vo":"Mia copies someone else's trades instead. Their risk. Their bad days. She only finds out after it happens.","see":"Mia looks at her phone; a stranger's avatar appears; the chart line drops sharply in red; a warning mark pops up over her head."},
- {"id":"same","vo":"Different lives. The same problem: no time, and no system.","see":"Ada, Tom, Leo and Mia stand in a row; one shared caption: no time, no system."},
- {"id":"meet","vo":"That's why we built FTM MACHINE.","see":"The four characters turn; the FTM logo (blue rounded square, gold chart line, white FTM) appears with a gold line rising behind it."},
- {"id":"what","vo":"Software that takes part in the markets for you. Fixed rules, around the clock, on your own account.","see":"A friendly machine panel works steadily: gold, Bitcoin, US Tech 100, USD/JPY and Hang Seng 50 tiles light up one by one; a 24-hour clock turns."},
- {"id":"trust","vo":"Your money stays in your name. You see every trade. And you can pause any time.","see":"Three gold check marks appear one after the other next to a phone showing a trade list and a pause button."},
- {"id":"start","vo":"Getting started takes minutes. Open ftm wealth nation dot com, create a free account, and connect your account in seconds.","see":"Phone mock-up: the FTM homepage, then the Connect account form filling in, then a green Connected tick."},
- {"id":"follow","vo":"Then follow every trade, and get your daily, weekly and monthly results.","see":"Notifications slide in: 'Your daily result is ready', 'Your weekly summary is ready'; the client area calendar and statistics appear."},
- {"id":"life","vo":"Ada is at work. Tom is in his meetings. And FTM MACHINE follows the markets for them.","see":"Split screen: Ada with a patient, Tom presenting; in a corner, FTM MACHINE quietly ticking with a gold line moving."},
- {"id":"cta","vo":"The markets moved today. Did your money? Start free at ftm wealth nation dot com. Invest today, secure tomorrow.","see":"Big closing card: 'The markets moved today. Did your money?' then the website, a red Start free button, and the gold tagline."}
+ {
+  "id": "ada",
+  "vo": "Meet Ada. She's a nurse. Every morning at six, the alarm rings. Every single day.",
+  "see": "Ada asleep in bed at dawn; the alarm clock on the bedside table shakes and rings at 6:00; she sits up and stretches."
+ },
+ {
+  "id": "tom",
+  "vo": "This is Tom. He works at a bank. Meetings, from morning to night.",
+  "see": "Tom at his office desk, laptop open; a wall clock spins fast from morning to evening; meeting bubbles pop up around him."
+ },
+ {
+  "id": "worry",
+  "vo": "Both of them carry the same quiet worry: the future. Their savings grow slowly, while prices grow faster.",
+  "see": "Ada and Tom side by side, each with a thought bubble: a small piggy bank barely growing, next to a price tag climbing fast."
+ },
+ {
+  "id": "time",
+  "vo": "They know the markets could help. But honestly, who has time to watch charts all day?",
+  "see": "Market charts flicker in the background; Ada and Tom glance at their watches and shake their heads."
+ },
+ {
+  "id": "leo",
+  "vo": "Leo tried. He wakes up at three a.m. to catch a trade. Then he's tired at work, and nervous all day.",
+  "see": "Night scene with a moon: Leo in bed lit by his phone screen showing a chart; clock reads 3:00; he yawns."
+ },
+ {
+  "id": "mia",
+  "vo": "Mia copies someone else's trades. Their risk. Their bad days. And she only finds out after it happens.",
+  "see": "Mia looks at her phone; a stranger's avatar appears; the chart line drops sharply in red; a warning mark pops up over her head."
+ },
+ {
+  "id": "same",
+  "vo": "Different lives. Same problem. No time, and no system.",
+  "see": "Ada, Tom, Leo and Mia stand in a row; one shared caption: no time, no system."
+ },
+ {
+  "id": "meet",
+  "vo": "That's exactly why we built FTM MACHINE.",
+  "see": "The four characters turn; the FTM logo (blue rounded square, gold chart line, white FTM) appears with a gold line rising behind it."
+ },
+ {
+  "id": "what",
+  "vo": "Smart software that takes part in the markets for you. Fixed rules. Around the clock. On your own account.",
+  "see": "A friendly machine panel works steadily: gold, Bitcoin, US Tech 100, USD/JPY and Hang Seng 50 tiles light up one by one; a 24-hour clock turns."
+ },
+ {
+  "id": "trust",
+  "vo": "Your money stays in your name. You see every single trade. And you can pause any time you want.",
+  "see": "Three gold check marks appear one after the other next to a phone showing a trade list and a pause button."
+ },
+ {
+  "id": "start",
+  "vo": "Getting started takes minutes. Visit ftm wealth nation dot com, open a free account, and connect your account in seconds.",
+  "see": "Phone mock-up: the FTM homepage, then the Connect account form filling in, then a green Connected tick."
+ },
+ {
+  "id": "follow",
+  "vo": "Then sit back, follow every trade, and get your daily, weekly and monthly results.",
+  "see": "Notifications slide in: 'Your daily result is ready', 'Your weekly summary is ready'; the client area calendar and statistics appear."
+ },
+ {
+  "id": "life",
+  "vo": "Ada is at work. Tom is in his meetings. And FTM MACHINE? It's following the markets for them.",
+  "see": "Split screen: Ada with a patient, Tom presenting; in a corner, FTM MACHINE quietly ticking with a gold line moving."
+ },
+ {
+  "id": "cta",
+  "vo": "The markets moved today. Did your money? Start free at ftm wealth nation dot com. Invest today. Secure tomorrow.",
+  "see": "Big closing card: 'The markets moved today. Did your money?' then the website, a red Start free button, and the gold tagline."
+ }
 ]
