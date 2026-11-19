@@ -13,6 +13,14 @@ body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antia
 .foot{position:absolute;left:0;right:0;bottom:0;height:120px;background:#0b1640;display:flex;align-items:center;justify-content:space-between;padding:0 70px;border-top:1.5px solid rgba(212,175,55,.35);z-index:5}
 .foot i{font-style:normal;color:#E3B62F;font-weight:700;font-size:30px}.foot u{text-decoration:none;font-weight:600;font-size:28px;opacity:.9}
 #bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:6}
+</style><style id="land" media="none">
+html,body{width:1920px;height:1080px}
+#art{left:110px;right:auto;top:100px;width:796px;height:860px}
+#art svg{width:796px;height:860px}
+.logo{left:1000px;top:120px}
+#sub{left:1000px;right:120px;top:300px;height:600px;justify-content:center}
+#sub .w{font-size:60px;line-height:1.3}
+.foot{height:90px}
 </style></head><body>
 <div id="bg"></div>
 <div class="logo"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
@@ -21,6 +29,7 @@ body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antia
 <div id="sub"><div class="w" id="subw"></div></div>
 <div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>
 <script>
+if(location.hash==='#land')document.getElementById('land').media='all';
 const W=1000,H=1080;
 const C={navy:'#0b1640',blue:'#1F3A93',gold:'#D4AF37',gold2:'#E3B62F',red:'#E5323E',green:'#2fbf71',white:'#fff',mute:'#aeb7dc'};
 const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));const ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)};const io=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
