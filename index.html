@@ -4064,7 +4064,7 @@ body.op-lock{overflow:hidden}
         <div class="cv-title"><h3 class="has-tip" data-tip="Gold line: balance after every closed trade. Green or red line: equity, which includes open trades (green when they are in profit, red when in loss). Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account progress</h3><div class="cv-now"><b id="cvNow">&mdash;</b><span id="cvChg"></span></div></div>
         <div class="cv-controls">
           <div class="tf" id="curveTF"><button data-r="1">1M</button><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="ytd">YTD</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div>
-          <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div><select id="cvCmp" class="cv-cmp" aria-label="Compare with" hidden><option value="">Compare with…</option><optgroup label="FTM markets"><option value="XAUUSD">Gold</option><option value="BTCUSD">Bitcoin</option><option value="USTEC">US Tech 100</option><option value="USDJPY">USD/JPY</option><option value="HK50">HK50</option></optgroup><optgroup label="Indices and metals"><option value="US500" data-pub="1">S&amp;P 500</option><option value="XAGUSD" data-pub="1">Silver</option></optgroup><optgroup label="Top stocks"><option value="NVDA" data-pub="1">Nvidia</option><option value="AAPL" data-pub="1">Apple</option><option value="MSFT" data-pub="1">Microsoft</option><option value="AMZN" data-pub="1">Amazon</option><option value="GOOGL" data-pub="1">Google</option></optgroup></select>
+          <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div><select id="cvCmp" class="cv-cmp" aria-label="Compare with" hidden><option value="">Compare with…</option><optgroup label="FTM markets"><option value="XAUUSD">Gold</option><option value="BTCUSD">Bitcoin</option><option value="USTEC">US Tech 100</option><option value="USDJPY">USD/JPY</option><option value="HK50">HK50</option></optgroup><optgroup label="World markets"><option value="US500" data-pub="1">S&amp;P 500</option><option value="DJI" data-pub="1">Dow Jones</option><option value="DAX" data-pub="1">DAX</option><option value="XAGUSD" data-pub="1">Silver</option><option value="OIL" data-pub="1">Crude oil</option><option value="EURUSD" data-pub="1">EUR/USD</option><option value="ETHUSD" data-pub="1">Ethereum</option></optgroup><optgroup label="Top stocks"><option value="NVDA" data-pub="1">Nvidia</option><option value="AAPL" data-pub="1">Apple</option><option value="MSFT" data-pub="1">Microsoft</option><option value="AMZN" data-pub="1">Amazon</option><option value="GOOGL" data-pub="1">Google</option><option value="TSLA" data-pub="1">Tesla</option><option value="META" data-pub="1">Meta</option><option value="BRKB" data-pub="1">Berkshire Hathaway</option><option value="TSM" data-pub="1">TSMC</option><option value="JPM" data-pub="1">JPMorgan</option></optgroup></select>
           <div class="cv-zoom-btns">
             <button class="cv-zoom-btn" id="curveZoomOut" type="button" aria-label="Zoom out">&minus;</button>
             <button class="cv-zoom-btn" id="curveZoomIn" type="button" aria-label="Zoom in">+</button>
@@ -7645,7 +7645,7 @@ body.op-lock{overflow:hidden}
         (on?on.name+' ('+on.number+')':'no account')+
         '</b>. Connecting a different account closes every open position on this one first, then starts trading on the new account.';
       var st=document.getElementById('mStatus');
-      if(st) st.innerHTML=on?'<i></i>FTM MACHINE is running on '+on.name:'FTM MACHINE is not running yet';
+      if(st) st.innerHTML=on?'<i></i>'+((window.I18NE&&I18NE.t)?I18NE.t('FTM MACHINE is trading for you'):'FTM MACHINE is trading for you'):'FTM MACHINE is not running yet';
     }
 
     F.renderAccounts = renderAccounts;
@@ -10618,7 +10618,7 @@ tick();setInterval(tick,5000);})();
     else if(!A.length){ b='Connect a trading account'; }
     else if(!ok && !on){ b=(bad && !(bad.brokerTradeDisabled||bad.statusReason==='CANNOT_TRADE'))?'Add account':''; }
     else if(!on){ h='Open the menu ⋮ next to your account and choose Trade on this account.'; }
-    else { h=tr('FTM MACHINE is running on {}').replace('{}',on.name+' '+on.number); }
+    else { h='FTM MACHINE is trading for you'; }
     hint.hidden=!h; hint.textContent=h?tr(h):'';
     btn.hidden=!b; btn.textContent=b?tr(b):''; btn.dataset.act=b;
     var hasAuto=!!(s.products&&s.products.indexOf('auto')>-1), bs=$('billSt'), stt=hasAuto?(F.planStatus||'ACTIVE'):'NONE';

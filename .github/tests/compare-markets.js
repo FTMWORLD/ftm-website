@@ -11,7 +11,7 @@ const hist=[
  {type:'SELL',entry:'OUT',position_ref:'B',time:new Date(now-5*D+36e5).toISOString(),profit:30,net:30,symbol:'HK50',volume:0.01}];
 const stats={ok:true,history:hist.slice().reverse(),history_total:hist.length,deposits_total:1000,withdrawals_total:0,closed_pl_total:80,trades_closed:2,wins:2,losses:0,win_rate_pct:100};
 const candles=(n,step,iso)=>Array.from({length:60},(_,i)=>{ const t=now-(59-i)*D; return {t:iso?new Date(t).toISOString():t,o:n+i*step,h:0,l:0,c:n+(i+1)*step}; });
-const want=['XAUUSD','BTCUSD','USTEC','USDJPY','HK50','US500','XAGUSD','NVDA','AAPL','MSFT','AMZN','GOOGL'];
+const want=['XAUUSD','BTCUSD','USTEC','USDJPY','HK50','US500','DJI','DAX','XAGUSD','OIL','EURUSD','ETHUSD','NVDA','AAPL','MSFT','AMZN','GOOGL','TSLA','META','BRKB','TSM','JPM'];
 const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) fails.push(m);};
 (async()=>{
  const b=await chromium.launch(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{});
@@ -32,11 +32,13 @@ const fails=[]; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) 
   await p.goto(BASE+'/');
   try{ await setup(); }catch(e){ if(!/context was destroyed|navigation/i.test(e.message)) throw e; await setup(); }
   await p.waitForTimeout(2500);
+  const stt=await p.evaluate(()=>{ const e=document.getElementById('mStatus'), h=document.getElementById('actHint'); return [(e&&e.textContent||'').trim(), (h&&!h.hidden?h.textContent:'').trim()]; });
+  ok(stt[0]==='FTM MACHINE is trading for you'&&!/DERIV|51000001|running on/i.test(stt.join(' ')), dev+': the chart says FTM MACHINE is trading for you, with no broker name (got '+stt.join(' | ')+')');
   const opts=await p.evaluate(()=>[...document.querySelectorAll('#cvCmp option')].map(o=>o.value).filter(Boolean));
-  ok(JSON.stringify(opts)===JSON.stringify(want), dev+': Compare with lists FTM\'s five markets, the S&P 500, silver and five top stocks (got '+opts.join(',')+')');
+  ok(JSON.stringify(opts)===JSON.stringify(want), dev+': Compare with lists FTM\'s five markets, seven world markets and ten top stocks (got '+opts.join(',')+')');
   const groups=await p.evaluate(()=>[...document.querySelectorAll('#cvCmp optgroup')].map(g=>g.label+':'+g.children.length).join('|'));
-  ok(groups==='FTM markets:5|Indices and metals:2|Top stocks:5', dev+': the list is grouped (got '+groups+')');
-  for(const sym of ['NVDA','HK50','US500']){
+  ok(groups==='FTM markets:5|World markets:7|Top stocks:10', dev+': the list is grouped (got '+groups+')');
+  for(const sym of ['NVDA','HK50','US500','BRKB']){
    const res=await p.evaluate(sym=>new Promise(done=>{ const cmp=document.getElementById('cvCmp'); cmp.hidden=false; cmp.value=sym; cmp.dispatchEvent(new Event('change'));
      setTimeout(()=>{ try{ const pl=document.querySelector('#mCurve .cv-bench'), lab=document.querySelector('#mCurve .cv-bench-l'), svg=pl&&pl.ownerSVGElement;
        if(FTM.curveUnit!=='percent') return done('not in %'); if(!pl||!lab) return done('no comparison line');

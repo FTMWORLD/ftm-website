@@ -6,7 +6,17 @@ const LIST = {
   AAPL: { y: 'AAPL', s: 'aapl.us' },
   MSFT: { y: 'MSFT', s: 'msft.us' },
   AMZN: { y: 'AMZN', s: 'amzn.us' },
-  GOOGL: { y: 'GOOGL', s: 'googl.us' }
+  GOOGL: { y: 'GOOGL', s: 'googl.us' },
+  DJI: { y: '^DJI', s: '^dji' },
+  DAX: { y: '^GDAXI', s: '^dax' },
+  OIL: { y: 'CL=F', s: 'cl.f' },
+  EURUSD: { y: 'EURUSD=X', s: 'eurusd' },
+  ETHUSD: { y: 'ETH-USD', s: 'eth.v' },
+  TSLA: { y: 'TSLA', s: 'tsla.us' },
+  META: { y: 'META', s: 'meta.us' },
+  BRKB: { y: 'BRK-B', s: 'brk-b.us' },
+  TSM: { y: 'TSM', s: 'tsm.us' },
+  JPM: { y: 'JPM', s: 'jpm.us' }
 };
 const memo = {};
 const UA = { 'User-Agent': 'Mozilla/5.0 (compatible; price-check)', Accept: '*/*' };
