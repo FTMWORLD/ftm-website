@@ -2713,6 +2713,12 @@ h3.has-tip{cursor:help}
 .chat-reply button{border:0;background:#e9ecf5;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:18px;line-height:1;color:#0b1440;flex:none}
 .mem .top .avatar,.mem .top b,.feed-row .avatar,.feed-row b{cursor:pointer}
 .pk-sheet{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;background:rgba(8,14,40,.55);backdrop-filter:blur(3px);padding:20px}.pk-sheet[hidden]{display:none}
+.pe-lock,.pe-lock body{overflow:hidden}.pk-card.pe-card{width:min(540px,100%);padding:22px 22px 20px}.pe-t{margin:0 0 2px;font-size:19px;color:#0b1440}.pe-hint{margin:0 0 12px;font-size:13px;color:#5b6378}
+.pe-stage{position:relative;width:100%;height:min(62vh,440px);border-radius:16px;overflow:hidden;background:#0b1440;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}.pe-stage.drag{cursor:grabbing}.pe-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pe-asp{display:flex;gap:6px;margin:12px 0 0;flex-wrap:wrap}.pe-asp[hidden]{display:none}.pe-asp button{flex:1 1 0;min-width:64px;height:34px;border-radius:99px;border:1px solid var(--line);background:#fff;color:#0b1440;font:inherit;font-size:13px;font-weight:700;cursor:pointer}.pe-asp button.is-on{background:#0b1440;border-color:#0b1440;color:#fff}
+.pe-ctl{display:flex;align-items:center;gap:10px;margin:14px 0 4px;color:#5b6378}.pe-ctl>svg{width:20px;height:20px;flex:none}.pe-ctl input[type=range]{flex:1;min-width:0;accent-color:#D4AF37;height:28px}.pe-rot{width:38px;height:38px;flex:none;border-radius:50%;border:1px solid var(--line);background:#fff;color:#0b1440;display:grid;place-items:center;cursor:pointer}.pe-rot svg{width:19px;height:19px}
+.pe-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}.pe-btns .btn{min-width:120px}
+@media (max-width:560px){.pk-card.pe-card{width:100%;padding:18px 16px calc(16px + env(safe-area-inset-bottom))}.pe-stage{height:min(52vh,400px)}.pe-btns .btn{flex:1;min-width:0}}
 .pk-card{position:relative;background:#fff;width:min(400px,100%);max-height:calc(100dvh - 40px);overflow:auto;border-radius:22px;box-shadow:0 30px 80px -20px rgba(8,14,40,.6);animation:cwIn .22s ease-out;text-align:center;padding:0 22px 22px}
 .pk-cover{height:96px;margin:0 -22px;background:linear-gradient(115deg,#0B1440,#152a7a 55%,#D4AF37);background-size:220% 100%;animation:pkSh 9s ease-in-out infinite alternate}
 @keyframes pkSh{to{background-position:100% 0}}@media (prefers-reduced-motion:reduce){.pk-cover{animation:none}}
@@ -8535,10 +8541,8 @@ body.op-lock{overflow:hidden}
       function sync(){ var pollOk=!FD.poll||FD.poll.filter(function(v){ return v.trim(); }).length>=2; btn.disabled=!((ta.value.trim()||FD.imgs.length)&&pollOk); ta.style.height='auto'; ta.style.height=Math.min(260,ta.scrollHeight)+'px'; }
       ta.addEventListener('input',function(){ el('fdErr').hidden=true; sync(); });
       file.addEventListener('change',function(){ var fs=[].slice.call(file.files||[]).slice(0,4-FD.imgs.length); file.value='';
-        fs.forEach(function(f){ var img=new Image(), url=URL.createObjectURL(f);
-          img.onload=function(){ var M=1440, sc=Math.min(1,M/Math.max(img.width,img.height)), c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc); c.getContext('2d').drawImage(img,0,0,c.width,c.height); URL.revokeObjectURL(url);
-            var q=0.85, d=c.toDataURL('image/jpeg',q); while(d.length>900000&&q>0.4){ q-=0.1; d=c.toDataURL('image/jpeg',q); } if(FD.imgs.length<4) FD.imgs.push(d); prev(); sync(); };
-          img.onerror=function(){ var x=el('fdErr'); x.textContent=tr2('That file is not a picture we can read.'); x.hidden=false; }; img.src=url; }); });
+        var next=function(i){ if(i>=fs.length) return; F.photoEdit(fs[i],{max:1440}).then(function(c){ if(c){ var q=0.85, d=c.toDataURL('image/jpeg',q); while(d.length>900000&&q>0.4){ q-=0.1; d=c.toDataURL('image/jpeg',q); } if(FD.imgs.length<4) FD.imgs.push(d); prev(); sync(); } next(i+1); })
+          .catch(function(){ var x=el('fdErr'); x.textContent=tr2('That file is not a picture we can read.'); x.hidden=false; next(i+1); }); }; next(0); });
       function reset(){ ta.value=''; FD.imgs=[]; FD.poll=null; prev(); pollDraw(); sync(); }
       btn.addEventListener('click',function(){ var t=ta.value.trim(); if(!t&&!FD.imgs.length) return; var po=FD.poll?FD.poll.map(function(v){ return v.trim(); }).filter(Boolean):null;
         if(!LIVE()){ FD.posts.unshift({id:'l'+Date.now(),author:{mid:CM.mid||'me',nickname:P.handle||'You',av:P.av},text:t,imgs:FD.imgs.slice(),t:new Date().toISOString(),likes:0,liked:false,comments:[],mine:true,can_delete:true,poll:po?{options:po.map(function(x){ return {text:x,votes:0}; }),total:0,mine:-1}:null}); reset(); renderFeed(true); return; }
@@ -8845,10 +8849,8 @@ body.op-lock{overflow:hidden}
     (function(){ var f=el('cAvFile'), msg=el('cAvMsg'), del=el('cAvDel'); if(!f) return;
       var say=function(t,bad){ msg.textContent=t; msg.style.color=bad?'#c81e2b':'#1f8a5b'; msg.hidden=!t; };
       f.addEventListener('change',function(){ var file=f.files&&f.files[0]; f.value=''; if(!file) return; if(!LIVE()){ say(tr2('Log in to change your photo.'),true); return; } if(!P.handle){ say(tr2('Save your community profile first (My profile).'),true); return; }
-        say(tr2('Uploading…')); var img=new Image(), url=URL.createObjectURL(file);
-        img.onload=function(){ var c=document.createElement('canvas'), S=256, m=Math.min(img.width,img.height); c.width=S; c.height=S; c.getContext('2d').drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S); URL.revokeObjectURL(url);
-          capi('avatar',{image:c.toDataURL('image/jpeg',0.86)}).then(function(j){ P.av=j.av; sbAv(); say(tr2('Photo updated.')); renderOverview(); liveLoad(true); }).catch(function(e){ say(cerr(e),true); }); };
-        img.onerror=function(){ say(tr2('That file is not a picture we can read.'),true); }; img.src=url; });
+        say(''); F.photoEdit(file,{circle:true,size:400}).then(function(c){ if(!c) return; say(tr2('Uploading…')); var q=0.88, d=c.toDataURL('image/jpeg',q); while(d.length>380000&&q>0.5){ q-=0.08; d=c.toDataURL('image/jpeg',q); }
+          capi('avatar',{image:d}).then(function(j){ P.av=j.av; sbAv(); say(tr2('Photo updated.')); renderOverview(); liveLoad(true); }).catch(function(e){ say(cerr(e),true); }); }).catch(function(){ say(tr2('That file is not a picture we can read.'),true); }); });
       del.addEventListener('click',function(){ if(!LIVE()||!P.av) return; capi('avatar',{remove:true}).then(function(){ P.av=null; sbAv(); say(tr2('Photo removed.')); renderOverview(); liveLoad(true); }).catch(function(e){ say(cerr(e),true); }); }); })();
     (function(){ var q=el('cSearch'); if(q) q.addEventListener('input',function(){ renderMembers(); }); })();
     el('cName').value=P.handle;
@@ -11271,6 +11273,55 @@ tick();setInterval(tick,5000);})();
   document.addEventListener('click',function(){ setTimeout(fitSoon,80); },true);
   (function(){ var last=0; function hook(){ ['appView','invView'].forEach(function(id){ var r=document.getElementById(id); if(!r||r._fzObs) return; r._fzObs=1; new MutationObserver(function(){ var now=Date.now(); if(now-last<120){ fitSoon(); return; } last=now; try{ fitNums(); }catch(x){} }).observe(r,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['hidden']}); }); } if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',hook); else hook(); })();
   setInterval(fitStats,1200); window.addEventListener('resize',fitStats); window.FTM=window.FTM||{}; FTM.fitStats=fitStats; FTM.fitNums=fitNums; })();
+</script>
+<div class="pk-sheet pe-sheet" id="peModal" hidden><div class="pk-card pe-card" role="dialog" aria-modal="true" aria-labelledby="peT"><h3 class="pe-t" id="peT">Edit photo</h3><p class="pe-hint">Drag to move. Pinch or use the slider to zoom.</p><div class="pe-stage" id="peStage"><canvas id="peCv"></canvas></div><div class="pe-asp" id="peAsp" role="group" aria-label="Shape"><button type="button" data-a="0" class="is-on">Original</button><button type="button" data-a="1">Square</button><button type="button" data-a="0.8">Portrait</button><button type="button" data-a="1.7778">Wide</button></div><div class="pe-ctl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3M8.5 11h5"/></svg><input type="range" id="peZoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.3-4.3M8.5 11h5M11 8.5v5"/></svg><button type="button" class="pe-rot" id="peRot" aria-label="Rotate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div><div class="pe-btns"><button type="button" class="btn btn-outline" id="peNo">Cancel</button><button type="button" class="btn btn-gold" id="peOk">Use photo</button></div></div></div>
+<script>
+(function(){
+  var M=document.getElementById('peModal'); if(!M) return;
+  var stage=document.getElementById('peStage'), cv=document.getElementById('peCv'), zm=document.getElementById('peZoom'), asp=document.getElementById('peAsp'), ok=document.getElementById('peOk'), no=document.getElementById('peNo'), rot=document.getElementById('peRot');
+  var S=null, done=null;
+  function dims(){ var r=S.rot%180!==0; return {w:r?S.img.height:S.img.width, h:r?S.img.width:S.img.height}; }
+  function frame(){ var W=stage.clientWidth, H=stage.clientHeight, m=W<420?16:28, a=S.circle?1:(S.aspect||(dims().w/dims().h)), fw=W-2*m, fh=fw/a; if(fh>H-2*m){ fh=H-2*m; fw=fh*a; } return {W:W,H:H,fw:fw,fh:fh}; }
+  function base(F){ var d=dims(); return Math.max(F.fw/d.w, F.fh/d.h); }
+  function clamp(F){ var d=dims(), s=base(F)*S.z, mx=Math.max(0,(d.w*s-F.fw)/2), my=Math.max(0,(d.h*s-F.fh)/2); S.tx=Math.max(-mx,Math.min(mx,S.tx)); S.ty=Math.max(-my,Math.min(my,S.ty)); }
+  function paint(){ if(!S) return; var F=frame(), dpr=Math.min(3,window.devicePixelRatio||1); if(!F.W||!F.H) return; clamp(F);
+    var pw=Math.round(F.W*dpr), ph=Math.round(F.H*dpr); if(cv.width!==pw||cv.height!==ph){ cv.width=pw; cv.height=ph; }
+    var c=cv.getContext('2d'); c.setTransform(dpr,0,0,dpr,0,0); c.clearRect(0,0,F.W,F.H); c.fillStyle='#0b1440'; c.fillRect(0,0,F.W,F.H);
+    var s=base(F)*S.z; c.save(); c.translate(F.W/2+S.tx,F.H/2+S.ty); c.rotate(S.rot*Math.PI/180); c.scale(s,s); c.imageSmoothingQuality='high'; c.drawImage(S.img,-S.img.width/2,-S.img.height/2); c.restore();
+    var x=(F.W-F.fw)/2, y=(F.H-F.fh)/2; c.save(); c.beginPath(); c.rect(0,0,F.W,F.H); if(S.circle) c.arc(F.W/2,F.H/2,F.fw/2,0,Math.PI*2,true); else { c.moveTo(x,y); c.lineTo(x,y+F.fh); c.lineTo(x+F.fw,y+F.fh); c.lineTo(x+F.fw,y); c.closePath(); }
+    c.fillStyle='rgba(11,20,64,.62)'; c.fill('evenodd'); c.restore();
+    c.save(); c.strokeStyle='rgba(255,255,255,.95)'; c.lineWidth=2; c.beginPath(); if(S.circle) c.arc(F.W/2,F.H/2,F.fw/2-1,0,Math.PI*2); else c.rect(x+1,y+1,F.fw-2,F.fh-2); c.stroke();
+    if(S.drag){ c.strokeStyle='rgba(255,255,255,.35)'; c.lineWidth=1; c.beginPath(); for(var k=1;k<3;k++){ c.moveTo(x+F.fw*k/3,y); c.lineTo(x+F.fw*k/3,y+F.fh); c.moveTo(x,y+F.fh*k/3); c.lineTo(x+F.fw,y+F.fh*k/3); } c.stroke(); } c.restore();
+    S.F=F; }
+  function setZ(z,ax,ay){ var F=frame(), old=S.z; z=Math.max(1,Math.min(4,z)); if(ax!=null){ var k=z/old; S.tx=(S.tx-(ax-F.W/2))*k+(ax-F.W/2); S.ty=(S.ty-(ay-F.H/2))*k+(ay-F.H/2); } else { S.tx*=z/old; S.ty*=z/old; } S.z=z; zm.value=String(z); paint(); }
+  function render(){ var F=S.F||frame(), s=base(F)*S.z, d=dims(), srcW=F.fw/s, srcH=F.fh/s, ow, oh;
+    if(S.circle){ ow=oh=S.size||400; } else { var L=S.max||1440, k=Math.min(1,L/Math.max(srcW,srcH)); ow=Math.max(1,Math.round(srcW*k)); oh=Math.max(1,Math.round(srcH*k)); }
+    var o=document.createElement('canvas'); o.width=ow; o.height=oh; var c=o.getContext('2d'); c.fillStyle='#fff'; c.fillRect(0,0,ow,oh); c.imageSmoothingQuality='high';
+    c.translate(ow/2,oh/2); c.scale(ow/F.fw,oh/F.fh); c.translate(S.tx,S.ty); c.rotate(S.rot*Math.PI/180); c.scale(s,s); c.drawImage(S.img,-S.img.width/2,-S.img.height/2); return o; }
+  function close(v){ M.hidden=true; document.documentElement.classList.remove('pe-lock'); var d=done; done=null; S=null; if(d) d(v); }
+  var P={};
+  stage.addEventListener('pointerdown',function(e){ if(!S) return; e.preventDefault(); try{ stage.setPointerCapture(e.pointerId); }catch(x){} P[e.pointerId]={x:e.clientX,y:e.clientY}; S.drag=true; stage.classList.add('drag'); paint(); });
+  stage.addEventListener('pointermove',function(e){ if(!S||!P[e.pointerId]) return; var ids=Object.keys(P), p=P[e.pointerId];
+    if(ids.length>=2){ var a=P[ids[0]], b=P[ids[1]], d0=Math.hypot(a.x-b.x,a.y-b.y), mx0=(a.x+b.x)/2, my0=(a.y+b.y)/2; p.x=e.clientX; p.y=e.clientY; var d1=Math.hypot(a.x-b.x,a.y-b.y), mx1=(a.x+b.x)/2, my1=(a.y+b.y)/2, r=stage.getBoundingClientRect();
+      S.tx+=mx1-mx0; S.ty+=my1-my0; if(d0>0) setZ(S.z*d1/d0,mx1-r.left,my1-r.top); else paint(); return; }
+    S.tx+=e.clientX-p.x; S.ty+=e.clientY-p.y; p.x=e.clientX; p.y=e.clientY; paint(); });
+  var up=function(e){ delete P[e.pointerId]; if(!Object.keys(P).length&&S){ S.drag=false; stage.classList.remove('drag'); paint(); } };
+  stage.addEventListener('pointerup',up); stage.addEventListener('pointercancel',up);
+  stage.addEventListener('wheel',function(e){ if(!S) return; e.preventDefault(); var r=stage.getBoundingClientRect(); setZ(S.z*Math.exp(-e.deltaY*0.0015),e.clientX-r.left,e.clientY-r.top); },{passive:false});
+  zm.addEventListener('input',function(){ if(S) setZ(+zm.value); });
+  rot.addEventListener('click',function(){ if(!S) return; S.rot=(S.rot+90)%360; S.tx=0; S.ty=0; paint(); });
+  asp.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b||!S) return; [].forEach.call(asp.children,function(x){ x.classList.toggle('is-on',x===b); }); S.aspect=+b.dataset.a||0; S.tx=0; S.ty=0; paint(); });
+  ok.addEventListener('click',function(){ if(!S) return; var o=null; try{ o=render(); }catch(x){} close(o); });
+  no.addEventListener('click',function(){ close(null); });
+  M.addEventListener('click',function(e){ if(e.target===M) close(null); });
+  document.addEventListener('keydown',function(e){ if(!M.hidden&&e.key==='Escape') close(null); if(!M.hidden&&S&&(e.key==='+'||e.key==='=')) setZ(S.z*1.15); if(!M.hidden&&S&&e.key==='-') setZ(S.z/1.15); });
+  window.addEventListener('resize',function(){ if(S) paint(); });
+  window.FTM=window.FTM||{};
+  FTM.photoEdit=function(file,o){ o=o||{}; return new Promise(function(res,rej){ var url=URL.createObjectURL(file), img=new Image();
+      img.onload=function(){ URL.revokeObjectURL(url); if(done) done(null); done=res; S={img:img,circle:!!o.circle,size:o.size,max:o.max,aspect:0,z:1,tx:0,ty:0,rot:0}; zm.value='1'; asp.hidden=!!o.circle; [].forEach.call(asp.children,function(x,i){ x.classList.toggle('is-on',i===0); });
+        M.hidden=false; document.documentElement.classList.add('pe-lock'); requestAnimationFrame(function(){ paint(); setTimeout(paint,60); }); try{ ok.focus({preventScroll:true}); }catch(x){} };
+      img.onerror=function(){ URL.revokeObjectURL(url); rej(new Error('IMAGE')); }; img.src=url; }); };
+})();
 </script>
 <div class="pk-sheet fz-sheet" id="fzModal" hidden><div class="pk-card fz-card" role="dialog" aria-modal="true" aria-labelledby="fzL"><button type="button" class="cw-x pk-x" id="fzX" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><span class="fz-l" id="fzL"></span><b class="fz-v" id="fzV"></b><small class="fz-s" id="fzS"></small></div></div>
 <script>

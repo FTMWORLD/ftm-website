@@ -178,5 +178,9 @@
  {
   "date": "2026-11-19",
   "text": "Community Discover: each member card now shows their FTM profit % (green or red) next to followers and following, and the Follows you label is a neat pill beside the country."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Community photos: when you choose a profile photo or a photo for a post, an editor opens first so you can move, zoom and rotate it, and choose the shape (round for the profile photo; Original, Square, Portrait or Wide for posts)."
  }
 ]

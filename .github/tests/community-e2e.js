@@ -94,6 +94,7 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   const pic=await (async()=>{ const q=await b.newPage({viewport:{width:400,height:260}}); await q.setContent('<body style="margin:0;background:linear-gradient(135deg,#0B1440,#D4AF37)"></body>'); const x=await q.screenshot({type:'jpeg'}); await q.close(); return x; })();
   await A.bringToFront(); await tab(A,'feed'); await A.waitForTimeout(600);
   await A.fill('#fdText','Gold closed strong today 📈'); await A.setInputFiles('#fdFile',{name:'g.jpg',mimeType:'image/jpeg',buffer:pic}); await A.waitForTimeout(600);
+  ok(await A.isVisible('#peModal'),'choosing a photo opens the photo editor first'); await A.click('#peOk'); await A.waitForTimeout(500);
   ok(await A.isVisible('#fdPrev'),'the photo preview shows before posting');
   await A.click('#fdPost'); await A.waitForTimeout(1200);
   ok(/Gold closed strong/.test(await A.textContent('#fdList')) && await A.evaluate(()=>!!document.querySelector('#fdList .fd-gi img')),'Tanaya posts text and a photo to the feed');
@@ -115,6 +116,7 @@ const tab=(p,t)=>p.click('#cTabs [data-tab="'+t+'"]');
   await tab(A,'feed'); await A.waitForTimeout(400);
   await A.fill('#fdText','Which market next? #gold'); await A.click('#fdPollBtn'); await A.fill('#fdPollOpts [data-po="0"]','Gold'); await A.fill('#fdPollOpts [data-po="1"]','Bitcoin');
   await A.setInputFiles('#fdFile',[{name:'a.jpg',mimeType:'image/jpeg',buffer:pic},{name:'b.jpg',mimeType:'image/jpeg',buffer:pic}]); await A.waitForTimeout(800);
+  for(let k=0;k<2;k++){ await A.click('#peOk'); await A.waitForTimeout(500); }
   ok(await A.evaluate(()=>document.querySelectorAll('#fdPrev img').length)===2,'two photos can be added to one post');
   await A.click('#fdPost'); await A.waitForTimeout(1500);
   const first='#fdList .fd-post:first-child';
