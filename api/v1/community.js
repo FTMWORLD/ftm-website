@@ -13,6 +13,7 @@
      post {text, image?}         new post (paid members and FTM); like {id}; comment {id, text}; delpost {id}; delcomment {id, cid}; pin {id} (FTM)
      notifs {read?}              likes, comments, new followers and FTM posts for me
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
+     GET ?dayresult=YYYY-MM-DD    the master account's posted day result (% and counts only) for social posts
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
    FTM staff = a login on @ftmwealthnation.com, the FTM mailbox ftmwebnation@gmail.com, or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
    Owners choose per post and comment: as FTM (body.as === 'ftm') or as their own profile (default).
@@ -129,6 +130,23 @@ module.exports = async function handler(req, res) {
       res.setHeader('Content-Type', 'image/jpeg'); res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
       return res.status(200).end(buf);
     } catch (e) { return res.status(404).end(); }
+  }
+  if (req.method === 'GET' && req.query && req.query.dayresult) {
+    const day = String(req.query.dayresult).slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return res.status(400).json({ ok: false, error: 'BAD_DATE' });
+    try {
+      const admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY), S = store(admin);
+      const Pp = await S.read('posts.json', { posts: [] }), month = day.slice(0, 7);
+      const days = Pp.posts.filter(p => p.ftm && p.card && p.card.k === 'day' && String(p.card.date || '').slice(0, 7) === month && p.card.date <= day)
+        .reduce((o, p) => { o[p.card.date] = p.card; return o; }, {});
+      const c = days[day];
+      if (!c) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
+      const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
+      let mtd = 1; Object.keys(days).sort().forEach(k => { mtd *= 1 + (+days[k].pct || 0) / 100; });
+      const markets = [...new Set(rows.map(r => r.s))];
+      res.setHeader('Cache-Control', 'public, max-age=120');
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd: +((mtd - 1) * 100).toFixed(2), days: Object.keys(days).length });
+    } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
     const id = String(req.query.postjson || req.query.share).replace(/[^a-z0-9]/g, '').slice(0, 24);
