@@ -152,7 +152,7 @@ module.exports = async function handler(req, res) {
       } catch (e) { mtd = null; }
       const markets = [...new Set(rows.map(r => r.s))];
       res.setHeader('Cache-Control', 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd });
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, dbg: req.query.dbg === '1' ? rows.map(r => [new Date(r.c).toISOString().slice(11, 19), r.s, r.d, r.pl]) : undefined });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
