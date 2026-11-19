@@ -5,6 +5,7 @@ const { createClient } = require('@supabase/supabase-js');
 const R = require('../_lib/renewals');
 
 module.exports = async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).json({ ok: false, error: 'METHOD_NOT_ALLOWED' });
   const secret = process.env.CRON_SECRET;
   if (secret && req.headers.authorization !== 'Bearer ' + secret) return res.status(401).json({ ok: false });
   try {
