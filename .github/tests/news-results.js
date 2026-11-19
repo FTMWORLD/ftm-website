@@ -62,11 +62,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
     let mm=await R.mail(admin,{deadline:Date.now()+30000}), calls=1; while(mm.more&&calls<6){ mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); calls++; }
     const mem=()=>mails.filter(m=>!/^Copy of /.test(m.subject)), to=x=>mem().filter(m=>m.to===x), one=x=>to(x)[0]||{}, copies=mails.filter(m=>/^Copy of /.test(m.subject));
     ok(!mm.more&&calls===3,'an engine read that fails is retried, then skipped after 3 tries ('+calls+' calls) '+JSON.stringify(mm.log));
-    ok(mem().length===4&&to('amelie@x.com').length===1&&to('ben@x.com').length===1,'emails: only members with their own account get a result email ('+mem().map(m=>m.to).join(', ')+')');
+    ok(mem().length===5&&to('amelie@x.com').length===1&&to('ben@x.com').length===1&&to('free@x.com').length===1,'emails: members get their own account; a free member gets the FTM master account ('+mem().map(m=>m.to).join(', ')+')');
     { const fo=to('ftmwebnation@gmail.com'), ms=fo.find(m=>/FTM master account/.test(m.html)), o4=fo.find(m=>/ · 10000 · /.test(m.subject));
       ok(fo.length===2&&ms&&/HK50/.test(ms.html)&&/\+\$1,627\.29/.test(ms.subject)&&/open=community/.test(ms.html)&&o4&&/XAUUSD/.test(o4.html)&&/€/.test(o4.subject),'the FTM owner email gets the master account and its own 10,000 account, nothing else ('+fo.map(m=>m.subject).join(' | ')+')');
       ok(!copies.length&&!fo.some(m=>/51234567|70011|amelie|ben@/.test(m.subject+m.html)),'the FTM owner email never gets a customer\'s result'); }
-    ok(!to('free@x.com').length,'the master result is not emailed to customers (free member gets none; it is on FTM news)');
+    { const fr0=one('free@x.com'); ok(/FTM master account/.test(fr0.html||'')&&/\+\$1,627\.29/.test(fr0.subject||'')&&/HK50/.test(fr0.html||'')&&!/51234567|70011|10000/.test((fr0.subject||'')+(fr0.html||'')),'a free member gets the FTM master account\'s daily result, never a customer\'s account ('+fr0.subject+')'); }
     ok(!to('idle@x.com').length,'a switched-off account with no trades that day gets no email');
     ok(!to('typo@x.con').length&&!to('broken@x.com').length,'unconfirmed login and failed engine read: no email');
     ok(engCalls.filter(c=>/^c1 /.test(c)&&/\/m1\//.test(c)).length===0,'the master history is never read for a member email');
@@ -82,7 +82,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     let m2=await R.mail(admin,{deadline:Date.now()+30000}); ok(/already being sent/.test(m2.log.join())&&mails.length===n0,'a second job while emails are going out sends nothing');
     for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
     const nw=mails.slice(n0), am=nw.filter(m=>m.to==='amelie@x.com'), bn=nw.filter(m=>m.to==='ben@x.com');
-    ok(!mm.more&&nw.length===8&&nw.filter(m=>m.to==='ftmwebnation@gmail.com').length===4&&am.length===2&&bn.length===2&&am.some(m=>m.subject.indexOf('51234567')!==-1&&/Résultat hebdomadaire/.test(m.subject)),'Friday: each member gets their own day and week ('+nw.map(m=>m.to.split('@')[0]+':'+m.subject.slice(6,30)).join(' | ')+')'); }
+    ok(!mm.more&&nw.length===10&&nw.filter(m=>m.to==='ftmwebnation@gmail.com').length===4&&nw.filter(m=>m.to==='free@x.com'&&/FTM master account/.test(m.html)).length===2&&am.length===2&&bn.length===2&&am.some(m=>m.subject.indexOf('51234567')!==-1&&/Résultat hebdomadaire/.test(m.subject)),'Friday: each member gets their own day and week, a free member the master\'s ('+nw.map(m=>m.to.split('@')[0]+':'+m.subject.slice(6,30)).join(' | ')+')'); }
     { const bw=mails.filter(m=>m.to==='ben@x.com'&&/Weekly result/.test(m.subject)).slice(-1)[0]||{}, h=bw.html||'';
       ok(/By market/.test(h)&&/Winning trades/.test(h)&&/Markets traded/.test(h)&&/NVDA/.test(h)&&/Won/.test(h)&&!/<td[^>]*>Monday/.test(h)&&!/Opened/.test(h),'Friday: the weekly email is a summary (result, trades, winning trades, markets traded, by market), not every trade'); }
   P=posts(); const wk=(P.find(x=>x.res==='week-2026-11-20')||{}).card||{};
@@ -93,6 +93,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   ok(mo.k==='month'&&mo.n===7&&mo.from==='2026-11-01'&&mo.to==='2026-11-30'&&mo.best&&mo.worst&&mo.win!=null,'30 November 23:00 (last day of the month): the month is posted '+JSON.stringify({n:mo.n,win:mo.win,best:mo.best&&mo.best.date,worst:mo.worst&&mo.worst.date}));
   { const n0=mails.length; let mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
     const ms=mails.slice(n0).filter(m=>/Monthly statement|Relevé mensuel/.test(m.subject)), b=ms.find(m=>m.to==='ben@x.com')||{}, h=b.html||'';
+    ok(ms.some(m=>m.to==='free@x.com'&&/FTM master account/.test(m.html)),'a free member also gets the FTM master account\'s monthly statement');
     ok(ms.length>=3&&ms.some(m=>m.to==='amelie@x.com'&&/Relevé mensuel/.test(m.subject))&&/Monthly statement: November 2026 · 70011/.test(b.subject||''),'every member with an account gets the monthly statement in their language ('+ms.map(m=>m.to.split('@')[0]).join(', ')+')');
     ok(/Opening balance/.test(h)&&/\$20,000\.00/.test(h)&&/Closing balance/.test(h)&&/\$19,925\.00/.test(h)&&/Trading result/.test(h)&&/-\$75\.00/.test(h)&&/Highest balance/.test(h)&&/Lowest balance/.test(h),'the statement email has opening and closing balance, trading result, highest and lowest balance (his own figures)');
     ok((h.match(/background:#D4AF37;border-radius:3px 3px 0 0/g)||[]).length>=13&&/Lowest balance.{0,300}\$19,925\.00/.test(h)&&/open=statement&amp;from=2026-11-01&amp;to=2026-11-30|open=statement&from=2026-11-01&to=2026-11-30/.test(h)&&/Download your statement \(PDF\)/.test(h),'a day-by-day balance chart (30 days) and a button that opens the PDF statement for November'); }

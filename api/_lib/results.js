@@ -99,11 +99,13 @@ function cardFor(key, h, cur) {
 function nameOf(u) { const m = (u && u.user_metadata) || {}; return String(m.full_name || m.name || [m.first_name, m.last_name].filter(Boolean).join(' ') || '').replace(/\s+/g, ' ').trim().slice(0, 60); }
 /* A member's own accounts: never the FTM master account or the master preview free accounts see. */
 function ownAccounts(A) { return (A || []).filter(a => a && a.accountId && !a.isMaster && !a.isPreview); }
-/* What a login is emailed: its own accounts; the FTM owner logins also get the master account (first), never anyone else's. */
+/* What a login is emailed: its own accounts; the FTM owner logins also get the master account (first), never anyone else's.
+   Free members (no account of their own) get the FTM master account's results, the same account their client area shows. */
 function mailAccounts(A, isOwner) {
-  const own = ownAccounts(A); if (!isOwner) return own;
+  const own = ownAccounts(A);
   const m = (A || []).find(a => a && a.accountId && a.isMaster) || (A || []).find(a => a && a.accountId && a.isPreview);
-  return m ? [m].concat(own) : own;
+  if (isOwner) return m ? [m].concat(own) : own;
+  return own.length ? own : (m ? [m] : []);
 }
 
 /* One run. Posts what is due at this local time; o.force posts today's day result now (staff/test). */
@@ -214,7 +216,7 @@ async function mail(admin, o) {
   let users = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; }
   users = users.filter(u => u.email && u.email_confirmed_at);
   const queue = users.filter(u => due.some(w => !w.have.has(u.id)));
-  let chain = Promise.resolve();
+  let chain = Promise.resolve(); const mcache = new Map();
   const save = () => { chain = chain.then(() => Promise.all(due.map(w => P.write(admin, 'results/own-' + w.key + '.json', w.S)))).catch(() => {}); return chain; };
   const finish = (w, u) => { if (w.have.has(u.id)) return; w.S.done.push(u.id); w.have.add(u.id); delete w.S.tries[u.id]; };
   async function one(u) {
@@ -226,7 +228,8 @@ async function mail(admin, o) {
         if (!own.length) return null;
         const lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null)), list = [];
         for (const acct of own) {
-          const h = await H.load(u, acct), cur = acct.currency || 'USD';
+          const mk = (acct.isMaster || acct.isPreview) ? 'm:' + acct.accountId : null;
+          const h = mk ? (mcache.get(mk) || await (async () => { const x = await H.load(u, acct); mcache.set(mk, x); return x; })()) : await H.load(u, acct), cur = acct.currency || 'USD';
           for (const w of pend) { const card = cardFor(w.key, h, cur), mst = acct.isMaster || acct.isPreview;
             if (/^month-/.test(w.key)) { const q = w.key.split('-'); card.st = statementFor(h, +q[1], +q[2]); }
             const moved = card.st && (card.st.dep || card.st.wd || card.st.close || card.st.open);
