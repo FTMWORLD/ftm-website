@@ -17,14 +17,14 @@ const css = (w, h) => `*{margin:0;padding:0;box-sizing:border-box}
 body{width:${w}px;height:${h}px;overflow:hidden;font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;
 background:radial-gradient(120% 80% at 85% 10%,#1d3590 0%,#132a7a 25%,#0b1640 65%,#070e2c 100%);position:relative}
 .grid{position:absolute;inset:0;opacity:.06;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:72px 72px}
-.wrap{position:absolute;inset:0;padding:${h > 1500 ? '150px 84px 140px' : '84px 84px 0'};display:flex;flex-direction:column}
+.wrap{position:absolute;left:0;right:0;top:0;bottom:${h > 1500 ? 130 : 96}px;padding:${h > 1500 ? '230px 84px 250px' : '56px 84px 48px'};display:flex;flex-direction:column;justify-content:center}
 .logo{display:flex;align-items:center;gap:16px;font-weight:800;font-size:46px;letter-spacing:-.04em}
 .mark{width:62px;height:62px;border-radius:18px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.kick{color:#D4AF37;font-weight:700;font-size:26px;letter-spacing:.16em;text-transform:uppercase;margin-top:${h > 1500 ? 120 : 64}px}
+.kick{color:#D4AF37;font-weight:700;font-size:26px;letter-spacing:.16em;text-transform:uppercase;margin-top:${h > 1500 ? 64 : 48}px}
 .date{font-size:40px;font-weight:600;color:#dfe4ff;margin-top:14px}
-.big{font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:${h > 1500 ? 90 : 46}px}
+.big{font-weight:800;letter-spacing:-.04em;line-height:1;margin-top:${h > 1500 ? 60 : 40}px}
 .sub{font-size:34px;color:#c9d0ee;margin-top:18px;font-weight:500}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:${h > 1500 ? 90 : 52}px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:${h > 1500 ? 60 : 44}px}
 .st{border:1.5px solid rgba(212,175,55,.42);border-radius:22px;padding:22px 24px;background:rgba(11,22,64,.5)}
 .st b{display:block;font-size:52px;font-weight:800;letter-spacing:-.03em}
 .st span{font-size:22px;color:#aeb7dc;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
@@ -32,11 +32,11 @@ background:radial-gradient(120% 80% at 85% 10%,#1d3590 0%,#132a7a 25%,#0b1640 65
 .foot{position:absolute;left:0;right:0;bottom:0;height:${h > 1500 ? 130 : 96}px;background:#0b1640;display:flex;align-items:center;justify-content:space-between;padding:0 84px;border-top:1.5px solid rgba(212,175,55,.35)}
 .foot i{font-style:normal;color:#E3B62F;font-weight:700;font-size:28px}
 .foot u{text-decoration:none;color:#fff;font-weight:600;font-size:26px;opacity:.9}
-h1{font-size:${h > 1500 ? 92 : 80}px;line-height:1.04;letter-spacing:-.035em;font-weight:800;margin-top:${h > 1500 ? 110 : 60}px;text-wrap:balance}
+h1{font-size:${h > 1500 ? 92 : 80}px;line-height:1.04;letter-spacing:-.035em;font-weight:800;margin-top:${h > 1500 ? 56 : 44}px;text-wrap:balance}
 h1 b{color:#E3B62F}
 .body{font-size:${h > 1500 ? 42 : 38}px;line-height:1.42;color:#d6dbf3;margin-top:44px;font-weight:500}
 .body p+p{margin-top:24px}
-.line{position:absolute;right:0;bottom:${h > 1500 ? 130 : 96}px;width:62%;height:38%;opacity:.9}`;
+.line{position:absolute;right:0;bottom:${h > 1500 ? 130 : 96}px;width:58%;height:28%;opacity:.8}`;
 const MARK = `<span class="mark"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>`;
 const LINE = `<svg class="line" viewBox="0 0 100 60" preserveAspectRatio="none"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".16"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path d="M0 52 L12 46 L18 49 L30 38 L36 41 L50 28 L56 31 L70 18 L76 21 L92 6 L100 4 L100 60 L0 60Z" fill="url(#a)"/><path d="M0 52 L12 46 L18 49 L30 38 L36 41 L50 28 L56 31 L70 18 L76 21 L92 6 L100 4" fill="none" stroke="#D4AF37" stroke-width=".5" vector-effect="non-scaling-stroke" style="stroke-width:4px"/></svg>`;
 const FOOT = `<div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>`;
@@ -68,7 +68,7 @@ function trades(w, h, part, parts) {
     <span><b style="font-size:.72em;padding:6px 14px;border-radius:99px;background:${/buy/i.test(r.d) ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${/buy/i.test(r.d) ? 'BUY' : 'SELL'}</b></span>
     <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(r.pl)}</span></div>`).join('');
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick" style="margin-top:56px">Today's trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
+    <div class="kick" style="margin-top:40px">Today's trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
     <div style="margin-top:30px;display:grid;grid-template-columns:122px 1fr 100px 118px 210px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Time</span><span>Market</span><span>Lots</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;

@@ -2,7 +2,7 @@
 python3 social/tools/slidevideo.py out.mp4 slide1.jpg slide2.jpg ...   (each slide 5 s, slow zoom, soft crossfade)"""
 import sys, subprocess, wave, numpy as np, os, tempfile
 out, slides = sys.argv[1], sys.argv[2:]
-per, fade, sr = 5.0, 0.6, 48000
+per, fade, sr = float(os.environ.get('PER', 5)), 0.6, 48000
 tot = per * len(slides) - fade * (len(slides) - 1)
 tmp = tempfile.mkdtemp()
 # video: each slide centred on a navy 1080x1920 canvas with a slow zoom, then crossfades
