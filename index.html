@@ -2326,9 +2326,9 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .rk-score{display:flex;align-items:baseline;gap:6px}
 .rk-score b{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
 .rk-score small{font-size:15px;font-weight:700;color:var(--muted)}
-.rk-within .rk-score b{color:#15803d}.rk-above .rk-score b{color:#c81e2b}.rk-below .rk-score b{color:#152a7a}
+.rk-within .rk-score b{color:#15803d}.rk-above .rk-score b{color:#c81e2b}.rk-below .rk-score b{color:#15803d}
 .rk-vs{display:inline-block;justify-self:start;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:99px;background:rgba(11,20,64,.06);color:var(--muted)}
-.rk-vs.rk-within{background:rgba(22,163,74,.1);color:#15803d}.rk-vs.rk-above{background:rgba(229,50,62,.1);color:#c81e2b}.rk-vs.rk-below{background:rgba(21,42,122,.08);color:#152a7a}
+.rk-vs.rk-within{background:rgba(22,163,74,.1);color:#15803d}.rk-vs.rk-above{background:rgba(229,50,62,.1);color:#c81e2b}.rk-vs.rk-below{background:#16a34a;color:#fff}
 .rk-vs:empty{display:none}
 .rk-m{min-width:0}
 .dz{position:relative;display:flex;height:14px;border-radius:99px;overflow:visible;margin:12px 0 4px}
@@ -10822,7 +10822,7 @@ tick();setInterval(tick,5000);})();
     if(bd){ band.hidden=false; band.style.left=P(bd[0])+'%'; band.style.width=(P(bd[1]==null?80:bd[1])-P(bd[0]))+'%'; } else band.hidden=true;
     $('rkScale').querySelectorAll('.dz-z').forEach(function(z){ z.classList.toggle('mine', !!prof && z.getAttribute('data-p')===prof); });
     var vs=!bd?'':(dd<bd[0]?'BELOW':((bd[1]!=null&&dd>bd[1])?'ABOVE':'WITHIN'));
-    var vsTxt={WITHIN:'Within the normal range',ABOVE:'Above the normal range',BELOW:'Below the normal range'}[vs]||'';
+    var vsTxt={WITHIN:'Healthy',ABOVE:'Risky',BELOW:'Very healthy'}[vs]||'';
     var el=$('rkVs'); el.textContent=vsTxt?tr(vsTxt):''; el.className='rk-vs rk-'+(vs.toLowerCase()||'none');
     card.classList.remove('rk-within','rk-above','rk-below'); if(vs) card.classList.add('rk-'+vs.toLowerCase());
     var pn={CONSERVATIVE:'Conservative',BALANCED:'Balanced',GROWTH:'Growth'}[prof]||'';

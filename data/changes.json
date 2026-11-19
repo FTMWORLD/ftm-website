@@ -166,5 +166,9 @@
  {
   "date": "2026-11-19",
   "text": "Account progress chart: 'Compare with' now lists all five FTM markets plus the S&P 500, Silver and five top stocks (Nvidia, Apple, Microsoft, Amazon, Google)."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Risk level card: under the drawdown it now says Very healthy (green), Healthy or Risky, depending on where the drop sits against your profile's normal range."
  }
 ]
