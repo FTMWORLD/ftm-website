@@ -177,7 +177,7 @@ module.exports = async function handler(req, res) {
     const followingOf = m => (soc.follows[m] || []).filter(k => idx.members[k] && !hidden.has(k)).length;
     let postsCache = null; const postCount = m => { return (postsCache || []).filter(x => x.a === m && !x.ftm).length; };
     if (action === 'members' || action === 'profile') postsCache = (await S.read('posts.json', { posts: [] })).posts;
-    const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m), posts: postCount(m) }; };
+    const pub = m => { const x = idx.members[m]; return { mid: m, nickname: x.nickname, lb: x.lb || null, country: x.country || '', bio: x.bio || '', since: x.since, av: x.av || null, sub: !!x.sub, seen: pres[m] || null, following: follows.indexOf(m) !== -1, follows_you: (soc.follows[m] || []).indexOf(me) !== -1, followers: followers(m), following_count: followingOf(m), posts: postCount(m) }; };
     const notify = async (m, n) => { if (!m || m === me) return; const p = 'notif/' + m + '.json', nb = await S.read(p, { items: [], read: '' }); n.t = new Date().toISOString(); nb.items = nb.items.filter(z => !(z.k === n.k && z.by === n.by && z.post === n.post && n.k !== 'comment')); nb.items.push(n); if (nb.items.length > 100) nb.items = nb.items.slice(-100); await S.write(p, nb); };
     const okTarget = m => m && m !== me && idx.members[m] && idx.members[m].visible && !hidden.has(m);
     const pushNick = () => (mine && mine.nickname) || 'A member';
