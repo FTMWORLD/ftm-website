@@ -143,16 +143,16 @@ module.exports = async function handler(req, res) {
       const c = days[day];
       if (!c) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
-      let mtd = null;
+      let mtd = null, balance = null;
       try {
         const R = require('../_lib/results'), [y, m, d] = day.split('-').map(Number), nx = new Date(Date.UTC(y, m - 1, d + 1));
         if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R.master(admin), 'master')).h };
         const sg = dayMemo.h.M.seg(R.midnight(y, m, 1, R.TZ), R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ));
-        if (sg && isFinite(sg.pct)) mtd = +sg.pct.toFixed(2);
+        if (sg && isFinite(sg.pct)) mtd = +sg.pct.toFixed(2); const zb = R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ), bv = dayMemo.h.M.balAt ? dayMemo.h.M.balAt(Math.min(zb, Date.now())) : null; if (bv != null && isFinite(bv)) balance = +(+bv).toFixed(2);
       } catch (e) { mtd = null; }
       const markets = [...new Set(rows.map(r => r.s))];
       res.setHeader('Cache-Control', 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
