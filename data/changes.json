@@ -202,5 +202,9 @@
  {
   "date": "2026-11-19",
   "text": "Free members now also get the result emails: the FTM master account's daily result, Friday weekly summary and end-of-month statement."
+ },
+ {
+  "date": "2026-11-20",
+  "text": "New sign-in email: clearer wording; 'This wasn't me' now reads 'FTM logs you out on every device and sends you a link to choose a new password.'"
  }
 ]

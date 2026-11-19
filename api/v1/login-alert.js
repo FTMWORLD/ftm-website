@@ -100,7 +100,7 @@ module.exports = async function handler(req, res) {
         + '<tr><td style="color:#6b7394;padding:3px 14px 3px 0;">Place</td><td style="font-weight:bold;color:#0b1640;">' + esc(where) + ' (approximate)</td></tr>'
         + '<tr><td style="color:#6b7394;padding:3px 14px 3px 0;">Time</td><td style="font-weight:bold;color:#0b1640;">' + esc(when) + '</td></tr></table>'
         + '<p style="margin:0 0 6px;"><b>Was this you?</b> Then you do not need to do anything.</p>'
-        + '<p style="margin:0 0 20px;">If it was <b>not</b> you, tap the button below. FTM signs every device out of your account and sends you a link to choose a new password.</p>'
+        + '<p style="margin:0 0 20px;">If it was <b>not</b> you, tap the button below. FTM logs you out on every device and sends you a link to choose a new password.</p>'
         + '<a href="' + esc(link) + '" style="display:inline-block;background:#E5323E;color:#ffffff;font-weight:bold;text-decoration:none;padding:13px 24px;border-radius:99px;">This wasn\'t me</a>'
         + '<p style="margin:20px 0 0;font-size:12.5px;color:#6b7394;">FTM will never ask for your password or MT5 password by email, phone or chat.</p>');
       try { await sendMail({ to: user.email, subject: 'New sign-in to your FTM account', html, fromName: 'FTM security' }); emailed = true; recent.push(now); }
