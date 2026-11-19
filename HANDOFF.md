@@ -755,3 +755,11 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - Only plans that really end: 5 Years, or an Annual whose Stripe subscription is cancelled (cancel_at_period_end / canceled). An Annual that renews by itself gets no reminder (telling it to "resubscribe" would charge it twice). Lifetime never.
 - The email shows the member's own result with FTM since joining (engine history, only when positive), what stops, Renew now (/#pricing). No promises (CLAUDE.md).
 - Website: during grace the plan bar says until when they can log in; after end + 30 days FTM.graceCheck logs them out with the reason and See plans (not investors, Lifetime or active plans). Trading during grace is the engine's rule (unchanged).
+
+## Social media (owner instructions, 19 Nov 2026)
+- Accounts via Metricool (brand 8233028, Europe/Berlin): Instagram, Facebook, TikTok, YouTube. Images/videos are served from /social/posts on the site (Metricool needs public URLs).
+- Daily result at 23:05 Berlin (scheduled task in the FTM-WEB.COM session): carousel = summary slide, trade slides (time, market, lots, BUY/SELL, result), last slide ends with the account balance and "The same trades are taken in members' accounts of any size". Never say "copied" or copy trading. Data: /api/v1/community?dayresult=YYYY-MM-DD (the posted FTM news day card + engine month-to-date and closing balance). Renderer: social/tools/render.js.
+- Captions: short, the same on every platform (YouTube writes ftmwealthnation.com instead of "link in bio"), always end with "Click the link in our bio to get started." plus hashtags. No promises or "get rich" wording (platform rules).
+- Sound on every post where the API allows it: TikTok photo posts autoAddMusic; videos carry our own music. Instagram image carousels cannot carry music through the API.
+- Videos: keep the main content (logo, text) centred vertically, clear of the platform buttons at top and bottom (9:16, safe area about 250 px top and 400 px bottom).
+- Intro video (animated, voice by Kokoro TTS af_heart): social/intro2 (anim.html, script.json, frames.js, mix.py). Brief for other tools: social/intro2/FTM-Intro-Video-Brief.pdf.
