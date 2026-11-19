@@ -210,5 +210,9 @@
  {
   "date": "2026-11-20",
   "text": "Plan reminders: from one month before a plan ends (5 Years, or an Annual whose automatic renewal was cancelled) you get a weekly email until you renew. After a plan ends there is a one-month grace period with weekly reminders; after it you are logged out until you renew with the same email."
+ },
+ {
+  "date": "2026-11-19",
+  "text": "Daily results: on busy days (more than 6 trades) the email and the FTM news card show one line per market (trades, buys and sells, net P/L) instead of every trade, so it fits on a phone."
  }
 ]
