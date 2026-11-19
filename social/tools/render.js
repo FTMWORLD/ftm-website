@@ -56,6 +56,21 @@ function day(w, h) {
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
     <div class="kick">FTM master account · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
 }
+function trades(w, h, part, parts) {
+  const R = (D.rows || []).slice().sort((a, b) => a.c - b.c), per = Math.ceil(R.length / parts), L = R.slice(part * per, (part + 1) * per);
+  const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+  const tm = ms => new Date(ms).toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
+  const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '';
+  const mny = v => (v > 0 ? '+' : v < 0 ? '−' : '') + sym + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const rh = Math.min(96, Math.floor(820 / Math.max(L.length, 1)));
+  const rows = L.map(r => `<div style="display:grid;grid-template-columns:120px 1fr 130px 230px;align-items:center;height:${rh}px;border-bottom:1.5px solid rgba(212,175,55,.18);font-size:${Math.min(36, rh * .42)}px">
+    <span style="color:#aeb7dc;font-weight:600">${tm(r.c)}</span><span style="font-weight:700">${esc(mk(r.s))}</span>
+    <span><b style="font-size:.72em;padding:6px 14px;border-radius:99px;background:${/buy/i.test(r.d) ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${/buy/i.test(r.d) ? 'BUY' : 'SELL'}</b></span>
+    <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(r.pl)}</span></div>`).join('');
+  return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
+    <div class="kick" style="margin-top:56px">Today's trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
+    <div style="margin-top:36px;border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div></div>${FOOT}`;
+}
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
     ${D.kicker ? `<div class="kick">${esc(D.kicker)}</div>` : ''}<h1>${D.title}</h1>
@@ -64,9 +79,11 @@ function card(w, h) {
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
   const name = nameArg || (kind === 'day' ? 'day-' + D.date : 'card');
-  for (const [tag, w, h] of [['post', 1080, 1350], ['story', 1080, 1920]]) {
+  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : [];
+  if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
+  for (const [tag, w, h, fn] of jobs) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
-    await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${kind === 'day' ? day(w, h) : card(w, h)}</body></html>`);
+    await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);
     await p.waitForTimeout(250);
     await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.close();
   }
