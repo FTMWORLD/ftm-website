@@ -155,7 +155,11 @@ async function emailFor(card, lang, acct, who) {
   if (card.k === 'day') {
     head = D(card.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     sub = card.n ? (card.n === 1 ? await t('One trade closed this day.') : (await t('{} trades closed this day.')).replace('{}', card.n)) : await t('No trades closed this day.');
-    if (card.rows && card.rows.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Opened')) + TH((await t('Closed')) + (tzName ? ' (' + tzName + ')' : '')) + TH(await t('Market')) + TH(await t('Direction')) + TH(await t('Size')) + TH('P/L') + '</tr>'
+    if (card.rows && card.rows.length > 6) {
+      const G = {}; card.rows.forEach(r => { const k = r.s || ''; const g = G[k] || (G[k] = { s: k, n: 0, pl: 0, d: {} }); g.n++; g.pl += +r.pl || 0; const dd = String(r.d || '').trim(); if (dd) g.d[dd] = (g.d[dd] || 0) + 1; });
+      table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Market')) + TH(await t('Trades')) + TH('P/L') + '</tr>'
+        + Object.values(G).sort((x, y) => y.n - x.n).map(g => '<tr>' + TD(g.s, '', true) + '<td style="padding:9px 6px;font-size:14px;color:#0b1640;border-bottom:1px solid #e6e9f2;">' + e(g.n + ' (' + Object.keys(g.d).map(k => g.d[k] + ' × ' + k).join(' · ') + ')') + '</td>' + TD(M(g.pl), col(g.pl), true) + '</tr>').join('') + '</table>';
+    } else if (card.rows && card.rows.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Opened')) + TH((await t('Closed')) + (tzName ? ' (' + tzName + ')' : '')) + TH(await t('Market')) + TH(await t('Direction')) + TH(await t('Size')) + TH('P/L') + '</tr>'
       + card.rows.map(r => '<tr>' + TD(hm(r.o)) + TD(hm(r.c)) + TD(r.s || '') + TD(r.d || '') + TD(r.v != null ? (+r.v).toFixed(2) : '') + TD(M(r.pl), col(r.pl), true) + '</tr>').join('') + '</table>';
   } else if (card.k === 'week') {
     head = D(card.from, { day: 'numeric', month: 'short' }) + ' – ' + D(card.to, { day: 'numeric', month: 'long', year: 'numeric' });
@@ -263,7 +267,7 @@ async function mail(admin, o) {
 /* Samples for the owners: the weekly summary (last completed week) and the monthly statement (this month so far) of the
    owner login's own accounts (the master and its copying account), emailed only to the owner mailboxes, at most once per
    10 minutes. Called by /api/v1/news-cron?sample=1. */
-async function samples(admin) {
+async function samples(admin, which) {
   const lock = await P.read(admin, 'results/sample-lock.json', null);
   if (lock && Date.now() - Date.parse(lock.at) < 10 * 60e3) return { log: ['samples were sent less than 10 minutes ago'] };
   await P.write(admin, 'results/sample-lock.json', { at: new Date().toISOString() });
@@ -275,7 +279,7 @@ async function samples(admin) {
     const A = mailAccounts((await H.accounts(u)).mapped, true), lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null));
     for (const acct of A) {
       const h = await H.load(u, acct), cur = acct.currency || 'USD', mst = acct.isMaster || acct.isPreview;
-      for (const key of [wk, mo]) {
+      for (const key of (which === 'day' ? ['day-' + ymd(lp.y, lp.m, lp.d)] : [wk, mo])) {
         const card = cardFor(key, h, cur); if (/^month-/.test(key)) card.st = statementFor(h, lp.y, lp.m);
         const m = await emailFor(card, lang, mst ? null : acct, nameOf(u));
         await Mail.sendMail({ to: u.email, subject: 'SAMPLE · ' + m.subject, html: m.html }); log.push('sample ' + key + ' ' + (mst ? 'master' : acct.number || acct.accountId) + ' -> ' + u.email);
