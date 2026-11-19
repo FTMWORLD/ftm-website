@@ -158,7 +158,7 @@ async function emailFor(card, lang, acct, who) {
     if (card.rows && card.rows.length > 6) {
       const G = {}; card.rows.forEach(r => { const k = r.s || ''; const g = G[k] || (G[k] = { s: k, n: 0, pl: 0, d: {} }); g.n++; g.pl += +r.pl || 0; const dd = String(r.d || '').trim(); if (dd) g.d[dd] = (g.d[dd] || 0) + 1; });
       table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Market')) + TH(await t('Trades')) + TH('P/L') + '</tr>'
-        + Object.values(G).sort((x, y) => y.n - x.n).map(g => '<tr>' + TD(g.s, '', true) + '<td style="padding:9px 6px;font-size:14px;color:#0b1640;border-bottom:1px solid #e6e9f2;">' + e(g.n + ' (' + Object.keys(g.d).map(k => g.d[k] + ' × ' + k).join(' · ') + ')') + '</td>' + TD(M(g.pl), col(g.pl), true) + '</tr>').join('') + '</table>';
+        + Object.values(G).sort((x, y) => y.n - x.n).map(g => '<tr>' + TD(g.s, '', true) + TD(g.n) + TD(M(g.pl), col(g.pl), true) + '</tr>').join('') + '</table>';
     } else if (card.rows && card.rows.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Opened')) + TH((await t('Closed')) + (tzName ? ' (' + tzName + ')' : '')) + TH(await t('Market')) + TH(await t('Direction')) + TH(await t('Size')) + TH('P/L') + '</tr>'
       + card.rows.map(r => '<tr>' + TD(hm(r.o)) + TD(hm(r.c)) + TD(r.s || '') + TD(r.d || '') + TD(r.v != null ? (+r.v).toFixed(2) : '') + TD(M(r.pl), col(r.pl), true) + '</tr>').join('') + '</table>';
   } else if (card.k === 'week') {
