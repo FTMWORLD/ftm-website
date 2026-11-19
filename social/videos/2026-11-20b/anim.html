@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#070e2c}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
+#art{position:absolute;inset:0}
+#cap{position:absolute;left:70px;right:70px;top:1210px;text-align:center;background:rgba(5,10,34,.78);border:2px solid rgba(212,175,55,.35);border-radius:36px;padding:30px 34px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-size:56px;line-height:1.2;font-weight:800;letter-spacing:-.025em;text-shadow:0 6px 30px rgba(0,0,0,.55)}
+.brand{position:absolute;left:0;right:0;top:250px;display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:44px;letter-spacing:-.04em;z-index:3;text-shadow:0 4px 20px rgba(0,0,0,.4)}
+.mark{width:58px;height:58px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:6}
+</style></head><body>
+<div id="art"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div>
+<div id="cap"><div class="w" id="subw"></div></div>
+<script>
+const W=1080,H=1920,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+function mix(c1,c2,t){const p=c=>[parseInt(c.slice(1,3),16),parseInt(c.slice(3,5),16),parseInt(c.slice(5,7),16)];const a=p(c1),b=p(c2);return 'rgb('+a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')+')'}
+/* sky phase: 0 night,1 dawn,2 day,3 dusk,4 night */
+function sky(ph){const K=[['#050a22','#0b1640'],['#2b2f6e','#f2a65a'],['#2f6fd6','#9cc7ff'],['#3b2a6e','#f08a4b'],['#050a22','#0b1640']];const i=Math.min(3,Math.floor(ph)),f=ph-i;return [mix(K[i][0],K[i+1][0],f),mix(K[i][1],K[i+1][1],f)]}
+/* skyline: deterministic buildings with windows */
+const B=[];{let x=-20,s=7;const r=()=>{s=(s*9301+49297)%233280;return s/233280};while(x<W+40){const w=90+r()*120,h=380+r()*620;B.push({x,w,h,seed:r()});x+=w+6}}
+function city(night,t,light){let o='';B.forEach((b,i)=>{const y=1600-b.h;o+=`<rect x="${b.x}" y="${y}" width="${b.w}" height="${b.h+460}" fill="${mix('#16205a','#0a1033',night)}"/>`;
+ for(let wy=y+30;wy<1580;wy+=58)for(let wx=b.x+16;wx<b.x+b.w-24;wx+=40){const k=(wx*7+wy*13+i*31)%97/97;const on=night>0.3?(k<0.45+0.1*sin(t*0.7+k*9)):(k<0.08);const lit=light&&i===light.i&&Math.abs(wx-light.x)<30&&Math.abs(wy-light.y)<30;
+  o+=`<rect x="${wx}" y="${wy}" width="22" height="30" rx="3" fill="${lit?'#E3B62F':on?'#f6d27a':'#22306e'}" opacity="${lit?1:on?0.75:0.5}"/>`}});
+ return o+`<rect x="0" y="1590" width="${W}" height="330" fill="${mix('#0e1846','#060b26',night)}"/>`}
+function people(t,n){let o='';for(let i=0;i<n;i++){const sp=60+(i*37)%50,dir=i%2?1:-1,x=((i*173+t*sp*dir)%(W+200)+W+200)%(W+200)-100,y=1620+(i%3)*26,c=['#3fa7a0','#2c3e6b','#d9705a','#5b4a9e','#E3B62F'][i%5],bob=Math.abs(sin(t*6+i))*6;
+ o+=`<g transform="translate(${x},${y-bob})"><circle cx="0" cy="-70" r="16" fill="#f1c27d"/><rect x="-16" y="-54" width="32" height="50" rx="12" fill="${c}"/><rect x="-12" y="-6" width="9" height="34" rx="4" fill="#1b2547" transform="rotate(${sin(t*8+i)*18} -8 -6)"/><rect x="3" y="-6" width="9" height="34" rx="4" fill="#1b2547" transform="rotate(${-sin(t*8+i)*18} 8 -6)"/></g>`}return o}
+function ticker(t){const items=[['GOLD','+0.84%','#2fbf71'],['BITCOIN','+1.92%','#2fbf71'],['US TECH 100','-0.31%','#E5323E'],['USD/JPY','+0.12%','#2fbf71'],['HANG SENG 50','+0.57%','#2fbf71']];let o='',x=-((t*220)%1500);for(let r=0;r<3;r++)items.forEach(([n,p,c])=>{o+=`<g transform="translate(${x},0)"><text x="0" y="0" font-family="Inter" font-weight="800" font-size="40" fill="#fff">${n}</text><text x="${n.length*27+20}" y="0" font-family="Inter" font-weight="800" font-size="40" fill="${c}">${p}</text></g>`;x+=n.length*27+200});return o}
+function chart(x,y,w,h,t,col){let d='';for(let i=0;i<=40;i++){const px=x+i/40*w,v=.55+.18*sin(i*.6+t*2)+.1*sin(i*.21+t)-i/40*.35;d+=(i?'L':'M')+px.toFixed(1)+' '+(y+v*h).toFixed(1)}return `<path d="${d}" fill="none" stroke="${col}" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>`}
+const LOGO=(x,y,s)=>`<g transform="translate(${x},${y}) scale(${s})"><rect x="-60" y="-60" width="120" height="120" rx="35" fill="#1F3A93"/><path d="M-30 25 L-5 -3 L12 13 L36 -19" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+const svg=(ph,inner)=>{const [a,b]=sky(ph);return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><radialGradient id="glow"><stop offset="0" stop-color="#E3B62F" stop-opacity=".9"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#sk)"/>${inner}<rect y="1100" width="${W}" height="820" fill="url(#fade)"/><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050a22" stop-opacity="0"/><stop offset=".35" stop-color="#050a22" stop-opacity=".75"/><stop offset="1" stop-color="#050a22" stop-opacity=".95"/></linearGradient></svg>`};
+const stars=(t,a)=>Array.from({length:40},(_,i)=>`<circle cx="${(i*137)%W}" cy="${(i*89)%700+80}" r="${1.5+i%3}" fill="#fff" opacity="${a*(.4+.4*sin(t*2+i))}"/>`).join('');
+const SCN={
+ dawn(t){const p=ease(t/4);const sy=lerp(1300,820,p);return svg(lerp(0.6,1.4,p),`<circle cx="760" cy="${sy}" r="110" fill="#ffd56b"/><circle cx="760" cy="${sy}" r="240" fill="url(#glow)" opacity=".5"/>${stars(t,1-p)}${city(1-p,t)}`)},
+ rush(t){return svg(1.8,`<circle cx="820" cy="420" r="90" fill="#fff4c2"/>${[0,1,2].map(i=>`<ellipse cx="${(200+i*360+t*30)%1300-100}" cy="${300+i*90}" rx="120" ry="34" fill="#fff" opacity=".7"/>`).join('')}${city(0,t)}${people(t,14)}`)},
+ ticker(t){return svg(2,`<circle cx="820" cy="420" r="90" fill="#fff4c2"/>${city(0,t)}<g transform="translate(0,${800})"><rect x="0" y="-80" width="${W}" height="120" fill="#0b1640" opacity=".88"/><rect x="0" y="40" width="${W}" height="4" fill="#D4AF37"/><g transform="translate(0,0)">${ticker(t)}</g></g><g transform="translate(140,380)" opacity="${ease(t/1)}"><rect x="0" y="0" width="800" height="300" rx="30" fill="#0b1640" opacity=".85" stroke="#D4AF37" stroke-opacity=".5" stroke-width="3"/>${chart(30,30,740,240,t,'#E3B62F')}</g>`)},
+ clock(t){const ph=lerp(2,3.6,cl(t/4.5));const a=t*3;return svg(ph,`${city(cl((ph-2.6)/1),t)}${people(t*2.2,22)}<g transform="translate(540,680)"><circle r="190" fill="#fff" opacity=".95"/><circle r="172" fill="#0b1640"/>${Array.from({length:12},(_,i)=>`<rect x="-4" y="-160" width="8" height="26" rx="4" fill="#D4AF37" transform="rotate(${i*30})"/>`).join('')}<path d="M0 0 L${120*cos(a-PI/2)} ${120*sin(a-PI/2)}" stroke="#fff" stroke-width="10" stroke-linecap="round"/><path d="M0 0 L${80*cos(a/12-PI/2)} ${80*sin(a/12-PI/2)}" stroke="#E5323E" stroke-width="14" stroke-linecap="round"/><circle r="12" fill="#D4AF37"/></g>`)},
+ night(t){const g=ease(t/1.2);return svg(4,`<circle cx="830" cy="300" r="80" fill="#f5f0c8"/><circle cx="800" cy="280" r="80" fill="#0b1640" opacity=".92"/>${stars(t,1)}${city(1,t,{i:4,x:B[4].x+40,y:1600-B[4].h+30})}<g opacity="${g}"><circle cx="540" cy="700" r="${300+20*sin(t*2)}" fill="url(#glow)" opacity=".35"/>${LOGO(540,700,1.9*(.85+.15*g))}</g>`)},
+ phone(t){const n=(i,s,txt)=>{const a=ease((t-s)/.5);return `<g opacity="${a}" transform="translate(0,${(1-a)*-40})"><rect x="-230" y="${-250+i*120}" width="460" height="100" rx="24" fill="#fff"/>${LOGO(-180,-200+i*120,.42)}<text x="-130" y="${-210+i*120}" font-family="Inter" font-weight="800" font-size="26" fill="#0b1640">FTM</text><text x="-130" y="${-176+i*120}" font-family="Inter" font-weight="600" font-size="24" fill="#3d4566">${txt}</text></g>`};
+  return svg(4,`${stars(t,1)}${city(1,t)}<g transform="translate(540,770) scale(.86) rotate(${sin(t)*2})"><rect x="-280" y="-470" width="560" height="940" rx="70" fill="#000" stroke="#D4AF37" stroke-opacity=".6" stroke-width="4"/><rect x="-256" y="-446" width="512" height="892" rx="54" fill="#13246a"/>${chart(-220,40,440,260,t,'#E3B62F')}<text x="-220" y="380" font-family="Inter" font-weight="800" font-size="30" fill="#2fbf71">● FTM MACHINE trading for you</text>${n(0,.3,'Trade closed · Gold')}${n(1,1.2,'Trade closed · US Tech 100')}${n(2,2.1,'Your daily result is ready')}</g>`)},
+ end(t){const p=1+.04*sin(t*5);return svg(0.2,`${stars(t,1)}${city(1,t)}<rect x="140" y="420" width="800" height="700" rx="50" fill="#050a22" opacity=".75"/>${LOGO(540,560,1.5*ease(t/.6))}<g opacity="${ease((t-1.5)/.5)}" transform="translate(540,830) scale(${p})"><rect x="-250" y="-62" width="500" height="124" rx="62" fill="#E5323E"/><text x="0" y="20" text-anchor="middle" font-family="Inter" font-weight="800" font-size="56" fill="#fff">Start free</text></g><text x="540" y="990" text-anchor="middle" font-family="Inter" font-weight="800" font-size="50" fill="#fff" opacity="${ease((t-2)/.5)}">ftmwealthnation.com</text><text x="540" y="1060" text-anchor="middle" font-family="Inter" font-weight="700" font-size="38" fill="#E3B62F" opacity="${ease((t-2.4)/.5)}">Invest today, secure tomorrow.</text>`)}
+};
+let S=[],T=[],TOTAL=0;
+window.setup=function(scenes,durs){S=scenes;let a=0.4;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.7});TOTAL=a+0.8;window.TOTAL=TOTAL;return {TOTAL,T}};
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.35)i=k;
+ const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i];
+ const art=document.getElementById('art');art.innerHTML=SCN[s.id](Math.max(0,lt+0.35));
+ const fade=Math.min(ease((lt+0.35)/0.35),1-ease((lt-(dur-0.4))/0.35));art.style.opacity=.15+.85*fade;
+ art.firstChild.style.transform=`scale(${1.03+0.03*cl((lt+.35)/dur)})`;art.firstChild.style.transformOrigin='50% 40%';
+ const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|time|free|money|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.25)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=fade;
+};
+</script></body></html>
