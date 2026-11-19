@@ -1,0 +1,110 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;background:#070e2c;position:relative}
+#bg{position:absolute;inset:-200px;background:radial-gradient(70% 45% at 75% 20%,#1d3590 0%,#132a7a 30%,#0b1640 65%,#070e2c 100%)}
+#grid{position:absolute;inset:-100px;opacity:.06;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:72px 72px}
+#line{position:absolute;left:0;right:0;bottom:180px;height:520px;opacity:.55}
+.logo{position:absolute;left:84px;top:110px;display:flex;align-items:center;gap:16px;font-weight:800;font-size:46px;letter-spacing:-.04em;z-index:5}
+.mark{width:62px;height:62px;border-radius:18px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.foot{position:absolute;left:0;right:0;bottom:0;height:130px;background:#0b1640;display:flex;align-items:center;justify-content:space-between;padding:0 84px;border-top:1.5px solid rgba(212,175,55,.35);z-index:5}
+.foot i{font-style:normal;color:#E3B62F;font-weight:700;font-size:30px}.foot u{text-decoration:none;font-weight:600;font-size:28px;opacity:.9}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:6}
+.scene{position:absolute;left:84px;right:84px;top:300px;bottom:200px;display:flex;flex-direction:column;justify-content:center;opacity:0}
+.k{color:#D4AF37;font-weight:700;font-size:30px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:34px}
+h1{font-size:100px;line-height:1.04;letter-spacing:-.035em;font-weight:800}
+h1 b{color:#E3B62F}
+h2{font-size:84px;line-height:1.06;letter-spacing:-.03em;font-weight:800}
+h2 b{color:#E3B62F}
+p.s{font-size:46px;line-height:1.38;color:#d6dbf3;margin-top:40px;font-weight:500}
+.ic{width:150px;height:150px;border-radius:40px;border:2px solid rgba(212,175,55,.5);display:grid;place-items:center;margin-bottom:56px;background:rgba(11,22,64,.6)}
+.list{display:flex;flex-direction:column;gap:30px;margin-top:20px}
+.li{display:flex;align-items:center;gap:30px;font-size:52px;font-weight:700;opacity:0}
+.li .d{width:70px;height:70px;border-radius:50%;background:#1F3A93;border:2px solid #D4AF37;display:grid;place-items:center;font-size:34px;color:#E3B62F;flex:none}
+.phone{width:560px;height:1150px;border-radius:70px;background:#000;padding:18px;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 3px rgba(212,175,55,.35);margin:0 auto;position:relative;overflow:hidden}
+.screen{width:100%;height:100%;border-radius:54px;overflow:hidden;position:relative;background:#0b1640}
+.screen img{width:100%;display:block}
+.cap{text-align:center;font-size:54px;font-weight:800;margin-top:44px;letter-spacing:-.02em}
+.cap b{color:#E3B62F}
+.app{position:absolute;inset:0;padding:70px 36px;display:flex;flex-direction:column;gap:26px;background:linear-gradient(#0b1640,#132a7a)}
+.card{background:rgba(255,255,255,.06);border:1.5px solid rgba(212,175,55,.35);border-radius:28px;padding:28px}
+.card .t{font-size:26px;color:#aeb7dc;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.card .v{font-size:44px;font-weight:800;margin-top:8px}
+.btn{background:#E5323E;border-radius:99px;text-align:center;font-weight:800;font-size:38px;padding:26px}
+.notif{position:absolute;left:24px;right:24px;background:rgba(255,255,255,.96);color:#0b1640;border-radius:30px;padding:24px 28px;display:flex;gap:20px;align-items:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.notif .m{width:64px;height:64px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;flex:none}
+.notif b{display:block;font-size:28px}.notif span{font-size:25px;color:#3d4566}
+.big{font-size:150px;font-weight:800;letter-spacing:-.045em;line-height:.95}
+</style></head><body>
+<div id="bg"></div><div id="grid"></div>
+<svg id="line" viewBox="0 0 100 60" preserveAspectRatio="none"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".18"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path id="la" fill="url(#a)"/><path id="ll" fill="none" stroke="#D4AF37" vector-effect="non-scaling-stroke" style="stroke-width:5px"/></svg>
+<div class="logo"><span class="mark"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div>
+<div id="stage"></div>
+<div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>
+<script>
+const G='#D4AF37';
+const I={
+ clock:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M5 3 2 6M19 3l3 3"/></svg>`,
+ brief:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 13h18"/></svg>`,
+ cloud:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linecap="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/><path d="M16 3h5v5"/></svg>`,
+ coin:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linecap="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>`,
+ eye:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`,
+ moon:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linejoin="round"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/></svg>`,
+ copy:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linejoin="round"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>`,
+ link:`<svg width="86" height="86" viewBox="0 0 24 24" fill="none" stroke="${G}" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>`
+};
+const ic=k=>`<div class="ic">${I[k]}</div>`;
+const MARK=`<svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg>`;
+const S=[
+ {d:4.5,h:`<div class="k">FTM · Follow The Market</div><h1>Every day, the same story.</h1>`},
+ {d:5,h:`${ic('clock')}<div class="k">6:00 a.m.</div><h1>The alarm rings. <b>Again.</b></h1>`},
+ {d:5,h:`${ic('brief')}<h1>Work. Commute. Meetings. Family. <b>Repeat.</b></h1>`},
+ {d:5.5,h:`${ic('cloud')}<h2>And somewhere in between, a quiet worry:</h2><p class="s">“What about my future? My retirement?”</p>`},
+ {d:5.5,h:`${ic('coin')}<h2>Savings grow slowly. <b>Prices grow faster.</b></h2><p class="s">Money sitting still loses value every year.</p>`},
+ {d:5.5,h:`${ic('eye')}<h2>You know the markets can help.</h2><p class="s">But who has time to watch charts all day?</p>`},
+ {d:6,h:`${ic('moon')}<div class="k">Some people try</div><h2>Up at 3 a.m. to catch a trade.</h2><p class="s">Tired at work. Nervous all day. Decisions made in a hurry.</p>`},
+ {d:6,h:`${ic('copy')}<div class="k">Others copy someone</div><h2>Their trades. Their risk. <b>Their bad days.</b></h2><p class="s">And they only find out after it happened.</p>`},
+ {d:5.5,h:`<div class="k">Nurse · Pilot · Banker · Parent</div><h1>Different lives. <b>Same problem.</b></h1><p class="s">No time. No system.</p>`},
+ {d:5,h:`<h1>What if the markets worked for you, <b>while you work?</b></h1>`},
+ {d:5,h:`<div style="display:flex;justify-content:flex-start;margin-bottom:60px"><span class="mark" style="width:170px;height:170px;border-radius:48px">${MARK.replace(/38/g,'100')}</span></div><div class="k">Meet</div><div class="big">FTM <b style="color:#E3B62F">MACHINE</b></div>`},
+ {d:6,h:`<h2>Software that takes part in the markets <b>for you.</b></h2><p class="s">Fixed rules. Around the clock. On your own account. No fear, no hurry, no guessing.</p>`},
+ {d:7.5,list:['Your money stays in your name','Every trade visible to you','Pause any time, in one tap','Results posted every evening'],h:`<div class="k">What you get</div><h2 style="margin-bottom:40px">Built for busy people.</h2><div class="list"></div>`},
+ {d:6.5,ph:'home',h:``},
+ {d:7,ph:'connect',h:``},
+ {d:7,ph:'live',h:``},
+ {d:6,h:`<div class="k">Every evening at 11 p.m.</div><h2>The day's result. <b>Good days and bad days.</b></h2><p class="s">No hiding. Judge it by months, not by one day.</p>`},
+ {d:5.5,h:`<h1>The markets moved today. <b>Did your money?</b></h1>`},
+ {d:8,h:`<div class="k">Start free today</div><h1>ftmwealth<wbr>nation<b>.com</b></h1><p class="s">Open a free account, watch FTM MACHINE trade live, then decide.</p><p class="s" style="color:#E3B62F;font-weight:800;margin-top:60px">Invest today, secure tomorrow.</p>`}
+];
+const PH={
+ home:{cap:'<b>1.</b> Open ftmwealthnation.com',inner:`<img src="home.png">`},
+ connect:{cap:'<b>2.</b> Connect your account in seconds',inner:`<div class="app"><div style="font-size:40px;font-weight:800">Connect account</div><div class="card"><div class="t">Broker</div><div class="v">MetaTrader 5</div></div><div class="card"><div class="t">Account number</div><div class="v" id="acct"></div></div><div class="card"><div class="t">Status</div><div class="v" id="st" style="color:#aeb7dc">Waiting…</div></div><div class="btn" id="cb">Connect</div></div>`},
+ live:{cap:'<b>3.</b> Follow every trade, get every update',inner:`<div class="app"><div style="font-size:40px;font-weight:800">My account</div><div class="card"><div class="t">FTM MACHINE</div><div class="v" style="color:#2fbf71">● Trading for you</div></div><div class="card"><div class="t">Today</div><div class="v">Calendar · Statistics · Statements</div></div><div class="card"><div class="t">Updates</div><div class="v" style="font-size:36px">Daily, weekly and monthly results by email</div></div></div><div class="notif" id="n1" style="top:-200px"><div class="m">${MARK}</div><div><b>FTM</b><span>Your daily result is ready.</span></div></div><div class="notif" id="n2" style="top:-200px"><div class="m">${MARK}</div><div><b>FTM</b><span>Your weekly summary is ready.</span></div></div>`}
+};
+const T=[];let acc=0;S.forEach(s=>{T.push(acc);acc+=s.d});window.TOTAL=acc;
+const stage=document.getElementById('stage');
+S.forEach((s,i)=>{const e=document.createElement('div');e.className='scene';e.id='s'+i;
+ if(s.ph){e.style.top='250px';e.style.alignItems='center';e.innerHTML=`<div class="phone"><div class="screen">${PH[s.ph].inner}</div></div><div class="cap">${PH[s.ph].cap}</div>`}
+ else{e.innerHTML=s.h; if(s.list){const L=e.querySelector('.list');s.list.forEach(x=>{L.insertAdjacentHTML('beforeend',`<div class="li"><span class="d">✓</span>${x}</div>`)})}}
+ stage.appendChild(e)});
+const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3);
+function linePath(t){let pts=[];for(let i=0;i<=40;i++){const x=i*2.5;const y=50-x*.42+Math.sin(i*.9+t*.8)*3.2+Math.sin(i*.37+t*.3)*2.4;pts.push([x,Math.max(4,y)])}
+ const d='M'+pts.map(p=>p[0].toFixed(2)+' '+p[1].toFixed(2)).join(' L');return [d,d+' L100 60 L0 60Z']}
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/acc*100)+'%';
+ document.getElementById('grid').style.transform=`translate(${(t*8)%72}px,${(t*5)%72}px)`;
+ document.getElementById('bg').style.transform=`translate(${Math.sin(t*.2)*40}px,${Math.cos(t*.15)*40}px)`;
+ const [d,a]=linePath(t);document.getElementById('ll').setAttribute('d',d);document.getElementById('la').setAttribute('d',a);
+ S.forEach((s,i)=>{const e=document.getElementById('s'+i),lt=t-T[i];
+  if(lt<0||lt>s.d){e.style.opacity=0;return}
+  const fi=ease(lt/0.7),fo=1-ease((lt-(s.d-0.5))/0.5);e.style.opacity=Math.min(fi,fo);
+  e.style.transform=`translateY(${(1-fi)*60}px) scale(${1+lt*0.004})`;
+  if(s.list)e.querySelectorAll('.li').forEach((x,k)=>{const q=ease((lt-0.8-k*1.1)/0.6);x.style.opacity=q;x.style.transform=`translateX(${(1-q)*-50}px)`});
+  if(s.ph==='home'){const img=e.querySelector('img');img.style.transform=`translateY(${-Math.max(0,lt-1.5)*60}px)`}
+  if(s.ph==='connect'){const n='40817263',k=Math.max(0,Math.min(n.length,Math.floor((lt-1)*4)));e.querySelector('#acct').textContent=n.slice(0,k)+(k<n.length&&Math.floor(lt*3)%2?'|':'');
+   const st=e.querySelector('#st'),cb=e.querySelector('#cb');if(lt>3.6){cb.style.background='#2fbf71';cb.textContent='Connected ✓';st.textContent='Connected';st.style.color='#2fbf71'}else{cb.style.background='#E5323E';cb.textContent='Connect';st.textContent='Waiting…';st.style.color='#aeb7dc'}}
+  if(s.ph==='live'){const n1=e.querySelector('#n1'),n2=e.querySelector('#n2');n1.style.top=(-200+ease((lt-1.5)/0.6)*260)+'px';n2.style.top=(-200+ease((lt-3.5)/0.6)*420)+'px'}
+ })};
+render(0);
+</script></body></html>

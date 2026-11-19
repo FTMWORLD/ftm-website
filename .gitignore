@@ -3,3 +3,5 @@ node_modules/
 .env
 .env.local
 social/kit/index.html
+social/intro/intro-silent.mp4
+social/intro/pad.wav
