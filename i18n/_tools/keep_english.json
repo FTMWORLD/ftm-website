@@ -132,5 +132,10 @@
  "BTCUSD",
  "EURUSD",
  "NVDA",
- "XAUUSD"
+ "XAUUSD",
+ "Nvidia",
+ "Apple",
+ "Microsoft",
+ "Amazon",
+ "Google"
 ]

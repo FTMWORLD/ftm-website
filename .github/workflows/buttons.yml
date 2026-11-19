@@ -21,6 +21,7 @@ jobs:
           sleep 2
           node .github/tests/buttons.js http://localhost:8765
           node .github/tests/figures.js http://localhost:8765
+          node .github/tests/compare-markets.js http://localhost:8765
           node .github/tests/layout.js http://localhost:8765
           node .github/tests/community-api.js
           node .github/tests/leaderboard-community.js
@@ -43,6 +44,7 @@ jobs:
           node .github/tests/year-table.js http://localhost:8765/
           YT_DIV=0 node .github/tests/year-table.js http://localhost:8765/
           node .github/tests/fx-api.js
+          node .github/tests/bench-api.js
           node .github/tests/scripts-pinned.js
           node .github/tests/no-promises.js
           node .github/tests/email-fallback.js

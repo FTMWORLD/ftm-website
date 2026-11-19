@@ -4056,7 +4056,7 @@ body.op-lock{overflow:hidden}
         <div class="cv-title"><h3 class="has-tip" data-tip="Gold line: balance after every closed trade. Green or red line: equity, which includes open trades (green when they are in profit, red when in loss). Green dots are deposits, red dots are withdrawals. Touch the line to read any point.">Account progress</h3><div class="cv-now"><b id="cvNow">&mdash;</b><span id="cvChg"></span></div></div>
         <div class="cv-controls">
           <div class="tf" id="curveTF"><button data-r="1">1M</button><button data-r="3">3M</button><button data-r="6">6M</button><button data-r="ytd">YTD</button><button data-r="12">1Y</button><button class="is-on" data-r="0">All</button></div>
-          <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div><select id="cvCmp" class="cv-cmp" aria-label="Compare with" hidden><option value="">Compare with…</option><option value="XAUUSD">Gold</option><option value="USTEC">US Tech 100</option><option value="BTCUSD">Bitcoin</option></select>
+          <div class="tf" id="curveUnit"><button class="is-on" data-u="amount">€</button><button data-u="percent">%</button></div><select id="cvCmp" class="cv-cmp" aria-label="Compare with" hidden><option value="">Compare with…</option><optgroup label="FTM markets"><option value="XAUUSD">Gold</option><option value="BTCUSD">Bitcoin</option><option value="USTEC">US Tech 100</option><option value="USDJPY">USD/JPY</option><option value="HK50">HK50</option></optgroup><optgroup label="Indices and metals"><option value="US500" data-pub="1">S&amp;P 500</option><option value="XAGUSD" data-pub="1">Silver</option></optgroup><optgroup label="Top stocks"><option value="NVDA" data-pub="1">Nvidia</option><option value="AAPL" data-pub="1">Apple</option><option value="MSFT" data-pub="1">Microsoft</option><option value="AMZN" data-pub="1">Amazon</option><option value="GOOGL" data-pub="1">Google</option></optgroup></select>
           <div class="cv-zoom-btns">
             <button class="cv-zoom-btn" id="curveZoomOut" type="button" aria-label="Zoom out">&minus;</button>
             <button class="cv-zoom-btn" id="curveZoomIn" type="button" aria-label="Zoom in">+</button>
@@ -5238,7 +5238,7 @@ body.op-lock{overflow:hidden}
   const I18NE=(function(){
     var lang='en', dict={}, cache={}, touched=new Set(), observer=null, queued=[], raf=0;
     var textOrig=new WeakMap(), textLast=new WeakMap(), htmlOrig=new WeakMap(), htmlLast=new WeakMap(), attrOrig=new WeakMap();
-    var ATTRS=['placeholder','aria-label','title','alt'];
+    var ATTRS=['placeholder','aria-label','title','alt','label'];
     var SKIP={SCRIPT:1,STYLE:1,NOSCRIPT:1,TEXTAREA:1,CODE:1,PRE:1};
     var INLINE={A:1,B:1,I:1,EM:1,STRONG:1,SPAN:1,BR:1,SMALL:1,U:1};
     function norm(t){ return String(t).replace(/\u2060/g,'').replace(/\u2011/g,'-').replace(/\s+/g,' ').trim(); }
@@ -6377,7 +6377,7 @@ body.op-lock{overflow:hidden}
           if(F.curveUnit!=='percent'){ var pb=unitTF&&unitTF.querySelector('[data-u="percent"]'); if(pb) pb.click(); }
           F._bench=F._bench||{}; F._benchAt=F._benchAt||{};
           if(F._bench[sym] && Date.now()-F._benchAt[sym]<600000){ F.render(); return; }
-          F.remote.api('/market/candles?symbol='+sym+'&tf=1d&limit=300').then(function(j){ F._bench[sym]=((j&&j.candles)||[]).map(function(x){ return {t:Date.parse(x.t)||(+x.t*1000),o:+x.o,c:+x.c}; }); F._benchAt[sym]=Date.now(); F.render(); }).catch(function(){ cmp.value=''; F.cmpSym=null; F.render(); });
+          var pub=cmp.options[cmp.selectedIndex]&&cmp.options[cmp.selectedIndex].getAttribute('data-pub'); (pub?fetch('/api/v1/bench?symbol='+sym).then(function(r){ if(!r.ok) throw new Error('bench'); return r.json(); }):F.remote.api('/market/candles?symbol='+sym+'&tf=1d&limit=300')).then(function(j){ var c=((j&&j.candles)||[]).map(function(x){ return {t:pub?+x.t:(Date.parse(x.t)||(+x.t*1000)),o:+x.o,c:+x.c}; }).filter(function(k){ return isFinite(k.t)&&k.c>0; }); if(!c.length) throw new Error('empty'); F._bench[sym]=c; F._benchAt[sym]=Date.now(); F.render(); }).catch(function(){ cmp.value=''; F.cmpSym=null; F.render(); });
         });
       }
     })();

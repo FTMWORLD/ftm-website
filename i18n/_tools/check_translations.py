@@ -17,7 +17,7 @@ from html.parser import HTMLParser
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 PAGES = ['index.html']
 LEGAL_PAGES = ['terms.html', 'privacy.html']
-ATTRS = ['placeholder', 'aria-label', 'title', 'alt']
+ATTRS = ['placeholder', 'aria-label', 'title', 'alt', 'label']
 SKIP = {'script', 'style', 'noscript', 'textarea', 'code', 'pre'}
 INLINE = {'a', 'b', 'i', 'em', 'strong', 'span', 'br', 'small', 'u'}
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr'}
