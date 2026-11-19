@@ -749,3 +749,9 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
 - CTA faces (`faces/1-10.webp`, 18 Nov 2026): owner wanted whole faces, not half faces. Crops from hero-bg-1..5 (1920 wide) at centre (x*2.4, y*2.4+30) with half-size 128px, saved 208px: 1 bg1 540,140 · 2 bg1 672,140 · 3 bg1 535,272 · 4 bg2 519,180 · 5 bg2 649,238 · 6 bg3 608,203 · 7 bg4 660,88 · 8 bg4 640,250 · 9 bg5 517,110 · 10 bg5 598,222. Head, chin and shoulders must all show.
 
 - CI emails (18 Nov 2026): every failed GitHub run emails the owner. 16-17 Nov: 7+ failures came from ubuntu-latest moving to 26.04 (fixed: runs-on ubuntu-24.04); the rest were tests a push broke. Rule: before pushing anything that touches figures or tables, run `FUZZ_TZ=Africa/Lagos node .github/tests/stats-fuzz.js 30 <seed>` and the tests that read the changed view. Scheduled runs reduced (buttons once a day 04:41 UTC, live check every 6 hours; the Watchdog stays hourly) so one problem cannot send an email every hour.
+
+### Plan renewal reminders and grace (20 November 2026, owner's request)
+- Daily job /api/v1/renew-cron (10:19 UTC, api/_lib/renewals.js): from 30 days before a plan ends, weekly emails until it is renewed; weekly during the one-month grace after the end. State in community storage renewals/state.json.
+- Only plans that really end: 5 Years, or an Annual whose Stripe subscription is cancelled (cancel_at_period_end / canceled). An Annual that renews by itself gets no reminder (telling it to "resubscribe" would charge it twice). Lifetime never.
+- The email shows the member's own result with FTM since joining (engine history, only when positive), what stops, Renew now (/#pricing). No promises (CLAUDE.md).
+- Website: during grace the plan bar says until when they can log in; after end + 30 days FTM.graceCheck logs them out with the reason and See plans (not investors, Lifetime or active plans). Trading during grace is the engine's rule (unchanged).

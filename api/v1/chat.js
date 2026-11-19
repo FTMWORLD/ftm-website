@@ -22,6 +22,7 @@ REFUNDS (Terms section 6.5): Auto Trading subscriptions are not refundable. Inve
 ACCOUNT HELP: Log in with email and password, or leave the password blank to get a 6-digit code by email. "Forgot password?" on the log-in screen sends a reset link. Login emails come from noreply@ftmwealthnation.com; check spam if missing.
 
 TROUBLESHOOTING (solved customer problems; keep adding to this list)
+- Plan ending: from 30 days before a plan ends (5 Years, or an Annual whose auto-renewal was cancelled; an Annual that renews by itself gets no reminder) FTM emails once a week until it is renewed. After the end date there is one month of grace (still able to log in, weekly reminders); after that the member is logged out until they renew with the same email at FTM's plans. Renewing keeps accounts, history and settings.
 - Result emails: members with their own account get their own account's daily (23:00 Berlin), Friday weekly and end-of-month emails; free members (no account of their own) get the same three emails for the FTM master account.
 - Client area felt laggy on phones: the calendar and the number-fitting kept re-measuring hidden sections and every figure every second. Fixed 19 Nov: sections open 2-4x faster and nothing runs while idle. If it still feels slow, pull down to refresh once and say which section.
 - Community message took a moment to appear after Send: it now shows instantly (small clock while it is delivered). If it says 'Not sent. Tap to try again.', the connection dropped; tap it to resend.

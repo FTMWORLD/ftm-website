@@ -12,5 +12,13 @@ const BASE=process.argv[2]||'http://localhost:8765'; let fails=0; const ok=(c,m)
       ok(r.ren===want && r.up, tag+': '+days+' days left: Renew '+(want?'shown':'hidden')+', Upgrade shown ('+JSON.stringify(r)+')');
     }
     const lf=await p.evaluate(()=>{ FTM.planLifetime=true; FTM.subRing(); return !document.getElementById('subRenew').hidden; }); ok(!lf, tag+': lifetime plan never shows Renew');
+    { const g=await p.evaluate(()=>{ const F=FTM; F.planLifetime=false; F.planName='5 Years'; F.session={email:'g@x.com',products:['auto']}; F.planStatus='EXPIRED'; F.planEnd=new Date(Date.now()-10*864e5).toISOString(); F.planBar(); const t=document.getElementById('planBarTxt').textContent, kept=!F.graceCheck()&&!!F.session; return {t,kept}; });
+      ok(/You can still log in until/.test(g.t)&&g.kept, tag+': plan ended 10 days ago: still logged in, the bar says until when ('+g.t+')'); }
+    { const g=await p.evaluate(()=>new Promise(res=>{ const F=FTM; F.auth=Object.assign(F.auth||{},{signOut:()=>Promise.resolve()}); F.session={email:'g@x.com',products:['auto']}; F.planStatus='EXPIRED'; F.planEnd=new Date(Date.now()-31*864e5).toISOString(); const out=F.graceCheck();
+        setTimeout(()=>{ const er=document.getElementById('authError'); res({out, session:!!F.session, msg:er&&!er.hidden?er.textContent:''}); },700); }));
+      ok(g.out&&!g.session&&/grace period is over/.test(g.msg)&&/See plans/.test(g.msg), tag+': one month after the plan ended: logged out with the reason and See plans ('+g.msg+')'); }
+    { const g=await p.evaluate(()=>{ const F=FTM; F.session={email:'i@x.com',products:['auto','invest']}; F.planStatus='EXPIRED'; F.planEnd=new Date(Date.now()-60*864e5).toISOString(); const a=F.graceCheck(); F.session={email:'l@x.com',products:['auto']}; F.planLifetime=true; const b=F.graceCheck(); F.planLifetime=false; F.planStatus='ACTIVE'; const c=F.graceCheck(); return [a,b,c]; });
+      ok(!g[0]&&!g[1]&&!g[2], tag+': investors, Lifetime and active plans are never logged out ('+g.join(',')+')'); }
+    await p.evaluate(()=>{ const x=document.getElementById('authClose'); if(x) x.click(); });
     ok(!errs.length, tag+': no script errors '+(errs[0]||'')); await p.close(); }
   await b.close(); console.log(fails?'FAILED: '+fails:'RENEW OK'); process.exit(fails?1:0); })();

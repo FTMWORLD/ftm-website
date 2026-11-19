@@ -49,6 +49,7 @@ jobs:
           YT_DIV=0 node .github/tests/year-table.js http://localhost:8765/
           node .github/tests/fx-api.js
           node .github/tests/bench-api.js
+          node .github/tests/renewals.js
           node .github/tests/scripts-pinned.js
           node .github/tests/no-promises.js
           node .github/tests/email-fallback.js

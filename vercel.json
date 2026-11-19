@@ -66,6 +66,10 @@
     {
       "path": "/api/v1/news-cron",
       "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/v1/renew-cron",
+      "schedule": "19 10 * * *"
     }
   ],
   "rewrites": [
