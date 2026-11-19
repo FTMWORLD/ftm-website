@@ -2362,6 +2362,16 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 }
 #appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.sub-card,#appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.op-card{display:none}
 #appView.free .app-view[data-view="metrics"] .app-cols>.app-side:last-child>.cx-card{grid-column:1/-1}
+.ld-strip{display:flex;align-items:center;gap:12px 18px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 10px 26px -18px rgba(11,20,64,.3);border:1px solid rgba(11,20,64,.05);min-width:0;margin-bottom:14px;flex-wrap:wrap}.ld-strip[hidden]{display:none!important}
+.ld-ic{width:38px;height:38px;flex:none;border-radius:12px;display:grid;place-items:center;background:rgba(212,175,55,.14);color:#a8841a}.ld-ic svg{width:19px;height:19px}
+.ld-when{display:grid;gap:1px;min-width:0}.ld-when span{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#5b6378}.ld-when b{font-size:14px;color:#0b1440;white-space:nowrap}
+.ld-res{display:flex;align-items:baseline;gap:8px;white-space:nowrap}.ld-res b{font-size:20px;font-weight:800;color:#0b1440;font-variant-numeric:tabular-nums}.ld-res em{font-style:normal;font-size:13px;font-weight:800}.ld-res .up{color:#15803d}.ld-res .dn{color:#c81e2b}
+.ld-facts{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:#5b6378;min-width:0;flex:1 1 220px}.ld-facts b{color:#0b1440}.ld-facts em{font-style:normal;font-weight:800}.ld-facts .up{color:#15803d}.ld-facts .dn{color:#c81e2b}
+.ld-hi{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:99px;background:linear-gradient(135deg,#E3B62F,#D4AF37);color:#0b1440;font-size:11.5px;font-weight:800;white-space:nowrap;animation:ldGlow 2.6s ease-in-out infinite}.ld-hi[hidden]{display:none}
+@keyframes ldGlow{0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,.0)}50%{box-shadow:0 0 0 5px rgba(212,175,55,.18)}}
+#ldOpen{margin-inline-start:auto;white-space:nowrap}
+@media (max-width:600px){.ld-strip{gap:10px 12px;padding:12px}.ld-res{margin-inline-start:auto}.ld-facts{order:3;flex-basis:100%}.ld-hi{order:4}#ldOpen{order:5}}
+@media (prefers-reduced-motion:reduce){.ld-hi{animation:none}}
 .lv-strip{display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 10px 26px -18px rgba(11,20,64,.3);border:1px solid rgba(11,20,64,.05);min-width:0}
 .lv-strip[hidden]{display:none!important}
 .lv-h{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
@@ -4007,6 +4017,7 @@ body.op-lock{overflow:hidden}
         <label class="dx-view" id="dxViewW" hidden><span>Show statistics of</span><select id="dxView"></select></label>
       </div>
     </div>
+    <div class="ld-strip" id="ldStrip" hidden><i class="ld-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></i><div class="ld-when"><span id="ldLab">Last trading day</span><b id="ldDate"></b></div><div class="ld-res"><b id="ldVal"></b><em id="ldPct"></em></div><div class="ld-facts" id="ldFacts"></div><span class="ld-hi" id="ldHi" hidden>New highest balance</span><button type="button" class="dx-link" id="ldOpen">See the trades</button></div>
     <div class="lv-strip" id="lvStrip" hidden><span class="lv-h"><i class="live-dot"></i>Open positions</span><div class="lv-list" id="lvList"></div><button type="button" class="dx-link" id="lvAll">View all</button></div>
     <div class="app-grid kp-grid">
       <div class="app-tile kp" data-tip="Money in the account after every closed trade, deposit and withdrawal. Open trades are not included."><i class="kp-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg></i><span>Balance</span><b id="mBalance">&mdash;</b><small class="kp-sub"><em>Highest balance</em> <b id="kpHigh">&mdash;</b></small></div>
@@ -7343,6 +7354,7 @@ body.op-lock{overflow:hidden}
       if(dayClose)dayClose.addEventListener('click',shutDay);
       if(dayModal)dayModal.addEventListener('click',function(e){ if(e.target===dayModal)shutDay(); });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape' && dayModal && !dayModal.hidden)shutDay(); });
+      F.openDay=function(k){ openDay(k); };
       function openDay(dayKey){
         var trades=F.data.closed.filter(function(t){ return key(t.closeTime)===dayKey; })
           .sort(function(a,b){return a.closeTime-b.closeTime;});
@@ -10852,6 +10864,26 @@ tick();setInterval(tick,5000);})();
   (function(){ var mo=$('mtMore'), le=$('mtLess'), box=document.querySelector('#appView .metrics'); if(!mo||!le||!box) return;
     mo.addEventListener('click',function(){ box.classList.add('mt-open'); mo.hidden=true; le.hidden=false; });
     le.addEventListener('click',function(){ box.classList.remove('mt-open'); mo.hidden=false; le.hidden=true; box.scrollIntoView({block:'start',behavior:'smooth'}); }); })();
+  function lastDay(){
+    var box=$('ldStrip'); if(!box) return; var C=((F.data&&F.data.closed)||[]).filter(function(t){ return t.closeTime&&t.pl!=null&&isFinite(+t.pl); });
+    if(!C.length||!F.metrics){ box.hidden=true; return; }
+    var dk=function(ts){ var d=new Date(ts); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+    var last=C.reduce(function(a,t){ return +t.closeTime>a?+t.closeTime:a; },0), k=dk(last), T=C.filter(function(t){ return dk(t.closeTime)===k; });
+    var d0=new Date(k+'T00:00:00'), d1=new Date(d0); d1.setDate(d1.getDate()+1);
+    var net=T.reduce(function(a,t){ return a+(+t.pl); },0), won=T.filter(function(t){ return +t.pl>0; }).length, sg=null; try{ sg=F.metrics().seg(d0.getTime(),d1.getTime()); }catch(e){}
+    var best=T.reduce(function(a,t){ return !a||+t.pl>+a.pl?t:a; },null), worst=T.reduce(function(a,t){ return !a||+t.pl<+a.pl?t:a; },null), today=k===dk(Date.now());
+    $('ldLab').textContent=tr(today?'Today so far':'Last trading day');
+    $('ldDate').textContent=d0.toLocaleDateString((window.FTM_LOCALE||'en-GB'),{weekday:'short',day:'numeric',month:'short'});
+    var v=$('ldVal'), cls=net>0?'up':(net<0?'dn':''); v.textContent=sgn(net,2); v.className=cls; var pc=$('ldPct'); pc.textContent=sg&&isFinite(sg.pct)?(sg.pct>0?'+':'')+sg.pct.toFixed(2)+'%':''; pc.className=cls;
+    var esc2=function(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+    var f=['<span><b>'+T.length+'</b> '+esc2(tr(T.length===1?'trade':'trades'))+' · <b>'+won+'</b> '+esc2(tr('won'))+'</span>'];
+    if(best&&+best.pl>0) f.push('<span>'+esc2(tr('Best trade'))+' <b>'+esc2(best.symbol||'')+'</b> <em class="up">'+sgn(+best.pl,2)+'</em></span>');
+    if(worst&&+worst.pl<0&&worst!==best) f.push('<span>'+esc2(tr('Worst trade'))+' <b>'+esc2(worst.symbol||'')+'</b> <em class="dn">'+sgn(+worst.pl,2)+'</em></span>');
+    var fh=f.join(''); if($('ldFacts')._h!==fh){ $('ldFacts').innerHTML=fh; $('ldFacts')._h=fh; }
+    var es=F.es?F.es():null, pa=es&&es.peakBalanceAt?Date.parse(es.peakBalanceAt):NaN; $('ldHi').hidden=!(isFinite(pa)&&dk(pa)===k);
+    box._day=k; box.hidden=false;
+  }
+  (function(){ var b=$('ldOpen'), box=$('ldStrip'); if(!b||!box) return; b.addEventListener('click',function(){ if(box._day&&F.openDay) F.openDay(box._day); }); })();
   function liveStrip(){
     var box=$('lvStrip'), L=$('lvList'); if(!box||!L) return;
     var O=((F.data&&F.data.open)||[]).filter(function(t){return t.symbol;});
@@ -11127,7 +11159,7 @@ tick();setInterval(tick,5000);})();
       P.supported().then(function(ok){ if(!ok) return; setTimeout(function(){ if(F.session&&F.session.email&&!P.isOn()) show('Log in faster next time with Face ID or your fingerprint.','offer'); },2500); });
     };
   })();
-  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); liveStrip(); factsheet(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
+  var orig=F.render; F.render=function(){ var r=orig.apply(this,arguments); try{ pnl(); riskCard(); lastDay(); liveStrip(); factsheet(); activity(); if(F._stFill) F._stFill(); if(F.loadCid) F.loadCid(); if(F.pkOffer) F.pkOffer(); }catch(e){} return r; };
   try{ pnl(); activity(); if(F._stFill) F._stFill(); }catch(e){}
 })();
 </script>
