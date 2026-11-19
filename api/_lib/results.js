@@ -285,4 +285,4 @@ async function samples(admin) {
   return { log };
 }
 
-module.exports = { run, mail, samples, emailFor, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
+module.exports = { master, run, mail, samples, emailFor, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };

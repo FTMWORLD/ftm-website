@@ -107,6 +107,7 @@ async function resolveFromBoard(admin, S, idx, n) {
   return mid;
 }
 
+let dayMemo = {};
 module.exports = async function handler(req, res) {
   if (req.method === 'GET' && req.query && req.query.avatar) {
     // profile pictures: /api/v1/community?avatar=<mid>&v=<version> (only members' opaque ids; images are small JPEGs)
@@ -142,10 +143,16 @@ module.exports = async function handler(req, res) {
       const c = days[day];
       if (!c) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
-      let mtd = 1; Object.keys(days).sort().forEach(k => { mtd *= 1 + (+days[k].pct || 0) / 100; });
+      let mtd = null;
+      try {
+        const R = require('../_lib/results'), [y, m, d] = day.split('-').map(Number), nx = new Date(Date.UTC(y, m - 1, d + 1));
+        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R.master(admin), 'master')).h };
+        const sg = dayMemo.h.M.seg(R.midnight(y, m, 1, R.TZ), R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ));
+        if (sg && isFinite(sg.pct)) mtd = +sg.pct.toFixed(2);
+      } catch (e) { mtd = null; }
       const markets = [...new Set(rows.map(r => r.s))];
       res.setHeader('Cache-Control', 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd: +((mtd - 1) * 100).toFixed(2), days: Object.keys(days).length });
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
