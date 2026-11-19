@@ -5,3 +5,7 @@ node_modules/
 social/kit/index.html
 social/intro/intro-silent.mp4
 social/intro/pad.wav
+social/intro2/video.mp4
+social/intro2/mix.wav
+social/intro2/vo/
+social/intro2/*.png
