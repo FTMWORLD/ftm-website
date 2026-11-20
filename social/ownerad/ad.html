@@ -1,0 +1,237 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#050a24}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;font-feature-settings:'tnum' 1}
+#st{position:absolute;inset:0;overflow:hidden;background:#050a24}
+.shot{position:absolute;inset:0;overflow:hidden;opacity:0}
+.plate{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
+.plate>img.ph{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:2}
+.blurbg{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(34px) brightness(.55) saturate(1.2)}
+.scr{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;z-index:1;background:#0b1640}
+.lay{position:absolute;inset:0;overflow:hidden}
+.topfade{position:absolute;left:0;right:0;top:0;height:760px;background:linear-gradient(180deg,rgba(5,10,36,.92) 0%,rgba(5,10,36,.72) 38%,rgba(5,10,36,0) 100%);z-index:5}
+.botfade{position:absolute;left:0;right:0;bottom:0;height:820px;background:linear-gradient(0deg,rgba(5,10,36,.95) 0%,rgba(5,10,36,.75) 40%,rgba(5,10,36,0) 100%);z-index:5}
+.dim{position:absolute;inset:0;background:#030719;opacity:0;z-index:4}
+#hook{position:absolute;left:0;right:0;top:0;z-index:20;text-align:center}
+.kick{font-weight:800;font-size:40px;letter-spacing:.24em;color:#E3B62F;text-transform:uppercase}
+#clock{position:relative;height:250px;margin-top:6px;font-weight:800;font-size:236px;letter-spacing:-6px;line-height:250px}
+#clock .d{position:absolute;left:0;right:0;top:0}
+#sec{font-size:64px;letter-spacing:0;color:#E3B62F;vertical-align:top;margin-left:10px;position:relative;top:34px}
+#ring{position:absolute;left:540px;top:400px;width:10px;height:10px;border-radius:50%;border:6px solid #E3B62F;transform:translate(-50%,-50%);opacity:0;z-index:19}
+.sub{font-weight:700;font-size:54px;letter-spacing:-1px}
+.live{display:inline-flex;align-items:center;gap:12px;background:#E5323E;color:#fff;font-weight:900;font-size:30px;letter-spacing:.12em;padding:10px 22px;border-radius:40px}
+.live i{width:14px;height:14px;border-radius:50%;background:#fff;display:block}
+.hl{position:absolute;left:60px;right:60px;top:236px;z-index:20;text-align:center}
+.hl .a{font-weight:900;font-size:80px;letter-spacing:-2.5px;line-height:1.02}
+.hl .b{font-weight:900;font-size:80px;letter-spacing:-2.5px;line-height:1.06;color:#E3B62F}
+.hl span.w{display:inline-block}
+#pill{position:absolute;left:50%;top:104px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:16px;padding:12px 26px 12px 12px;border-radius:60px;background:rgba(8,16,52,.72);border:1.5px solid rgba(227,182,47,.55);box-shadow:0 10px 40px rgba(0,0,0,.35);backdrop-filter:blur(8px)}
+#pill .av{width:62px;height:62px;border-radius:50%;background:#1F3A93;display:grid;place-items:center;border:2px solid #E3B62F}
+#pill .nm{font-weight:800;font-size:28px;line-height:1.05}#pill .nm small{display:block;font-weight:600;font-size:21px;color:#c9d0ee;letter-spacing:.02em}
+#wave{display:flex;align-items:center;gap:5px;height:48px;margin-left:6px}
+#wave b{display:block;width:6px;border-radius:4px;background:#E3B62F}
+#cap{position:absolute;left:70px;right:70px;top:1420px;z-index:40;text-align:center}
+#cap .in{display:inline-block;padding:14px 30px 18px;border-radius:28px;background:rgba(5,10,36,.62);font-weight:900;font-size:60px;line-height:1.12;letter-spacing:-1px}
+#cap span{display:inline-block;margin:0 .17em;transform-origin:50% 60%}
+.glass{position:absolute;z-index:22;left:90px;right:90px;border-radius:34px;background:rgba(10,20,66,.78);border:1.5px solid rgba(227,182,47,.5);box-shadow:0 30px 80px rgba(0,0,0,.45);padding:30px 36px;backdrop-filter:blur(14px)}
+.row{display:flex;align-items:center;gap:20px}
+.mk{width:74px;height:74px;border-radius:22px;background:#1F3A93;display:grid;place-items:center;flex:none}
+.gt{font-weight:900;font-size:40px;letter-spacing:-.5px}.gs{font-weight:600;font-size:30px;color:#c9d0ee;margin-top:4px}
+.run{margin-left:auto;display:flex;align-items:center;gap:12px;font-weight:800;font-size:30px;color:#3ddc84}
+.run i{width:18px;height:18px;border-radius:50%;background:#3ddc84;display:block}
+.chk{display:flex;align-items:center;gap:16px;margin-top:22px;font-weight:700;font-size:34px}
+.chk svg{flex:none}
+.tg{margin-left:auto;width:150px;height:84px;border-radius:50px;background:#3ddc84;position:relative;flex:none}
+.tg i{position:absolute;top:7px;left:73px;width:70px;height:70px;border-radius:50%;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.3);display:block}
+.card{position:absolute;z-index:24;width:470px;height:340px;border-radius:30px;background-size:470px auto;border:3px solid rgba(255,255,255,.18);box-shadow:0 40px 90px rgba(0,0,0,.6);opacity:0}
+.stamp{position:absolute;left:50%;top:-34px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:12px 26px;border-radius:40px;font-weight:900;font-size:32px;letter-spacing:.06em;white-space:nowrap;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.tap{position:absolute;z-index:45;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;background:rgba(255,255,255,.35);border:4px solid #fff;opacity:0}
+#end{position:absolute;inset:0;z-index:50;opacity:0;background:radial-gradient(90% 60% at 50% 32%,#1d3590 0%,#0b1640 55%,#040822 100%);text-align:center;overflow:hidden}
+#rays{position:absolute;left:540px;top:330px;width:2400px;height:2400px;margin:-1200px 0 0 -1200px;background:repeating-conic-gradient(from 0deg,rgba(227,182,47,.07) 0deg 5deg,rgba(227,182,47,0) 5deg 20deg);border-radius:50%;-webkit-mask-image:radial-gradient(circle,#000 0%,transparent 60%)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:18px;height:136px;padding:0 64px;border-radius:70px;background:#E5323E;font-weight:900;font-size:56px;box-shadow:0 20px 60px rgba(229,50,62,.45)}
+#grain{position:absolute;inset:-100px;z-index:90;background:url(img/grain.png);opacity:.05;mix-blend-mode:overlay;pointer-events:none}
+#vig{position:absolute;inset:0;z-index:89;background:radial-gradient(120% 90% at 50% 45%,rgba(0,0,0,0) 60%,rgba(0,0,0,.4) 100%);pointer-events:none}
+#flash{position:absolute;inset:0;z-index:88;background:#fff;opacity:0;pointer-events:none}
+.sb{position:absolute;left:0;right:0;top:0;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;font-weight:700;font-size:24px;z-index:9}
+.isl{position:absolute;left:50%;top:14px;width:150px;height:40px;margin-left:-75px;border-radius:24px;background:#000;z-index:10}
+</style></head><body><div id="st"></div>
+<script>
+const NAME = 'Banz';
+const W = [];// filled by setup: [start,end,word]
+const CH = [[0,5],[6,9],[10,14],[15,18],[19,21],[22,27],[28,31],[32,37],[38,44],[45,48],[49,52],[53,56],[57,62],[63,64],[65,68]];
+const FIX = {'am':'am','11,':'11,','11.':'11.'};
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), pr = (t, a, d) => cl((t - a) / d);
+const eo = x => 1 - Math.pow(1 - cl(x), 3), eio = x => { x = cl(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const bk = x => { x = cl(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const fade = (t, a, b, fi = .3, fo = .3) => Math.min(pr(t, a, fi), 1 - pr(t, b, fo));
+const $ = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstChild; };
+const MARK = (s = 1) => `<svg width="${46 * s}" height="${46 * s}" viewBox="-30 -30 60 60"><path d="M-20 14 L-4 -3 L7 7 L22 -12" stroke="#D4AF37" stroke-width="7.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const TICK = (c = '#3ddc84', s = 44) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="${c}"/><path d="M12 22.5 L19 29.5 L32 15" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const DOWN = (s = 40) => `<svg width="${s}" height="${s}" viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="#fff"/><path d="M22 11 V31 M13 23 L22 32 L31 23" stroke="#E5323E" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+let P, A, END = 33.6, E = {};
+const st = document.getElementById('st');
+function statusBar(time = '23:00') { return `<div class="isl"></div><div class="sb"><span>${time}</span><span style="display:flex;gap:10px;align-items:center"><svg width="34" height="22" viewBox="0 0 34 22"><rect x="0" y="14" width="6" height="8" rx="1.5" fill="#fff"/><rect x="9" y="10" width="6" height="12" rx="1.5" fill="#fff"/><rect x="18" y="5" width="6" height="17" rx="1.5" fill="#fff"/><rect x="27" y="0" width="6" height="22" rx="1.5" fill="#fff"/></svg><svg width="46" height="22" viewBox="0 0 46 22"><rect x="1" y="1" width="38" height="20" rx="6" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><rect x="4" y="4" width="28" height="14" rx="3.5" fill="#fff"/><rect x="41" y="7" width="3" height="8" rx="1.5" fill="#fff" fill-opacity=".6"/></svg></span></div>`; }
+function machineUI(H, big) {
+  return `<div class="lay" style="background:radial-gradient(120% 70% at 50% 20%,#1d3590 0%,#0b1640 60%,#060d30 100%)">${statusBar('23:04')}
+  <div style="position:absolute;top:96px;left:36px;right:36px;display:flex;align-items:center;gap:16px"><div class="mk" style="width:62px;height:62px;border-radius:18px">${MARK(1)}</div><b style="font-size:40px;font-weight:900">FTM</b></div>
+  <div style="position:absolute;top:210px;left:0;right:0;text-align:center"><div class="kick" style="font-size:28px">FTM MACHINE</div>
+  <div class="mring" style="margin:34px auto 0;width:300px;height:300px;border-radius:50%;border:10px solid #3ddc84;display:grid;place-items:center;box-shadow:0 0 60px rgba(61,220,132,.35)"><div><div class="mst" style="font-weight:900;font-size:56px">Running</div><div class="msb" style="font-weight:600;font-size:26px;color:#c9d0ee;margin-top:6px">trading for you</div></div></div></div>
+  <div style="position:absolute;top:${big ? 640 : 610}px;left:30px;right:30px;border-radius:28px;background:rgba(255,255,255,.07);padding:26px 28px">
+  <div style="font-weight:800;font-size:30px;color:#E3B62F;letter-spacing:.1em">YOUR ACCOUNT</div>
+  <div class="chk" style="font-size:30px">${TICK('#3ddc84', 38)}In your own name</div><div class="chk" style="font-size:30px">${TICK('#3ddc84', 38)}Every trade shown</div></div>
+  <div style="position:absolute;top:${big ? 960 : 900}px;left:30px;right:30px;border-radius:28px;background:rgba(255,255,255,.07);padding:24px 28px" class="row"><div><div style="font-weight:900;font-size:34px">FTM MACHINE</div><div class="msb2" style="font-weight:600;font-size:24px;color:#c9d0ee">On</div></div><div class="tg mtg" style="width:130px;height:74px"><i style="width:60px;height:60px;left:63px"></i></div></div></div>`;
+}
+function setMachine(root, on) {
+  root.querySelectorAll('.mring').forEach(e => { e.style.borderColor = on ? '#3ddc84' : '#E3B62F'; e.style.boxShadow = on ? '0 0 60px rgba(61,220,132,.35)' : '0 0 60px rgba(227,182,47,.3)'; });
+  root.querySelectorAll('.mst').forEach(e => e.textContent = on ? 'Running' : 'Paused');
+  root.querySelectorAll('.msb').forEach(e => e.textContent = on ? 'trading for you' : 'resume any time');
+  root.querySelectorAll('.msb2').forEach(e => e.textContent = on ? 'On' : 'Paused');
+}
+function setToggle(el, k) { el.style.background = `rgb(${61 + (110 - 61) * k},${220 + (120 - 220) * k},${132 + (150 - 132) * k})`; const i = el.querySelector('i'); const w = el.offsetWidth, s = i.offsetWidth; i.style.left = (7 + (w - s - 14) * (1 - k)) + 'px'; }
+function shot(id, img, opts = {}) {
+  const pl = P[id]; const s = $(`<div class="shot" id="sh_${id}${opts.tag || ''}"></div>`);
+  if (opts.inset) s.appendChild($(`<div class="blurbg" style="background-image:url(img/${pl.img})"></div>`));
+  const plate = $(`<div class="plate"><img class="ph" src="img/${pl.img}"></div>`); s.appendChild(plate);
+  (pl.scr || []).forEach((sc, i) => { const d = $(`<div class="scr" style="width:${sc.W}px;height:${sc.H}px;transform:${sc.m}"></div>`); plate.appendChild(d); });
+  s.appendChild($('<div class="dim"></div>'));
+  if (!opts.nofade) { s.appendChild($('<div class="topfade"></div>')); s.appendChild($('<div class="botfade"></div>')); }
+  st.appendChild(s); return s;
+}
+function hl(id, a, b) { const e = $(`<div class="hl" id="${id}"><div class="a">${a}</div><div class="b">${b}</div></div>`); st.appendChild(e); return e; }
+function setup(words, amp) {
+  W.push(...words); A = amp;
+  // shots
+  E.watch = shot('watch'); E.handA = shot('hand', 0, { inset: 1, tag: 'A' }); E.nurse = shot('nurse'); E.courier = shot('courier'); E.kitchen = shot('kitchen'); E.handB = shot('hand', 0, { inset: 1, tag: 'B' }); E.couple = shot('couple'); E.world = shot('world');
+  // hand A screen layers
+  const sA = E.handA.querySelector('.scr'), H = P.hand.scr[0].H;
+  sA.innerHTML = `<div class="lay" id="L_lock" style="background:radial-gradient(90% 55% at 50% 30%,#2a4bb8 0%,#13246a 45%,#060d30 100%)">${statusBar('23:00')}
+    <div style="position:absolute;left:0;right:0;top:250px;text-align:center;opacity:.06">${MARK(9)}</div>
+    <div style="position:absolute;left:0;right:0;top:120px;text-align:center;font-weight:600;font-size:32px;color:#dfe4ff">Thursday, 19 November</div>
+    <div style="position:absolute;left:0;right:0;top:160px;text-align:center;font-weight:700;font-size:170px;letter-spacing:-5px">23:00</div>
+    <div id="notif" style="position:absolute;left:24px;right:24px;top:420px;border-radius:30px;background:rgba(245,247,255,.94);color:#0b1640;padding:22px 24px;display:flex;gap:18px;box-shadow:0 20px 50px rgba(0,0,0,.35)"><div class="mk" style="width:76px;height:76px;border-radius:20px">${MARK(1.1)}</div><div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:24px;font-weight:700;color:#5a6390"><span>FTM</span><span>now</span></div><div style="font-weight:900;font-size:31px;margin-top:4px">Today's result is live</div><div style="font-weight:600;font-size:25px;margin-top:4px;color:#2a3366">Thursday 19 Nov · 15 trades · every one shown</div></div></div></div>
+    <div class="lay" id="L_s19" style="background:#0b1640"><img src="img/s19.jpg" style="position:absolute;left:0;top:${(H - 960) / 2}px;width:540px;height:960px">${statusBar('23:00')}</div>
+    <div class="lay" id="L_t19" style="background:#0b1640"><img src="img/t19.jpg" style="position:absolute;left:0;top:${(H - 675) / 2}px;width:540px;height:675px"><div id="rowhl" style="position:absolute;left:10px;right:10px;height:46px;border-radius:10px;background:rgba(227,182,47,.22);border:2px solid rgba(227,182,47,.8)"></div>${statusBar('23:00')}</div>`;
+  E.rowTop = (H - 675) / 2;
+  // hand B: sign-up (real screen)
+  const sB = E.handB.querySelector('.scr');
+  sB.innerHTML = `<div class="lay" style="background:#0c1748"><img src="img/su1.jpg" style="position:absolute;left:0;top:70px;width:540px;height:919px"><div style="position:absolute;left:0;right:0;top:0;height:70px;background:#0c1748"></div>${statusBar('23:02')}
+    <div id="typ" style="position:absolute;left:112px;top:492px;width:318px;height:56px;background:#fff;font-weight:400;font-size:24px;line-height:56px;color:#0b1640;padding-left:10px;font-family:Inter"></div>
+    <div id="ok" style="position:absolute;inset:0;background:rgba(5,10,36,.82);display:grid;place-items:center;opacity:0"><div style="text-align:center">${TICK('#3ddc84', 150)}<div style="font-weight:900;font-size:44px;margin-top:24px">Account created</div><div style="font-weight:600;font-size:28px;color:#c9d0ee;margin-top:8px">Free · no card needed</div></div></div></div>`;
+  // kitchen phone: machine UI
+  const sK = E.kitchen.querySelector('.scr'); sK.innerHTML = machineUI(P.kitchen.scr[0].H, 1);
+  // couple + world: real result slides, live
+  const live = `<div style="position:absolute;left:24px;top:84px" class="live"><i></i>LIVE</div>`;
+  E.couple.querySelector('.scr').innerHTML = `<div class="lay" style="background:#0b1640"><img src="img/s19.jpg" style="position:absolute;left:0;top:${(P.couple.scr[0].H - 960) / 2}px;width:540px;height:960px">${statusBar('23:01')}${live}</div>`;
+  E.world.querySelectorAll('.scr').forEach((d, i) => { d.innerHTML = `<div class="lay" style="background:#0b1640"><img src="img/${['s19', 's17', 's19', 's17'][i]}.jpg" style="position:absolute;left:0;top:${(P.world.scr[i].H - 960) / 2}px;width:540px;height:960px"></div>`; });
+  // hook
+  st.appendChild($(`<div id="hook"><div style="height:250px"></div><div class="kick">Every night at</div><div id="clock"><div class="d" id="d1">22:59<span id="sec">:55</span></div><div class="d" id="d2" style="color:#E3B62F;opacity:0">23:00</div></div><div class="sub" id="hsub">our real result goes live.</div><div style="margin-top:28px;opacity:0" id="hlive"><span class="live"><i></i>LIVE · BERLIN TIME</span></div></div>`));
+  st.appendChild($('<div id="ring"></div>'));
+  E.h = [[4.95, 10.6, hl('h1', 'Real results.', 'Posted every night.')], [10.6, 12.45, hl('h2', 'Every single trade.', '&nbsp;')], [12.45, 15.0, hl('h3', 'Good days. Bad days.', 'We show every one.')], [15.0, 19.0, hl('h4', '<span style="font-size:68px">FTM MACHINE trades for you</span>', 'on your own account.')], [19.0, 22.3, hl('h5', 'You stay in control.', 'Pause it any time.')], [22.3, 25.6, hl('h6', 'Open a free account.', 'Just your email.')], [25.6, 28.15, hl('h7', 'Watch it live,', 'as long as you like.')]];
+  // good / bad day cards (real slides, cropped)
+  const card = (img, txt, col, ic) => { const c = $(`<div class="card" style="background-image:url(img/${img}.jpg);background-position:0 ${-180 * 470 / 1080}px"><div class="stamp" style="background:${col}">${ic}${txt}</div></div>`); st.appendChild(c); return c; };
+  E.good = card('s17', 'GOOD DAY', '#1f9d55', TICK('rgba(255,255,255,.25)', 36)); E.bad = card('s09', 'BAD DAY · SHOWN TOO', '#E5323E', `<svg width="36" height="36" viewBox="0 0 44 44"><circle cx="22" cy="22" r="21" fill="rgba(255,255,255,.25)"/><path d="M22 11 V31 M13 23 L22 32 L31 23" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+  // lifestyle glass cards
+  E.gN = $(`<div class="glass" style="top:1130px"><div class="row"><div class="mk">${MARK(1.3)}</div><div><div class="gt">FTM MACHINE</div><div class="gs">Working while you work</div></div><div class="run"><i></i>Running</div></div></div>`); st.appendChild(E.gN);
+  E.gC = $(`<div class="glass" style="top:1100px"><div class="row"><div class="mk">${MARK(1.3)}</div><div><div class="gt">FTM MACHINE</div><div class="gs">Trading for you</div></div><div class="run"><i></i>Running</div></div><div class="chk">${TICK()}On your own account</div><div class="chk">${TICK()}In your own name</div></div>`); st.appendChild(E.gC);
+  E.gK = $(`<div class="glass" style="top:1120px"><div class="row"><div class="mk">${MARK(1.3)}</div><div><div class="gt">FTM MACHINE</div><div class="gs" id="gks">Running · trading for you</div></div><div class="tg" id="gkt"><i></i></div></div></div>`); st.appendChild(E.gK);
+  E.tap = $('<div class="tap"></div>'); st.appendChild(E.tap); E.tap2 = $('<div class="tap"></div>'); st.appendChild(E.tap2);
+  // end card
+  st.appendChild($(`<div id="end"><div id="rays"></div><div id="eparts"></div>
+    <div style="position:absolute;left:0;right:0;top:250px" id="e1"><div style="display:inline-flex;align-items:center;gap:26px"><div class="mk" style="width:150px;height:150px;border-radius:44px;box-shadow:0 0 80px rgba(227,182,47,.35)">${MARK(2.8)}</div><b style="font-size:120px;font-weight:900;letter-spacing:-4px">FTM</b></div></div>
+    <div style="position:absolute;left:0;right:0;top:500px" id="e2"><div style="font-weight:900;font-size:96px;letter-spacing:-3px;line-height:1">Open a free account</div><div style="font-weight:700;font-size:44px;color:#E3B62F;margin-top:22px">Just your email · no card</div></div>
+    <div style="position:absolute;left:0;right:0;top:770px" id="e3"><div class="btn" id="ebtn">Start free ${DOWN(56)}</div></div>
+    <div style="position:absolute;left:0;right:0;top:960px;font-weight:800;font-size:46px" id="e4">Link below <span id="earr" style="display:inline-block">↓</span></div>
+    <div style="position:absolute;left:0;right:0;top:1080px" id="e5"><div style="display:inline-flex;align-items:center;gap:20px;padding:20px 40px;border-radius:60px;border:2px solid #E3B62F;background:rgba(227,182,47,.08)"><svg width="54" height="54" viewBox="0 0 54 54"><circle cx="27" cy="27" r="24" fill="none" stroke="#E3B62F" stroke-width="4"/><path d="M27 13 V27 L36 33" stroke="#E3B62F" stroke-width="4.5" fill="none" stroke-linecap="round"/></svg><span style="font-weight:900;font-size:50px">See you at 23:00</span></div><div style="font-weight:600;font-size:32px;color:#c9d0ee;margin-top:16px">Every night · Berlin time</div></div>
+    <div style="position:absolute;left:0;right:0;top:1290px" id="e6"><div style="font-weight:800;font-size:44px">ftmwealthnation.com</div><div style="font-weight:700;font-size:36px;color:#E3B62F;margin-top:14px">Invest today, secure tomorrow.</div></div></div>`));
+  let ps = ''; for (let i = 0; i < 40; i++) ps += `<i style="position:absolute;display:block;border-radius:50%;background:#E3B62F"></i>`; document.getElementById('eparts').innerHTML = ps;
+  st.appendChild($('<div id="flash"></div>'));
+  // voice pill, captions, grain
+  st.appendChild($(`<div id="pill"><div class="av">${MARK(1)}</div><div class="nm">${NAME}<small>from FTM</small></div><div id="wave">${'<b></b>'.repeat(22)}</div></div>`));
+  st.appendChild($('<div id="cap"><div class="in"></div></div>'));
+  st.appendChild($('<div id="vig"></div>')); st.appendChild($('<div id="grain"></div>'));
+  return { TOTAL: END };
+}
+const SH = [['watch', 0, 4.95, [1.0, 1.13, 560, 1180]], ['handA', 4.95, 15.0, null], ['nurse', 15.0, 16.75, [1.06, 1.0, 540, 700]], ['courier', 16.75, 19.0, [1.0, 1.07, 480, 700]], ['kitchen', 19.0, 22.3, [1.0, 1.06, 700, 960]], ['handB', 22.3, 25.6, null], ['couple', 25.6, 26.95, [1.04, 1.12, 600, 1350]], ['world', 26.95, 28.15, [1.12, 1.0, 540, 1200]]];
+function lay(id, t, a, b) { const e = document.getElementById(id); if (t < a - .01 || t > b + .5) { e.style.display = 'none'; return; } e.style.display = 'block'; const k = eo(pr(t, a, .42)), o = eio(pr(t, b, .42)); e.style.transform = `translateX(${(1 - k) * 100 - o * 35}%)`; e.style.filter = o > 0 ? `brightness(${1 - o * .5})` : ''; e.style.zIndex = Math.round(a * 10); }
+function render(t) {
+  // shots: crossfade + zoom punch
+  SH.forEach(([k, a, b, kb]) => {
+    const e = E[k], on = t >= a - .25 && t < b + .25; e.style.display = on ? 'block' : 'none'; if (!on) return;
+    const o = Math.min(pr(t, a - .25, .25) + (a === 0 ? 1 : 0), 1 - pr(t, b, .25)); e.style.opacity = cl(o); e.style.zIndex = 1;
+    const punch = 1 + .06 * (1 - eo(pr(t, a - .1, .6))) * (a > 0 ? 1 : 0), pl = e.querySelector('.plate');
+    if (kb) { const [s0, s1, ox, oy] = kb, s = (s0 + (s1 - s0) * eio(pr(t, a - .25, b - a + .5))) * punch; pl.style.transform = `translate(${ox}px,${oy}px) scale(${s}) translate(${-ox}px,${-oy}px)`; }
+    else { const s = .8 * punch * (1 + .03 * pr(t, a, b - a)), x = 540 - 540 * s, y = 1000 - 1000 * s - 30; pl.style.transform = `translate(${x}px,${y}px) scale(${s})`; const bb = e.querySelector('.blurbg'); bb.style.transform = `scale(${1.05 + .03 * Math.sin(t * .5)})`; }
+  });
+  // hand A screens
+  if (t > 4.6 && t < 15.5) {
+    lay('L_lock', t, 0, 6.85); lay('L_s19', t, 6.85, 10.7); lay('L_t19', t, 10.7, 99);
+    const n = document.getElementById('notif'), k = bk(pr(t, 5.35, .55)); n.style.transform = `translateY(${(1 - k) * -260}px) scale(${.9 + .1 * k})`; n.style.opacity = pr(t, 5.35, .2);
+    const s19 = document.querySelector('#L_s19 img'); s19.style.transform = `scale(${1 + .05 * pr(t, 6.9, 4)})`;
+    const r = Math.floor((t - 10.95) / .16), rh = document.getElementById('rowhl'); const rows = [409, 501, 594, 687, 777, 870, 963, 1053];
+    if (t > 10.95 && r < 8) { rh.style.opacity = 1; rh.style.top = (E.rowTop + rows[Math.max(0, r)] * .5 - 23) + 'px'; } else rh.style.opacity = t > 10.95 ? cl(1 - (t - 12.25) / .3) : 0;
+    E.handA.querySelector('.dim').style.opacity = .55 * Math.min(pr(t, 12.55, .3), 1 - pr(t, 14.75, .3));
+  }
+  // good / bad cards out of the phone
+  [[E.good, 12.62, 290, 735, -7], [E.bad, 13.38, 770, 1010, 6]].forEach(([c, a, x, y, r]) => {
+    if (t < a || t > 15.3) { c.style.opacity = 0; return; }
+    const k = bk(pr(t, a, .5)), o = eio(pr(t, 14.8, .4)), cx = 540 + (x - 540) * k, cy = 960 + (y - 960) * k + o * 120;
+    c.style.left = (cx - 235) + 'px'; c.style.top = (cy - 170) + 'px'; c.style.opacity = cl(pr(t, a, .15) - o); c.style.transform = `rotate(${r * k}deg) scale(${.35 + .65 * k})`;
+    const sp = c.querySelector('.stamp'), ks = pr(t, a + .25, .22); sp.style.opacity = ks; sp.style.transform = `translateX(-50%) scale(${1.6 - .6 * eo(ks)})`;
+  });
+  // hook
+  const hook = document.getElementById('hook'); const ho = 1 - pr(t, 4.75, .3); hook.style.opacity = ho; hook.style.display = ho > 0 ? 'block' : 'none';
+  if (ho > 0) {
+    const flip = eo(pr(t, 4.24, .28)); const d1 = document.getElementById('d1'), d2 = document.getElementById('d2');
+    document.getElementById('sec').textContent = ':' + String(Math.min(59, 55 + Math.floor(t / 4.24 * 5))).padStart(2, '0');
+    d1.style.transform = `translateY(${-flip * 120}px)`; d1.style.opacity = 1 - flip; d2.style.transform = `translateY(${(1 - flip) * 120}px) scale(${1 + .08 * Math.sin(Math.PI * pr(t, 4.24, .5))})`; d2.style.opacity = flip;
+    document.getElementById('hlive').style.opacity = pr(t, 4.3, .2); document.getElementById('hlive').style.transform = `scale(${bk(pr(t, 4.3, .35))})`;
+    document.getElementById('clock').style.transform = `scale(${1 + .015 * Math.sin(t * 6.3)})`;
+    hook.style.transform = `translateY(${-30 * pr(t, 4.7, .35)}px)`;
+  }
+  const rg = document.getElementById('ring'), rk = pr(t, 4.26, .7); rg.style.opacity = rk > 0 && rk < 1 ? (1 - rk) : 0; rg.style.width = rg.style.height = (40 + rk * 1100) + 'px';
+  document.getElementById('flash').style.opacity = .22 * (1 - pr(t, 4.26, .25)) * (t >= 4.26 ? 1 : 0);
+  // headlines: words rise in one by one
+  E.h.forEach(([a, b, e]) => {
+    const o = Math.min(pr(t, a, .2), 1 - pr(t, b - .15, .2)); e.style.display = o > 0 ? 'block' : 'none'; if (o <= 0) return; e.style.opacity = o;
+    ['.a', '.b'].forEach((s, li) => { const el = e.querySelector(s); const k = eo(pr(t, a + li * .22, .45)); el.style.transform = `translateY(${(1 - k) * 40}px)`; el.style.opacity = k; });
+  });
+  // glass cards
+  [[E.gN, 15.15, 16.75], [E.gC, 16.9, 19.0], [E.gK, 19.2, 22.3]].forEach(([g, a, b]) => { const k = eo(pr(t, a, .45)), o = pr(t, b - .2, .25); g.style.opacity = cl(k - o); g.style.display = k > 0 && o < 1 ? 'block' : 'none'; g.style.transform = `translateY(${(1 - k) * 80}px)`; });
+  document.querySelectorAll('.run i').forEach(i => { i.style.opacity = .5 + .5 * Math.sin(t * 7); i.style.boxShadow = `0 0 ${8 + 10 * Math.sin(t * 7)}px #3ddc84`; });
+  E.gC.querySelectorAll('.chk').forEach((c, i) => { const k = bk(pr(t, 17.65 + i * .45, .35)); c.style.opacity = cl(k); c.style.transform = `translateX(${(1 - cl(k)) * 40}px)`; });
+  // pause: tap + toggle
+  const pk = eio(pr(t, 19.8, .25)), on = t < 19.9; setToggle(document.getElementById('gkt'), pk); document.getElementById('gks').textContent = on ? 'Running · trading for you' : 'Paused · resume any time';
+  setMachine(E.kitchen, on); E.kitchen.querySelectorAll('.mtg').forEach(m => setToggle(m, pk));
+  const tg = document.getElementById('gkt').getBoundingClientRect();
+  const tapAt = (el, x, y, a) => { const k = pr(t, a - .25, .25), r = pr(t, a, .45); el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.opacity = t > a - .25 && t < a + .45 ? (r > 0 ? 1 - r : k) : 0; el.style.transform = `scale(${r > 0 ? 1 + r * 1.4 : 1.25 - .25 * k})`; };
+  tapAt(E.tap, tg.left + tg.width / 2, tg.top + tg.height / 2, 19.82);
+  // sign-up typing + tap
+  if (t > 22 && t < 26) {
+    const tx = 'you@email.com', n = Math.floor(cl((t - 24.1) / .85) * tx.length); document.getElementById('typ').innerHTML = (n ? tx.slice(0, n) : '<span style="color:#9aa0b8">you@example.com</span>') + (t > 24.0 && t < 25.25 && Math.floor(t * 3) % 2 ? '<span style="color:#1F3A93">|</span>' : '');
+    const sc = E.handB.querySelector('.scr').getBoundingClientRect(); const bx = sc.left + sc.width * (270 / 540), by = sc.top + sc.height * ((70 + 503 * 919 / 1992 * 1.0) / P.hand.scr[0].H);
+    tapAt(E.tap2, bx, by, 25.18); document.getElementById('ok').style.opacity = pr(t, 25.32, .2); document.querySelector('#ok svg').style.transform = `scale(${bk(pr(t, 25.32, .35))})`;
+  } else E.tap2.style.opacity = 0;
+  // end card
+  const en = document.getElementById('end'), ek = pr(t, 28.0, .35); en.style.opacity = ek; en.style.display = ek > 0 ? 'block' : 'none';
+  if (ek > 0) {
+    document.getElementById('rays').style.transform = `rotate(${t * 6}deg)`;
+    [['e1', 28.05], ['e2', 28.25], ['e3', 28.5], ['e4', 28.3], ['e5', 29.62], ['e6', 30.3]].forEach(([id, a]) => { const k = bk(pr(t, a, .5)); const el = document.getElementById(id); el.style.opacity = cl(pr(t, a, .25)); el.style.transform = `translateY(${(1 - k) * 60}px)`; });
+    document.getElementById('ebtn').style.transform = `scale(${1 + .04 * Math.sin((t - 28.5) * 5.5)})`; document.getElementById('earr').style.transform = `translateY(${10 * Math.abs(Math.sin(t * 5))}px)`;
+    document.querySelectorAll('#eparts i').forEach((p, i) => { const sp = 30 + (i * 37) % 60, x = (i * 263) % 1080, y = 1920 - ((t * sp + i * 97) % 2000), s = 4 + (i % 5) * 2; p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.width = p.style.height = s + 'px'; p.style.opacity = .15 + .35 * ((i % 4) / 3); });
+  }
+  // voice pill waveform (real voice level)
+  const f = Math.floor(t * 25); document.querySelectorAll('#wave b').forEach((b, i) => { const v = A[Math.max(0, f - (21 - i))] || 0; b.style.height = (6 + 42 * v) + 'px'; b.style.opacity = .45 + .55 * (i / 21); });
+  document.getElementById('pill').style.opacity = 1 - pr(t, 27.9, .3);
+  // captions: karaoke
+  const cap = document.querySelector('#cap .in'); let ci = -1; CH.forEach(([a, b], i) => { if (t >= W[a][0] - .12) ci = i; });
+  const showCap = ci >= 0 && t < 28.0 && !(ci < CH.length - 1 && false); cap.parentNode.style.display = showCap ? 'block' : 'none';
+  if (showCap) {
+    const [a, b] = CH[ci]; const nextA = ci < CH.length - 1 ? W[CH[ci + 1][0]][0] - .12 : 99; const endv = Math.min(nextA, W[b][1] + .7);
+    if (t > endv) cap.parentNode.style.display = 'none'; else {
+      let h = ''; for (let i = a; i <= b; i++) { const w = W[i], nx = i < b ? W[i + 1][0] : w[1] + .3, act = t >= w[0] - .04 && t < Math.min(nx - .04, w[1] + .25), past = t >= w[1]; h += `<span style="color:${act ? '#E3B62F' : '#fff'};opacity:${act || past ? 1 : .55};transform:scale(${act ? 1.05 : 1})">${w[2]}</span>`; }
+      cap.innerHTML = h; const k = eo(pr(t, W[a][0] - .12, .18)); cap.style.transform = `translateY(${(1 - k) * 20}px) scale(${.96 + .04 * k})`; cap.style.opacity = k;
+    }
+  }
+  document.getElementById('grain').style.transform = `translate(${(f * 37) % 100 - 50}px,${(f * 71) % 100 - 50}px)`;
+}
+</script></body></html>

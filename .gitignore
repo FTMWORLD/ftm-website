@@ -18,3 +18,8 @@ social/videos/*/*.timing.json
 social/videos/*/f*.png
 social/videos/*/vo/*.wav
 social/plan/plan.html
+social/ownerad/t*.png
+social/ownerad/_*
+social/ownerad/render.log
+social/ownerad/img/*.png
+social/voice/owner-take1-clean.wav
