@@ -3,12 +3,12 @@ import sys, os, json, shutil, subprocess, numpy as np
 D = os.path.dirname(os.path.abspath(__file__)); root = os.path.dirname(D)
 step = sys.argv[1] if len(sys.argv) > 1 else 'full'
 V2 = os.environ.get('V2') == '1'; VO = 'vo2' if V2 else 'vo'
-open(os.path.join(D, 'anim.html'), 'w').write(open(os.path.join(D, 'base.html')).read().replace('/*__SCENES__*/', open(os.path.join(root, 'ad', 'scn-ad.js')).read() + '\n' + open(os.path.join(D, 'scn-explainer.js')).read() + ('\n' + ''.join(open(os.path.join(D, f)).read() for f in ('qr.js', 'trades19.js', 'scn-explainer2.js')) if V2 else '')))
+open(os.path.join(D, 'anim.html'), 'w').write(open(os.path.join(D, 'base.html')).read().replace('/*__SCENES__*/', open(os.path.join(root, 'ad', 'scn-ad.js')).read() + '\n' + open(os.path.join(D, 'scn-explainer.js')).read() + ('\n' + ''.join(open(os.path.join(D, f)).read() for f in ('qr.js', 'trades19.js', 'endimg.js', 'scn-explainer2.js')) if V2 else '')))
 shutil.copy(os.path.join(root, 'videos', 'assets', 'rig.js'), D)
 S = json.load(open(os.path.join(D, 'script2.json' if V2 else 'script.json'))); chap = ''
 for s in S:
     if s['id'] == 'chap': s['id'] = 'chap%d' % s['n']; chap = 'Chapter %d · %s' % (s['n'], s['t'])
-    s['chap'] = chap; s.setdefault('gap', 0.75); s.setdefault('vo', '')
+    s['chap'] = '' if s['id'] == 'endcard' else chap; s.setdefault('gap', 0.75); s.setdefault('vo', '')
 json.dump(S, open(os.path.join(D, 'script.run.json'), 'w'), indent=1)
 sr0 = 24000
 if step == 'vo' or not os.path.exists(os.path.join(D, VO, 'durs.json')):
