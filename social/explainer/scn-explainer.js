@@ -166,7 +166,7 @@ Object.assign(SCN, {
     return { bg: DEEP, nocap: 1, core: `${amb(t)}${particles(t, 50, GOLD, 120)}${LOGO(540, 160, .9, 0)}<text x="540" y="320" text-anchor="middle" font-family="Inter" font-weight="900" font-size="64" fill="#fff">Thanks for watching</text>${slot(140, 'Watch next')}${slot(940, 'Subscribe')}<text x="540" y="960" text-anchor="middle" font-family="Inter" font-weight="800" font-size="40" fill="${GOLD}">ftmwealthnation.com · Invest today, secure tomorrow.</text>` };
   }
 });
-for (let n = 1; n <= 5; n++) SCN['chap' + n] = function (t, d, talk, gt, s) {
+for (let n = 1; n <= 6; n++) SCN['chap' + n] = function (t, d, talk, gt, s) {
   __cl = __cl % 1e6; const w = ex((t - .1) / .8), title = (s && s.t) || '';
   let bars = ''; for (let i = 0; i < 9; i++) bars += `<rect x="${W0 + i * 250 - 2400 * (1 - ex((t - i * .03) / .6))}" y="-60" width="252" height="1320" fill="${i % 2 ? '#0b1640' : '#0d1a4c'}"/>`;
   return { bg: '#060c2a', nocap: 1, zoom: 1 + .03 * cl(t / d), core: `${bars}${amb(t)}<text x="540" y="560" text-anchor="middle" font-family="Inter" font-weight="900" font-size="420" fill="none" stroke="${GOLD}" stroke-opacity="${.25 * w}" stroke-width="3">0${n}</text><rect x="${540 - 160 * w}" y="600" width="${320 * w}" height="6" rx="3" fill="${GOLD}"/><text x="540" y="470" text-anchor="middle" font-family="Inter" font-weight="800" font-size="32" fill="${GOLD}" letter-spacing="8" opacity="${w}">CHAPTER ${n}</text>${rise(title, 540, 720, 104, t, .25)}` };

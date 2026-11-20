@@ -1,5 +1,19 @@
 [
  {
+  "file": "v2/ftm-explainer-v3-16x9.mp4",
+  "title": "Everything about FTM, 5 min (final, with presenter and affiliate)",
+  "date": "2026-11-20",
+  "kind": "YouTube video",
+  "at": 24
+ },
+ {
+  "file": "v2/ftm-explainer-v3-9x16.mp4",
+  "title": "Everything about FTM, 5 min (phone version, final)",
+  "date": "2026-11-20",
+  "kind": "YouTube video",
+  "at": 100
+ },
+ {
   "file": "v2/ftm-explainer-v2-16x9.mp4",
   "title": "Everything about FTM in 5 minutes (new version)",
   "date": "2026-11-20",
