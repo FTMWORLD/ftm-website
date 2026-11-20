@@ -1,5 +1,5 @@
 """Couple ad: clean the two-voice take, cut it into lines, level both voices to match, tighten the gaps.
-Writes vo.wav, vo.lines.json [[start,end,speaker]], vo.amp.json."""
+Line 12 starts at "Create a free account" (the spoken web address is left out; the screen shows it). Writes vo.wav, vo.lines.json [[start,end,speaker]], vo.amp.json."""
 import subprocess, json, numpy as np, wave
 sr = 48000
 raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', '../voice/couple-take1.m4a', '-af', 'highpass=f=85,afftdn=nf=-30:tn=1,equalizer=f=250:t=q:w=1.2:g=-2.5,equalizer=f=3800:t=q:w=1:g=2.5,equalizer=f=9000:t=q:w=1:g=1', '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'], capture_output=True).stdout
@@ -8,7 +8,7 @@ def rms(x): return np.sqrt(np.mean(x ** 2) + 1e-12)
 # split point between line 5 (her) and 6 (him): quietest 40 ms between 12.2 and 12.75 s
 h = int(.02 * sr); w = a[int(12.2 * sr):int(12.75 * sr)]; en = [rms(w[i:i + 2 * h]) for i in range(0, len(w) - 2 * h, h)]; cut = 12.2 + (int(np.argmin(en)) * h + h) / sr
 L = [(1.01, 3.55, 'her'), (4.11, 6.43, 'him'), (6.8, 7.58, 'her'), (8.18, 10.84, 'him'), (11.33, cut, 'her'), (cut, 16.17, 'him'), (16.88, 18.29, 'her'), (19.02, 24.73, 'him'),
-     (25.47, 26.73, 'her'), (27.78, 30.37, 'him'), (31.05, 32.1, 'her'), (32.75, 39.0, 'him'), (40.17, 40.87, 'her'), (41.86, 43.46, 'him')]
+     (25.47, 26.73, 'her'), (27.78, 30.37, 'him'), (31.05, 32.1, 'her'), (35.36, 39.0, 'him'), (40.17, 40.87, 'her'), (41.86, 43.46, 'him')]
 GAP = {1: .28, 3: .22, 5: .2, 7: .3, 9: .3, 11: .28, 13: .55}
 out = [np.zeros(int(.12 * sr))]; t0 = .12; lines = []
 for i, (s, e, who) in enumerate(L):

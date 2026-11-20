@@ -5,7 +5,8 @@ body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antia
 #st{position:absolute;inset:0;overflow:hidden;background:#050a24}
 .shot{position:absolute;inset:0;overflow:hidden;opacity:0;display:none}
 .plate{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:0 0}
-.plate>img.ph{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:2}
+.plate>img.ph,.fgw>img.ph,.bgl{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:2}
+.bgl{z-index:0}.fgw{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:1}
 .blurbg{position:absolute;inset:-60px;background-size:cover;background-position:center;filter:blur(34px) brightness(.55) saturate(1.2)}
 .scr{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden;z-index:1;background:#0b1640}
 .lay{position:absolute;inset:0;overflow:hidden;display:none}
@@ -55,6 +56,7 @@ body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antia
 </style></head><body><div id="st"></div>
 <script>
 const OFF = .5;
+const LY = {"couple": {"cx": 549, "cy": 1357}, "hand": {"cx": 450, "cy": 1202}, "nurse": {"cx": 572, "cy": 1261}, "watch": {"cx": 565, "cy": 1531}, "courier": {"cx": 647, "cy": 1337}, "kitchen": {"cx": 498, "cy": 1430}};
 const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), pr = (t, a, d) => cl((t - a) / d);
 const eo = x => 1 - Math.pow(1 - cl(x), 3), eio = x => { x = cl(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
 const bk = x => { x = cl(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
@@ -76,8 +78,9 @@ function setToggle(el, k) { el.style.background = `rgb(${61 + 49 * k},${220 - 10
 function shot(key, id, opts = {}) {
   const pl = P[id]; const s = $(`<div class="shot"></div>`);
   if (opts.inset) s.appendChild($(`<div class="blurbg" style="background-image:url(img/${pl.img})"></div>`));
-  const plate = $(`<div class="plate"><img class="ph" src="img/${pl.img}"></div>`); s.appendChild(plate);
-  (pl.scr || []).forEach(sc => plate.appendChild($(`<div class="scr" style="width:${sc.W}px;height:${sc.H}px;transform:${sc.m}"></div>`)));
+  const plate = $(`<div class="plate"><img class="bgl" src="img/${id}-bg.jpg"><div class="fgw" style="transform-origin:${LY[id].cx}px ${LY[id].cy}px"><img class="ph" src="img/${id}-fg.png"></div></div>`); s.appendChild(plate);
+  const fgw = plate.querySelector('.fgw'), bgl = plate.querySelector('.bgl'); bgl.style.transformOrigin = `${LY[id].cx}px ${LY[id].cy}px`; s._fg = fgw; s._bg = bgl; s._id = id;
+  (pl.scr || []).forEach(sc => fgw.appendChild($(`<div class="scr" style="width:${sc.W}px;height:${sc.H}px;transform:${sc.m}"></div>`)));
   s.appendChild($('<div class="dim"></div>')); s.appendChild($('<div class="topfade"></div>')); s.appendChild($('<div class="botfade"></div>'));
   st.appendChild(s); E[key] = s; return s;
 }
@@ -85,12 +88,12 @@ function hl(a, b, t0, t1) { const e = $(`<div class="hl"><div class="a">${a}</di
 const lt = i => LN[i][0] + OFF, le = i => LN[i][1] + OFF;
 function wt(word, from = 0) { for (let i = 0; i < WD.length; i++) if (WD[i][0] + OFF >= from && WD[i][2].toLowerCase().startsWith(word.toLowerCase())) return WD[i][0] + OFF; return from; }
 function setup(words, amp, lines) {
-  A = amp; LN = lines;
+  A = amp; LN = lines; END = +(LN[LN.length - 1][1] + OFF + 2.7).toFixed(2);
   // fix what the recogniser misheard; join split tokens
-  const W = []; words.forEach(w => { let x = w[2]; if (x === "'clock.") { W[W.length - 1][2] += x; W[W.length - 1][1] = w[1]; return; } if (x === '.com.') { W[W.length - 1][2] = 'ftmwealthnation.com,'; W[W.length - 1][1] = w[1]; return; } if (/^ftm.*nation/i.test(x)) x = 'ftmwealthnation'; if (x === 'Create') x = 'create'; W.push([w[0], w[1], x]); }); WD = W;
+  const W = []; words.forEach(w => { let x = w[2]; if (x === "'clock.") { W[W.length - 1][2] += x; W[W.length - 1][1] = w[1]; return; } if (x === '.com.') { W[W.length - 1][2] = 'ftmwealthnation.com,'; W[W.length - 1][1] = w[1]; return; } if (/^ftm.*nation/i.test(x)) x = 'ftmwealthnation'; W.push([w[0], w[1], x]); }); WD = W;
   // shot list [key, start, end, kenburns: [scale0, scale1, x, y, dy]]
   const T = { l2: lt(1) - .15, l3: lt(2) - .15, l4: lt(3) - .15, l5: lt(4) - .15, l6: lt(5) - .15, l7: lt(6) - .15, l8: lt(7) - .15, l9: lt(8) - .15, l10: lt(9) - .15, l11: lt(10) - .15, l12: lt(11) - .15, l13: lt(12) - .2 };
-  E.T = T; E.tWork1 = wt('on', lt(7)) - .1; E.tWork2 = wt('while', lt(7)) - .1; E.tTap = wt('tap', lt(9)); E.tEmail = wt('email', lt(11)); E.tCreate = wt('Create', lt(11)); E.tStarted = wt('started', lt(11)); E.tCom = wt('ftm', lt(11));
+  E.T = T; E.tWork1 = wt('on', lt(7)) - .1; E.tWork2 = wt('while', lt(7)) - .1; E.tTap = wt('tap', lt(9)); E.tEmail = wt('email', lt(11)); E.tCreate = lt(11) + 1.25; E.tStarted = wt('started', lt(11)); E.tCom = lt(11) - .1;
   E.tBad = wt('bad', lt(5)); E.tTrust = wt('That', lt(5)); E.t11 = wt('11', 0);
   E.SH = [['cA', 0, T.l2, [1.0, 1.12, 420, 1000]], ['hA', T.l2, T.l3, null], ['cB', T.l3, T.l4, [1.5, 1.58, 300, 960]], ['hB', T.l4, T.l5, null], ['cC', T.l5, T.l6, [1.45, 1.38, 330, 980]], ['hC', T.l6, T.l7, null],
     ['cD', T.l7, T.l8, [1.4, 1.48, 760, 900]], ['nurse', T.l8, E.tWork1, [1.06, 1.0, 540, 700]], ['watch', E.tWork1, E.tWork2, [1.0, 1.08, 560, 1180]], ['courier', E.tWork2, T.l9, [1.0, 1.07, 480, 700]],
@@ -157,6 +160,9 @@ function render(t) {
     const e = E[k], on = t >= a - .22 && t < b + .22; e.style.display = on ? 'block' : 'none'; if (!on) return;
     e.style.opacity = cl(Math.min(a === 0 ? 1 : pr(t, a - .22, .22), 1 - pr(t, b, .22)));
     const punch = a > 0 ? 1 + .05 * (1 - eo(pr(t, a - .1, .55))) : 1, pl = e.querySelector('.plate');
+    const u = pr(t, a - .22, b - a + .44), sd = (k.charCodeAt(0) * 7 + k.length * 13) % 10 / 10;
+    if (e._id === 'hand') { e._fg.style.transform = `translate(${6 * Math.sin(t * 1.3 + sd * 6)}px,${5 * Math.sin(t * 1.7 + 1)}px) rotate(${.7 * Math.sin(t * 1.1 + sd * 4)}deg) scale(${1 + .025 * u})`; e._bg.style.transform = `translate(${-14 * u}px,${-6 * u}px) scale(${1.03 + .02 * u})`; }
+    else { const dir = sd < .5 ? 1 : -1; e._fg.style.transform = `translate(${dir * 10 * (u - .5)}px,${2.5 * Math.sin(t * 2.1)}px) scale(${1.012 + .045 * u})`; e._bg.style.transform = `translate(${-dir * 16 * (u - .5)}px,0) scale(${1.03 + .012 * u})`; }
     if (kb) { const [s0, s1, ox, oy] = kb, s = (s0 + (s1 - s0) * eio(pr(t, a - .22, b - a + .44))) * punch; pl.style.transform = `translate(${ox}px,${oy}px) scale(${s}) translate(${-ox}px,${-oy}px)`; }
     else { const s = .8 * punch * (1 + .03 * pr(t, a, b - a)), x = 540 - 540 * s, y = 1000 - 1000 * s - 50; pl.style.transform = `translate(${x}px,${y}px) scale(${s})`; e.querySelector('.blurbg').style.transform = `scale(${1.05 + .03 * Math.sin(t * .5)})`; }
   });
@@ -205,7 +211,7 @@ function render(t) {
   E.msgs.forEach(([a, b, m, ws, i]) => {
     let o = 0, y = 0, s = 1;
     m.style.filter = ''; if (i === cur && t < b + 1.2) { const k = bk(pr(t, a, .35)); o = cl(pr(t, a, .15)); s = .7 + .3 * k; y = (1 - cl(k)) * 30; }
-    else if (i === cur - 1) { const k = eo(pr(t, E.msgs[cur][0], .35)); const h = E.msgs[cur][2].offsetHeight; o = (1 - k * .2) * (t < E.msgs[cur][0] + 2.2 ? 1 : 1 - pr(t, E.msgs[cur][0] + 2.2, .3)); y = -k * (h + 22); s = 1 - .1 * k; m.style.filter = `brightness(${1 - .25 * k})`; }
+    else if (i === cur - 1) { const k = eo(pr(t, E.msgs[cur][0], .35)); const h = E.msgs[cur][2].offsetHeight; o = (1 - k * .2) * (1 - pr(t, E.msgs[cur][0] + .8, .3)); y = -k * (h + 22); s = 1 - .1 * k; m.style.filter = `brightness(${1 - .25 * k})`; }
     m.style.opacity = o; m.style.display = o > 0 ? 'flex' : 'none'; m.style.transform = `translateY(${y}px) scale(${s})`; m.style.transformOrigin = m.classList.contains('her') ? '0 100%' : '100% 100%';
     if (o > 0) m.querySelectorAll('.bub span').forEach((sp, j) => { const w = ws[j], ws0 = w[0] + OFF, nx = j < ws.length - 1 ? ws[j + 1][0] + OFF : w[1] + OFF + .3, act = t >= ws0 - .04 && t < nx - .04, done = t >= ws0; sp.style.opacity = done ? 1 : .4; sp.style.color = act ? (m.classList.contains('her') ? '#c2410c' : '#E3B62F') : ''; });
   });
