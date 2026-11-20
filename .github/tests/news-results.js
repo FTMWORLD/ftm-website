@@ -112,6 +112,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
     const cal=(g[1]&&g[1].cal)||[], d17=cal.find(x=>x.date==='2026-11-17')||{}, d16=cal.find(x=>x.date==='2026-11-16')||{};
     ok(g[0]===200&&cal.length===17&&cal[0].date==='2026-11-01','dayresult: the month so far, one entry per day ('+cal.length+')');
     ok(d17.n===3&&Math.abs(d17.pct-g[1].pct)<0.006&&d16.n===1&&cal.filter(x=>x.n).length===3,'dayresult: each day\'s trades and time-weighted % match the day card ('+JSON.stringify(d17)+')'); }
+  { // a day not posted yet (tomorrow, so it never clashes with the days posted above): hidden from the public (the social job waits for the 23:00 post), shown to the owner with &preview=1
+    const today=new Date(Date.now()+864e5+3600e3).toISOString().slice(0,10), GQ=q=>new Promise(res=>{ const r={s:0,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},json(j){res([this.s,j,this.h]);},end(){res([this.s,null,this.h]);}}; CH({method:'GET',headers:{},query:q},r); });
+    const a=await GQ({dayresult:today}), b2=await GQ({dayresult:today,preview:'1'});
+    ok(a[0]===404&&a[1].error==='NOT_POSTED_YET','dayresult: a day not posted yet is not public ('+JSON.stringify(a.slice(0,2)).slice(0,160)+')');
+    ok(b2[0]===200&&b2[1].date===today&&b2[2]['Cache-Control']==='no-store','dayresult preview: the day so far from the engine, never cached ('+JSON.stringify(b2).slice(0,200)+')'); }
   // browser: the card in the feed
   let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');}
   const b=await pw.chromium.launch(); const day=P.find(x=>x.res==='day-2026-11-17'), ftmPosts=[mo,wk,day.card].map((cd,i)=>({id:'r'+i,author:{mid:'s',nickname:'FTM',ftm:true},text:'x'+i,card:cd,imgs:[],t:new Date(Date.now()-i*6e4).toISOString(),likes:0,comments:[],tags:[]}));

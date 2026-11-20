@@ -14,6 +14,7 @@
      notifs {read?}              likes, comments, new followers and FTM posts for me
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
      GET ?dayresult=YYYY-MM-DD    the master account's posted day result (% and counts only) for social posts
+                                  (&preview=1: today so far, built from the engine before the 23:00 post, for the owner's preview)
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
    FTM staff = a login on @ftmwealthnation.com, the FTM mailbox ftmwebnation@gmail.com, or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
    Owners choose per post and comment: as FTM (body.as === 'ftm') or as their own profile (default).
@@ -144,7 +145,7 @@ module.exports = async function handler(req, res) {
       if (!c) {
         // a past day that was never posted (before FTM news started): the same day card, built from the engine's history
         const R0 = require('../_lib/results'), [y0, m0, d0] = day.split('-').map(Number), endOfDay = R0.midnight(y0, m0, d0 + 1 > 31 ? 1 : d0, R0.TZ);
-        if (R0.midnight(y0, m0, d0, R0.TZ) + 864e5 > Date.now()) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
+        if (req.query.preview !== '1' && R0.midnight(y0, m0, d0, R0.TZ) + 864e5 > Date.now()) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
         if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R0.master(admin), 'master')).h };
         c = R0.dayCard(dayMemo.h, 'USD', y0, m0, d0); void endOfDay;
       }
@@ -160,7 +161,7 @@ module.exports = async function handler(req, res) {
           cal.push({ date: y + '-' + String(m).padStart(2, '0') + '-' + String(i).padStart(2, '0'), pct: s2 && isFinite(s2.pct) ? +s2.pct.toFixed(2) : 0, n: k }); }
       } catch (e) { mtd = null; }
       const markets = [...new Set(rows.map(r => r.s))];
-      res.setHeader('Cache-Control', 'public, max-age=120');
+      res.setHeader('Cache-Control', req.query.preview === '1' && !days[day] ? 'no-store' : 'public, max-age=120');
       return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
