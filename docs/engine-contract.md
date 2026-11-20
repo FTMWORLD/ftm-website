@@ -4,6 +4,59 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-20 — GROUP COPIES THAT CAN LIVE, HONG KONG AFTERNOON BREAK, MASTER GROWTH COUNTS ENTRY COMMISSION (not committed yet; live 12:17 Berlin with the owner's "Yes, put both live" and "Yes, all three", API restarted)
+
+- WEBSITE: nothing to change. No API field changed. One figure moves: the master's growth_pct (and the figures built from the
+  same deals: gross profit / loss, daily / weekly / monthly, by symbol, curves) now counts what the broker books at ENTRY
+  (commission on USDJPY and gold; 22.69 USD so far), so growth_pct equals balance minus deposits again (10.45 -> 10.43 today).
+  An IN row of the master's history may now carry "commission" and "net" (same fields as before, they were 0 / null).
+  A deposit or withdrawal of the master is never counted as trade profit (balance_ops_total is subtracted).
+- GROUP COPY (small accounts; switch COPY_GROUPS stays ON): the first live group copy (19 Nov 21:29 Berlin, Bitcoin) was refused
+  GROUP_MASTER_NOT_OPEN. A whole-life scripted test showed three faults, all fixed in shared code for every account:
+  the claim guard read only the Sender's once-a-minute position list (now also the master's own OPEN events of the last
+  COPY_GROUP_FRESH_OPEN_S = 120 s with no CLOSE; 0 = old behaviour) and refuses a group the master has already left;
+  the orphan check would have closed every group copy after 3 minutes (now a group copy is an orphan only when NO piece of its
+  group is on the master's fresh list); the trade monitor would have flagged every group copy (now it compares with the group).
+- GROUPING: a group is anchored on its FIRST open and every open belongs to at most one group (60 s inclusive), as in
+  FTM MACHINE's model. 372 of the 376 master opens on record group the same as before; the 4 others are chain cases.
+- ALERTS: HK50's afternoon break (08:30-09:15 UTC) is no longer "market open" for the dead-chart check (false CHART_DEAD on
+  19 Nov 09:53 Berlin); a dead chart outside the breaks is still caught.
+- Proof: new gate test verify-group-life (29 checks on the real 19 Nov signal: claim, monitor, orphan check, exit; rolled back),
+  verify-reconcile repaired and in the gate, verify-alert-tiers T7b, FTM MACHINE's 108-trade list 324 of 324 decisions the same
+  WITHOUT the helper rows that hid the fault on 19 Nov. Gate SAFE on the staged code before and on the live code after.
+  Backups C:\FTM\_backups\*.before-groupfix-20261120; bundle admin-bundle-20261120a.ps1.
+
+## 2026-11-19 — FTM MACHINE 3.8 ON THE PROP TERMINAL AND THE MASTER (not committed yet; live 16:13 / 16:25 Berlin with the owner's "Master and prop")
+
+- WEBSITE: nothing to change. No API field changed. Two new strategies will register themselves at their first trade:
+  34696 breakout hold (gold) and 34697 box break (US Tech, HK50); both are inside the relay range 34636-34699.
+- EA 3.8 = 3.7.1 + breakout hold, box break, the 36-hour trend filter, each behind one input (default OFF), plus live-only restart
+  care (first candle after a start skipped, last traded level kept in a terminal global variable). Source sha256 294a3a30...18ad
+  built on the server from FTM MACHINE's patches (hash = the tested source), compiled on the server: ex5 bf292a29...c7fb.
+- Switches: master XAUUSD bhOn, BTCUSD trendFilterOn, USTEC bpOn, HK50 bpOn, USDJPY none; prop XAUUSD bhOn + bhTrend 10 + bhTrail 96,
+  BTCUSD trendFilterOn, NDX100 bpOn, USDJPY none. Read back from the charts MT5 rewrote after loading: 303 old inputs unchanged
+  on all nine charts, 22 new, all at default except these.
+- Server check before the install: scripts/dryrun-38-list.js, 108 model trades through the real planner, group copy and claim
+  guard in rolled-back transactions: 324 of 324 account decisions the same as FTM MACHINE's model. Gate 57/57.
+- Master run: the journal wrote HK50's "loaded successfully" line late; the procedure's proof step was stopped by hand before it
+  rolled back a healthy terminal, then PROOF-ONLY = OK (logged in update-ftm-ea.log). Backups FTM_EA_BACKUP-20261119-160921 (prop),
+  -161752 (master).
+
+## 2026-11-19 — FTM MACHINE 3.7.1 ON THE MASTER AND THE PROP TERMINAL; DEAD-CHART HEARTBEAT = STATE FILES ONLY (not committed yet; live 14:32-14:47 Berlin with the owner's yes, no API restart)
+
+- WEBSITE: nothing to change. No API field changed.
+- EA 3.7.1 = 3.7 plus only: the timer now starts on a live chart, a tick watchdog (log line "STALLED ...", MT5 alert, re-subscribe;
+  it never trades), and saved M and W patterns older than 72 h are dropped at load ("STATE DROPPED ..."). Source built on the
+  server from FTM MACHINE's patch on the staged 3.7 source: sha256 6f2e0511...bbf6 = the regression-tested source (ten of ten
+  runs trade-identical to 3.7, normal and prop settings). Compiled on the server: ex5 sha256 70daa04a...a505.
+- Installed with ops/update-ftm-ea.ps1, one terminal at a time: MT5_Prop 14:34-14:41 (backup FTM_EA_BACKUP-20261119-143414),
+  MT5_Master 14:41-14:46 (backup FTM_EA_BACKUP-20261119-144156); both proofs OK. Master position 2102681164 untouched; its six
+  M and W waiting orders were removed and placed again by the EA's own restart rule; the Asian Breakout order was kept.
+- src/services/ea-silence.js: a chart's heartbeat is now the FTM3_m{w,x,y,z} state files only (saved from OnTick). 3.7.1 writes
+  the hourly STATUS line and the STALLED line from its timer, so a fresh log is no longer proof of life; with the old rule a
+  stalled chart would never have reached the 60-minute automatic restart. Backup _backups/ea-silence.js.before-statefiles-20261119.
+  Proofs: _stage-371/prove-liveness.mjs, verify-ea-silence 25/0, verify-alert-tiers 21/0.
+
 ## 2026-11-19 — COPY STOPS FROM THE COPY'S OWN FILL: INSTALLED, SWITCHED OFF (this commit; installed 05:15 Berlin with the owner's click, API restarted; COPY_STOP_MODE=ABSOLUTE = unchanged behaviour)
 
 - WEBSITE: nothing to change. No API field changed. Nothing about trading changes while the switch is ABSOLUTE.
