@@ -4,6 +4,28 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-20 — FTM MACHINE 3.9 ON THE PROP TERMINAL AND THE MASTER (not committed yet; live 13:02 / 13:13 Berlin with the owner's "Yes, install both now")
+
+- WEBSITE: nothing to change. No API field changed. No new magic number (3.9 uses the same strategies and offsets as 3.8).
+- EA 3.9 = 3.8 + Recipe Auto (the EA sets breakout hold / box break / trend filter itself per market and account type; the
+  per-chart switches only count when Recipe Auto is off), "Risk -$ / Target +$" labels on the chart, phone pushes per new
+  trade and ALARM pushes (one trade over 2 % of the balance, all open over 6 %; pushes need the owner's MetaQuotes ID in each
+  terminal, not entered yet: the EA logs "push not sent (4517)" and trades on), no late first entry of breakout hold on install
+  day, no false STALLED after a market break, template writer carries every 3.8/3.9 input. Open box break / breakout hold
+  positions keep their management where the recipe has the strategy off (found by the engine's sync check, fixed by FTM MACHINE).
+- The only trading change is on the PROP account: breakout hold (gold) and box break (US Tech) open no new trades there
+  (FTM MACHINE's real-tick challenge grid 2022-26: 35 of 48 passed without them, 27 of 48 with them). The master trades as before
+  (FTM MACHINE: trade for trade identical to 3.8 on gold, Bitcoin, US Tech, HK50, USDJPY).
+- Source sha256 216b773c...5ce0 = the 3.8 source + FTM MACHINE's 483-line patch (a7dc9bba...7c14), byte for byte; compiled on
+  the server with the MT5_Template MetaEditor, 0 errors 0 warnings, ex5 f93eefaa...83b2. Server check before the install:
+  dryrun-38-list 324 of 324 decisions the same, 0 guard refusals; every live chart's inputs compared with the 3.9 defaults
+  (325 inputs unchanged per chart, 5 new ones at default). The first 3.9 build (7f3b6b3d) was refused: on prop it would have
+  left two open trades without trailing; kept under ops/ea-staging/ftm-machine-3.9/superseded-7f3b6b3d.
+- Installs: MT5_Prop EA_UPDATE_OK 13:02:19 (backup FTM_EA_BACKUP-20261120-125328, 4 positions 2 orders after), MT5_Master
+  EA_UPDATE_OK 13:13:01 (backup FTM_EA_BACKUP-20261120-130316, 6 positions 1 order after); each chart loaded exactly once, no
+  Auto-attach, charts read back after MT5 rewrote them: 331 inputs, recipeAuto=true, pushOn=true, propOn right on every chart.
+  Restart rule re-placed the waiting orders (prop USDJPY buy stop 0.37, master USTEC buy stop 1.2 -> 1.1). Engine: 0 mismatches.
+
 ## 2026-11-20 — GROUP COPIES THAT CAN LIVE, HONG KONG AFTERNOON BREAK, MASTER GROWTH COUNTS ENTRY COMMISSION (not committed yet; live 12:17 Berlin with the owner's "Yes, put both live" and "Yes, all three", API restarted)
 
 - WEBSITE: nothing to change. No API field changed. One figure moves: the master's growth_pct (and the figures built from the
