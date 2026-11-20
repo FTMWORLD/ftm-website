@@ -96,7 +96,7 @@ function month(w, h) {
   let cells = ''; for (let i = 0; i < slots.length; i += 7) { const L = slots.slice(i, i + 7); cells += L.map(x => x ? cell(x) : '<div></div>').join('') + wk(L); }
   return `<div class="grid"></div><div class="wrap" style="padding-top:40px;padding-bottom:30px"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:30px">Every day shown · ${MONTHS[m - 1]} ${y}</div>
-    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">Losing days are part of trading. <span style="color:#E3B62F">We show you every one.</span></div>
+    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">Losing days are part of trading.<br><span style="color:#E3B62F;white-space:nowrap">We show you every one.</span></div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:28px;font-size:17px;color:#aeb7dc;font-weight:700;letter-spacing:.06em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN', 'WEEK'].map((x, i) => `<span style="${i === 7 ? 'color:#D4AF37' : ''}">${x}</span>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:10px">${cells}</div>
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}

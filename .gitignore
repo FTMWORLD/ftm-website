@@ -29,3 +29,6 @@ social/couplead/_*
 social/couplead/render*.log
 social/couplead/img/home0.png
 __pycache__/
+social/videos/week-*/video.mp4
+social/videos/week-*/vo/
+social/videos/week-*/*.timing.json

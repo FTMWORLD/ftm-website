@@ -313,6 +313,32 @@
     ]
    ],
    "note": "Figures: real November day results and month total from the dayresult feed; never invent numbers."
+  },
+  {
+   "date": "week-2026-11-20",
+   "stage": "2 · Proof",
+   "format": "Weekly recap (newsroom, real figures)",
+   "title": "This week on the FTM master account",
+   "open": "Seven days, Saturday to Friday. Here is every result, good and bad.",
+   "hook": "Our week, in numbers.",
+   "scenes": [
+    [
+     "week",
+     "Here is this week on the FTM master account, day by day. Real numbers from the account."
+    ],
+    [
+     "best",
+     "The best day was Tuesday, plus 2.55 percent. The lowest day was Friday, minus 0.99 percent. We show every single one."
+    ],
+    [
+     "total",
+     "The week in total: plus 5.35 percent, from 38 closed trades."
+    ],
+    [
+     "cta",
+     "See every trade live. Start free at ftm wealth nation dot com, and follow us for every result at 11 p.m."
+    ]
+   ]
   }
  ]
 }

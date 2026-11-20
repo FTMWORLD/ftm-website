@@ -1,0 +1,85 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#05091f}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
+#stage{position:absolute;inset:0;overflow:hidden}
+.ph{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;will-change:transform}
+.shade{position:absolute;inset:0}
+.brand{position:absolute;left:0;right:0;top:240px;display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:42px;letter-spacing:-.04em;z-index:5;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.mark{width:56px;height:56px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#cap{position:absolute;left:70px;right:70px;top:1330px;text-align:center;background:rgba(5,10,34,.72);backdrop-filter:blur(14px);border:1.5px solid rgba(212,175,55,.4);border-radius:36px;padding:28px 34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-size:52px;line-height:1.22;font-weight:800;letter-spacing:-.02em}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:7}
+.glass{position:absolute;background:rgba(11,22,64,.62);backdrop-filter:blur(18px);border:1.5px solid rgba(255,255,255,.18);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+</style></head><body>
+<div id="stage"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div>
+<div id="cap"><div class="w" id="subw"></div></div>
+<script src="rig.js"></script><script>
+const W=1080,H=1920,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)},back=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const IMG=(src,t,o)=>{o=o||{};const z=(o.z0||1)+(o.dz||0.08)*cl(t/(o.d||6)),x=(o.x||0)+(o.dx||0)*cl(t/(o.d||6)),y=(o.y||0)+(o.dy||0)*cl(t/(o.d||6));return `<img class="ph" src="${src}" style="transform:translate(${x}px,${y}px) scale(${z});filter:${o.f||'none'}">`};
+const SHADE=(a,b)=>`<div class="shade" style="background:linear-gradient(180deg,rgba(5,9,31,${a}) 0%,rgba(5,9,31,${a*0.35}) 30%,rgba(5,9,31,${a*0.4}) 55%,rgba(5,9,31,${b}) 100%)"></div>`;
+const LOGO=(s)=>`<svg viewBox="0 0 120 120" width="${s}" height="${s}"><rect width="120" height="120" rx="35" fill="#1F3A93"/><path d="M30 85 L55 57 L72 73 L96 41" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* Saturday weekly video (owner 20 Nov): TV newsroom, anchor + video wall with the week's REAL daily results, last Saturday to this Friday.
+   WEEK = [[day, pct, trades], ...] from social/tools/week.py (set by weekvid.py). */
+const WEEK = window.WEEK || [["Sat", 0.64, 1], ["Sun", 0, 0], ["Mon", 0.17, 3], ["Tue", 2.55, 5], ["Wed", 1.2, 1], ["Thu", 1.7, 15], ["Fri", -0.99, 13]];
+const WEEKPCT = (WEEK.reduce((f, x) => f * (1 + (x[1] || 0) / 100), 1) - 1) * 100;
+const ANCHOR = {skin:'#e0ac69',hair:'#2b1810',hairStyle:'wavy',top:'#1F3A93',top2:'#14214f',ph:.8,collar:'<path d="M-30 -210 L0 -170 L30 -210" stroke="#E3B62F" stroke-width="6" fill="none"/>'};
+const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
+function newsroom(t) {
+  let o = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0"><defs>
+  <linearGradient id="nbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1238"/><stop offset="1" stop-color="#02040f"/></linearGradient>
+  <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26408a"/><stop offset="1" stop-color="#0b1640"/></linearGradient>
+  <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f1d55"/><stop offset="1" stop-color="#081034"/></linearGradient></defs>
+  <rect width="${W}" height="${H}" fill="url(#nbg)"/>`;
+  for (let i = 0; i < 12; i++) o += `<rect x="${i * 95}" y="330" width="3" height="900" fill="#1F3A93" opacity=".25"/>`;
+  for (let i = 0; i < 40; i++) { const x = (i * 211 + t * 30) % W, y = 360 + (i * 97) % 820; o += `<circle cx="${x}" cy="${y}" r="${2 + i % 3}" fill="#E3B62F" opacity="${.15 + .15 * sin(t * 2 + i)}"/>`; }
+  return o;
+}
+function wall(t, mode) {
+  const x0 = 90, y0 = 360, w = 900, h = 560, maxV = Math.max(3, ...WEEK.map(x => Math.abs(x[1] || 0)));
+  let o = `<g><rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="26" fill="url(#wall)" stroke="#D4AF37" stroke-width="4"/>
+   <text x="${x0 + 40}" y="${y0 + 64}" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="5">THIS WEEK · FTM MASTER ACCOUNT</text>`;
+  const nW = WEEK.length, bw = nW > 5 ? 92 : 120, gap = (w - 80 - bw * nW) / Math.max(1, nW - 1), negRoom = Math.max(0, ...WEEK.map(([, v]) => v != null && v < 0 ? -v / maxV * (WEEK.length > 5 ? 240 : 300) : 0)), base = y0 + h - 90 - negRoom;
+  let best = -1e9, worst = 1e9; WEEK.forEach(([, v, n]) => { if (v != null && n !== 0) { best = Math.max(best, v); worst = Math.min(worst, v); } });
+  WEEK.forEach(([d, v, n], i) => {
+    if (n === 0) v = null;
+    const bx = x0 + 40 + i * (bw + gap), g = ease((t - 0.3 - i * 0.35) / 0.6);
+    const hh = v == null ? 0 : Math.abs(v) / maxV * (nW > 5 ? 240 : 300) * g, up = v == null || v >= 0;
+    const hl = mode === 'best' && v != null && (v === best || v === worst);
+    o += `<text x="${bx + bw / 2}" y="${base + negRoom + 50}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="32" fill="#aeb7dc">${d}</text>`;
+    if (v == null) o += `<rect x="${bx}" y="${base - 60}" width="${bw}" height="60" rx="12" fill="none" stroke="#aeb7dc" stroke-dasharray="8 8" stroke-width="3"/><text x="${bx + bw / 2}" y="${base - 80}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="20" fill="#aeb7dc">no trades</text>`;
+    else o += `<rect x="${bx}" y="${up ? base - hh : base}" width="${bw}" height="${hh}" rx="12" fill="${up ? '#2fbf71' : '#E5323E'}" opacity="${mode === 'best' && !hl ? .35 : 1}"/>
+      <text x="${bx + bw / 2}" y="${up ? base - hh - 18 : base - 18}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="${nW > 5 ? 29 : 34}" fill="#fff" opacity="${g}">${fmt(v * g)}</text>
+      ${hl ? `<rect x="${bx - 10}" y="${base - hh - 70}" width="${bw + 20}" height="${hh + 80}" rx="16" fill="none" stroke="#E3B62F" stroke-width="5" opacity="${.6 + .4 * sin(t * 6)}"/><text x="${bx + bw / 2}" y="${base - hh - 84}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="26" fill="#E3B62F">${v === best ? 'BEST' : 'LOWEST'}</text>` : ''}`;
+  });
+  return o + `<rect x="${x0 + 40}" y="${base}" width="${w - 80}" height="3" fill="#aeb7dc" opacity=".5"/></g>`;
+}
+function ticker(t) { let s = ''; let x = -((t * 180) % 1400); for (let r = 0; r < 3; r++) WEEK.forEach(([d, v, n]) => { s += `<text x="${x}" y="0" font-family="Inter" font-weight="800" font-size="34" fill="#fff">${d.toUpperCase()} ${n === 0 ? '· NO TRADES' : fmt(v)}</text>`; x += 280; }); return `<g transform="translate(0,1270)"><rect x="0" y="-48" width="${W}" height="68" fill="#E5323E"/><rect x="0" y="-48" width="200" height="68" fill="#0b1640"/><text x="24" y="-2" font-family="Inter" font-weight="900" font-size="34" fill="#fff">FTM NEWS</text><g transform="translate(220,0)"><svg x="0" y="-48" width="${W - 220}" height="68" viewBox="0 -48 ${W - 220} 68">${s}</svg></g></g>`; }
+function anchorDesk(t, talk) { return person(Object.assign({}, ANCHOR, { x: 540, y: 1300, s: 1.05, t, talk, sit: 1, armL: 25, elL: 60, armR: 25, elR: 60, look: 0, mood: 'smile' })) + `<path d="M150 1060 L930 1060 L990 1230 L90 1230Z" fill="url(#desk)"/><rect x="430" y="1110" width="220" height="60" rx="12" fill="#0b1640" stroke="#D4AF37" stroke-width="3"/><text x="540" y="1152" text-anchor="middle" font-family="Inter" font-weight="900" font-size="36" fill="#fff">FTM</text>`; }
+const SCN = {
+  hook(t) { const n = Math.min(WEEK.length, Math.floor(t * 3) + 1); return newsroom(t) + `<g transform="translate(540,760)"><circle r="${250 + 10 * sin(t * 4)}" fill="#E3B62F" opacity=".08"/><text x="0" y="80" text-anchor="middle" font-family="Inter" font-weight="900" font-size="300" fill="#E3B62F">${n}</text></g>
+   <text text-anchor="middle" font-family="Inter" font-weight="800" font-size="70" fill="#fff"><tspan x="540" y="1000">days. Saturday to Friday.</tspan></text><text text-anchor="middle" font-family="Inter" font-weight="800" font-size="62" fill="#fff" opacity="${ease((t - 1.6) / .4)}"><tspan x="540" y="1120">Every result,</tspan><tspan x="540" y="1200" fill="#E3B62F">good and bad.</tspan></text></svg>`; },
+  week(t, d, talk) { return newsroom(t) + wall(t, 'week') + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
+  best(t, d, talk) { return newsroom(t) + wall(t + 3, 'best') + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
+  total(t, d, talk) { const tot = WEEKPCT; const g = ease(t / 1.2);
+    return newsroom(t) + `<g transform="translate(540,640)"><rect x="-430" y="-250" width="860" height="500" rx="40" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/><text x="0" y="-130" text-anchor="middle" font-family="Inter" font-weight="800" font-size="36" fill="#E3B62F" letter-spacing="5">THE WEEK</text><text x="0" y="40" text-anchor="middle" font-family="Inter" font-weight="900" font-size="190" fill="${tot >= 0 ? '#2fbf71' : '#E5323E'}">${fmt(tot * g)}</text><text x="0" y="150" text-anchor="middle" font-family="Inter" font-weight="700" font-size="34" fill="#aeb7dc">closed trades · FTM master account</text></g>` + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
+  cta(t, d, talk) { const p = 1 + .04 * sin(t * 5); return newsroom(t) + `<g transform="translate(540,620)"><rect x="-430" y="-230" width="860" height="460" rx="40" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/><text x="0" y="-100" text-anchor="middle" font-family="Inter" font-weight="800" font-size="58" fill="#fff">A new week starts today.</text><text x="0" y="-20" text-anchor="middle" font-family="Inter" font-weight="800" font-size="58" fill="#E3B62F">Will you be in?</text><g transform="translate(0,110) scale(${p})"><rect x="-220" y="-56" width="440" height="112" rx="56" fill="#E5323E"/><text x="0" y="18" text-anchor="middle" font-family="Inter" font-weight="800" font-size="54" fill="#fff">Start free</text></g></g>` + anchorDesk(t, talk) + ticker(t) + '</svg>'; }
+};
+
+let S=[],T=[],TOTAL=0;
+window.setup=function(scenes,durs,amp){if(amp)window.AMP=amp;S=scenes;let a=0.3;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.6});TOTAL=a+0.9;window.TOTAL=TOTAL;return {TOTAL,T}};
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.3)i=k;
+ const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i];
+ const st=document.getElementById('stage');st.innerHTML=SCN[s.id](Math.max(0,lt+0.3),dur,talkAt(s.id,Math.max(0,lt)));
+ const fade=Math.min(ease((lt+0.3)/0.3),1-ease((lt-(dur-0.35))/0.3));st.style.opacity=.1+.9*fade;
+ const hide=/^hook/.test(s.id);
+ const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|myth|fact|week|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=hide?0:fade;
+};
+</script></body></html>
