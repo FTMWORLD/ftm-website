@@ -24,3 +24,7 @@ social/ownerad/render.log
 social/ownerad/img/*.png
 social/voice/owner-take1-clean.wav
 social/ownerad/render*.log
+social/couplead/t*.png
+social/couplead/_*
+social/couplead/render*.log
+social/couplead/img/home0.png
