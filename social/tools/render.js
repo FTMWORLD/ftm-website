@@ -102,7 +102,7 @@ function month(w, h) {
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
     <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} green day${g === 1 ? '' : 's'} · ${r} red day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
 }
-/* Weekly summary (owner 20 Nov: every Saturday 06:00, the week Sunday to Friday). D = {from, to, pct, trades, wins, losses, mtd, balance, cur, markets, days:[{date, pct, n, wins, losses}]} */
+/* Weekly summary (owner 20 Nov: every Saturday 06:00, the week from last Saturday to this Friday). D = {from, to, pct, trades, wins, losses, mtd, balance, cur, markets, days:[{date, pct, n, wins, losses}]} */
 function weekRange() { const [y1, m1, d1] = D.from.split('-').map(Number), [y2, m2, d2] = D.to.split('-').map(Number); return (m1 === m2 ? `${d1}` : `${d1} ${MONTHS[m1 - 1]}`) + ` – ${d2} ${MONTHS[m2 - 1]} ${y2}`; }
 function weekBars(H) {
   const L = D.days || [], mx = Math.max(.5, ...L.map(x => Math.abs(x.pct)));
@@ -118,7 +118,7 @@ function week(w, h) {
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
     <div class="kick">FTM master account · weekly result</div><div class="date">${weekRange()}</div>
     <div class="big" style="font-size:${h > 1500 ? 220 : 180}px;color:${col}">${pc(D.pct)}</div>
-    <div class="sub">Result of this week's closed trades, Sunday to Friday</div>
+    <div class="sub">Result of this week's closed trades, Saturday to Friday</div>
     ${weekBars(h > 1500 ? 380 : 300)}
     <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
     ${D.mtd == null ? '' : `<div class="stats" style="grid-template-columns:1fr;margin-top:18px"><div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div></div>`}
