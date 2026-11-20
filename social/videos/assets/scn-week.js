@@ -1,5 +1,5 @@
 /* Nov 22: TV newsroom, anchor + video wall with the week's REAL daily results (FTM master account). */
-const WEEK = window.WEEK || [['Mon', 0.17], ['Tue', 2.55], ['Wed', 1.20], ['Thu', 1.70], ['Fri', null]];
+const WEEK = window.WEEK || [['Mon', 0.17], ['Tue', 2.55], ['Wed', 1.20], ['Thu', 1.70], ['Fri', -0.99]];
 const ANCHOR = {skin:'#e0ac69',hair:'#2b1810',hairStyle:'wavy',top:'#1F3A93',top2:'#14214f',ph:.8,collar:'<path d="M-30 -210 L0 -170 L30 -210" stroke="#E3B62F" stroke-width="6" fill="none"/>'};
 const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
 function newsroom(t) {
@@ -16,16 +16,16 @@ function wall(t, mode) {
   const x0 = 90, y0 = 360, w = 900, h = 560, maxV = 3;
   let o = `<g><rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="26" fill="url(#wall)" stroke="#D4AF37" stroke-width="4"/>
    <text x="${x0 + 40}" y="${y0 + 64}" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="5">THIS WEEK · FTM MASTER ACCOUNT</text>`;
-  const bw = 120, gap = (w - 80 - bw * 5) / 4, base = y0 + h - 90;
+  const bw = 120, gap = (w - 80 - bw * 5) / 4, negRoom = Math.max(0, ...WEEK.map(([, v]) => v != null && v < 0 ? -v / maxV * 300 : 0)), base = y0 + h - 90 - negRoom;
   let best = -1e9, worst = 1e9; WEEK.forEach(([, v]) => { if (v != null) { best = Math.max(best, v); worst = Math.min(worst, v); } });
   WEEK.forEach(([d, v], i) => {
     const bx = x0 + 40 + i * (bw + gap), g = ease((t - 0.3 - i * 0.35) / 0.6);
     const hh = v == null ? 0 : Math.abs(v) / maxV * 300 * g, up = v == null || v >= 0;
     const hl = mode === 'best' && v != null && (v === best || v === worst);
-    o += `<text x="${bx + bw / 2}" y="${base + 50}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="32" fill="#aeb7dc">${d}</text>`;
+    o += `<text x="${bx + bw / 2}" y="${base + negRoom + 50}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="32" fill="#aeb7dc">${d}</text>`;
     if (v == null) o += `<rect x="${bx}" y="${base - 60}" width="${bw}" height="60" rx="12" fill="none" stroke="#aeb7dc" stroke-dasharray="8 8" stroke-width="3"/><text x="${bx + bw / 2}" y="${base - 80}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="26" fill="#aeb7dc">tonight</text>`;
     else o += `<rect x="${bx}" y="${up ? base - hh : base}" width="${bw}" height="${hh}" rx="12" fill="${up ? '#2fbf71' : '#E5323E'}" opacity="${mode === 'best' && !hl ? .35 : 1}"/>
-      <text x="${bx + bw / 2}" y="${base - hh - 18}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="34" fill="#fff" opacity="${g}">${fmt(v * g)}</text>
+      <text x="${bx + bw / 2}" y="${up ? base - hh - 18 : base - 18}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="34" fill="#fff" opacity="${g}">${fmt(v * g)}</text>
       ${hl ? `<rect x="${bx - 10}" y="${base - hh - 70}" width="${bw + 20}" height="${hh + 80}" rx="16" fill="none" stroke="#E3B62F" stroke-width="5" opacity="${.6 + .4 * sin(t * 6)}"/><text x="${bx + bw / 2}" y="${base - hh - 84}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="26" fill="#E3B62F">${v === best ? 'BEST' : 'LOWEST'}</text>` : ''}`;
   });
   return o + `<rect x="${x0 + 40}" y="${base}" width="${w - 80}" height="3" fill="#aeb7dc" opacity=".5"/></g>`;
