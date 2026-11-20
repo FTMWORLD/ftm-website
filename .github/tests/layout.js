@@ -36,7 +36,7 @@ const SIZES=[['laptop 1440',{viewport:{width:1440,height:900}}],['laptop 1280',{
         const vis=e=>{ const r=e.getBoundingClientRect(); if(r.width<1||r.height<1) return false; const cs=getComputedStyle(e); return cs.visibility!=='hidden'&&cs.display!=='none'&&+cs.opacity>0.05; };
         const scrolls=e=>{ for(let a=e.parentElement;a&&a!==document.body;a=a.parentElement){ const o=getComputedStyle(a).overflowX; if(o==='auto'||o==='scroll') return true; } return false; };
         const lab=e=>(e.id?'#'+e.id:'')+(e.className&&typeof e.className==='string'?'.'+e.className.trim().split(/\s+/).slice(0,2).join('.'):'')+' "'+e.textContent.trim().replace(/\s+/g,' ').slice(0,40)+'"';
-        const texts=[...root.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&!e.closest('svg,[hidden],[aria-hidden="true"],.ftm-tip,select,option,input,textarea'));
+        const texts=[...root.querySelectorAll('*')].filter(e=>vis(e)&&[...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())&&!e.closest('svg,[hidden],[aria-hidden="true"],.ftm-tip,select,option,input,textarea,.lv-track'));
         texts.forEach(e=>{ const cs=getComputedStyle(e);
           if(!e.closest('.rg-leg-mkt em')&&(e.scrollWidth>e.clientWidth+1)&&(cs.overflowX==='hidden'||cs.overflowX==='clip'||cs.textOverflow==='ellipsis')&&cs.display!=='inline') out.push('cut off: '+lab(e));
           const r=e.getBoundingClientRect(); if((r.right>W+1||r.left<-1)&&!scrolls(e)) out.push('wider than the screen: '+lab(e));

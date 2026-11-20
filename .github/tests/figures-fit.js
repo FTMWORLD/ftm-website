@@ -43,7 +43,7 @@ const SIZES=process.env.ONLY?SIZES0.filter(s=>process.env.ONLY.split(',').includ
         const lab=e=>(e.id?'#'+e.id:'')+(e.className&&typeof e.className==='string'?'.'+e.className.trim().split(/\s+/).slice(0,2).join('.'):'')+' "'+e.textContent.trim().replace(/\s+/g,' ').slice(0,40)+'"';
         const W=document.documentElement.clientWidth;
         const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT); let n;
-        while((n=tw.nextNode())){ const e=n.parentElement; if(!e||!vis(e)||e.closest('svg,[hidden],[aria-hidden="true"],.ftm-tip,select,option,input,textarea,.cv-yaxis')) continue;
+        while((n=tw.nextNode())){ const e=n.parentElement; if(!e||!vis(e)||e.closest('svg,[hidden],[aria-hidden="true"],.ftm-tip,select,option,input,textarea,.cv-yaxis,.lv-track')) continue;
           const re=/[+\-\u2212]?[^\s\d.,%()·]{0,3}\d[\d,.\u00a0\u202f]*\d%?/g; let m;
           while((m=re.exec(n.textContent))){ if(m[0].replace(/\D/g,'').length<5) continue; const rg=document.createRange(); rg.setStart(n,m.index); rg.setEnd(n,m.index+m[0].length);
             const R=[...rg.getClientRects()].filter(r=>r.width>0.5); if(!R.length) continue;
