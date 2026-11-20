@@ -1,6 +1,7 @@
 /* Renders FTM social images with the official FTM logo.
    node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a losing day also gets <name>-month: the month so far, every day)
    node social/tools/render.js card '<json {title, body, kicker, foot}>' out-dir name
+   node social/tools/render.js week '<json from social/tools/week.py>' out-dir   -> week-<to>-post, -days, -story (Saturday 06:00 weekly summary)
    node social/tools/render.js cover '<json {top, big, title, sub, tone}>' out-dir name   -> <name>-cover (1080x1920 reel/short cover) + <name>-thumb (1280x720 YouTube)
    Writes <name>-post.png (1080x1350) and <name>-story.png (1080x1920). */
 const { chromium } = require('playwright');
@@ -93,6 +94,43 @@ function month(w, h) {
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
     <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} green day${g === 1 ? '' : 's'} · ${r} red day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
 }
+/* Weekly summary (owner 20 Nov: every Saturday 06:00, the week Sunday to Friday). D = {from, to, pct, trades, wins, losses, mtd, balance, cur, markets, days:[{date, pct, n, wins, losses}]} */
+function weekRange() { const [y1, m1, d1] = D.from.split('-').map(Number), [y2, m2, d2] = D.to.split('-').map(Number); return (m1 === m2 ? `${d1}` : `${d1} ${MONTHS[m1 - 1]}`) + ` – ${d2} ${MONTHS[m2 - 1]} ${y2}`; }
+function weekBars(H) {
+  const L = D.days || [], mx = Math.max(.5, ...L.map(x => Math.abs(x.pct)));
+  return `<div style="display:grid;grid-template-columns:repeat(${L.length},1fr);gap:14px;align-items:end;height:${H}px;margin-top:34px;position:relative">
+    <div style="position:absolute;left:0;right:0;top:${H / 2}px;border-top:1.5px dashed rgba(212,175,55,.35)"></div>
+    ${L.map(x => { const [y, m, d] = x.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()].slice(0, 3), on = x.n > 0, hh = on ? Math.max(6, Math.abs(x.pct) / mx * (H / 2 - 40)) : 0, up = x.pct >= 0;
+      return `<div style="position:relative;height:${H}px"><div style="position:absolute;left:12%;right:12%;${up ? `bottom:${H / 2}px` : `top:${H / 2}px`};height:${hh}px;border-radius:12px;background:${up ? 'linear-gradient(0deg,#1f9d55,#5fe39b)' : 'linear-gradient(180deg,#c42a35,#ff6b74)'};${on ? '' : 'display:none'}"></div>
+      <div style="position:absolute;left:0;right:0;${up ? `bottom:${H / 2 + hh + 8}px` : `top:${H / 2 + hh + 8}px`};text-align:center;font-size:22px;font-weight:800;color:${!on ? '#6b7194' : up ? '#5fe39b' : '#ff8a92'}">${on ? pc(x.pct) : ''}</div>
+      <div style="position:absolute;left:0;right:0;${up || !on ? `top:${H / 2 + 10}px` : `bottom:${H / 2 + 10}px`};text-align:center;font-size:22px;font-weight:700;color:#aeb7dc">${wd}${on ? '' : '<br><span style="font-size:18px;color:#6b7194">no trades</span>'}</div></div>`; }).join('')}</div>`;
+}
+function week(w, h) {
+  const col = D.pct > 0 ? '#E3B62F' : D.pct < 0 ? '#ff6b74' : '#ffffff', [, m] = D.to.split('-').map(Number), markets = (D.markets || []).map(mk).filter((v, i, a) => a.indexOf(v) === i);
+  return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
+    <div class="kick">FTM master account · weekly result</div><div class="date">${weekRange()}</div>
+    <div class="big" style="font-size:${h > 1500 ? 220 : 180}px;color:${col}">${pc(D.pct)}</div>
+    <div class="sub">Result of this week's closed trades, Sunday to Friday</div>
+    ${weekBars(h > 1500 ? 380 : 300)}
+    <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
+    ${D.mtd == null ? '' : `<div class="stats" style="grid-template-columns:1fr;margin-top:18px"><div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div></div>`}
+    ${markets.length && h > 1500 ? `<div class="mk">Markets: ${esc(markets.join(' · '))}</div>` : ''}</div>${FOOT}`;
+}
+function weekDays(w, h) {
+  const L = D.days || [];
+  const rows = L.map(x => { const [y, m, d] = x.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()], on = x.n > 0;
+    return `<div style="display:grid;grid-template-columns:2.1fr 1.1fr 1.4fr 1fr;align-items:center;height:96px;border-bottom:1.5px solid rgba(212,175,55,.18);font-size:34px">
+    <span><b style="font-weight:800">${wd}</b> <span style="color:#aeb7dc;font-weight:600;font-size:28px">${d} ${MONTHS[m - 1].slice(0, 3)}</span></span>
+    <span style="color:#dfe4ff;font-weight:600">${on ? x.n + ' trade' + (x.n === 1 ? '' : 's') : '—'}</span><span style="color:#aeb7dc;font-weight:600;font-size:28px">${on ? x.wins + ' won · ' + x.losses + ' lost' : ''}</span>
+    <span style="text-align:right;font-weight:800;color:${!on ? '#6b7194' : x.pct >= 0 ? '#E3B62F' : '#ff6b74'}">${on ? pc(x.pct) : 'No trades'}</span></div>`; }).join('');
+  const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '';
+  return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
+    <div class="kick" style="margin-top:40px">The week, day by day</div><div class="date">${weekRange()} · Berlin time</div>
+    <div style="margin-top:30px;border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:34px;font-weight:800"><span style="color:#D4AF37;letter-spacing:.06em;font-size:26px;text-transform:uppercase">Week</span><span style="color:${D.pct >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.pct)}</span></div>
+    ${D.balance != null ? `<div style="margin-top:28px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+    <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
+}
 /* Cover image for a reel / short / video (owner 20 Nov: every video post gets its own designed cover). 1080x1920; the words
    sit in the centre square so the profile grid (3:4 / 1:1 crop) shows them. D = {top, title, big, sub, tone: 'up'|'down'|'gold', bg: a still from the video (optional)} */
 function cover(w, h) {
@@ -117,8 +155,8 @@ function card(w, h) {
 }
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
-  const name = nameArg || (kind === 'day' ? 'day-' + D.date : 'card');
-  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : [];
+  const name = nameArg || (kind === 'day' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
+  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
   if (kind === 'day' && D.pct < 0 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
