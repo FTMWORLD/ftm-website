@@ -140,8 +140,14 @@ module.exports = async function handler(req, res) {
       const Pp = await S.read('posts.json', { posts: [] }), month = day.slice(0, 7);
       const days = Pp.posts.filter(p => p.ftm && p.card && p.card.k === 'day' && String(p.card.date || '').slice(0, 7) === month && p.card.date <= day)
         .reduce((o, p) => { o[p.card.date] = p.card; return o; }, {});
-      const c = days[day];
-      if (!c) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
+      let c = days[day];
+      if (!c) {
+        // a past day that was never posted (before FTM news started): the same day card, built from the engine's history
+        const R0 = require('../_lib/results'), [y0, m0, d0] = day.split('-').map(Number), endOfDay = R0.midnight(y0, m0, d0 + 1 > 31 ? 1 : d0, R0.TZ);
+        if (R0.midnight(y0, m0, d0, R0.TZ) + 864e5 > Date.now()) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
+        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R0.master(admin), 'master')).h };
+        c = R0.dayCard(dayMemo.h, 'USD', y0, m0, d0); void endOfDay;
+      }
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
       let mtd = null, balance = null;
       try {
