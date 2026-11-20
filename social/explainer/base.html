@@ -10,7 +10,7 @@ body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antia
 #cap{position:absolute;text-align:center;background:rgba(3,6,26,.74);border:1.5px solid rgba(212,175,55,.45);border-radius:34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 #cap .w{font-weight:800;letter-spacing:-.02em}
 #bar{position:absolute;left:0;top:0;height:5px;background:linear-gradient(90deg,#D4AF37,#E3B62F);z-index:7}
-#grain{position:absolute;inset:-20px;z-index:4;pointer-events:none;opacity:.07;mix-blend-mode:overlay}
+#grain{position:absolute;inset:-20px;z-index:4;pointer-events:none;opacity:.045;mix-blend-mode:overlay}
 #chapl{position:absolute;right:60px;top:56px;z-index:5;font-weight:700;font-size:22px;letter-spacing:.14em;text-transform:uppercase;color:#D4AF37;opacity:.85}
 body.land{width:1920px;height:1080px}body.land .brand{left:60px;top:50px}
 body.land #cap{left:380px;right:380px;bottom:26px;padding:14px 26px}body.land #cap .w{font-size:36px;line-height:1.2}
@@ -38,7 +38,7 @@ window.render=function(t){
  const core=document.getElementById('core');core.innerHTML=`<svg width="100%" height="100%" viewBox="${LAND?'-562 -22 2204 1240':'0 -330 1080 1920'}">${r.core}${VIG}</svg>`;
  const fade=Math.min(ease((lt+0.25)/0.25),1-ease((lt-(dur-0.3))/0.25));
  core.style.opacity=.08+.92*fade;core.style.transformOrigin=LAND?'50% 45%':'50% 45%';core.style.transform=`scale(${(r.zoom||1)*(1+0.025*cl(tt/dur))})`;
- const words=(s.vo||'').replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').replace(/ninety-eight thousand, six hundred and forty-four percent/i,'98,644%').replace(/plus eleven point five six percent/i,'+11.56%').replace(/one thousand euros/i,'1,000€').replace(/plus one point seven percent/i,'+1.70%').replace(/fifteen trades/i,'15 trades').replace(/at eleven\./i,'at 11 p.m.').replace(/six red days/i,'6 red days').replace(/five minutes/i,'5 minutes').replace(/thirty-nine percent/i,'39%').replace(/fifty-three of eighty-two/i,'53 of 82').replace(/Seven out of seven/i,'7 out of 7').replace(/eleven p\.m\./i,'11 p.m.').replace(/Growth two times/gi,'Growth 2×').replace(/fifty languages/i,'50 languages').split(' ');
+ const words=(s.vo||'').replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').replace(/ninety-eight thousand, six hundred and forty-four percent/i,'98,644%').replace(/plus eleven point five six percent/i,'+11.56%').replace(/one thousand euros/i,'1,000€').replace(/plus one point seven percent/i,'+1.70%').replace(/fifteen trades/i,'15 trades').replace(/at eleven\./i,'at 11 p.m.').replace(/six red days/i,'6 red days').replace(/five minutes/i,'5 minutes').replace(/plus seventeen hundred percent/i,'+1,772%').replace(/plus twelve thousand/i,'+12,137%').replace(/Twelve, twenty-two and thirty-nine percent/i,'12%, 22% and 39%').replace(/thirty-nine percent/i,'39%').replace(/fifty-three of eighty-two/i,'53 of 82').replace(/Seven out of seven/i,'7 out of 7').replace(/eleven p\.m\./i,'11 p.m.').replace(/Growth two times/gi,'Growth 2×').replace(/fifty languages/i,'50 languages').split(' ');
  // one sentence at a time: the sentence being spoken, its words lit as they are said
  const prog=cl(lt/((s.d||dur)*0.97)), total=words.length; let at=Math.floor(prog*total+0.999), st=0, en=total;
  { let acc=0; for(let j=0;j<total;j++){ if(/[.?!:]$/.test(words[j])&&j<total-1){ if(j+1<=Math.max(0,at-1)) st=j+1; else { en=j+1; break; } } } }

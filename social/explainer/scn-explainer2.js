@@ -67,3 +67,18 @@ Object.assign(SCN, {
 // live result with the follow reason under it
 const _present = SCN.present;
 SCN.present = function (t, d, talk) { const r = _present(t, d, talk); r.core += followPill(t, 540, 1010, ex((t - d * .72) / .5)); return r; };
+/* The record, all three risk profiles (owner 20 Nov): Portfolio backtest 2020–2026, log scale, each line with its total and
+   its deepest drop, as on the website's performance report. */
+SCN.past = function (t, d, talk) {
+  const P3 = [['Conservative', 1772, -12.01, '#7fb2ff', Math.log10(18.72)], ['Balanced', 12137, -22.26, '#E3B62F', Math.log10(122.37)], ['Growth', 98644, -39.13, '#5fe39b', Math.log10(987.44)]];
+  const X = i => -440 + i * 200, Y = v => 860 - v / 3.1 * 560, yrs = [2020, 2021, 2022, 2023, 2024, 2025, 2026];
+  const shape = j => { const k = j / 60; return Math.pow(k, 1.15) + .025 * sin(j * .9) - (k > .3 && k < .4 ? .05 : 0); };
+  let o = yrs.map((y, i) => `<line x1="${X(i)}" y1="290" x2="${X(i)}" y2="870" stroke="#fff" stroke-opacity=".05"/><text x="${X(i)}" y="910" text-anchor="middle" font-family="Inter" font-weight="700" font-size="26" fill="#aeb7dc">${y}</text>`).join('');
+  P3.forEach((p, n) => { const pts = []; for (let j = 0; j <= 60; j++) pts.push([X(0) + j / 60 * (X(6) - X(0)), Y(Math.max(0, shape(j)) * p[4])]);
+    const pr = (t - .4 - n * (d * .17)) / (d * .3); o += drawn(pts, pr, { sw: n === 2 ? 9 : 6, c: p[3] });
+    if (pr >= 1) { const e = pts[60]; o += `<g opacity="${ex((pr - 1) * 3)}"><circle cx="${e[0]}" cy="${e[1]}" r="10" fill="${p[3]}"/><text x="${e[0] + 22}" y="${e[1] + 10}" font-family="Inter" font-weight="900" font-size="34" fill="${p[3]}">+${p[1].toLocaleString('en-US')}%</text></g>`; } });
+  const rows = P3.map((p, n) => { const a = ex((t - d * .55 - n * .3) / .4); return `<g opacity="${a}" transform="translate(1070,${370 + n * 120})"><rect width="450" height="100" rx="18" fill="rgba(255,255,255,.05)" stroke="${p[3]}" stroke-opacity=".6" stroke-width="2"/><circle cx="34" cy="50" r="12" fill="${p[3]}"/><text x="60" y="44" font-family="Inter" font-weight="900" font-size="28" fill="#fff">${p[0]}</text><text x="60" y="80" font-family="Inter" font-weight="700" font-size="20" fill="#c9d0ee">deepest drop ${p[2].toFixed(2).replace('-', '−')}%</text><text x="432" y="44" text-anchor="end" font-family="Inter" font-weight="900" font-size="28" fill="${p[3]}">+${p[1].toLocaleString('en-US')}%</text></g>`; }).join('');
+  const head = `<text x="-470" y="235" font-family="Inter" font-weight="900" font-size="64" fill="#fff">Every profile grew</text><text x="-466" y="285" font-family="Inter" font-weight="700" font-size="30" fill="#c9d0ee">Portfolio · backtest 2020–2026 · log scale</text>`;
+  const yrsOk = `<g opacity="${ex((t - d * .78) / .5)}">${chip('Every year in profit: 2020–2026', 1250, 780, { fs: 28, st: GREEN, c: '#5fe39b' })}</g>`;
+  return { bg: DEEP, zoom: camera(t, d, .03), core: `${amb(t)}${head}${o}${rows}${yrsOk}` };
+};
