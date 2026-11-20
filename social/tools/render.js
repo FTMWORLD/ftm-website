@@ -106,9 +106,9 @@ function cover(w, h) {
     <div style="position:absolute;left:${land ? 90 : 70}px;right:${land ? 90 : 70}px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
       ${D.top ? `<div style="font-size:${land ? 34 : 40}px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#D4AF37">${esc(D.top)}</div>` : ''}
       ${D.big ? `<div style="font-size:${land ? 190 : 230}px;font-weight:900;letter-spacing:-.05em;line-height:1;color:${tone};margin-top:18px;text-shadow:0 20px 60px rgba(0,0,0,.45)">${esc(D.big)}</div>` : ''}
-      ${D.title ? `<div style="font-size:${land ? 96 : (D.big ? 76 : 116)}px;font-weight:900;letter-spacing:-.04em;line-height:1.02;margin-top:${D.big ? 20 : 26}px;text-wrap:balance;text-shadow:0 14px 50px rgba(0,0,0,.5)">${D.title}</div>` : ''}
+      ${D.title ? `<div style="font-size:${land ? 96 : (D.big ? 76 : 116)}px;font-weight:900;letter-spacing:-.04em;line-height:1.02;margin-top:${D.big ? 20 : 26}px;text-wrap:balance;text-shadow:0 14px 50px rgba(0,0,0,.5)">${String(D.title).replace(/<b>/g, '<b style="color:#E3B62F">')}</div>` : ''}
       ${D.sub ? `<div style="margin-top:34px;display:inline-block;padding:16px 34px;border-radius:999px;background:#E5323E;font-size:${land ? 34 : 40}px;font-weight:800">${esc(D.sub)}</div>` : ''}
-    </div>${FOOT}`;
+    </div>${land ? '' : FOOT}`;
 }
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
