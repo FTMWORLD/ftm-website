@@ -42,6 +42,7 @@ jobs:
           node .github/tests/letter.js http://localhost:8765
           node .github/tests/letter-auto.js
           node .github/tests/news-results.js http://localhost:8765
+          node .github/tests/why-no-trade.js http://localhost:8765
           node .github/tests/service-status.js http://localhost:8765
           node .github/tests/calendar-day.js http://localhost:8765/
           node .github/tests/trade-stats.js http://localhost:8765/

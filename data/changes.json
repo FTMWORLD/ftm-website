@@ -214,5 +214,9 @@
  {
   "date": "2026-11-19",
   "text": "Daily results: on busy days (more than 6 trades) the email and the FTM news card show one line per market (trades, buys and sells, net P/L) instead of every trade, so it fits on a phone."
+ },
+ {
+  "date": "2026-11-20",
+  "text": "Daily result email: on a day your account closed no trade, a short note now explains why (no trade met the rules, trades still open, or on small accounts the broker's minimum trade size)."
  }
 ]

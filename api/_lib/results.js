@@ -95,6 +95,9 @@ function cardFor(key, h, cur) {
   const nm = p[2] === 12 ? [p[1] + 1, 1, 1] : [p[1], p[2] + 1, 1];
   return periodCard('month', h, cur, [p[1], p[2], 1], nm, MONTHS[p[2] - 1] + ' ' + p[1]);
 }
+/* Why an own account closed no trade on a day: what the master account did that day (mn = its closed trades), the
+   account's balance (trades are sized to it, and small accounts hit the broker's 0.01-lot minimum) and its open trades. */
+function whyNone(mn, acct) { return { mn: +mn || 0, bal: acct && acct.balance != null && isFinite(+acct.balance) ? +acct.balance : null, open: (acct && +acct.openPositions) || 0 }; }
 /* The member's name as they gave it (full name, else first and last name); empty when unknown. */
 function nameOf(u) { const m = (u && u.user_metadata) || {}; return String(m.full_name || m.name || [m.first_name, m.last_name].filter(Boolean).join(' ') || '').replace(/\s+/g, ' ').trim().slice(0, 60); }
 /* A member's own accounts: never the FTM master account or the master preview free accounts see. */
@@ -161,6 +164,15 @@ async function emailFor(card, lang, acct, who) {
         + Object.values(G).sort((x, y) => y.n - x.n).map(g => '<tr>' + TD(g.s, '', true) + TD(g.n) + TD(M(g.pl), col(g.pl), true) + '</tr>').join('') + '</table>';
     } else if (card.rows && card.rows.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Opened')) + TH((await t('Closed')) + (tzName ? ' (' + tzName + ')' : '')) + TH(await t('Market')) + TH(await t('Direction')) + TH(await t('Size')) + TH('P/L') + '</tr>'
       + card.rows.map(r => '<tr>' + TD(hm(r.o)) + TD(hm(r.c)) + TD(r.s || '') + TD(r.d || '') + TD(r.v != null ? (+r.v).toFixed(2) : '') + TD(M(r.pl), col(r.pl), true) + '</tr>').join('') + '</table>';
+    if (card.why && !card.n) {
+      const W = card.why, bal = W.bal != null ? M(W.bal).replace(/^\+/, '') : '', lines = [];
+      if (W.open > 0) lines.push(W.open === 1 ? await t('One trade is still open on your account. It is counted on the day it closes.') : (await t('{} trades are still open on your account. They are counted on the day they close.')).replace('{}', W.open));
+      else if (!W.mn) lines.push(await t('FTM MACHINE found no trade that met its rules today, on any account. Days without a trade are normal: not trading is also a decision.'));
+      else if (W.bal != null && W.bal < 2000) { lines.push((await t('The FTM master account traded today. FTM MACHINE sizes every trade to your balance, and on an account of {} some trades come out smaller than your broker\'s smallest size (0.01 lot). FTM MACHINE then skips the trade rather than take more risk than your profile allows.')).replace('{}', bal)); lines.push(await t('Accounts of 2,000 or more take part in more trades.')); }
+      else lines.push(await t('The FTM master account traded today, but no trade opened on your account. If this happens again tomorrow, reply to this email or ask us in Ask here and we will check your connection.'));
+      table += '<table width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0 0;background:#f7f8fb;border-left:4px solid #D4AF37;border-radius:10px;"><tr><td style="padding:14px 16px;"><p style="margin:0 0 6px;font-size:13px;font-weight:bold;color:#0b1640;">' + e(await t('Why no trade today?')) + '</p>'
+        + lines.map(x => '<p style="margin:0 0 6px;font-size:14px;line-height:1.5;color:#46507a;">' + e(x) + '</p>').join('') + '</td></tr></table>';
+    }
   } else if (card.k === 'week') {
     head = D(card.from, { day: 'numeric', month: 'short' }) + ' – ' + D(card.to, { day: 'numeric', month: 'long', year: 'numeric' });
     sub = card.n === 1 ? await t('One trade closed this week.') : (await t('{} trades closed this week.')).replace('{}', card.n);
@@ -210,7 +222,7 @@ async function mail(admin, o) {
     const st = await P.read(admin, 'results/own-' + key + '.json', null); if (st && st.finished) continue;
     const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5 || Date.parse(post.t) < OWN_SINCE) continue;
     const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0 }, st || {}); S.tries = S.tries || {};
-    due.push({ key, S, have: new Set(S.done) });
+    due.push({ key, S, have: new Set(S.done), mn: post.card && post.card.n });
   }
   if (!due.length) return { more, log };
   const lock = await P.read(admin, 'results/mail-lock.json', null);
@@ -237,6 +249,7 @@ async function mail(admin, o) {
           for (const w of pend) { const card = cardFor(w.key, h, cur), mst = acct.isMaster || acct.isPreview;
             if (/^month-/.test(w.key)) { const q = w.key.split('-'); card.st = statementFor(h, +q[1], +q[2]); }
             const moved = card.st && (card.st.dep || card.st.wd || card.st.close || card.st.open);
+            if (card.k === 'day' && !card.n && !mst) card.why = whyNone(w.mn, acct);
             if (mst || card.n || acct.active || moved) list.push({ w, m: await emailFor(card, lang, mst ? null : acct, nameOf(u)) }); }
         }
         return list;
@@ -289,4 +302,4 @@ async function samples(admin, which) {
   return { log };
 }
 
-module.exports = { master, run, mail, samples, emailFor, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
+module.exports = { master, run, mail, samples, emailFor, whyNone, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
