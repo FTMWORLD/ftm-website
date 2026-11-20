@@ -1,58 +1,302 @@
 {
-  "tz": "Europe/Berlin",
-  "morning_time": "06:00",
-  "story_times": ["08:00", "11:00", "14:00", "17:00", "20:00"],
-  "tags": "#FTM #FTMMACHINE #AutomatedTrading #BusyPeople #FollowTheMarket",
-  "morning": [
-    {"date": "2026-11-20", "kicker": "For busy people", "title": "Busy is not a reason to stay <b>out of the markets.</b>",
-     "body": ["Most people don't skip the markets for lack of interest. They skip them for lack of time.", "FTM MACHINE follows the markets for you, on your own account, while you work."],
-     "caption": "Most people don't stay out of the markets because they don't care. They stay out because they have no time.\n\nFTM MACHINE follows the markets for you, automatically, on your own account, while you get on with your day.\n\nHow it works: link in bio."},
-    {"date": "2026-11-21", "kicker": "Auto vs manual", "title": "Manual trading has one weak spot: <b>you.</b>",
-     "body": ["Fear closes good trades too early. Hurry opens bad ones. Tiredness misses both.", "Fixed rules don't get scared, rushed or tired."],
-     "caption": "Fear closes good trades too early. Hurry opens bad ones. Tiredness misses both.\n\nThat's why FTM MACHINE trades by fixed rules: the same decision at 3 a.m. as at 3 p.m.\n\nWould you trust your own decisions at the end of a long shift?"},
-    {"date": "2026-11-22", "kicker": "Copy trading", "title": "Copy trading: <b>whose risk</b> are you copying?",
-     "body": ["When you copy a person, you copy their bad days, their risk size and their mood.", "You usually find out after it happened."],
-     "caption": "Copy trading sounds easy: find someone good and copy them.\n\nBut you also copy their bad days, their risk size and their mood, and you usually find out after it happened.\n\nBefore you copy anyone, ask: who controls the risk, and can I see every single trade?"},
-    {"date": "2026-11-23", "kicker": "For busy people", "title": "The market moves <b>while you're at work.</b>",
-     "body": ["Gold, Bitcoin and the big indices move around the clock.", "You can't watch them all day. FTM MACHINE can."],
-     "caption": "Markets don't wait for your lunch break. Gold, Bitcoin and the big indices move around the clock.\n\nYou can't watch them all day. FTM MACHINE can, on your own account, by fixed rules.\n\nLink in bio."},
-    {"date": "2026-11-24", "kicker": "How it works", "title": "What is <b>FTM MACHINE?</b>",
-     "body": ["Software that connects to your own broker account and places trades by fixed rules.", "Your money stays in your account. You can pause it at any time."],
-     "caption": "What is FTM MACHINE?\n\n1. Software that connects to your own broker account.\n2. It places trades by fixed rules, around the clock.\n3. Your money stays in your account, in your name.\n4. You see every trade in your client area and can pause at any time.\n\nQuestions? Ask below."},
-    {"date": "2026-11-25", "kicker": "Before you trust any system", "title": "Three questions to ask <b>any trading system.</b>",
-     "body": ["1. Can I see every trade?", "2. Does my money stay in my own account?", "3. Are the losing days shown too?"],
-     "caption": "Three questions to ask before you trust any trading system:\n\n1. Can I see every trade?\n2. Does my money stay in my own account?\n3. Are the losing days shown too?\n\nFTM posts the master account's result every evening at 11 p.m. Berlin time, good days and bad days."},
-    {"date": "2026-11-26", "kicker": "Auto vs manual", "title": "Discipline is hard. <b>Code is consistent.</b>",
-     "body": ["People change their rules after one bad trade.", "FTM MACHINE follows the same rules on Monday morning and Friday night."],
-     "caption": "Most people change their rules after one bad trade. Then again after the next one.\n\nFTM MACHINE follows the same rules on Monday morning and Friday night. No revenge trades, no guessing.\n\nThat's the difference automation makes."},
-    {"date": "2026-11-27", "kicker": "Honest results", "title": "Losing days are <b>part of it.</b>",
-     "body": ["Every system has them. Anyone who only shows winning days is hiding something.", "We post every day's result, good or bad. Look at months, not single days."],
-     "caption": "Every trading system has losing days. Anyone who only shows the winning ones is hiding something.\n\nWe post the FTM master account's result every evening, good or bad. Judge any system by months, not by one day.\n\n11 p.m. Berlin, every day, on this page."},
-    {"date": "2026-11-28", "kicker": "Who FTM is for", "title": "Nurses. Pilots. Bankers. <b>Drivers. Parents.</b>",
-     "body": ["None of them have time to watch charts all day.", "That's exactly who FTM MACHINE is built for."],
-     "caption": "A nurse on a night shift. A pilot over the Atlantic. A banker in back-to-back meetings. A parent on the school run.\n\nNone of them have time to watch charts. That's exactly who FTM MACHINE is built for.\n\nTag someone who never has time."},
-    {"date": "2026-11-29", "kicker": "Copy trading vs automation", "title": "Follow a person, or <b>follow rules?</b>",
-     "body": ["Copy trading: you follow one person's decisions, whatever their day is like.", "Automation: you follow fixed rules you can see, every trade, every day."],
-     "caption": "Copy trading: you follow one person's decisions, whatever kind of day they're having.\n\nAutomation: you follow fixed rules, and you can see every trade they make.\n\nWhich would you rather trust with your money?"},
-    {"date": "2026-11-30", "kicker": "Your money, your name", "title": "Your money stays <b>in your name.</b>",
-     "body": ["FTM never holds your money. FTM MACHINE trades on your own broker account.", "Deposit, withdraw or pause whenever you want."],
-     "caption": "FTM never holds your money.\n\nFTM MACHINE trades on your own broker account, in your own name. You can deposit, withdraw or pause whenever you want, and see every trade in your client area.\n\nStart with a free account: link in bio."}
-  ],
-  "stories": [
-    {"kicker": "FTM MACHINE", "title": "Takes part in the markets <b>for you.</b>", "body": ["Automatically, on your own account, while you work."]},
-    {"kicker": "Your money", "title": "Stays in <b>your own account.</b>", "body": ["FTM MACHINE trades on your broker account, in your name."]},
-    {"kicker": "Markets", "title": "Five markets, <b>around the clock.</b>", "body": ["Gold · Bitcoin · US Tech 100 · USD/JPY · Hang Seng 50"]},
-    {"kicker": "Every evening", "title": "Today's result at <b>11 p.m.</b>", "body": ["The FTM master account's closed trades, posted every day. Good days and bad days."]},
-    {"kicker": "You stay in control", "title": "Pause <b>any time.</b>", "body": ["One tap in your client area stops FTM MACHINE trading."]},
-    {"kicker": "Plans", "title": "Annual · 5 Years · <b>Lifetime</b>", "body": ["See the plans at ftmwealthnation.com"]},
-    {"kicker": "Free account", "title": "Watch the master account <b>live, free.</b>", "body": ["Open a free account and see every trade before you decide."]},
-    {"kicker": "FTM Community", "title": "Meet other people running <b>FTM MACHINE.</b>", "body": ["Posts, chats and results from members around the world."]},
-    {"kicker": "Built for", "title": "Nurses, pilots, drivers, <b>parents.</b>", "body": ["Anyone too busy to watch the markets."]},
-    {"kicker": "Auto vs manual", "title": "No fear. No hurry. <b>Same rules.</b>", "body": ["Automation makes the same decision at any hour."]},
-    {"kicker": "Copy trading tip", "title": "Always ask: <b>who controls the risk?</b>", "body": ["If you can't see every trade, think twice."]},
-    {"kicker": "Members get", "title": "Daily, weekly and <b>monthly results.</b>", "body": ["Straight to your inbox, for your own account."]},
-    {"kicker": "50 languages", "title": "FTM speaks <b>your language.</b>", "body": ["The whole site and client area in 50 languages."]},
-    {"kicker": "Client area", "title": "Calendar, statistics, <b>statements.</b>", "body": ["Every trade on your account, explained."]},
-    {"kicker": "Get started", "title": "Invest today, <b>secure tomorrow.</b>", "body": ["Free account at ftmwealthnation.com"]}
-  ]
+ "tz": "Europe/Berlin",
+ "morning_time": "06:00",
+ "story_times": [
+  "08:00",
+  "11:00",
+  "14:00",
+  "17:00",
+  "20:00"
+ ],
+ "tags": "#FTM #FTMMACHINE #AutomatedTrading #BusyPeople #FollowTheMarket",
+ "morning": [
+  {
+   "date": "2026-11-20",
+   "kicker": "For busy people",
+   "title": "Busy is not a reason to stay <b>out of the markets.</b>",
+   "body": [
+    "Most people don't skip the markets for lack of interest. They skip them for lack of time.",
+    "FTM MACHINE follows the markets for you, on your own account, while you work."
+   ],
+   "caption": "Most people don't stay out of the markets because they don't care. They stay out because they have no time.\n\nFTM MACHINE follows the markets for you, automatically, on your own account, while you get on with your day.\n\nHow it works: link in bio."
+  },
+  {
+   "date": "2026-11-21",
+   "kicker": "Auto vs manual",
+   "title": "Manual trading has one weak spot: <b>you.</b>",
+   "body": [
+    "Fear closes good trades too early. Hurry opens bad ones. Tiredness misses both.",
+    "Fixed rules don't get scared, rushed or tired."
+   ],
+   "caption": "Fear closes good trades too early. Hurry opens bad ones. Tiredness misses both.\n\nThat's why FTM MACHINE trades by fixed rules: the same decision at 3 a.m. as at 3 p.m.\n\nWould you trust your own decisions at the end of a long shift?"
+  },
+  {
+   "date": "2026-11-22",
+   "kicker": "Copy trading",
+   "title": "Copy trading: <b>whose risk</b> are you copying?",
+   "body": [
+    "When you copy a person, you copy their bad days, their risk size and their mood.",
+    "You usually find out after it happened."
+   ],
+   "caption": "Copy trading sounds easy: find someone good and copy them.\n\nBut you also copy their bad days, their risk size and their mood, and you usually find out after it happened.\n\nBefore you copy anyone, ask: who controls the risk, and can I see every single trade?"
+  },
+  {
+   "date": "2026-11-23",
+   "kicker": "For busy people",
+   "title": "The market moves <b>while you're at work.</b>",
+   "body": [
+    "Gold, Bitcoin and the big indices move around the clock.",
+    "You can't watch them all day. FTM MACHINE can."
+   ],
+   "caption": "Markets don't wait for your lunch break. Gold, Bitcoin and the big indices move around the clock.\n\nYou can't watch them all day. FTM MACHINE can, on your own account, by fixed rules.\n\nLink in bio."
+  },
+  {
+   "date": "2026-11-24",
+   "kicker": "How it works",
+   "title": "What is <b>FTM MACHINE?</b>",
+   "body": [
+    "Software that connects to your own broker account and places trades by fixed rules.",
+    "Your money stays in your account. You can pause it at any time."
+   ],
+   "caption": "What is FTM MACHINE?\n\n1. Software that connects to your own broker account.\n2. It places trades by fixed rules, around the clock.\n3. Your money stays in your account, in your name.\n4. You see every trade in your client area and can pause at any time.\n\nQuestions? Ask below."
+  },
+  {
+   "date": "2026-11-25",
+   "kicker": "Before you trust any system",
+   "title": "Three questions to ask <b>any trading system.</b>",
+   "body": [
+    "1. Can I see every trade?",
+    "2. Does my money stay in my own account?",
+    "3. Are the losing days shown too?"
+   ],
+   "caption": "Three questions to ask before you trust any trading system:\n\n1. Can I see every trade?\n2. Does my money stay in my own account?\n3. Are the losing days shown too?\n\nFTM posts the master account's result every evening at 11 p.m. Berlin time, good days and bad days."
+  },
+  {
+   "date": "2026-11-26",
+   "kicker": "Auto vs manual",
+   "title": "Discipline is hard. <b>Code is consistent.</b>",
+   "body": [
+    "People change their rules after one bad trade.",
+    "FTM MACHINE follows the same rules on Monday morning and Friday night."
+   ],
+   "caption": "Most people change their rules after one bad trade. Then again after the next one.\n\nFTM MACHINE follows the same rules on Monday morning and Friday night. No revenge trades, no guessing.\n\nThat's the difference automation makes."
+  },
+  {
+   "date": "2026-11-27",
+   "kicker": "Honest results",
+   "title": "Losing days are <b>part of it.</b>",
+   "body": [
+    "Every system has them. Anyone who only shows winning days is hiding something.",
+    "We post every day's result, good or bad. Look at months, not single days."
+   ],
+   "caption": "Every trading system has losing days. Anyone who only shows the winning ones is hiding something.\n\nWe post the FTM master account's result every evening, good or bad. Judge any system by months, not by one day.\n\n11 p.m. Berlin, every day, on this page."
+  },
+  {
+   "date": "2026-11-28",
+   "kicker": "Who FTM is for",
+   "title": "Nurses. Pilots. Bankers. <b>Drivers. Parents.</b>",
+   "body": [
+    "None of them have time to watch charts all day.",
+    "That's exactly who FTM MACHINE is built for."
+   ],
+   "caption": "A nurse on a night shift. A pilot over the Atlantic. A banker in back-to-back meetings. A parent on the school run.\n\nNone of them have time to watch charts. That's exactly who FTM MACHINE is built for.\n\nTag someone who never has time."
+  },
+  {
+   "date": "2026-11-29",
+   "kicker": "Copy trading vs automation",
+   "title": "Follow a person, or <b>follow rules?</b>",
+   "body": [
+    "Copy trading: you follow one person's decisions, whatever their day is like.",
+    "Automation: you follow fixed rules you can see, every trade, every day."
+   ],
+   "caption": "Copy trading: you follow one person's decisions, whatever kind of day they're having.\n\nAutomation: you follow fixed rules, and you can see every trade they make.\n\nWhich would you rather trust with your money?"
+  },
+  {
+   "date": "2026-11-30",
+   "kicker": "Your money, your name",
+   "title": "Your money stays <b>in your name.</b>",
+   "body": [
+    "FTM never holds your money. FTM MACHINE trades on your own broker account.",
+    "Deposit, withdraw or pause whenever you want."
+   ],
+   "caption": "FTM never holds your money.\n\nFTM MACHINE trades on your own broker account, in your own name. You can deposit, withdraw or pause whenever you want, and see every trade in your client area.\n\nStart with a free account: link in bio."
+  }
+ ],
+ "stories": [
+  {
+   "kicker": "FTM MACHINE",
+   "title": "Takes part in the markets <b>for you.</b>",
+   "body": [
+    "Automatically, on your own account, while you work."
+   ]
+  },
+  {
+   "kicker": "Your money",
+   "title": "Stays in <b>your own account.</b>",
+   "body": [
+    "FTM MACHINE trades on your broker account, in your name."
+   ]
+  },
+  {
+   "kicker": "Markets",
+   "title": "Five markets, <b>around the clock.</b>",
+   "body": [
+    "Gold · Bitcoin · US Tech 100 · USD/JPY · Hang Seng 50"
+   ]
+  },
+  {
+   "kicker": "Every evening",
+   "title": "Today's result at <b>11 p.m.</b>",
+   "body": [
+    "The FTM master account's closed trades, posted every day. Good days and bad days."
+   ]
+  },
+  {
+   "kicker": "You stay in control",
+   "title": "Pause <b>any time.</b>",
+   "body": [
+    "One tap in your client area stops FTM MACHINE trading."
+   ]
+  },
+  {
+   "kicker": "Plans",
+   "title": "Annual · 5 Years · <b>Lifetime</b>",
+   "body": [
+    "See the plans at ftmwealthnation.com"
+   ]
+  },
+  {
+   "kicker": "Free account",
+   "title": "Watch the master account <b>live, free.</b>",
+   "body": [
+    "Open a free account and see every trade before you decide."
+   ]
+  },
+  {
+   "kicker": "FTM Community",
+   "title": "Meet other people running <b>FTM MACHINE.</b>",
+   "body": [
+    "Posts, chats and results from members around the world."
+   ]
+  },
+  {
+   "kicker": "Built for",
+   "title": "Nurses, pilots, drivers, <b>parents.</b>",
+   "body": [
+    "Anyone too busy to watch the markets."
+   ]
+  },
+  {
+   "kicker": "Auto vs manual",
+   "title": "No fear. No hurry. <b>Same rules.</b>",
+   "body": [
+    "Automation makes the same decision at any hour."
+   ]
+  },
+  {
+   "kicker": "Copy trading tip",
+   "title": "Always ask: <b>who controls the risk?</b>",
+   "body": [
+    "If you can't see every trade, think twice."
+   ]
+  },
+  {
+   "kicker": "Members get",
+   "title": "Daily, weekly and <b>monthly results.</b>",
+   "body": [
+    "Straight to your inbox, for your own account."
+   ]
+  },
+  {
+   "kicker": "50 languages",
+   "title": "FTM speaks <b>your language.</b>",
+   "body": [
+    "The whole site and client area in 50 languages."
+   ]
+  },
+  {
+   "kicker": "Client area",
+   "title": "Calendar, statistics, <b>statements.</b>",
+   "body": [
+    "Every trade on your account, explained."
+   ]
+  },
+  {
+   "kicker": "Get started",
+   "title": "Invest today, <b>secure tomorrow.</b>",
+   "body": [
+    "Free account at ftmwealthnation.com"
+   ]
+  },
+  {
+   "kicker": "Right now",
+   "title": "The markets are moving <b>while you read this.</b>",
+   "body": [
+    "FTM MACHINE is already following them. Start free: link in bio."
+   ]
+  },
+  {
+   "kicker": "Tonight, 11 p.m.",
+   "title": "See today's trades <b>before you decide.</b>",
+   "body": [
+    "Open a free account and follow the master account live."
+   ]
+  },
+  {
+   "kicker": "While you sleep",
+   "title": "Tokyo opens. <b>FTM MACHINE is there.</b>",
+   "body": [
+    "You rest. The rules keep working. Link in bio."
+   ]
+  },
+  {
+   "kicker": "Set up once",
+   "title": "Connect once. <b>Then get on with your day.</b>",
+   "body": [
+    "A few steps at ftmwealthnation.com"
+   ]
+  },
+  {
+   "kicker": "Coffee break",
+   "title": "Enough time to <b>open a free account.</b>",
+   "body": [
+    "Then watch every trade live. Link in bio."
+   ]
+  },
+  {
+   "kicker": "Next week",
+   "title": "Watch the markets, <b>or take part?</b>",
+   "body": [
+    "Start free today at ftmwealthnation.com"
+   ]
+  },
+  {
+   "kicker": "Busy is fine",
+   "title": "You don't need time. <b>You need a system.</b>",
+   "body": [
+    "FTM MACHINE follows fixed rules for you. Link in bio."
+   ]
+  },
+  {
+   "kicker": "Your account",
+   "title": "Your broker. Your name. <b>Your call.</b>",
+   "body": [
+    "Pause any time. Start free: link in bio."
+   ]
+  },
+  {
+   "kicker": "Don't just scroll",
+   "title": "Tomorrow's markets <b>won't wait.</b>",
+   "body": [
+    "See how FTM MACHINE works: link in bio."
+   ]
+  },
+  {
+   "kicker": "Month end",
+   "title": "Start December <b>with FTM MACHINE.</b>",
+   "body": [
+    "Free account today at ftmwealthnation.com"
+   ]
+  }
+ ]
 }
