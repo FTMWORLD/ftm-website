@@ -35,7 +35,7 @@ window.render=function(t){
  const core=document.getElementById('core');core.innerHTML=`<svg width="100%" height="100%" viewBox="${LAND?'-562 -22 2204 1240':'0 -330 1080 1920'}">${r.core}${VIG}</svg>`;
  const fade=Math.min(ease((lt+0.25)/0.25),1-ease((lt-(dur-0.3))/0.25));
  core.style.opacity=.08+.92*fade;core.style.transformOrigin=LAND?'50% 45%':'50% 45%';core.style.transform=`scale(${(r.zoom||1)*(1+0.025*cl(tt/dur))})`;
- const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').replace(/seven and a half trillion dollars/i,'$7.5 trillion').replace(/fifty languages/i,'50 languages').replace(/^Seven a\.m\./i,'7 a.m.').split(' ');
+ const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').replace(/seven and a half trillion dollars/i,'$7.5 trillion').replace(/fifty languages/i,'50 languages').replace(/twenty-four seven/i,'24/7').replace(/^Seven a\.m\./i,'7 a.m.').split(' ');
  const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
  document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|trade|\$7\.5|trillion|today/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
  document.getElementById('cap').style.opacity=(r.nocap?0:1)*fade;
