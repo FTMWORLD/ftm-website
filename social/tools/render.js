@@ -1,6 +1,7 @@
 /* Renders FTM social images with the official FTM logo.
-   node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir
+   node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a losing day also gets <name>-month: the month so far, every day)
    node social/tools/render.js card '<json {title, body, kicker, foot}>' out-dir name
+   node social/tools/render.js cover '<json {top, big, title, sub, tone}>' out-dir name   -> <name>-cover (1080x1920 reel/short cover) + <name>-thumb (1280x720 YouTube)
    Writes <name>-post.png (1080x1350) and <name>-story.png (1080x1920). */
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -73,6 +74,38 @@ function trades(w, h, part, parts) {
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
+/* Losing days only: the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
+function month(w, h) {
+  const [y, m, d] = D.date.split('-').map(Number), C = D.cal || [], first = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
+  const g = C.filter(x => x.n && x.pct > 0).length, r = C.filter(x => x.n && x.pct < 0).length;
+  const cell = x => { const on = x.n > 0, c = !on ? 'rgba(255,255,255,.05)' : x.pct >= 0 ? 'rgba(47,191,113,.22)' : 'rgba(229,50,62,.24)', b = !on ? 'rgba(255,255,255,.08)' : x.pct >= 0 ? 'rgba(95,227,155,.55)' : 'rgba(255,138,146,.6)', today = x.date === D.date;
+    return `<div style="height:104px;border-radius:16px;background:${c};border:${today ? '3px solid #E3B62F' : '1.5px solid ' + b};padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between"><span style="font-size:20px;color:#aeb7dc;font-weight:700">${+x.date.slice(8)}</span><b style="font-size:22px;letter-spacing:-.02em;color:${!on ? '#6b7194' : x.pct >= 0 ? '#5fe39b' : '#ff8a92'}">${on ? pc(x.pct) : '—'}</b></div>`; };
+  const cells = Array(first).fill('<div></div>').concat(C.map(cell)).join('');
+  return `<div class="grid"></div><div class="wrap" style="padding-top:40px;padding-bottom:30px"><div class="logo">${MARK}FTM</div>
+    <div class="kick" style="margin-top:30px">Every day shown · ${MONTHS[m - 1]} ${y}</div>
+    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">Losing days are part of trading. <span style="color:#E3B62F">We show you every one.</span></div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:28px;font-size:18px;color:#aeb7dc;font-weight:700;letter-spacing:.08em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(x => `<span>${x}</span>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-top:10px">${cells}</div>
+    ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
+    <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} green day${g === 1 ? '' : 's'} · ${r} red day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
+}
+/* Cover image for a reel / short / video (owner 20 Nov: every video post gets its own designed cover). 1080x1920; the words
+   sit in the centre square so the profile grid (3:4 / 1:1 crop) shows them. D = {top, title, big, sub, tone: 'up'|'down'|'gold', bg: a still from the video (optional)} */
+function cover(w, h) {
+  const tone = D.tone === 'down' ? '#ff6b74' : D.tone === 'up' ? '#5fe39b' : '#E3B62F', land = w > h;
+  let rays = ''; for (let i = 0; i < 14; i++) { const a = i * Math.PI / 7; rays += `<path d="M50 50 L${50 + 90 * Math.cos(a - .05)} ${50 + 90 * Math.sin(a - .05)} L${50 + 90 * Math.cos(a + .05)} ${50 + 90 * Math.sin(a + .05)}Z" fill="#E3B62F" opacity=".05"/>`; }
+  const bg = D.bg && fs.existsSync(D.bg) ? `<div style="position:absolute;inset:0;background:url(data:image/${/png$/i.test(D.bg) ? 'png' : 'jpeg'};base64,${fs.readFileSync(D.bg).toString('base64')}) center/cover"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,14,44,.55),rgba(7,14,44,.25) 30%,rgba(7,14,44,.72) 50%,rgba(7,14,44,.35) 72%,rgba(7,14,44,.8))"></div>` : '';
+  return bg + `<div style="position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 50%,rgba(227,182,47,.22),transparent 70%)"></div>
+    <svg style="position:absolute;inset:0" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${rays}</svg>
+    <div class="grid"></div>${LINE}
+    <div style="position:absolute;left:0;right:0;top:${land ? 44 : 150}px;display:flex;justify-content:center"><div class="logo">${MARK}FTM</div></div>
+    <div style="position:absolute;left:${land ? 90 : 70}px;right:${land ? 90 : 70}px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+      ${D.top ? `<div style="font-size:${land ? 34 : 40}px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#D4AF37">${esc(D.top)}</div>` : ''}
+      ${D.big ? `<div style="font-size:${land ? 190 : 230}px;font-weight:900;letter-spacing:-.05em;line-height:1;color:${tone};margin-top:18px;text-shadow:0 20px 60px rgba(0,0,0,.45)">${esc(D.big)}</div>` : ''}
+      ${D.title ? `<div style="font-size:${land ? 96 : (D.big ? 76 : 116)}px;font-weight:900;letter-spacing:-.04em;line-height:1.02;margin-top:${D.big ? 20 : 26}px;text-wrap:balance;text-shadow:0 14px 50px rgba(0,0,0,.5)">${D.title}</div>` : ''}
+      ${D.sub ? `<div style="margin-top:34px;display:inline-block;padding:16px 34px;border-radius:999px;background:#E5323E;font-size:${land ? 34 : 40}px;font-weight:800">${esc(D.sub)}</div>` : ''}
+    </div>${FOOT}`;
+}
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
     ${D.kicker ? `<div class="kick">${esc(D.kicker)}</div>` : ''}<h1>${D.title}</h1>
@@ -81,8 +114,9 @@ function card(w, h) {
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
   const name = nameArg || (kind === 'day' ? 'day-' + D.date : 'card');
-  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : [];
+  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
+  if (kind === 'day' && D.pct < 0 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);

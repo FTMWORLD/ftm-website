@@ -149,16 +149,19 @@ module.exports = async function handler(req, res) {
         c = R0.dayCard(dayMemo.h, 'USD', y0, m0, d0); void endOfDay;
       }
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
-      let mtd = null, balance = null;
+      let mtd = null, balance = null, cal = null;
       try {
         const R = require('../_lib/results'), [y, m, d] = day.split('-').map(Number), nx = new Date(Date.UTC(y, m - 1, d + 1));
         if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R.master(admin), 'master')).h };
         const sg = dayMemo.h.M.seg(R.midnight(y, m, 1, R.TZ), R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ));
         if (sg && isFinite(sg.pct)) mtd = +sg.pct.toFixed(2); const zb = R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ), bv = dayMemo.h.M.balAt ? dayMemo.h.M.balAt(Math.min(zb, Date.now())) : null; if (bv != null && isFinite(bv)) balance = +(+bv).toFixed(2);
+        // the month so far, day by day (the same time-weighted seg as every view), for the losing-day "whole month" slide
+        cal = []; for (let i = 1; i <= d; i++) { const a2 = R.midnight(y, m, i, R.TZ), n2 = new Date(Date.UTC(y, m - 1, i + 1)), z2 = R.midnight(n2.getUTCFullYear(), n2.getUTCMonth() + 1, n2.getUTCDate(), R.TZ), s2 = dayMemo.h.M.seg(a2, z2), k = dayMemo.h.closed.filter(t => t.closeTime >= a2 && t.closeTime < z2 && t.pl != null).length;
+          cal.push({ date: y + '-' + String(m).padStart(2, '0') + '-' + String(i).padStart(2, '0'), pct: s2 && isFinite(s2.pct) ? +s2.pct.toFixed(2) : 0, n: k }); }
       } catch (e) { mtd = null; }
       const markets = [...new Set(rows.map(r => r.s))];
       res.setHeader('Cache-Control', 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
