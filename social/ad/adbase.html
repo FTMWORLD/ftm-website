@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{overflow:hidden;background:#03061a}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
+#bg{position:absolute;inset:0}
+#core{position:absolute;inset:0}
+#core svg{display:block}
+.brand{position:absolute;display:flex;align-items:center;gap:14px;font-weight:800;font-size:44px;letter-spacing:-.04em;z-index:5;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.mark{width:58px;height:58px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#cap{position:absolute;text-align:center;background:rgba(3,6,26,.74);border:1.5px solid rgba(212,175,55,.45);border-radius:34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-weight:800;letter-spacing:-.02em}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:7}
+body.land{width:1920px;height:1080px}body.land .brand{left:60px;top:50px}
+body.land #cap{left:380px;right:380px;bottom:26px;padding:14px 26px}body.land #cap .w{font-size:36px;line-height:1.2}
+body.vert{width:1080px;height:1920px}body.vert .brand{left:0;right:0;justify-content:center;top:225px}
+body.vert #cap{left:70px;right:70px;top:1440px;padding:28px 34px}body.vert #cap .w{font-size:52px;line-height:1.22}
+</style></head><body>
+<div id="bg"></div><div id="core"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div><div id="cap"><div class="w" id="subw"></div></div>
+<script src="rig.js"></script><script>
+const LAND=location.hash==='#land';document.body.className=LAND?'land':'vert';
+const W=1080,H=1080,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)},back=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)},io=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const VIG=`<defs><radialGradient id='vg' cx='50%' cy='45%' r='75%'><stop offset='.55' stop-color='#000' stop-opacity='0'/><stop offset='1' stop-color='#000' stop-opacity='.55'/></radialGradient></defs><rect x='-700' y='-500' width='2480' height='2600' fill='url(#vg)' pointer-events='none'/>`;
+/*__SCENES__*/
+let S=[],T=[],TOTAL=0;
+window.setup=function(scenes,durs,amp){if(amp)window.AMP=amp;S=scenes;let a=0.2;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+(s.gap||0.45)});TOTAL=a+0.8;window.TOTAL=TOTAL;return {TOTAL,T}};
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.25)i=k;
+ const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i],tt=Math.max(0,lt+0.25);
+ const r=SCN[s.id](tt,dur,talkAt(s.id,Math.max(0,lt)),t);
+ document.getElementById('bg').style.background=r.bg;
+ const core=document.getElementById('core');core.innerHTML=`<svg width="100%" height="100%" viewBox="${LAND?'-562 -22 2204 1240':'0 -330 1080 1920'}">${r.core}${VIG}</svg>`;
+ const fade=Math.min(ease((lt+0.25)/0.25),1-ease((lt-(dur-0.3))/0.25));
+ core.style.opacity=.08+.92*fade;core.style.transformOrigin=LAND?'50% 45%':'50% 45%';core.style.transform=`scale(${(r.zoom||1)*(1+0.025*cl(tt/dur))})`;
+ const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').replace(/seven and a half trillion dollars/i,'$7.5 trillion').split(' ');
+ const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|trade|\$7\.5|trillion|today/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=(r.nocap?0:1)*fade;
+};
+</script></body></html>
