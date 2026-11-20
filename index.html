@@ -2365,7 +2365,11 @@ html.app-open main#top>section *,html.app-open .nav-wrap *{animation-play-state:
 .lv-strip{display:flex;align-items:center;gap:14px;background:#fff;border-radius:18px;padding:12px 16px;box-shadow:0 10px 26px -18px rgba(11,20,64,.3);border:1px solid rgba(11,20,64,.05);min-width:0}
 .lv-strip[hidden]{display:none!important}
 .lv-h{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.lv-list{display:flex;gap:10px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}.lv-list::-webkit-scrollbar{display:none}
+.lv-list{display:flex;flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.lv-track{display:flex;width:max-content;animation:lvRun var(--lv-dur,30s) linear infinite}.lv-set{display:flex;gap:10px;padding-right:10px}
+.lv-strip:hover .lv-track{animation-play-state:paused}
+@keyframes lvRun{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.lv-track{animation:none}.lv-list{overflow-x:auto}.lv-set[aria-hidden]{display:none}}
 .lv-c{display:inline-flex;align-items:baseline;gap:8px;padding:8px 12px;border-radius:12px;background:#f6f7fb;white-space:nowrap;font-size:13px}
 .lv-c b{color:var(--ink)}.lv-c em{font-style:normal;color:var(--muted);font-size:12px}.lv-c strong{font-variant-numeric:tabular-nums}.lv-c strong.up{color:#15803d}.lv-c strong.dn{color:#c81e2b}
 .lv-more{color:var(--muted);font-weight:700}
@@ -10877,7 +10881,11 @@ tick();setInterval(tick,5000);})();
     var box=$('lvStrip'), L=$('lvList'); if(!box||!L) return;
     var O=((F.data&&F.data.open)||[]).filter(function(t){return t.symbol;});
     if(!O.length){ box.hidden=true; return; }
-    L.innerHTML=O.slice(0,4).map(function(t){ var pl=t.pl, up=pl!=null&&pl>=0; return '<span class="lv-c"><b>'+String(t.symbol).replace(/</g,'')+'</b><em>'+tr(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</em><strong class="'+(pl==null?'':(up?'up':'dn'))+'">'+(pl==null?'—':sgn(pl,2))+'</strong></span>'; }).join('')+(O.length>4?'<span class="lv-c lv-more">+'+(O.length-4)+'</span>':'');
+    var chips=O.map(function(t){ var pl=t.pl, up=pl!=null&&pl>=0; return '<span class="lv-c"><b>'+String(t.symbol).replace(/</g,'')+'</b><em>'+tr(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</em><strong class="'+(pl==null?'':(up?'up':'dn'))+'">'+(pl==null?'—':sgn(pl,2))+'</strong></span>'; }).join('');
+    // every open position, moving right to left without end (two copies make the loop seamless); the same track is kept so
+    // a refresh only updates the figures and never restarts the movement
+    var tk=L.querySelector('.lv-track'); if(!tk){ L.innerHTML='<div class="lv-track"><div class="lv-set"></div><div class="lv-set" aria-hidden="true"></div></div>'; tk=L.querySelector('.lv-track'); }
+    tk.children[0].innerHTML=chips; tk.children[1].innerHTML=chips; tk.style.setProperty('--lv-dur',Math.max(18,O.length*7)+'s');
     box.hidden=false;
   }
   F.liveStrip=liveStrip;

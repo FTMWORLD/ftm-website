@@ -222,5 +222,9 @@
  {
   "date": "2026-11-20",
   "text": "Welcome emails are back: new free members and new customers get a short series of emails from FTM (how it works, how to connect your account, your client area), in their own language."
+ },
+ {
+  "date": "2026-11-20",
+  "text": "Open positions on the dashboard now move gently from right to left and show every open trade, not only the first four."
  }
 ]
