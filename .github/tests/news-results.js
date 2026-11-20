@@ -33,7 +33,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   const own={a1:{dep:5000,deals:[[U(10,17,9,5),120.5,'EURUSD','BUY'],[U(10,17,14,40),-40.25,'XAUUSD','SELL'],[U(10,19,10,0),60,'EURUSD','BUY']]},
     a2:{dep:20000,deals:[[U(10,17,12,0),-75,'NVDA','BUY']]}, a3:{dep:1000,deals:[[U(10,3,9,0),10,'EURUSD','BUY']]}, a4:{dep:10000,deals:[[U(10,17,10,30),45,'XAUUSD','BUY']]}};
   own.m1={dep:100000,deals};
-  const ACC={s1:[{account_id:'m1',view_only:true,is_master:true,currency:'USD',display_status:'ACTIVE'},{account_id:'a4',account_number:'10000',currency:'EUR',is_trading:true,display_status:'ACTIVE'}],f1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'}],
+  const ACC={s1:[{account_id:'m1',view_only:true,is_master:true,currency:'USD',display_status:'ACTIVE',floating_profit:-412.5,open_positions:2,balance:102977.29,equity:102564.79},{account_id:'a4',account_number:'10000',currency:'EUR',is_trading:true,display_status:'ACTIVE'}],f1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'}],
     c1:[{account_id:'m1',preview:true,view_only:true,currency:'USD',display_status:'ACTIVE'},{account_id:'a1',account_number:'51234567',currency:'USD',is_trading:true,display_status:'ACTIVE'}],
     e1:[{account_id:'a2',account_number:'70011',currency:'USD',is_trading:true,display_status:'ACTIVE'}], i1:[{account_id:'a3',account_number:'333',currency:'USD',is_trading:false,display_status:'PAUSED'}]};
   const engCalls=[];
@@ -116,7 +116,10 @@ const BASE=process.argv[2]||'http://localhost:8765';
     const today=new Date(Date.now()+864e5+3600e3).toISOString().slice(0,10), GQ=q=>new Promise(res=>{ const r={s:0,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},json(j){res([this.s,j,this.h]);},end(){res([this.s,null,this.h]);}}; CH({method:'GET',headers:{},query:q},r); });
     const a=await GQ({dayresult:today}), b2=await GQ({dayresult:today,preview:'1'});
     ok(a[0]===404&&a[1].error==='NOT_POSTED_YET','dayresult: a day not posted yet is not public ('+JSON.stringify(a.slice(0,2)).slice(0,160)+')');
-    ok(b2[0]===200&&b2[1].date===today&&b2[2]['Cache-Control']==='no-store','dayresult preview: the day so far from the engine, never cached ('+JSON.stringify(b2).slice(0,200)+')'); }
+    ok(b2[0]===200&&b2[1].date===today&&b2[2]['Cache-Control']==='no-store','dayresult preview: the day so far from the engine, never cached ('+JSON.stringify(b2).slice(0,200)+')');
+    const fl=b2[1].floating; ok(fl&&isFinite(fl.pl)&&(fl.pct===null||isFinite(fl.pct))&&Number.isInteger(fl.n),'dayresult: the open trades (floating P/L, % of balance, count) come with the day ('+JSON.stringify(fl)+')');
+    ok(fl&&fl.pl===-412.5&&fl.n===2&&Math.abs(fl.pct-(-412.5/102977.29*100))<0.006,'dayresult: floating % = floating P/L / balance');
+    ok(a[1].floating===undefined,'dayresult: nothing about open trades leaks while the day is not public'); }
   // browser: the card in the feed
   let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');}
   const b=await pw.chromium.launch(); const day=P.find(x=>x.res==='day-2026-11-17'), ftmPosts=[mo,wk,day.card].map((cd,i)=>({id:'r'+i,author:{mid:'s',nickname:'FTM',ftm:true},text:'x'+i,card:cd,imgs:[],t:new Date(Date.now()-i*6e4).toISOString(),likes:0,comments:[],tags:[]}));

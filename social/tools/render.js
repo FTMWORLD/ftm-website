@@ -43,6 +43,14 @@ const MARK = `<span class="mark"><svg viewBox="0 0 24 24" width="36" height="36"
 const LINE = `<svg class="line" viewBox="0 0 100 60" preserveAspectRatio="none"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".16"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient></defs><path d="M0 52 L12 46 L18 49 L30 38 L36 41 L50 28 L56 31 L70 18 L76 21 L92 6 L100 4 L100 60 L0 60Z" fill="url(#a)"/><path d="M0 52 L12 46 L18 49 L30 38 L36 41 L50 28 L56 31 L70 18 L76 21 L92 6 L100 4" fill="none" stroke="#D4AF37" stroke-width=".5" vector-effect="non-scaling-stroke" style="stroke-width:4px"/></svg>`;
 const FOOT = `<div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>`;
 
+/* owner 20 Nov: the 23:00 post also shows the open trades' floating P/L (money and % of the balance) at posting time */
+function floatBox() {
+  const F = D.floating; if (!F) return '';
+  const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '', col = F.pl > 0 ? '#5fe39b' : F.pl < 0 ? '#ff6b74' : '#ffffff';
+  const money = (F.pl > 0 ? '+' : F.pl < 0 ? '−' : '') + sym + Math.abs(F.pl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (!F.n) return `<div class="st"><b style="font-size:40px">No open trades</b><span>Floating now</span></div>`;
+  return `<div class="st"><b style="color:${col};font-size:40px;white-space:nowrap">${money}${F.pct != null ? ` <span style="font-size:28px;color:${col};letter-spacing:0;text-transform:none">(${pc(F.pct)})</span>` : ''}</b><span>Floating · ${F.n} open trade${F.n === 1 ? '' : 's'}</span></div>`;
+}
 function day(w, h) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
   const col = D.pct > 0 ? '#E3B62F' : D.pct < 0 ? '#ff6b74' : '#ffffff';
@@ -51,10 +59,10 @@ function day(w, h) {
     ? `<div class="big" style="font-size:${h > 1500 ? 230 : 200}px;color:${col}">${pc(D.pct)}</div>
        <div class="sub">Result of today's closed trades</div>
        <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
-       ${D.mtd == null ? '' : `<div class="stats" style="grid-template-columns:1fr;margin-top:18px"><div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div></div>`}
+       ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'};margin-top:18px">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}
        ${markets.length ? `<div class="mk">Markets: ${esc(markets.join(' · '))}</div>` : ''}`
     : `<div class="big" style="font-size:120px">No trades today</div><div class="sub">FTM MACHINE found no setup worth taking. Waiting is part of the plan.</div>
-       ${D.mtd == null ? '' : `<div class="stats" style="grid-template-columns:1fr"><div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div></div>`}`;
+       ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'}">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}`;
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
     <div class="kick">FTM master account · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
 }

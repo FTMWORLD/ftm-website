@@ -15,6 +15,7 @@
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
      GET ?dayresult=YYYY-MM-DD    the master account's posted day result (% and counts only) for social posts
                                   (&preview=1: today so far, built from the engine before the 23:00 post, for the owner's preview)
+                                  floating: the open trades right now {pl, pct of balance, n, equity} when the day is today (or the preview)
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
    FTM staff = a login on @ftmwealthnation.com, the FTM mailbox ftmwebnation@gmail.com, or listed in FTM_COMMUNITY_ADMINS (comma-separated emails); their posts show as FTM.
    Owners choose per post and comment: as FTM (body.as === 'ftm') or as their own profile (default).
@@ -146,23 +147,33 @@ module.exports = async function handler(req, res) {
         // a past day that was never posted (before FTM news started): the same day card, built from the engine's history
         const R0 = require('../_lib/results'), [y0, m0, d0] = day.split('-').map(Number), endOfDay = R0.midnight(y0, m0, d0 + 1 > 31 ? 1 : d0, R0.TZ);
         if (req.query.preview !== '1' && R0.midnight(y0, m0, d0, R0.TZ) + 864e5 > Date.now()) return res.status(404).json({ ok: false, error: 'NOT_POSTED_YET' });
-        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R0.master(admin), 'master')).h };
+        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) { const mm = await within(20000, R0.master(admin), 'master'); dayMemo = { at: Date.now(), h: mm.h, reader: mm.reader }; }
         c = R0.dayCard(dayMemo.h, 'USD', y0, m0, d0); void endOfDay;
       }
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
       let mtd = null, balance = null, cal = null;
       try {
         const R = require('../_lib/results'), [y, m, d] = day.split('-').map(Number), nx = new Date(Date.UTC(y, m - 1, d + 1));
-        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) dayMemo = { at: Date.now(), h: (await within(20000, R.master(admin), 'master')).h };
+        if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) { const mm = await within(20000, R.master(admin), 'master'); dayMemo = { at: Date.now(), h: mm.h, reader: mm.reader }; }
         const sg = dayMemo.h.M.seg(R.midnight(y, m, 1, R.TZ), R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ));
         if (sg && isFinite(sg.pct)) mtd = +sg.pct.toFixed(2); const zb = R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ), bv = dayMemo.h.M.balAt ? dayMemo.h.M.balAt(Math.min(zb, Date.now())) : null; if (bv != null && isFinite(bv)) balance = +(+bv).toFixed(2);
         // the month so far, day by day (the same time-weighted seg as every view), for the losing-day "whole month" slide
         cal = []; for (let i = 1; i <= d; i++) { const a2 = R.midnight(y, m, i, R.TZ), n2 = new Date(Date.UTC(y, m - 1, i + 1)), z2 = R.midnight(n2.getUTCFullYear(), n2.getUTCMonth() + 1, n2.getUTCDate(), R.TZ), s2 = dayMemo.h.M.seg(a2, z2), k = dayMemo.h.closed.filter(t => t.closeTime >= a2 && t.closeTime < z2 && t.pl != null).length;
           cal.push({ date: y + '-' + String(m).padStart(2, '0') + '-' + String(i).padStart(2, '0'), pct: s2 && isFinite(s2.pct) ? +s2.pct.toFixed(2) : 0, n: k }); }
       } catch (e) { mtd = null; }
+      // open trades right now (owner 20 Nov: the 23:00 post shows the floating P/L, money and % of the balance), straight from the engine
+      let floating = null;
+      try {
+        const R1 = require('../_lib/results'), H1 = require('../_lib/accountHistory'), bt = new Date(Date.now()).toLocaleDateString('en-CA', { timeZone: R1.TZ }), late = new Date(Date.now() - 3600e3).toLocaleDateString('en-CA', { timeZone: R1.TZ });
+        if (req.query.preview === '1' || day === bt || day === late) {
+          if (!dayMemo.reader) dayMemo.reader = (await within(20000, R1.master(admin), 'master')).reader;
+          const A1 = (await within(15000, H1.accounts(dayMemo.reader), 'accounts')).mapped, m1 = A1.find(a => a.isMaster) || A1.find(a => a.isPreview);
+          if (m1 && m1.floating != null && isFinite(m1.floating)) { const bal = m1.balance != null ? +m1.balance : balance; floating = { pl: +(+m1.floating).toFixed(2), pct: bal ? +(m1.floating / bal * 100).toFixed(2) : null, n: +m1.openPositions || 0, equity: m1.equity != null ? +(+m1.equity).toFixed(2) : null, at: Date.now() }; }
+        }
+      } catch (e) { floating = null; }
       const markets = [...new Set(rows.map(r => r.s))];
-      res.setHeader('Cache-Control', req.query.preview === '1' && !days[day] ? 'no-store' : 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD' });
+      res.setHeader('Cache-Control', floating || (req.query.preview === '1' && !days[day]) ? 'no-store' : 'public, max-age=120');
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD', floating });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {
