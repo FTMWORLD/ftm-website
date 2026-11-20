@@ -5,7 +5,7 @@ R=TS[ids.index('solution')];C=TS[ids.index('cta')];CH=[TS[i] for i,x in enumerat
 rng=np.random.default_rng(11)
 vo=np.zeros(n)
 for i,sid in enumerate(ids):
-    raw=subprocess.run(['ffmpeg','-loglevel','error','-i','vo/%s.wav'%sid,'-af','aresample=48000:resampler=soxr','-f','f32le','-ac','1','-'],capture_output=True).stdout
+    raw=subprocess.run(['ffmpeg','-loglevel','error','-i',(__import__('os').environ.get('VO','vo'))+'/%s.wav'%sid,'-af','aresample=48000:resampler=soxr','-f','f32le','-ac','1','-'],capture_output=True).stdout
     d=np.frombuffer(raw,dtype=np.float32).astype(float);a=int(TS[i]*sr);vo[a:a+len(d)]+=d[:max(0,n-a)]
 mus=np.zeros(n);fx=np.zeros(n)
 def add(buf,a,sig,g=1.0):
