@@ -28,3 +28,4 @@ social/couplead/t*.png
 social/couplead/_*
 social/couplead/render*.log
 social/couplead/img/home0.png
+__pycache__/
