@@ -8,6 +8,10 @@ mus = np.zeros(n); fx = np.zeros(n)
 def add(buf, a, sig, g=1.0):
     a = int(a * sr); b = min(n, a + len(sig))
     if 0 <= a < n: buf[a:b] += g * sig[:b - a]
+def S(*xs):
+    m = max(len(x) for x in xs); o = np.zeros(m)
+    for x in xs: o[:len(x)] += x
+    return o
 def lp(x, k): return np.convolve(x, np.ones(k) / k, 'same')
 def tone(f, L, dec, h=(1, .35, .12)): tt = np.arange(int(L * sr)) / sr; return np.exp(-tt * dec) * sum(a * np.sin(2 * np.pi * f * (i + 1) * tt) for i, a in enumerate(h)) * np.minimum(1, tt / .004)
 FLIP = 4.24; END = 28.0
@@ -33,27 +37,27 @@ while k * bar < tot:
 mus *= np.where(t < FLIP, .55, 1.0)
 # hook: clock ticks, riser, impact + chime on 23:00
 for i in range(5):
-    tk = np.diff(rng.standard_normal(int(.035 * sr) + 1)) * np.exp(-np.arange(int(.035 * sr)) / sr * 160); add(fx, i * FLIP / 5 + .02, tk + .5 * tone(2400, .05, 90), .55)
+    tk = np.diff(rng.standard_normal(int(.035 * sr) + 1)) * np.exp(-np.arange(int(.035 * sr)) / sr * 160); add(fx, i * FLIP / 5 + .02, S(tk, .5 * tone(2400, .05, 90)), .55)
 Lr = int(1.4 * sr); tr = np.arange(Lr) / sr; pr = tr / 1.4; nz = rng.standard_normal(Lr); add(fx, FLIP - 1.4, (nz - lp(nz, 6)) * pr ** 2.5 * .35 + np.sin(2 * np.pi * np.cumsum(300 + 1200 * pr ** 2) / sr) * pr ** 3 * .2, .9)
 Li = int(2.4 * sr); ti = np.arange(Li) / sr; add(fx, FLIP, np.sin(2 * np.pi * (36 + 70 * np.exp(-ti * 8)) * ti) * np.exp(-ti * 1.8) * .9 + lp(rng.standard_normal(Li), 2) * np.exp(-ti * 4) * .15)
-add(fx, FLIP + .02, tone(1318.5, 1.6, 3) + .6 * tone(1975.5, 1.4, 3.5) + .4 * tone(2637, 1.2, 4), .16)
+add(fx, FLIP + .02, S(tone(1318.5, 1.6, 3), .6 * tone(1975.5, 1.4, 3.5), .4 * tone(2637, 1.2, 4)), .16)
 # whooshes on cuts and screen swipes
 for a, g in [(4.95, .5), (6.85, .25), (10.7, .25), (15.0, .45), (16.75, .35), (19.0, .4), (22.3, .45), (25.6, .4), (26.95, .35), (28.0, .55)]:
     L = int(.6 * sr); x = lp(rng.standard_normal(L), 18); add(fx, a - .38, x * np.sin(np.pi * np.arange(L) / L) ** 2, g)
 # notification, cards, stamps, toggle, typing, button, success
-add(fx, 5.36, tone(1567.98, .5, 7) + .7 * tone(2093, .5, 7), .1); add(fx, 5.5, tone(2093, .6, 6), .08)
+add(fx, 5.36, S(tone(1567.98, .5, 7), .7 * tone(2093, .5, 7)), .1); add(fx, 5.5, tone(2093, .6, 6), .08)
 for a in (12.62, 13.38):
     L = int(.25 * sr); tt = np.arange(L) / sr; add(fx, a, np.sin(2 * np.pi * (180 + 500 * np.exp(-tt * 25)) * tt) * np.exp(-tt * 18), .35)
 for a, f in ((12.87, 880), (13.63, 330)):
-    L = int(.3 * sr); tt = np.arange(L) / sr; add(fx, a, np.sin(2 * np.pi * (60 + 90 * np.exp(-tt * 30)) * tt) * np.exp(-tt * 14) + .3 * tone(f, .3, 10)[:L], .45)
-L = int(.06 * sr); add(fx, 19.82, np.diff(rng.standard_normal(L + 1)) * np.exp(-np.arange(L) / sr * 120) + tone(1800, .06, 80)[:L], .35)
+    L = int(.3 * sr); tt = np.arange(L) / sr; add(fx, a, np.sin(2 * np.pi * (60 + 90 * np.exp(-tt * 30)) * tt) * np.exp(-tt * 14) + .3 * tone(f, .3, 10)[:L] if len(tone(f, .3, 10)) >= L else 0, .45)
+L = int(.06 * sr); add(fx, 19.82, S(np.diff(rng.standard_normal(L + 1)) * np.exp(-np.arange(L) / sr * 120), tone(1800, .06, 80)), .35)
 for i in range(13): L = int(.03 * sr); add(fx, 24.1 + i * .85 / 13 + rng.uniform(-.01, .01), lp(np.diff(rng.standard_normal(L + 1)), 2) * np.exp(-np.arange(L) / sr * 200), .18)
 L = int(.12 * sr); add(fx, 25.18, np.sin(2 * np.pi * 900 * np.arange(L) / sr) * np.exp(-np.arange(L) / sr * 40), .12)
-add(fx, 25.32, tone(1046.5, .7, 5) + tone(1318.5, .7, 5)[:int(.7 * sr)] * .8, .1); add(fx, 25.44, tone(1568, .8, 4.5), .1)
+add(fx, 25.32, S(tone(1046.5, .7, 5), tone(1318.5, .7, 5) * .8), .1); add(fx, 25.44, tone(1568, .8, 4.5), .1)
 # end: soft impact, final sting after "see you at 11"
 Li = int(2.5 * sr); ti = np.arange(Li) / sr; add(fx, 28.0, np.sin(2 * np.pi * (40 + 60 * np.exp(-ti * 8)) * ti) * np.exp(-ti * 1.6) * .7)
 Ls = int(3.4 * sr); ts = np.arange(Ls) / sr; add(fx, 30.5, sum(np.sin(2 * np.pi * f * ts) * (1 / (1 + i * .3)) for i, f in enumerate([220, 329.63, 440, 554.37, 659.25])) * np.exp(-ts * .9) * np.minimum(1, ts / .02) / 4, .5)
-add(fx, 30.5, tone(1760, 2.5, 1.6) + .5 * tone(2637, 2, 1.8), .07)
+add(fx, 30.5, S(tone(1760, 2.5, 1.6), .5 * tone(2637, 2, 1.8)), .07)
 mus /= np.abs(mus).max() + 1e-9; mus *= .24; mus *= np.minimum(1, t / .3) * np.minimum(1, (tot - t) / 2.2)
 fx /= np.abs(fx).max() + 1e-9; fx *= .4
 env = np.convolve((np.abs(vo) > .02).astype(float), np.ones(int(.3 * sr)) / (.3 * sr), 'same'); mus *= 1 - .55 * np.clip(env * 2, 0, 1)
