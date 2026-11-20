@@ -2,10 +2,10 @@
 import sys, os, json, shutil, subprocess, numpy as np
 D = os.path.dirname(os.path.abspath(__file__)); root = os.path.dirname(D)
 step = sys.argv[1] if len(sys.argv) > 1 else 'full'
-V2 = os.environ.get('V2') == '1'; VO = 'vo2' if V2 else 'vo'
-open(os.path.join(D, 'anim.html'), 'w').write(open(os.path.join(D, 'base.html')).read().replace('/*__SCENES__*/', open(os.path.join(root, 'ad', 'scn-ad.js')).read() + '\n' + open(os.path.join(D, 'scn-explainer.js')).read() + ('\n' + ''.join(open(os.path.join(D, f)).read() for f in ('qr.js', 'trades19.js', 'endimg.js', 'scn-explainer2.js')) if V2 else '')))
+VER = os.environ.get('VER') or ('2' if os.environ.get('V2') == '1' else ''); V2 = VER in ('2', '3'); VO = 'vo' + VER
+open(os.path.join(D, 'anim.html'), 'w').write(open(os.path.join(D, 'base.html')).read().replace('/*__SCENES__*/', open(os.path.join(root, 'ad', 'scn-ad.js')).read() + '\n' + open(os.path.join(D, 'scn-explainer.js')).read() + ('\n' + ''.join(open(os.path.join(D, f)).read() for f in ('qr.js', 'trades19.js', 'endimg.js', 'scn-explainer2.js') + (('trades3.js', 'scn-explainer3.js') if VER == '3' else ())) if V2 else '')))
 shutil.copy(os.path.join(root, 'videos', 'assets', 'rig.js'), D)
-S = json.load(open(os.path.join(D, 'script2.json' if V2 else 'script.json'))); chap = ''
+S = json.load(open(os.path.join(D, 'script%s.json' % VER if V2 else 'script.json'))); chap = ''
 for s in S:
     if s['id'] == 'chap': s['id'] = 'chap%d' % s['n']; chap = 'Chapter %d · %s' % (s['n'], s['t'])
     s['chap'] = '' if s['id'] == 'endcard' else chap; s.setdefault('gap', 0.75); s.setdefault('vo', '')
@@ -33,5 +33,5 @@ env = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules', LAND='1', VO=VO
 if step == 'test':
     subprocess.run(['node', 'frames.js', 'test', os.environ.get('TEST', 'all')], cwd=D, env=env, check=True); sys.exit()
 subprocess.run(['node', 'frames.js', 'full'], cwd=D, env=dict(env, OUT='_v.mp4'), check=True)
-out = os.path.join(root, 'posts', 'v2', 'ftm-explainer-v2-16x9.mp4' if V2 else 'ftm-explainer-16x9.mp4')
+out = os.path.join(root, 'posts', 'v2', 'ftm-explainer-v%s-16x9.mp4' % VER if V2 else 'ftm-explainer-16x9.mp4')
 subprocess.run(['python3', 'mix.py', '_v.mp4', out], cwd=D, check=True, env=env); print('ok', out)

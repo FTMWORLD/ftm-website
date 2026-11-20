@@ -1,0 +1,123 @@
+[
+ {
+  "id": "hook",
+  "vo": "The twelfth of November: plus ten point one six percent. The seventeenth: plus two point five five. Last Thursday, the nineteenth: plus one point seven. Thirty-one trades, three days. And nobody sat in front of a chart."
+ },
+ {
+  "id": "host1",
+  "vo": "Good evening, everyone. Give me five minutes, and I'll show you exactly how that happened. No hype. Real numbers, the red days included. And at the end, you can watch it live for yourself, for free.",
+  "gap": 0.6
+ },
+ {
+  "id": "chap",
+  "n": 1,
+  "t": "The problem",
+  "dur": 1.8
+ },
+ {
+  "id": "problem",
+  "vo": "So here's an honest question. If the markets move every single day, why are most people not part of it? It's not money. It's time. A nurse on a night shift can't watch charts. Neither can a pilot over the Atlantic, or a banker in back-to-back meetings. And the people who do try? They often trade on emotion. Buy when they're excited, sell when they're scared."
+ },
+ {
+  "id": "chap",
+  "n": 2,
+  "t": "The solution",
+  "dur": 1.8
+ },
+ {
+  "id": "solution",
+  "vo": "That's why we built FTM MACHINE. Software that trades for you by fixed rules, around the clock, five days a week. It doesn't get tired. It doesn't panic. Monday morning or Friday night, same plan."
+ },
+ {
+  "id": "how",
+  "vo": "And here's the part people like most. Your money never leaves your own trading account. Your broker. Your name. FTM never holds it. You connect the account, and FTM MACHINE places the trades. It can trade, but it can never withdraw. And you can pause it, any time, with one tap."
+ },
+ {
+  "id": "chap",
+  "n": 3,
+  "t": "Markets and risk",
+  "dur": 1.8
+ },
+ {
+  "id": "markets",
+  "vo": "It trades five markets on one account: gold, Bitcoin, the US Tech 100, the dollar against the yen, and the Hang Seng 50. When one market goes quiet, the others keep working. We call it the Portfolio."
+ },
+ {
+  "id": "profiles",
+  "vo": "And you choose the pace. Conservative, for a steadier ride. Balanced, our default. Or Growth, for people who are fine with bigger swings. You can change it whenever you like."
+ },
+ {
+  "id": "host2",
+  "vo": "Now, I know. Everyone online shows big numbers. So let me show you ours, and then, the red days too.",
+  "gap": 0.6
+ },
+ {
+  "id": "chap",
+  "n": 4,
+  "t": "The record",
+  "dur": 1.8
+ },
+ {
+  "id": "past",
+  "vo": "In FTM's backtest from 2020 to 2026, the Portfolio grew on every profile. Conservative: plus seventeen hundred percent. Balanced: plus twelve thousand. And Growth: ninety-eight thousand, six hundred and forty-four percent. Every year ended in profit. And the deepest drops along the way? Twelve, twenty-two and thirty-nine percent. We show you those as well."
+ },
+ {
+  "id": "present",
+  "vo": "But backtests are history. This is live. Every evening at eleven, we post the master account's result. Every trade. Look at November: six red days, some of them big. And still, by the nineteenth, the month stood at plus eleven point five six percent. Follow us, and you don't have to trust anyone's word. You check it, every day, yourself."
+ },
+ {
+  "id": "clientarea",
+  "vo": "Once you join, your own client area shows all of it: a calendar of every day, your statistics, your statements, every single trade. In fifty languages."
+ },
+ {
+  "id": "faq",
+  "vo": "The three questions we hear most. Can I take my money out? Yes, any time, from your own broker. FTM never touches it. What about a losing month? You'll see it, like every month, and you decide. Do I need experience? No. If you can use a phone, you can start."
+ },
+ {
+  "id": "host3",
+  "vo": "So here's what I'd do in your place. Don't decide today. Open a free account. It's just your email. Then watch the master account trade, live, for as long as you like. If you like what you see, you start. If not, you've lost nothing.",
+  "gap": 0.6
+ },
+ {
+  "id": "chap",
+  "n": 5,
+  "t": "Get started",
+  "dur": 1.8
+ },
+ {
+  "id": "steps",
+  "vo": "When you're ready, it's three steps. Choose your plan. Connect your MT5 trading account. Pick your risk profile. That's it. It takes about two minutes, and FTM MACHINE starts trading."
+ },
+ {
+  "id": "invest",
+  "vo": "And if you don't have a broker account, FTM Investment lets you start from one thousand euros, without one, and receive half of the profit your share makes, over five years."
+ },
+ {
+  "id": "community",
+  "vo": "You'll also join the FTM Community: people from all over the world, sharing results and ideas every day."
+ },
+ {
+  "id": "chap",
+  "n": 6,
+  "t": "Earn with FTM",
+  "dur": 1.8
+ },
+ {
+  "id": "host4",
+  "vo": "And one more thing. Even if you're not ready to invest, you can still earn with FTM.",
+  "gap": 0.6
+ },
+ {
+  "id": "affiliate",
+  "vo": "FTM is a master affiliate of Deriv. Join our affiliate programme, refer people, and earn commission: revenue share, a fixed fee per client, or a mix of both. You get your referral link the same day, ready-made marketing material, and our team helps you set up. Run a community? As an introducing broker, you earn on what your members trade. Or become a payment agent, and help people near you deposit and withdraw, for a fee you set."
+ },
+ {
+  "id": "cta",
+  "vo": "The market moves tomorrow, with you or without you. Tap the link below, or scan the code, and open your free account. And follow, so tomorrow's real result finds you first. FTM. Invest today, secure tomorrow."
+ },
+ {
+  "id": "endcard",
+  "dur": 16,
+  "nocap": 1
+ }
+]
