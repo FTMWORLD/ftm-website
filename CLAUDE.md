@@ -27,6 +27,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Risk warnings (owner instruction, 18 October 2026)
 - Risk and past-performance warnings live only in the homepage footer and in terms.html. Never add them to statistics, backtests, the trust engine or designs.
+- Exception (owner instruction, 20 November 2026): paid ads (boosted or promoted posts) end with one small line: "Capital at risk. Trading can lose money. Past results do not guarantee future results." Organic posts stay without it.
 
 ## Design standard (owner instruction, 20 October 2026)
 - Every page, section, slide and line of text must show FTM as the most standard, unique and outstanding financial company in the world. Benchmark against the best finance sites (Binance, Deriv, Revolut, Stripe, eToro, Wealthfront) and do better.
