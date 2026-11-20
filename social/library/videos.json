@@ -1,10 +1,65 @@
 [
- {"file":"v2/ftm-yt-ad-16x9.mp4","title":"YouTube ad (TV / laptop)","date":"2026-11-20","kind":"Ad","at":12},
- {"file":"v2/ftm-yt-ad-9x16.mp4","title":"YouTube ad (phone)","date":"2026-11-20","kind":"Ad","at":12},
- {"file":"v2/vid-2026-11-20c.mp4","title":"Most people miss the markets for one reason","date":"2026-11-20","kind":"Morning video","at":6},
- {"file":"day-2026-11-19-short.mp4","title":"Daily result 19 Nov: +1.70%","date":"2026-11-19","kind":"Daily result","at":1},
- {"file":"ftm-intro-animated-v2.mp4","title":"Meet FTM MACHINE (intro)","date":"2026-11-19","kind":"Intro","at":10},
- {"file":"v2/vid-2026-11-21.mp4","title":"Myth or fact? (21 Nov, 6 a.m.)","date":"2026-11-21","kind":"Coming next","at":9},
- {"file":"v2/vid-2026-11-22.mp4","title":"This week on FTM (22 Nov, 6 a.m.)","date":"2026-11-22","kind":"Coming next","at":8},
- {"file":"v2/vid-2026-11-23.mp4","title":"A day in the life of FTM MACHINE (23 Nov, 6 a.m.)","date":"2026-11-23","kind":"Coming next","at":8}
+ {
+  "file": "v2/ftm-explainer-16x9.mp4",
+  "title": "Everything about FTM (5-minute YouTube video)",
+  "date": "2026-11-20",
+  "kind": "YouTube video",
+  "at": 125
+ },
+ {
+  "file": "v2/ftm-yt-ad-16x9.mp4",
+  "title": "YouTube ad (TV / laptop)",
+  "date": "2026-11-20",
+  "kind": "Ad",
+  "at": 12
+ },
+ {
+  "file": "v2/ftm-yt-ad-9x16.mp4",
+  "title": "YouTube ad (phone)",
+  "date": "2026-11-20",
+  "kind": "Ad",
+  "at": 12
+ },
+ {
+  "file": "v2/vid-2026-11-20c.mp4",
+  "title": "Most people miss the markets for one reason",
+  "date": "2026-11-20",
+  "kind": "Morning video",
+  "at": 6
+ },
+ {
+  "file": "day-2026-11-19-short.mp4",
+  "title": "Daily result 19 Nov: +1.70%",
+  "date": "2026-11-19",
+  "kind": "Daily result",
+  "at": 1
+ },
+ {
+  "file": "ftm-intro-animated-v2.mp4",
+  "title": "Meet FTM MACHINE (intro)",
+  "date": "2026-11-19",
+  "kind": "Intro",
+  "at": 10
+ },
+ {
+  "file": "v2/vid-2026-11-21.mp4",
+  "title": "Myth or fact? (21 Nov, 6 a.m.)",
+  "date": "2026-11-21",
+  "kind": "Coming next",
+  "at": 9
+ },
+ {
+  "file": "v2/vid-2026-11-22.mp4",
+  "title": "This week on FTM (22 Nov, 6 a.m.)",
+  "date": "2026-11-22",
+  "kind": "Coming next",
+  "at": 8
+ },
+ {
+  "file": "v2/vid-2026-11-23.mp4",
+  "title": "A day in the life of FTM MACHINE (23 Nov, 6 a.m.)",
+  "date": "2026-11-23",
+  "kind": "Coming next",
+  "at": 8
+ }
 ]
