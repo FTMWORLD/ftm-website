@@ -1,0 +1,27 @@
+[
+ {
+  "id": "hook",
+  "vo": "Five trading days. Here is every result, good and bad.",
+  "see": ""
+ },
+ {
+  "id": "week",
+  "vo": "Here is this week on the FTM master account, day by day. Real numbers from the account.",
+  "see": ""
+ },
+ {
+  "id": "best",
+  "vo": "The best day, and the lowest day. We show every single one.",
+  "see": ""
+ },
+ {
+  "id": "total",
+  "vo": "And the week in total.",
+  "see": ""
+ },
+ {
+  "id": "cta",
+  "vo": "See every trade live. Start free at ftm wealth nation dot com.",
+  "see": ""
+ }
+]

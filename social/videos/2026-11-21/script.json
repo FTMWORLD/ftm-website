@@ -1,32 +1,27 @@
 [
  {
-  "id": "leo",
-  "vo": "Leo tried trading by himself. Up at three a.m. to catch a move. Tired at work, nervous all day.",
+  "id": "hook",
+  "vo": "Three things people believe about trading software. All three are wrong.",
   "see": ""
  },
  {
-  "id": "time",
-  "vo": "Fear makes you close too early. Hurry makes you open too soon.",
+  "id": "m1",
+  "vo": "Myth one: you need to be an expert. Fact: FTM MACHINE does the work, you just connect your account.",
   "see": ""
  },
  {
-  "id": "meet",
-  "vo": "FTM MACHINE doesn't get tired or nervous.",
+  "id": "m2",
+  "vo": "Myth two: the software holds your money. Fact: your money stays in your own account, in your name.",
   "see": ""
  },
  {
-  "id": "what",
-  "vo": "It follows fixed rules, at three a.m. and at three p.m., on your own account.",
-  "see": ""
- },
- {
-  "id": "trust",
-  "vo": "You see every trade, and you can pause any time.",
+  "id": "m3",
+  "vo": "Myth three: you can't stop it. Fact: you can pause any time, with one tap.",
   "see": ""
  },
  {
   "id": "cta",
-  "vo": "Sleep at night. Start free at ftm wealth nation dot com.",
+  "vo": "Now you know. Start free at ftm wealth nation dot com.",
   "see": ""
  }
 ]

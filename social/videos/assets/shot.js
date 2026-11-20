@@ -1,0 +1,1 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1080,height:700}});await p.goto('file://'+__dirname+'/rigtest.html');await p.waitForTimeout(400);await p.screenshot({path:'/tmp/claude-0/-home-user-ftm-website/bf2cab86-488a-5b85-ae97-884fa7cab310/scratchpad/rig.png'});await b.close()})();

@@ -1,148 +1,75 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:1080px;height:1920px;overflow:hidden;background:#070e2c}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#05091f}
 body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
-#bg{position:absolute;inset:-200px;background:radial-gradient(70% 45% at 75% 20%,#1d3590 0%,#132a7a 30%,#0b1640 65%,#070e2c 100%)}
-.logo{position:absolute;left:110px;top:230px;display:flex;align-items:center;gap:14px;font-weight:800;font-size:42px;letter-spacing:-.04em;z-index:5}
-.mark{width:56px;height:56px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-#art{position:absolute;left:110px;right:110px;top:330px;height:929px;border-radius:48px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);border:2px solid rgba(212,175,55,.35)}
-#art svg{display:block;width:860px;height:929px}
-#sub{position:absolute;left:100px;right:100px;top:1300px;height:330px;display:flex;flex-direction:column;justify-content:flex-start}
-#sub .w{font-size:50px;line-height:1.3;font-weight:800;letter-spacing:-.02em}
-#sub .w span{transition:none}
-.foot{position:absolute;left:0;right:0;bottom:0;height:120px;background:#0b1640;display:flex;align-items:center;justify-content:space-between;padding:0 70px;border-top:1.5px solid rgba(212,175,55,.35);z-index:5}
-.foot i{font-style:normal;color:#E3B62F;font-weight:700;font-size:30px}.foot u{text-decoration:none;font-weight:600;font-size:28px;opacity:.9}
-#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:6}
-</style><style id="land" media="none">
-html,body{width:1920px;height:1080px}
-#art{left:110px;right:auto;top:100px;width:796px;height:860px}
-#art svg{width:796px;height:860px}
-.logo{left:1000px;top:120px}
-#sub{left:1000px;right:120px;top:300px;height:600px;justify-content:center}
-#sub .w{font-size:60px;line-height:1.3}
-.foot{height:90px}
+#stage{position:absolute;inset:0;overflow:hidden}
+.ph{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;will-change:transform}
+.shade{position:absolute;inset:0}
+.brand{position:absolute;left:0;right:0;top:240px;display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:42px;letter-spacing:-.04em;z-index:5;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.mark{width:56px;height:56px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#cap{position:absolute;left:70px;right:70px;top:1330px;text-align:center;background:rgba(5,10,34,.72);backdrop-filter:blur(14px);border:1.5px solid rgba(212,175,55,.4);border-radius:36px;padding:28px 34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-size:52px;line-height:1.22;font-weight:800;letter-spacing:-.02em}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:7}
+.glass{position:absolute;background:rgba(11,22,64,.62);backdrop-filter:blur(18px);border:1.5px solid rgba(255,255,255,.18);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 </style></head><body>
-<div id="bg"></div>
-<div class="logo"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="stage"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
 <div id="bar"></div>
-<div id="art"></div>
-<div id="sub"><div class="w" id="subw"></div></div>
-<div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>
-<script>
-if(location.hash==='#land')document.getElementById('land').media='all';
-const W=1000,H=1080;
-const C={navy:'#0b1640',blue:'#1F3A93',gold:'#D4AF37',gold2:'#E3B62F',red:'#E5323E',green:'#2fbf71',white:'#fff',mute:'#aeb7dc'};
-const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));const ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)};const io=x=>{x=cl(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
-const sin=Math.sin,PI=Math.PI;
-/* A flat character. o: x,y (feet), s scale, skin, hair, hairStyle, top, bottom, armL, armR (deg, 0 = down), mouth ('smile','flat','o','sad'), blink time t, extra */
-function person(o){
- const s=o.s||1,t=o.t||0,bl=((t+(o.ph||0))%3.4)<0.13;const hx=o.hx||0,hy=o.hy||0;
- const eye=(x)=>bl?`<rect x="${x-7}" y="-3" width="14" height="4" rx="2" fill="#1a1a2e"/>`:`<ellipse cx="${x}" cy="0" rx="6.5" ry="8" fill="#1a1a2e"/><circle cx="${x+2}" cy="-3" r="2" fill="#fff"/>`;
- const m={smile:'<path d="M-14 22 Q0 34 14 22" stroke="#7a2e2e" stroke-width="5" fill="none" stroke-linecap="round"/>',flat:'<path d="M-11 26 L11 26" stroke="#7a2e2e" stroke-width="5" stroke-linecap="round"/>',o:'<ellipse cx="0" cy="26" rx="9" ry="12" fill="#7a2e2e"/>',sad:'<path d="M-12 30 Q0 20 12 30" stroke="#7a2e2e" stroke-width="5" fill="none" stroke-linecap="round"/>'}[o.mouth||'smile'];
- const hair={bun:`<circle cx="0" cy="-78" r="34" fill="${o.hair}"/><path d="M-62 -10 Q-66 -70 0 -72 Q66 -70 62 -10 Q58 -44 0 -48 Q-58 -44 -62 -10Z" fill="${o.hair}"/>`,
-  short:`<path d="M-62 -6 Q-70 -78 0 -76 Q70 -78 62 -6 Q60 -40 20 -44 Q-30 -36 -62 -6Z" fill="${o.hair}"/>`,
-  long:`<path d="M-66 60 Q-80 -76 0 -76 Q80 -76 66 60 L50 60 Q58 -30 0 -44 Q-58 -30 -50 60Z" fill="${o.hair}"/>`,
-  curly:`${[[-50,-40],[-30,-62],[0,-70],[30,-62],[50,-40],[-58,-14],[58,-14]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="24" fill="${o.hair}"/>`).join('')}`}[o.hairStyle||'short'];
- const arm=(side,deg)=>`<g transform="translate(${side*72},-150) rotate(${deg*side})"><rect x="-17" y="-6" width="34" height="128" rx="17" fill="${o.top}"/><circle cx="0" cy="124" r="17" fill="${o.skin}"/>${(side>0&&o.holdR)||''}${(side<0&&o.holdL)||''}</g>`;
- const legs=o.sit?'':`<rect x="-46" y="-40" width="38" height="140" rx="18" fill="${o.bottom||'#1b2547'}"/><rect x="8" y="-40" width="38" height="140" rx="18" fill="${o.bottom||'#1b2547'}"/><ellipse cx="-27" cy="100" rx="30" ry="12" fill="#111"/><ellipse cx="27" cy="100" rx="30" ry="12" fill="#111"/>`;
- return `<g transform="translate(${o.x},${o.y}) scale(${s})">${legs}
- ${arm(-1,o.armL||10)}${arm(1,o.armR||10)}
- <rect x="-72" y="-180" width="144" height="160" rx="50" fill="${o.top}"/>${o.badge||''}
- <rect x="-16" y="-206" width="32" height="34" fill="${o.skin}"/>
- <g transform="translate(${hx},${-262+hy}) rotate(${o.tilt||0})">${o.hairStyle==='long'?hair:''}<circle cx="0" cy="0" r="62" fill="${o.skin}"/>${o.hairStyle!=='long'?hair:`<path d="M-62 -6 Q-66 -76 0 -76 Q66 -76 62 -6 Q56 -44 0 -48 Q-56 -44 -62 -6Z" fill="${o.hair}"/>`}
- <g transform="translate(0,4)">${eye(-22)}${eye(22)}</g>${m}${o.cap||''}</g></g>`;
-}
-const ADA={skin:'#8d5524',hair:'#2b1a10',hairStyle:'bun',top:'#3fa7a0',bottom:'#2f8f89',badge:'<rect x="30" y="-150" width="26" height="26" rx="6" fill="#fff"/><path d="M43 -146 v18 M34 -137 h18" stroke="#E5323E" stroke-width="5"/>',ph:.3};
-const TOM={skin:'#f1c27d',hair:'#6b4423',hairStyle:'short',top:'#2c3e6b',bottom:'#1b2547',badge:'<path d="M0 -176 L-10 -150 L0 -60 L10 -150Z" fill="#E5323E"/><path d="M-30 -178 L0 -150 L30 -178" stroke="#fff" stroke-width="8" fill="none"/>',ph:1.1};
-const LEO={skin:'#c68642',hair:'#141414',hairStyle:'curly',top:'#5b4a9e',bottom:'#2a2350',ph:2};
-const MIA={skin:'#ffdbac',hair:'#b5562b',hairStyle:'long',top:'#d9705a',bottom:'#3b3b5c',ph:.7};
-const P=(base,o)=>person(Object.assign({},base,o));
-const svg=(inner,bg)=>`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg?bg[0]:'#16296e'}"/><stop offset="1" stop-color="${bg?bg[1]:'#0b1640'}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#sky)"/>${inner}</svg>`;
-const floor=(c)=>`<rect x="0" y="880" width="${W}" height="200" fill="${c||'#0e1b4d'}"/>`;
-const txt=(x,y,s,c,str,w)=>`<text x="${x}" y="${y}" font-family="Inter" font-weight="${w||800}" font-size="${s}" fill="${c}" text-anchor="middle">${str}</text>`;
-const phoneSVG=(x,y,s,inner)=>`<g transform="translate(${x},${y}) scale(${s})"><rect x="-90" y="-170" width="180" height="340" rx="28" fill="#0a0a14" stroke="#D4AF37" stroke-opacity=".5" stroke-width="3"/><rect x="-80" y="-158" width="160" height="316" rx="20" fill="#13246a"/>${inner||''}</g>`;
-const chart=(x,y,w,h,t,col,drop)=>{let d='';for(let i=0;i<=30;i++){const px=x+i/30*w;let v=.5+.25*sin(i*.7+t*1.5)+.15*sin(i*.23)-(i/30)*.3;if(drop&&i>18)v+= (i-18)*.06*cl(drop);d+=(i?'L':'M')+px.toFixed(1)+' '+(y+v*h).toFixed(1)}return `<path d="${d}" fill="none" stroke="${col}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>`};
-const bubble=(x,y,w,h,inner,a)=>`<g opacity="${a}" transform="translate(${x},${y}) scale(${.6+.4*a})"><circle cx="${-w/2+30}" cy="${h/2+40}" r="14" fill="#fff"/><circle cx="${-w/2+10}" cy="${h/2+70}" r="9" fill="#fff"/><rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="40" fill="#fff"/>${inner}</g>`;
-const LOGO=(x,y,s)=>`<g transform="translate(${x},${y}) scale(${s})"><rect x="-60" y="-60" width="120" height="120" rx="35" fill="#1F3A93"/><path d="M-30 25 L-5 -3 L12 13 L36 -19" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
-const check=(x,y,a)=>`<g opacity="${a}" transform="translate(${x},${y}) scale(${.5+.5*a})"><circle r="40" fill="#2fbf71"/><path d="M-18 0 L-4 14 L20 -12" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
-const stars=(t)=>Array.from({length:30},(_,i)=>{const x=(i*137)%W,y=(i*89)%520+20;return `<circle cx="${x}" cy="${y}" r="${2+i%3}" fill="#fff" opacity="${.4+.4*sin(t*2+i)}"/>`}).join('');
+<div id="cap"><div class="w" id="subw"></div></div>
+<script src="rig.js"></script><script>
+const W=1080,H=1920,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)},back=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const IMG=(src,t,o)=>{o=o||{};const z=(o.z0||1)+(o.dz||0.08)*cl(t/(o.d||6)),x=(o.x||0)+(o.dx||0)*cl(t/(o.d||6)),y=(o.y||0)+(o.dy||0)*cl(t/(o.d||6));return `<img class="ph" src="${src}" style="transform:translate(${x}px,${y}px) scale(${z});filter:${o.f||'none'}">`};
+const SHADE=(a,b)=>`<div class="shade" style="background:linear-gradient(180deg,rgba(5,9,31,${a}) 0%,rgba(5,9,31,${a*0.35}) 30%,rgba(5,9,31,${a*0.4}) 55%,rgba(5,9,31,${b}) 100%)"></div>`;
+const LOGO=(s)=>`<svg viewBox="0 0 120 120" width="${s}" height="${s}"><rect width="120" height="120" rx="35" fill="#1F3A93"/><path d="M30 85 L55 57 L72 73 L96 41" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* Nov 21: TV game-show studio, host + buzzer, MYTH stamp -> FACT */
+const HOST={skin:'#f1c27d',hair:'#5a3a22',hairStyle:'short',top:'#14214f',top2:'#0b1640',beard:1,glasses:1,ph:.4,collar:'<path d="M-24 -212 L0 -180 L24 -212" stroke="#fff" stroke-width="8" fill="none"/><path d="M0 -180 l-9 30 9 70 9 -70z" fill="#E3B62F"/>'};
+const GUEST={skin:'#8d5524',hair:'#1b120c',hairStyle:'bun',top:'#3fa7a0',ph:1.3};
+function studio(t,spot){let o=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0"><defs>
+<radialGradient id="sbg" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#1d3590"/><stop offset=".6" stop-color="#0b1640"/><stop offset="1" stop-color="#03061a"/></radialGradient>
+<linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6d0" stop-opacity=".45"/><stop offset="1" stop-color="#fff6d0" stop-opacity="0"/></linearGradient>
+<linearGradient id="flr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16245e"/><stop offset="1" stop-color="#050a22"/></linearGradient></defs>
+<rect width="${W}" height="${H}" fill="url(#sbg)"/>`;
+ for(let i=0;i<7;i++){const x=80+i*155,a=sin(t*1.3+i)*14;o+=`<g transform="translate(${x},300) rotate(${a})"><path d="M-30 0 L30 0 L170 1000 L-170 1000Z" fill="url(#beam)" opacity="${(spot?.55:.25)+.15*sin(t*2+i)}"/></g><circle cx="${x}" cy="300" r="16" fill="#fff6d0"/>`}
+ o+=`<rect x="0" y="1150" width="${W}" height="${H-1150}" fill="url(#flr)"/><ellipse cx="540" cy="1170" rx="520" ry="40" fill="#E3B62F" opacity=".12"/>`;
+ for(let i=0;i<14;i++){o+=`<circle cx="${40+i*78}" cy="1150" r="7" fill="${i%2?'#E3B62F':'#fff'}" opacity="${.4+.6*((Math.floor(t*6)+i)%2)}"/>`}
+ return o;}
+function screen(x,y,w,h,inner){return `<g transform="translate(${x},${y})"><rect x="-8" y="-8" width="${w+16}" height="${h+16}" rx="26" fill="#000" opacity=".5"/><rect width="${w}" height="${h}" rx="20" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/>${inner}</g>`}
+function stamp(t,label,col,x,y){const p=back(t/0.35);return `<g transform="translate(${x},${y}) rotate(-12) scale(${2.4-1.4*p})" opacity="${cl(t/0.15)}"><rect x="-230" y="-80" width="460" height="160" rx="18" fill="none" stroke="${col}" stroke-width="14"/><text x="0" y="40" text-anchor="middle" font-family="Inter" font-weight="900" font-size="120" fill="${col}" letter-spacing="8">${label}</text></g>`}
+function mythScene(n,t,d,talk,myth,fact){const ft=cl((t-d*0.45)/0.4);
+ let o=studio(t,1)+screen(110,360,860,470,`<text x="430" y="70" text-anchor="middle" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="6">MYTH ${n} OF 3</text>
+ <text x="430" y="190" text-anchor="middle" font-family="Inter" font-weight="800" font-size="${ft<.5?56:50}" fill="#fff">${ft<.5?myth[0]:fact[0]}</text><text x="430" y="260" text-anchor="middle" font-family="Inter" font-weight="800" font-size="${ft<.5?56:50}" fill="${ft<.5?'#fff':'#2fbf71'}">${ft<.5?myth[1]:fact[1]}</text>
+ ${ft>.5?`<circle cx="430" cy="370" r="46" fill="#2fbf71"/><path d="M408 370 l16 16 l28 -30" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}`);
+ o+=person(Object.assign({},HOST,{x:320,y:1170,s:1.25,t,talk,armR:ft>.5?20:12,elR:ft>.5?130:30,armL:10,look:.6,mood:ft>.5?'smile':'neutral'}));
+ o+=`<g transform="translate(790,1080)"><rect x="-120" y="-30" width="240" height="140" rx="20" fill="#14214f" stroke="#D4AF37" stroke-width="4"/><circle cx="0" cy="-30" r="${60-8*Math.max(0,sin(t*10))*(t<d*0.45?1:0)}" fill="${ft>.5?'#2fbf71':'#E5323E'}"/></g>`;
+ o+='</svg>';
+ if(t<d*0.45+0.35&&t>0.4)o+=`<svg width="${W}" height="${H}" style="position:absolute;inset:0">${stamp(t-0.4,'MYTH','#E5323E',700,960)}</svg>`;
+ if(ft>0)o+=`<svg width="${W}" height="${H}" style="position:absolute;inset:0" opacity="${1-cl((t-d*0.45-1.2)/0.3)}">${stamp(t-d*0.45,'FACT','#2fbf71',700,960)}</svg>`;
+ return o;}
 const SCN={
- ada(t){const up=io((t-2.4)/0.8);const shake=t<3.2?sin(t*60)*8:0;
-  return svg(`<rect x="620" y="110" width="300" height="300" rx="20" fill="#f6b26b" opacity=".85"/><rect x="620" y="110" width="300" height="300" rx="20" fill="url(#sky)" opacity="${.6-up*.4}"/><path d="M770 110 v300 M620 260 h300" stroke="#0b1640" stroke-width="12"/><circle cx="700" cy="${330-up*80}" r="40" fill="#ffd56b"/>
-  ${floor('#132a7a')}<rect x="80" y="660" width="560" height="160" rx="30" fill="#e8ecff"/><rect x="80" y="760" width="560" height="60" rx="20" fill="#c9d0ee"/><rect x="60" y="560" width="40" height="300" rx="16" fill="#6b4423"/>
-  ${up<.5?`<g transform="translate(0,${up*40})"><ellipse cx="200" cy="650" rx="90" ry="40" fill="#fff"/><circle cx="210" cy="620" r="58" fill="${ADA.skin}"/><circle cx="210" cy="580" r="40" fill="${ADA.hair}"/><path d="M188 624 h16 M222 624 h16" stroke="#1a1a2e" stroke-width="5" stroke-linecap="round"/></g><rect x="250" y="640" width="390" height="120" rx="40" fill="#3fa7a0"/>`:
-   `<rect x="250" y="700" width="390" height="100" rx="40" fill="#3fa7a0"/>${P(ADA,{x:330,y:850,s:.95,t,sit:1,armL:160-40*sin(t*3),armR:160-40*sin(t*3+1),mouth:t<3.6?'o':'smile'})}`}
-  <rect x="700" y="760" width="220" height="120" rx="14" fill="#6b4423"/>
-  <g transform="translate(810,700) rotate(${shake})"><circle r="72" fill="#E5323E"/><circle r="56" fill="#fff"/>${txt(0,14,40,'#0b1640','6:00')}<circle cx="-50" cy="-62" r="18" fill="#E5323E"/><circle cx="50" cy="-62" r="18" fill="#E5323E"/></g>
-  ${t<3.2?`<path d="M890 640 q20 20 0 40 M915 625 q30 35 0 70 M730 640 q-20 20 0 40 M705 625 q-30 35 0 70" stroke="#E3B62F" stroke-width="6" fill="none" opacity="${.5+.5*sin(t*20)}"/>`:''}`,['#3b4fa0','#0b1640'])},
- tom(t){const a=t*2.2;const bubbles=[['9:00','Meeting',.6],['12:00','Call',1.6],['15:00','Meeting',2.4],['18:00','Report',3.2]];
-  return svg(`<rect x="0" y="0" width="${W}" height="880" fill="#1d3370"/>${[0,1,2].map(i=>`<rect x="${80+i*300}" y="120" width="220" height="320" rx="12" fill="#26408a"/>`).join('')}
-  <g transform="translate(820,220)"><circle r="90" fill="#fff"/><circle r="80" fill="#eef1fa"/><path d="M0 0 L${50*Math.cos(a*6-PI/2)} ${50*sin(a*6-PI/2)}" stroke="#0b1640" stroke-width="9" stroke-linecap="round"/><path d="M0 0 L${34*Math.cos(a/2-PI/2)} ${34*sin(a/2-PI/2)}" stroke="#E5323E" stroke-width="11" stroke-linecap="round"/></g>
-  ${P(TOM,{x:430,y:900,s:1.15,t,armL:40+10*sin(t*4),armR:60+10*sin(t*4+2),mouth:'flat'})}
-  <rect x="120" y="720" width="760" height="40" rx="10" fill="#6b4423"/><rect x="160" y="760" width="40" height="160" fill="#4d3018"/><rect x="800" y="760" width="40" height="160" fill="#4d3018"/>
-  <g transform="translate(560,600)"><rect x="0" y="0" width="260" height="160" rx="10" fill="#cfd6f0"/><rect x="12" y="12" width="236" height="136" rx="6" fill="#13246a"/>${chart(24,30,212,100,t,'#D4AF37')}<rect x="-30" y="158" width="320" height="16" rx="8" fill="#9aa5cf"/></g>
-  ${bubbles.map(([h,l,s],i)=>bubble(150+(i%2)*220,180+i*120,200,90,txt(0,-4,26,'#1F3A93',h)+txt(0,28,26,'#0b1640',l,700),ease((t-s)/.4))).join('')}`)},
- worry(t){const g=ease(t/2);
-  return svg(`${floor()}${P(ADA,{x:280,y:960,s:1,t,mouth:'flat',armL:15,armR:15,hx:sin(t*1.2)*4})}${P(TOM,{x:720,y:960,s:1,t,mouth:'flat',armL:15,armR:25})}
-  ${bubble(280,300,330,250,`<g transform="translate(0,10) scale(${.9+.05*ease((t-1)/4)})"><ellipse cx="0" cy="0" rx="80" ry="60" fill="#f4a6b8"/><circle cx="62" cy="-10" r="8" fill="#e98aa0"/><rect x="-20" y="-64" width="40" height="10" rx="5" fill="#c46c84"/><rect x="-50" y="44" width="20" height="30" rx="6" fill="#f4a6b8"/><rect x="30" y="44" width="20" height="30" rx="6" fill="#f4a6b8"/><circle cx="35" cy="-15" r="6" fill="#1a1a2e"/></g>`+txt(0,-90,28,'#0b1640','Savings'),g)}
-  ${bubble(720,300,330,250,`<g transform="translate(-40,${30-60*ease((t-2.5)/3)})"><path d="M-50 -30 h90 l40 40 l-40 40 h-90z" fill="#E3B62F"/><circle cx="-30" cy="10" r="10" fill="#fff"/></g><path d="M80 80 L80 ${70-90*ease((t-2.5)/3)}" stroke="#E5323E" stroke-width="12" stroke-linecap="round"/><path d="M60 ${80-90*ease((t-2.5)/3)} l20 -24 l20 24" fill="#E5323E"/>`+txt(0,-90,28,'#0b1640','Prices'),ease((t-1.5)/.6))}`)},
- time(t){let c='';for(let i=0;i<14;i++){const h=60+80*Math.abs(sin(i*1.7+t*3)),up=sin(i*2.3+t)>0;c+=`<rect x="${60+i*65}" y="${300-h/2}" width="34" height="${h}" rx="6" fill="${up?'#2fbf71':'#E5323E'}" opacity=".55"/><rect x="${75+i*65}" y="${300-h/2-30}" width="4" height="${h+60}" fill="${up?'#2fbf71':'#E5323E'}" opacity=".4"/>`}
-  const look=io((t-.6)/.5)*(1-io((t-2.6)/.5));
-  return svg(`${c}${floor()}${P(ADA,{x:300,y:960,s:1,t,armR:10+120*look,mouth:'flat',hx:look?sin(t*10)*6:0})}${P(TOM,{x:700,y:960,s:1,t,armL:10+120*look,mouth:'flat',hx:look?sin(t*10+1)*6:0})}`)},
- leo(t){const yawn=((t>3.2&&t<4.4));
-  return svg(`${stars(t)}<circle cx="820" cy="160" r="70" fill="#f5f0c8"/><circle cx="790" cy="140" r="70" fill="#0b1640" opacity=".9"/>
-  <path d="M300 520 L120 1080 L760 1080 L560 520Z" fill="#7fb2ff" opacity="${.12+.04*sin(t*8)}"/>
-  ${floor('#081236')}<rect x="80" y="700" width="840" height="170" rx="30" fill="#2a3566"/>
-  ${P(LEO,{x:430,y:900,s:1.05,t,sit:1,armL:150,armR:120,mouth:yawn?'o':'flat',holdR:'',hy:t>4.5?8:0})}
-  ${phoneSVG(600,560,.8,chart(-70,-80,140,150,t,'#D4AF37'))}
-  <g transform="translate(830,700)"><rect x="-90" y="-50" width="180" height="100" rx="16" fill="#0a0a14"/>${txt(0,22,58,'#E5323E','3:00')}</g>
-  ${txt(620,300,60,'#c9d0ee','z',700).replace('<text','<text opacity="'+(t<3?(.5+.5*sin(t*4)):0)+'"')}`,['#0b1640','#050a20'])},
- mia(t){const drop=ease((t-2.2)/1.2);
-  return svg(`${floor()}${P(MIA,{x:300,y:960,s:1.05,t,armR:150,mouth:drop>.5?'sad':'smile',hy:drop*6})}
-  ${phoneSVG(470,520,.9,chart(-70,-90,140,140,t,drop>.3?'#E5323E':'#2fbf71',drop))}
-  <g opacity="${ease((t-.6)/.5)}" transform="translate(760,340)"><rect x="-170" y="-120" width="340" height="240" rx="30" fill="#fff"/><circle cx="-90" cy="-30" r="44" fill="#9aa5cf"/><circle cx="-90" cy="-44" r="18" fill="#fff"/><rect x="-115" y="-12" width="50" height="30" rx="14" fill="#fff"/>${txt(50,-40,26,'#0b1640','Copying')}${txt(50,-6,26,'#0b1640','someone')}${txt(50,28,26,'#0b1640','else')}${txt(0,90,26,'#E5323E',drop>.4?'Their risk. Their loss.':'Their trades...',700)}</g>
-  <g opacity="${ease((t-3.2)/.4)}" transform="translate(300,560)"><circle r="40" fill="#E5323E"/>${txt(0,22,60,'#fff','!')}</g>`)},
- same(t){const c=[ADA,TOM,LEO,MIA];
-  return svg(`${floor()}${c.map((b,i)=>P(b,{x:140+i*240,y:960-8*Math.abs(sin(t*2+i)),s:.82,t,mouth:'flat'})).join('')}
-  <g opacity="${ease((t-1.2)/.5)}"><rect x="90" y="120" width="820" height="140" rx="70" fill="#fff"/>${txt(500,212,64,'#0b1640','No time. No system.')}</g>`)},
- meet(t){const s=ease(t/0.9);let d='M80 900';for(let i=1;i<=20;i++){const x=80+i*42,y=900-i*24-30*sin(i*.9);if(i/20<=ease(t/1.6))d+=` L${x} ${y}`}
-  return svg(`<path d="${d}" stroke="#D4AF37" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>${LOGO(500,430,2.2*s)}<g opacity="${s}">${txt(500,720,110,'#fff','FTM MACHINE')}</g>`)},
- what(t){const mk=['Gold','Bitcoin','US Tech 100','USD/JPY','Hang Seng 50'];
-  return svg(`<g transform="translate(500,330)"><rect x="-300" y="-200" width="600" height="400" rx="50" fill="#13246a" stroke="#D4AF37" stroke-width="4"/>${LOGO(-180,-80,.8)}${txt(60,-50,50,'#fff','FTM MACHINE')}<circle cx="-180" cy="100" r="8" fill="#2fbf71" opacity="${.5+.5*sin(t*6)}"/>${txt(60,112,40,'#2fbf71','Trading for you',700)}
-  <g transform="translate(250,-160) rotate(${t*60})"><circle r="28" fill="none" stroke="#D4AF37" stroke-width="14" stroke-dasharray="14 10"/></g></g>
-  ${mk.map((m,i)=>{const a=ease((t-.4-i*.5)/.4);return `<g opacity="${.25+.75*a}" transform="translate(${i<3?190+i*310:345+(i-3)*310},${i<3?690:820})"><rect x="-140" y="-46" width="280" height="92" rx="46" fill="${a>.9?'#D4AF37':'#26408a'}"/>${txt(0,14,36,a>.9?'#0b1640':'#fff',m)}</g>`}).join('')}
-  <g transform="translate(500,975)">${txt(0,0,40,'#c9d0ee','24 hours · fixed rules · your own account',700)}</g>`)},
- trust(t){const rows=['XAUUSD  Buy','BTCUSD  Sell','USTEC  Buy','USDJPY  Buy'];
-  return svg(`${phoneSVG(250,520,2.0,`${rows.map((r,i)=>`<g opacity="${ease((t-i*.3)/.4)}"><rect x="-70" y="${-130+i*48}" width="140" height="40" rx="10" fill="#26408a"/><text x="-60" y="${-104+i*48}" font-family="Inter" font-weight="700" font-size="15" fill="#fff">${r}</text></g>`).join('')}<rect x="-60" y="80" width="120" height="44" rx="22" fill="${t>3.6?'#E5323E':'#26408a'}"/><text x="0" y="109" text-anchor="middle" font-family="Inter" font-weight="800" font-size="18" fill="#fff">Pause</text>`)}
-  ${['Money in your name','See every trade','Pause any time'].map((l,i)=>{const a=ease((t-.5-i*1.3)/.4);return check(560,260+i*240,a)+`<g opacity="${a}">${txt(615,272+i*240,34,'#fff',l).replace('text-anchor="middle"','text-anchor="start"')}</g>`}).join('')}`)},
- start(t){const st=t<2.4?0:t<4.8?1:2;
-  const scr=st===0?`<image href="home.png" x="-80" y="${-158-Math.max(0,t-.8)*40}" width="160" height="346" preserveAspectRatio="xMidYMin slice"/>`:
-   `<text x="-66" y="-120" font-family="Inter" font-weight="800" font-size="14" fill="#fff">${st===1?'Create free account':'Connect account'}</text>${[0,1].map(i=>`<rect x="-66" y="${-100+i*60}" width="132" height="44" rx="10" fill="#26408a"/><text x="-56" y="${-72+i*60}" font-family="Inter" font-weight="600" font-size="14" fill="#fff">${st===1?(i?'••••••••':'you@email.com').slice(0,Math.floor((t-2.4)*10)):(i?'MetaTrader 5':'Account no.')}</text>`).join('')}<rect x="-66" y="40" width="132" height="46" rx="23" fill="${st===2&&t>6.2?'#2fbf71':'#E5323E'}"/><text x="0" y="70" text-anchor="middle" font-family="Inter" font-weight="800" font-size="17" fill="#fff">${st===2?(t>6.2?'Connected ✓':'Connect'):'Sign up free'}</text>`;
-  return svg(`${phoneSVG(330,540,2.5,`<clipPath id="cp"><rect x="-80" y="-158" width="160" height="316" rx="20"/></clipPath><g clip-path="url(#cp)">${scr}</g>`)}
-  ${['Open the website','Free account','Connect in seconds'].map((l,i)=>`<g opacity="${i<=st?1:.3}"><circle cx="720" cy="${330+i*200}" r="44" fill="${i<st||(i==2&&t>6.2)?'#2fbf71':i===st?'#D4AF37':'#26408a'}"/>${txt(720,346+i*200,44,'#0b1640',i+1)}${txt(720,420+i*200,32,'#fff',l,700)}</g>`).join('')}`)},
- follow(t){const n=(i,s)=>{const a=ease((t-s)/.5);return `<g transform="translate(500,${-120+a*(200+i*170)})"><rect x="-400" y="-60" width="800" height="130" rx="34" fill="#fff"/>${LOGO(-320,5,.6)}${txt(40,-6,32,'#0b1640','FTM',800)}${txt(40,40,30,'#3d4566',i?'Your weekly summary is ready':'Your daily result is ready',600)}</g>`};
-  let cal='';for(let i=0;i<28;i++){const a=ease((t-1.8-i*.04)/.3);const g=sin(i*2.1)>-.3;cal+=`<rect x="${210+(i%7)*85}" y="${560+Math.floor(i/7)*85}" width="72" height="72" rx="12" fill="${g?'#2fbf71':'#E5323E'}" opacity="${.15+.5*a}"/>`}
-  return svg(`${cal}${txt(500,520,40,'#c9d0ee','Calendar · Statistics · Statements',700)}${n(0,.4)}${n(1,1.4)}`)},
- life(t){return svg(`<rect x="0" y="0" width="500" height="1080" fill="#1c3d6e"/><rect x="500" y="0" width="500" height="1080" fill="#22397a"/>${floor()}
-  ${P(ADA,{x:250,y:960,s:.95,t,armR:110+10*sin(t*2),holdR:'<rect x="-30" y="110" width="60" height="80" rx="8" fill="#fff"/>'})}${txt(250,180,40,'#fff','At work')}
-  ${P(TOM,{x:680,y:960,s:.95,t,armR:130+20*sin(t*3),mouth:'smile'})}<rect x="760" y="420" width="200" height="140" rx="12" fill="#fff"/>${chart(780,440,160,100,t,'#1F3A93')}${txt(750,180,40,'#fff','In meetings')}
-  <g transform="translate(500,${330+6*sin(t*2)})"><rect x="-240" y="-80" width="480" height="160" rx="36" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/>${LOGO(-170,0,.7)}${txt(40,-10,34,'#fff','FTM MACHINE')}${txt(40,36,26,'#2fbf71','● Following the markets',700)}</g>`)},
- cta(t){const p=1+.05*sin(t*5);
-  return svg(`${LOGO(500,230,1.6*ease(t/.6))}<g opacity="${ease((t-.3)/.5)}">${txt(500,480,64,'#fff','The markets moved today.')}${txt(500,575,70,'#E3B62F','Did your money?')}</g>
-  <g opacity="${ease((t-2.6)/.5)}" transform="translate(500,770) scale(${p})"><rect x="-260" y="-60" width="520" height="120" rx="60" fill="#E5323E"/>${txt(0,20,56,'#fff','Start free')}</g>
-  <g opacity="${ease((t-3.2)/.5)}">${txt(500,930,52,'#fff','ftmwealthnation.com')}${txt(500,1010,40,'#E3B62F','Invest today, secure tomorrow.',700)}</g>`)}
+ hook(t,d,talk){const f=Math.floor(t*8)%2;return studio(t,f)+`<text x="540" y="560" text-anchor="middle" font-family="Inter" font-weight="900" font-size="${190+10*sin(t*6)}" fill="#E5323E" opacity="${.9}">3</text>
+  <rect x="80" y="640" width="920" height="520" rx="40" fill="#050a22" opacity=".82" stroke="#D4AF37" stroke-width="4"/>
+  <text text-anchor="middle" font-family="Inter" font-weight="800" fill="#fff" font-size="72"><tspan x="540" y="760">Three things people</tspan><tspan x="540" y="850">believe about trading</tspan><tspan x="540" y="940">software.</tspan></text>
+  <text x="540" y="1080" text-anchor="middle" font-family="Inter" font-weight="900" font-size="${84*ease((t-1.8)/.3)}" fill="#E3B62F">All three are wrong.</text></svg>`},
+ m1(t,d,talk){return mythScene(1,t,d,talk,['You need to be','an expert.'],['FTM MACHINE','does the work.'])},
+ m2(t,d,talk){return mythScene(2,t,d,talk,['The software','holds your money.'],['Your money stays','in your name.'])},
+ m3(t,d,talk){return mythScene(3,t,d,talk,["You can't stop it",'once it starts.'],['Pause any time,','with one tap.'])},
+ cta(t,d,talk){const p=1+.04*sin(t*5);return studio(t,1)+person(Object.assign({},GUEST,{x:300,y:1170,s:1.2,t,prop:'phone',armR:12,elR:118,look:.5,mood:'smile'}))+person(Object.assign({},HOST,{x:780,y:1170,s:1.2,t,talk,armL:20,elL:120,look:-.5}))+
+  `<g transform="translate(540,520)"><rect x="-420" y="-150" width="840" height="300" rx="40" fill="#050a22" opacity=".85" stroke="#D4AF37" stroke-width="4"/><text x="0" y="-50" text-anchor="middle" font-family="Inter" font-weight="800" font-size="60" fill="#fff">The markets won't wait.</text>
+  <g transform="scale(${p})"><rect x="-210" y="0" width="420" height="104" rx="52" fill="#E5323E"/><text x="0" y="68" text-anchor="middle" font-family="Inter" font-weight="800" font-size="52" fill="#fff">Start free</text></g></g></svg>`}
 };
+
 let S=[],T=[],TOTAL=0;
-window.setup=function(scenes,durs){S=scenes;let a=0.6;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.9});TOTAL=a+0.8;window.TOTAL=TOTAL;window.STARTS=T;return {TOTAL,T}};
+window.setup=function(scenes,durs,amp){if(amp)window.AMP=amp;S=scenes;let a=0.3;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.6});TOTAL=a+0.9;window.TOTAL=TOTAL;return {TOTAL,T}};
 window.render=function(t){
  document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
- document.getElementById('bg').style.transform=`translate(${sin(t*.2)*40}px,${Math.cos(t*.15)*40}px)`;
- let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.45)i=k;
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.3)i=k;
  const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i];
- const art=document.getElementById('art');art.innerHTML=SCN[s.id](Math.max(0,lt+0.45));const sv=art.firstChild;const z=1.02+0.03*cl((lt+0.45)/dur);sv.style.transform=`scale(${z}) translate(${sin(t*.4)*6}px,${Math.cos(t*.3)*5}px)`;
- const fade=Math.min(ease((lt+0.45)/0.45),1-ease((lt-(dur-0.5))/0.45));art.style.opacity=fade;art.style.transform=`translateX(${(1-fade)*(lt<0.5?70:-70)}px) scale(${.97+.03*fade})`;
- const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const vd=s.d||dur;const k=Math.floor(cl(lt/(vd*0.95))*words.length+0.999);
- document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|future|time|system|free|money\?/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
- document.getElementById('sub').style.opacity=fade;
+ const st=document.getElementById('stage');st.innerHTML=SCN[s.id](Math.max(0,lt+0.3),dur,talkAt(s.id,Math.max(0,lt)));
+ const fade=Math.min(ease((lt+0.3)/0.3),1-ease((lt-(dur-0.35))/0.3));st.style.opacity=.1+.9*fade;
+ const hide=/^hook/.test(s.id);
+ const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|myth|fact|week|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=hide?0:fade;
 };
 </script></body></html>
