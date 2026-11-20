@@ -107,6 +107,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
   const call=(tok,body)=>new Promise(res=>{ const r={s:0,setHeader(){},status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,null]);}}; CH({method:'POST',headers:{authorization:'Bearer '+tok},body},r); });
   await call('tokC',{action:'me'}).catch(()=>{});
   for(const sc of ['all','following','ftm']){ const f=await call('tokC',{action:'feed',scope:sc}); const L=(f[1]&&f[1].posts)||[]; ok(f[0]===200&&L.filter(x=>x.card&&x.author&&x.author.ftm).length===Math.min(30,posts().length),'feed "'+sc+'": every result post is there with its card ('+L.length+')'); }
+  { // dayresult (social posts): the month so far day by day, the same time-weighted % as the day card (losing-day month slide)
+    const g=await new Promise(res=>{ const r={s:0,setHeader(){},status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,null]);}}; CH({method:'GET',headers:{},query:{dayresult:'2026-11-17'}},r); });
+    const cal=(g[1]&&g[1].cal)||[], d17=cal.find(x=>x.date==='2026-11-17')||{}, d16=cal.find(x=>x.date==='2026-11-16')||{};
+    ok(g[0]===200&&cal.length===17&&cal[0].date==='2026-11-01','dayresult: the month so far, one entry per day ('+cal.length+')');
+    ok(d17.n===3&&Math.abs(d17.pct-g[1].pct)<0.006&&d16.n===1&&cal.filter(x=>x.n).length===3,'dayresult: each day\'s trades and time-weighted % match the day card ('+JSON.stringify(d17)+')'); }
   // browser: the card in the feed
   let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');}
   const b=await pw.chromium.launch(); const day=P.find(x=>x.res==='day-2026-11-17'), ftmPosts=[mo,wk,day.card].map((cd,i)=>({id:'r'+i,author:{mid:'s',nickname:'FTM',ftm:true},text:'x'+i,card:cd,imgs:[],t:new Date(Date.now()-i*6e4).toISOString(),likes:0,comments:[],tags:[]}));
