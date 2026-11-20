@@ -1,11 +1,11 @@
 import json,wave,numpy as np,subprocess,sys
 vid=sys.argv[1];out=sys.argv[2]
 sr=48000;T=json.load(open(vid+'.timing.json'));tot=T['TOTAL'];n=int(tot*sr);t=np.arange(n)/sr;ids=T['ids'];TS=T['T']
-R=TS[ids.index('b_reveal')];C=TS[ids.index('b_cta')]
+R=TS[ids.index('b_reveal' if 'b_reveal' in ids else 'v_meet')];C=TS[ids.index('b_cta' if 'b_cta' in ids else 'v_cta')]
 rng=np.random.default_rng(11)
 vo=np.zeros(n)
 for i,sid in enumerate(ids):
-    raw=subprocess.run(['ffmpeg','-loglevel','error','-i','vo/%s.wav'%sid,'-af','aresample=48000:resampler=soxr','-f','f32le','-ac','1','-'],capture_output=True).stdout
+    raw=subprocess.run(['ffmpeg','-loglevel','error','-i',(__import__('os').environ.get('VO','vo'))+'/%s.wav'%sid,'-af','aresample=48000:resampler=soxr','-f','f32le','-ac','1','-'],capture_output=True).stdout
     d=np.frombuffer(raw,dtype=np.float32).astype(float);a=int(TS[i]*sr);vo[a:a+len(d)]+=d[:max(0,n-a)]
 mus=np.zeros(n);fx=np.zeros(n)
 def add(buf,a,sig,g=1.0):
