@@ -1,5 +1,26 @@
 [
  {
+  "file": "v2/ftm-explainer-v2-16x9.mp4",
+  "title": "Everything about FTM in 5 minutes (new version)",
+  "date": "2026-11-20",
+  "kind": "YouTube video",
+  "at": 20
+ },
+ {
+  "file": "v2/ftm-explainer-v2-9x16.mp4",
+  "title": "Everything about FTM in 5 minutes (phone version)",
+  "date": "2026-11-20",
+  "kind": "YouTube video",
+  "at": 100
+ },
+ {
+  "file": "v2/ftm-brand-9x16.mp4",
+  "title": "30-second brand cut (for boosting)",
+  "date": "2026-11-20",
+  "kind": "Ad",
+  "at": 12
+ },
+ {
   "file": "v2/ftm-explainer-16x9.mp4",
   "title": "Everything about FTM (5-minute YouTube video)",
   "date": "2026-11-20",

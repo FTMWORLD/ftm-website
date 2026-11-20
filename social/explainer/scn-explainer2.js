@@ -49,7 +49,7 @@ Object.assign(SCN, {
   },
   host3(t, d, talk) {
     const step = (i, txt, c) => `<g opacity="${ex((t - .4 - i * d * .22) / .5)}" transform="translate(110,${190 + i * 140})"><circle r="40" fill="${c}"/><text y="14" text-anchor="middle" font-family="Inter" font-weight="900" font-size="38" fill="#0b1640">${i + 1}</text><text x="70" y="14" font-family="Inter" font-weight="800" font-size="46" fill="#fff">${txt}</text></g>`;
-    const scr = `<text x="500" y="100" text-anchor="middle" font-family="Inter" font-weight="900" font-size="54" fill="#E3B62F">Try it with zero risk</text>${step(0, 'Free account: just your email', '#E3B62F')}${step(1, 'Watch the master trade live', '#E3B62F')}${step(2, 'Start only if you like it', '#2fbf71')}`;
+    const scr = `<text x="500" y="100" text-anchor="middle" font-family="Inter" font-weight="900" font-size="54" fill="#E3B62F">Try it first, free</text>${step(0, 'Free account: just your email', '#E3B62F')}${step(1, 'Watch the master trade live', '#E3B62F')}${step(2, 'Start only if you like it', '#2fbf71')}`;
     return { bg: '#071033', zoom: 1 + .03 * cl(t / d), core: studio(t, scr) + host(t, talk) };
   },
   cta(t, d, talk) {
