@@ -1,5 +1,5 @@
 {
- "note": "Morning story videos, 06:00 Berlin, Nov 20-30. Each: 30-45 s, animated characters, voice (Kokoro af_heart), FTM music, ends with a call to action. Scenes come from social/intro2/anim.html. Every video OPENS with the \"open\" hook line (2-4 s, big centred text on its own scene, no caption box) before the story.",
+ "note": "Morning story videos, 06:00 Berlin. Each day a DIFFERENT format and design (owner + customer view: no repetition). Every video opens with its \"open\" hook (2-4 s, big centred text, own scene), then the story, then a call to action. 30-45 s, voice Kokoro af_heart, FTM music varied each day. Scene ids are names for the day's own anim.html.",
  "days": [
   {
    "date": "2026-11-20",
@@ -36,309 +36,283 @@
      "The markets moved today. Did your money? Start free at ftm wealth nation dot com."
     ]
    ],
-   "open": "Most people miss the markets for one reason. And it's not money."
+   "open": "Most people miss the markets for one reason. And it's not money.",
+   "format": "City story (sunrise to night)"
   },
   {
    "date": "2026-11-21",
-   "stage": "1 · The problem",
-   "title": "The 3 a.m. trader problem",
-   "hook": "Manual trading has one weak spot: you.",
+   "stage": "1 · Learn",
+   "format": "Myth buster (quick-fire, big MYTH / FACT stamps)",
+   "title": "3 myths about automated trading",
+   "open": "Three things people believe about trading software. All three are wrong.",
+   "hook": "Myth or fact?",
    "scenes": [
     [
-     "leo",
-     "Leo tried trading by himself. Up at three a.m. to catch a move. Tired at work, nervous all day."
+     "m1",
+     "Myth one: you need to be an expert. Fact: FTM MACHINE does the work, you just connect your account."
     ],
     [
-     "time",
-     "Fear makes you close too early. Hurry makes you open too soon."
+     "m2",
+     "Myth two: the software holds your money. Fact: your money stays in your own account, in your name."
     ],
     [
-     "meet",
-     "FTM MACHINE doesn't get tired or nervous."
-    ],
-    [
-     "what",
-     "It follows fixed rules, at three a.m. and at three p.m., on your own account."
-    ],
-    [
-     "trust",
-     "You see every trade, and you can pause any time."
+     "m3",
+     "Myth three: you can't stop it. Fact: you can pause any time, with one tap."
     ],
     [
      "cta",
-     "Sleep at night. Start free at ftm wealth nation dot com."
+     "Now you know. Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "He set an alarm for 3 a.m. Just to lose money tired."
+   ]
   },
   {
    "date": "2026-11-22",
-   "stage": "1 · The problem",
-   "title": "The copy-trading trap",
-   "hook": "Whose risk are you copying?",
+   "stage": "2 · Proof",
+   "format": "Weekly recap with real figures (animated chart of the week)",
+   "title": "This week on the FTM master account",
+   "open": "Five trading days. Here is every result, good and bad.",
+   "hook": "Our week, in numbers.",
    "scenes": [
     [
-     "mia",
-     "Mia copies someone else's trades. Their risk. Their bad days. She only finds out after it happens."
+     "week",
+     "Here is this week on the FTM master account, day by day. Real numbers from the account."
     ],
     [
-     "same",
-     "Copying a person means copying their mood."
+     "best",
+     "The best day, and the worst day. We show both."
     ],
     [
-     "meet",
-     "FTM MACHINE is different."
-    ],
-    [
-     "what",
-     "No person to copy. Fixed rules that you can follow, trade by trade, on your own account."
-    ],
-    [
-     "trust",
-     "Your money stays in your name, and every trade is visible."
+     "total",
+     "And the week in total."
     ],
     [
      "cta",
-     "Follow rules, not moods. Start free at ftm wealth nation dot com."
+     "See every trade live. Start free at ftm wealth nation dot com."
     ]
    ],
-   "open": "You copied a winner. So why is your account red?"
+   "note": "Figures: real values from https://www.ftmwealthnation.com/api/v1/community?dayresult=YYYY-MM-DD for Mon 16 – Fri 20 Nov (pct per day) and mtd; never invent numbers."
   },
   {
    "date": "2026-11-23",
-   "stage": "2 · The solution",
-   "title": "The market never sleeps",
-   "hook": "The market moves while you're at work.",
+   "stage": "1 · Learn",
+   "format": "First person: the machine tells its own day (robot narrator, digital look)",
+   "title": "24 hours in the life of FTM MACHINE",
+   "open": "I never sleep. Let me show you my day.",
+   "hook": "A day in the life of a trading machine.",
    "scenes": [
     [
-     "tom",
-     "Tom is in meetings all day."
+     "m0",
+     "Midnight. Markets in Asia open, and I start watching."
     ],
     [
-     "time",
-     "Meanwhile, gold, Bitcoin and the big indices keep moving, hour after hour."
+     "m1",
+     "Morning. Gold moves. I follow my rules, not my mood."
     ],
     [
-     "meet",
-     "FTM MACHINE is awake when you are not."
+     "m2",
+     "Afternoon. New York opens. I check every setup."
     ],
     [
-     "what",
-     "It watches five markets around the clock and acts by fixed rules."
-    ],
-    [
-     "follow",
-     "You get every trade, plus daily, weekly and monthly results."
+     "m3",
+     "Night. You are asleep. I'm still here."
     ],
     [
      "cta",
-     "Let the market work for you. Start free at ftm wealth nation dot com."
+     "I work. You live. Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "While you read this, the markets just moved. Did you?"
+   ]
   },
   {
    "date": "2026-11-24",
-   "stage": "2 · The solution",
-   "title": "What is FTM MACHINE?",
-   "hook": "How it works in 30 seconds.",
+   "stage": "1 · Learn",
+   "format": "Money explainer (animated coins and a melting price tag)",
+   "title": "What inflation does to money that sits still",
+   "open": "Your money is shrinking, even when the number stays the same.",
+   "hook": "Money that sits still loses value.",
    "scenes": [
     [
-     "meet",
-     "What is FTM MACHINE?"
+     "c1",
+     "If prices rise, the same money buys less every year."
     ],
     [
-     "what",
-     "Software that connects to your own trading account and places trades by fixed rules."
+     "c2",
+     "That is why many people put part of their savings to work in the markets."
     ],
     [
-     "trust",
-     "Your money stays in your name. You see every trade. You can pause any time."
-    ],
-    [
-     "start",
-     "Open ftm wealth nation dot com, create a free account, and connect in seconds."
+     "c3",
+     "FTM MACHINE does that for you, on your own account, by fixed rules."
     ],
     [
      "cta",
-     "Start free today at ftm wealth nation dot com."
+     "Let your money work. Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "This software trades while you sleep. Here's how, in 30 seconds."
+   ]
   },
   {
    "date": "2026-11-25",
-   "stage": "2 · The solution",
-   "title": "3 questions before you trust any system",
-   "hook": "Ask these three questions.",
+   "stage": "3 · Action",
+   "format": "Tutorial: real website walkthrough on a phone (screen-style)",
+   "title": "How to start with FTM in 60 seconds",
+   "open": "Sixty seconds. That is all it takes. Watch.",
+   "hook": "From zero to connected in 60 seconds.",
    "scenes": [
     [
-     "same",
-     "Before you trust any trading system, ask three questions."
+     "s1",
+     "Step one. Open ftm wealth nation dot com and create a free account."
     ],
     [
-     "trust",
-     "Can I see every trade? Does my money stay in my own account? Are the losing days shown too?"
+     "s2",
+     "Step two. Connect your trading account in seconds."
     ],
     [
-     "follow",
-     "At FTM, the answer is yes. Every evening at eleven, we post the day's result."
-    ],
-    [
-     "meet",
-     "That's FTM MACHINE."
+     "s3",
+     "Step three. Watch every trade, and get your daily results."
     ],
     [
      "cta",
-     "See it for yourself. Start free at ftm wealth nation dot com."
+     "Your turn. Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "Never trust a trading system before you ask these three questions."
+   ]
   },
   {
    "date": "2026-11-26",
-   "stage": "3 · Trust",
-   "title": "Discipline is hard. Code is consistent.",
-   "hook": "No revenge trades. No guessing.",
+   "stage": "2 · Proof",
+   "format": "Checklist (three ticks fill in one by one)",
+   "title": "3 questions before you trust any system",
+   "open": "Never trust a trading system before you ask these three questions.",
+   "hook": "Ask these three questions.",
    "scenes": [
     [
-     "leo",
-     "After one bad trade, Leo changed his rules. After the next one, again."
+     "q1",
+     "One. Can I see every trade?"
     ],
     [
-     "time",
-     "Most people do. Emotions take over."
+     "q2",
+     "Two. Does my money stay in my own account?"
     ],
     [
-     "meet",
-     "FTM MACHINE never changes its rules on a bad day."
+     "q3",
+     "Three. Are the losing days shown too?"
     ],
     [
-     "what",
-     "Same rules on Monday morning and Friday night. No revenge trades, no guessing."
+     "a",
+     "At FTM, the answer is yes, yes and yes."
     ],
     [
      "cta",
-     "Let discipline work for you. Start free at ftm wealth nation dot com."
+     "Check it yourself. Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "The most expensive thing in trading isn't fees. It's emotions."
+   ]
   },
   {
    "date": "2026-11-27",
-   "stage": "3 · Trust",
-   "title": "Losing days are part of it",
-   "hook": "Anyone who only shows wins is hiding something.",
+   "stage": "2 · Proof",
+   "format": "Honest case study: a real losing day this month and how the month went on",
+   "title": "We show our losing days",
+   "open": "This was our worst day this month. We are showing it anyway.",
+   "hook": "Here's why we show losses.",
    "scenes": [
     [
-     "mia",
-     "Some people only show their winning days."
+     "l1",
+     "Every system has losing days. Here is ours, from this month."
     ],
     [
-     "same",
-     "But every system has losing days."
+     "l2",
+     "Judge any system by months, not by one day. Here is the month so far."
     ],
     [
-     "follow",
-     "FTM posts the master account's result every evening, good or bad."
-    ],
-    [
-     "trust",
-     "Judge any system by months, not by one day. And see every trade yourself."
+     "l3",
+     "That is why we post every result, every evening."
     ],
     [
      "cta",
-     "Honest results, every day. Start free at ftm wealth nation dot com."
+     "Honest results. Start free at ftm wealth nation dot com."
     ]
    ],
-   "open": "We show our losing days. Here's why most don't."
+   "note": "Figures: worst day and month-to-date from the dayresult feed for November; never invent numbers."
   },
   {
    "date": "2026-11-28",
-   "stage": "3 · Trust",
-   "title": "Who is FTM for?",
-   "hook": "Nurses. Pilots. Bankers. Parents.",
+   "stage": "3 · Action",
+   "format": "FAQ rapid-fire (chat bubbles: question in, answer out)",
+   "title": "Your 4 biggest questions, answered",
+   "open": "These are the four questions people ask us most.",
+   "hook": "You asked. We answered.",
    "scenes": [
     [
-     "ada",
-     "A nurse on a night shift."
+     "f1",
+     "Do I need trading experience? No."
     ],
     [
-     "tom",
-     "A banker in back-to-back meetings."
+     "f2",
+     "Who holds my money? You do. It stays in your own account."
     ],
     [
-     "same",
-     "Different lives. None of them have time to watch charts."
+     "f3",
+     "Can I stop it? Yes, pause any time."
     ],
     [
-     "life",
-     "That's exactly who FTM MACHINE is built for."
+     "f4",
+     "Can I try first? Yes. Open a free account and watch it trade live."
     ],
     [
      "cta",
-     "Tag someone who never has time. Start free at ftm wealth nation dot com."
+     "Start free at ftm wealth nation dot com."
     ]
-   ],
-   "open": "A nurse, a pilot and a banker walk into the markets."
+   ]
   },
   {
    "date": "2026-11-29",
-   "stage": "4 · Action",
-   "title": "Your money stays in your name",
-   "hook": "FTM never holds your money.",
+   "stage": "1 · Learn",
+   "format": "Market explainer (gold bars, animated price line, world map)",
+   "title": "Why FTM MACHINE trades gold",
+   "open": "People have traded gold for thousands of years. Here is why it still matters.",
+   "hook": "Gold, explained in 30 seconds.",
    "scenes": [
     [
-     "worry",
-     "Many people worry: who holds my money?"
+     "g1",
+     "Gold is one of the most traded markets in the world."
     ],
     [
-     "meet",
-     "With FTM, you do."
+     "g2",
+     "It moves on news, on fear and on interest rates, around the clock."
     ],
     [
-     "trust",
-     "FTM MACHINE trades on your own account, in your name. Deposit, withdraw or pause whenever you want."
+     "g3",
+     "FTM MACHINE follows those moves by fixed rules, together with four other markets."
     ],
     [
-     "start",
-     "Getting started takes minutes. Create a free account and connect in seconds."
+     "cta",
+     "Follow the market with us. Start free at ftm wealth nation dot com."
+    ]
+   ]
+  },
+  {
+   "date": "2026-11-30",
+   "stage": "3 · Action",
+   "format": "Month recap with real November numbers (calendar fills day by day)",
+   "title": "November with FTM MACHINE",
+   "open": "November is over. Here is every day, in thirty seconds.",
+   "hook": "Our November, day by day.",
+   "scenes": [
+    [
+     "cal",
+     "Here is November on the FTM master account. Green days, red days, all of them."
+    ],
+    [
+     "tot",
+     "And the month in total."
+    ],
+    [
+     "dec",
+     "Start December with a system that works while you do."
     ],
     [
      "cta",
      "Start free at ftm wealth nation dot com."
     ]
    ],
-   "open": "Who really holds your money? Most people never ask."
-  },
-  {
-   "date": "2026-11-30",
-   "stage": "4 · Action",
-   "title": "November with FTM MACHINE",
-   "hook": "Start December with a system.",
-   "scenes": [
-    [
-     "same",
-     "November is over. Ada worked. Tom had his meetings. Leo slept."
-    ],
-    [
-     "life",
-     "And FTM MACHINE followed the markets for them, every day."
-    ],
-    [
-     "follow",
-     "Every trade and every result is posted, good days and bad days."
-    ],
-    [
-     "start",
-     "Start December with a system. Create your free account today."
-    ],
-    [
-     "cta",
-     "Start free at ftm wealth nation dot com. Invest today. Secure tomorrow."
-    ]
-   ],
-   "open": "November is over. Here's what happened while people were busy."
+   "note": "Figures: real November day results and month total from the dayresult feed; never invent numbers."
   }
  ]
 }
