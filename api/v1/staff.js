@@ -223,6 +223,8 @@ module.exports = async function handler(req, res) {
       stats.no_account = (cr.customers || []).filter(c => c.accounts && !c.accounts.length).length;
       stats.attention = accounts.filter(a => !(a.status === 'ACTIVE' || a.status === 'PAUSED' && a.reason === 'PAUSED')).length;
       stats.conversion = stats.customers ? Math.round(stats.paying / stats.customers * 1000) / 10 : 0;
+      // sign-ups by link (?start=ig|fb|tt|yt|wa...), last 30 days and all time
+      stats.sources_30d = users.filter(u => now - Date.parse(u.created_at) < 30 * day).reduce((o, u) => { const k = (u.user_metadata && u.user_metadata.ftm_src) || 'direct'; o[k] = (o[k] || 0) + 1; return o; }, {});
       if (role === 'support') pay = null;
       return res.status(200).json({ ok: true, role, at: cr.at, crawl_ms: cr.ms, stats, days, money, by_status: count(a => a.status), by_tier: count(a => a.tier), by_broker: count(a => a.broker), payments: pay,
         accounts: accounts.sort((a, b) => b.equity - a.equity), problems: problems(users, prof, cr),

@@ -48,7 +48,15 @@ module.exports = async function handler(req, res) {
     if (mode === 'signup') {
       // Someone who already has a password and signs up again gets a login code instead of a new password.
       if (user && user.user_metadata && user.user_metadata.password_set) await sendLoginEmail(admin, email, { name });
-      else await sendPasswordEmail(admin, email, { free: true, name });
+      else {
+        const r = await sendPasswordEmail(admin, email, { free: true, name });
+        // where the sign-up came from (?start=ig|fb|tt|yt|wa... links in bios and posts), kept once, never overwritten
+        const src = String(body.src || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 20);
+        const uid = (user && user.id) || (r && r.userId);
+        if (src && uid && !(user && user.user_metadata && user.user_metadata.ftm_src)) {
+          try { await admin.auth.admin.updateUserById(uid, { user_metadata: Object.assign({}, (user && user.user_metadata) || {}, { ftm_src: src, ftm_src_at: new Date().toISOString() }) }); } catch (e) { console.error('auth-email: source not saved', e.message); }
+        }
+      }
     } else if (mode === 'login') {
       await sendLoginEmail(admin, email, { name });
     } else if (user) {
