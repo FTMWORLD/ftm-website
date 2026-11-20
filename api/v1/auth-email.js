@@ -66,5 +66,7 @@ module.exports = async function handler(req, res) {
     console.error('auth-email:', mode, 'failed for', email, e.message);
     return res.status(502).json({ ok: false, error: 'EMAIL_FAILED' });
   }
+  // the free sign-up pop-up never shows again to this internet address (signed up or logged in)
+  try { await require('../_lib/nudge').mark(createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY), ip, mode === 'signup' ? 'signed' : 'customer'); } catch (e) {}
   return res.status(200).json({ ok: true });
 };
