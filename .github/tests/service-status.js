@@ -36,6 +36,8 @@ const BASE=process.argv[2]||'http://localhost:8765';
     ok(/FTM MACHINE engine/.test(v.eng)&&/99\.95% uptime/.test(v.eng),'['+label+'] uptime per service from the hourly checks: '+v.eng.replace(/\n/g,' '));
     ok(/: 1 checks with a problem$/.test(v.tips[80])&&/: No problems found$/.test(v.tips[81])&&/: Not checked$/.test(v.tips[0]),'['+label+'] every day explains itself on hover/tap');
     ok(v.fit,'['+label+'] fits the screen');
+    const inc=await p.evaluate(()=>[...document.querySelectorAll('#ssModal .ss-inc li')].map(li=>li.textContent));
+    ok(inc.length===2&&/Payments/.test(inc[0])&&/5 checks with a problem/.test(inc[0])&&/FTM MACHINE engine/.test(inc[1])&&/1 checks with a problem/.test(inc[1]),'['+label+'] problems in the last 14 days are listed, newest first: '+JSON.stringify(inc));
     await p.keyboard.press('Escape'); await p.waitForTimeout(200); ok(await p.evaluate(()=>document.getElementById('ssModal').hidden),'['+label+'] closes with Escape');
     if(process.env.SHOT_DIR){ await p.evaluate(()=>FTM.openStatus()); await p.waitForTimeout(500); await p.screenshot({path:path.join(process.env.SHOT_DIR,'status-'+label.replace(/ /g,'_')+'.png')}); }
     ok(!errs.length,'['+label+'] no script errors '+errs.join(' | ')); await p.close();

@@ -230,5 +230,9 @@
  {
   "date": "2026-11-20",
   "text": "New visitors see the free sign-up once, after 20 seconds on the site, with a close button; customers and anyone who has already seen it are never asked again."
+ },
+ {
+  "date": "2026-11-21",
+  "text": "The Service status page now lists any problem from the last 14 days: the day, the service and how many hourly checks found it."
  }
 ]
