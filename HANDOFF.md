@@ -387,7 +387,7 @@ Sections in page order, with the line where each begins:
 | Instagram | `https://www.instagram.com/ftm_wealth_nation` |
 | Facebook *(updated)* | `https://www.facebook.com/profile.php?id=61595064296217` |
 | TikTok | `https://www.tiktok.com/@ftm_wealth_nation` |
-| YouTube *(updated)* | `http://www.youtube.com/@ftmwealthnation` |
+| YouTube *(new channel, 21 Nov 2026; same channel Metricool posts to)* | `https://www.youtube.com/channel/UCZGQ7Mx-qpDOF-JF6St1qOQ` |
 | X *(added)* | `https://x.com/ftmwealthnation?s=11` |
 
 **Still pointing nowhere:** Log in destination (opens the preview overlay), Explore FTM MT5,
