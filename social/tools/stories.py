@@ -1,7 +1,7 @@
-"""FTM daily stories (owner 21 Nov 2026): 5 own stories a day at 08:00, 11:00, 14:00, 17:00, 20:00 (built here), plus the
+"""FTM daily stories (owner 21 Nov 2026): 5 own stories a day at 08:00, 10:30, 13:00, 15:30, 18:00 (owner 21 Nov: nothing at 20:00; built here), plus the
 reposts of the feed posts (06:05 morning video, 23:00 day result built by the daily result job with storyvid.js). Every story is a 10 s video: centred, moving, music,
 a real figure, FOMO and a call to action. Figures come from /api/v1/community?dayresult= (never typed by hand).
-python3 social/tools/stories.py YYYY-MM-DD [out-dir]  -> <out>/story-D-08|11|14|17|20.mp4
+python3 social/tools/stories.py YYYY-MM-DD [out-dir]  -> <out>/story-D-0800|1030|1300|1530|1800.mp4
 python3 social/tools/stories.py YYYY-MM-DD out-dir night '<dayresult json>'  -> <out>/day-D-story.mp4 (23:00 result story)"""
 import sys, json, os, subprocess, datetime, urllib.request
 
@@ -92,22 +92,26 @@ def day_set(d):
     br = []
     for k in range(3):
         b = dict(BRAND[(o + k) % len(BRAND)]); b['seed'] = dt.day * 5 + 3 + k; br.append(b)
-    return [('08', br[0]), ('11', s11), ('14', br[1]), ('17', s17), ('20', br[2])]
+    return [('0800', br[0]), ('1030', s11), ('1300', br[1]), ('1530', s17), ('1800', br[2])]
 
 
 def night(d, j):
     dt = datetime.date.fromisoformat(d); mon = MON[dt.month - 1]; fl = j.get('floating') or {}
     if j.get('trades', 0) == 0:
-        cfg = {'kicker': 'Today on FTM · %d %s' % (dt.day, mon[:3]), 'hook': 'No trades today.', 'big': '0 trades', 'bigTone': 'gold',
-               'bigLabel': 'Waiting is part of the plan', 'title': ('%s so far: <b>%s</b>' % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}
+        cal = j.get('cal') or []; best = max(cal, key=lambda c: c.get('pct', 0)) if cal else None
+        cfg = {'kicker': 'No trades today · %d %s' % (dt.day, mon[:3]), 'hook': 'Not every day <b>needs a trade.</b>',
+               'big': pc(j['mtd']) if j.get('mtd') is not None else '0 trades', 'bigTone': 'up' if (j.get('mtd') or 0) >= 0 else 'down',
+               'bigLabel': mon + ' so far on FTM', 'title': 'FTM MACHINE waits for its setups. <b>Waiting is part of the plan.</b>'}
+        if best and best.get('pct', 0) > 0:
+            bd = datetime.date.fromisoformat(best['date']); cfg['chips0'] = ['Best day: %s (%d %s)' % (pc(best['pct']), bd.day, mon[:3])]
     else:
         cfg = {'kicker': 'Today on FTM · %d %s' % (dt.day, mon[:3]), 'hook': 'Today\'s result:', 'big': pc(j['pct']),
                'bigTone': 'up' if j['pct'] >= 0 else 'down', 'bigLabel': '%d trades · every one shown' % j['trades'],
                'title': ('%s so far: <b>%s</b>' % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}
-    chips = []
+    chips = cfg.pop('chips0', [])
     if fl.get('n'):
         chips.append('Open trades: %s%s (%s)' % ('+' if fl.get('pl', 0) >= 0 else '−', '${:,.0f}'.format(abs(fl.get('pl', 0))), pc(fl.get('pct', 0))))
-    chips.append('Swipe the post for every trade')
+    chips.append('Swipe the post for every trade' if j.get('trades', 0) else 'Swipe the post for the numbers')
     cfg.update({'chips': chips, 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 4})
     return cfg
 

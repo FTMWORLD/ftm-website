@@ -2,6 +2,7 @@
    node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a losing day also gets <name>-month: the month so far, every day)
    node social/tools/render.js card '<json {title, body, kicker, foot}>' out-dir name
    node social/tools/render.js week '<json from social/tools/week.py>' out-dir   -> week-<to>-post, -days, -story (Saturday 06:00 weekly summary)
+   node social/tools/render.js quiet '<dayresult json + night>' out-dir   -> day-D-quiet1..3 (no-trade day: note + live stats + trust engine)
    node social/tools/render.js cover '<json {top, big, title, sub, tone}>' out-dir name   -> <name>-cover (1080x1920 reel/short cover) + <name>-thumb (1280x720 YouTube)
    Writes <name>-post.png (1080x1350) and <name>-story.png (1080x1920). */
 const { chromium } = require('playwright');
@@ -170,10 +171,35 @@ function card(w, h) {
     ${D.kicker ? `<div class="kick">${esc(D.kicker)}</div>` : ''}<h1>${D.title}</h1>
     <div class="body">${(D.body || []).map(p => `<p>${p}</p>`).join('')}</div></div>${FOOT}`;
 }
+/* No-trade day (owner 21 Nov 2026): the 11 p.m. post becomes a short note ("not every day needs a trade") and two slides of real
+   statistics: the live account this month (D = the dayresult JSON) and the trust engine's Portfolio backtest. D.night = series number. */
+function quiet(w, h, part) {
+  const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()], mon = MONTHS[m - 1];
+  const cal = D.cal || [], green = cal.filter(c => c.pct > 0).length, red = cal.filter(c => c.pct < 0).length, trades = cal.reduce((a, c) => a + (c.n || 0), 0);
+  const best = cal.reduce((b, c) => (c.pct > (b ? b.pct : -1e9) ? c : b), null);
+  const chip = (t, v, tone) => `<div style="padding:22px 26px;border-radius:24px;background:rgba(6,12,38,.55);border:2px solid rgba(227,182,47,.35);text-align:center"><b style="display:block;font-size:56px;font-weight:900;letter-spacing:-.03em;color:${tone || '#fff'}">${v}</b><span style="font-size:22px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc">${t}</span></div>`;
+  const badge = t => `<div style="display:inline-flex;align-items:center;gap:14px;padding:14px 26px;border-radius:999px;background:rgba(6,12,38,.6);border:2px solid rgba(227,182,47,.55);font-size:28px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#E3B62F"><i style="width:14px;height:14px;border-radius:50%;background:#5fe39b"></i>${esc(t)}</div>`;
+  const frame = inner => `<div style="position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 48%,rgba(227,182,47,.18),transparent 70%)"></div><div class="grid"></div>
+    <div style="position:absolute;left:84px;right:84px;top:60px;bottom:${h > 1500 ? 130 : 96}px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:34px">
+    <div class="logo">${MARK}FTM</div>${inner}</div>${FOOT}`;
+  if (part === 1) return frame(`${badge((D.night ? 'Night ' + D.night + ' · ' : '') + wd + ' ' + d + ' ' + mon.slice(0, 3))}
+    <div style="font-size:210px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F;text-shadow:0 0 70px rgba(227,182,47,.3)">0 trades</div>
+    <h1 style="margin:0;font-size:86px">Not every day <b>needs a trade.</b></h1>
+    <div class="body" style="margin:0;font-size:38px">FTM MACHINE only trades when its rules line up. Waiting is part of the plan. Swipe for the numbers 👉</div>`);
+  if (part === 2) return frame(`${badge('Live account · ' + mon + ' so far')}
+    <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:${(D.mtd || 0) >= 0 ? '#5fe39b' : '#ff6b74'}">${D.mtd == null ? '—' : pc(D.mtd)}</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('trades', trades)}${chip('green days', green, '#5fe39b')}${chip('red days', red, '#ff6b74')}${chip('best day', best ? pc(best.pct) : '—', '#5fe39b')}</div>
+    <div class="body" style="margin:0">Every trade is posted here at 11 p.m., good days and bad.</div>`);
+  return frame(`${badge('Trust engine · Portfolio · 2020 to 2026')}
+    <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#5fe39b">+98,644%</div>
+    <h1 style="margin:0;font-size:72px">Five markets. <b>One account.</b></h1>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('years profitable', '7 of 7', '#E3B62F')}${chip('markets', '5')}</div>
+    <div class="body" style="margin:0">Growth profile, full backtest. See every trade behind it on the trust engine: ftmwealthnation.com</div>`);
+}
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
-  const name = nameArg || (kind === 'day' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
-  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : [];
+  const name = nameArg || (kind === 'day' || kind === 'quiet' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
+  const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : kind === 'quiet' ? [['quiet1', 1080, 1350, () => quiet(1080, 1350, 1)], ['quiet2', 1080, 1350, () => quiet(1080, 1350, 2)], ['quiet3', 1080, 1350, () => quiet(1080, 1350, 3)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
   if (kind === 'day' && D.pct < 0 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
