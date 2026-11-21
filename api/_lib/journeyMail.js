@@ -103,6 +103,21 @@ async function run(admin, o) {
     }
     await P.write(admin, key, st);
   }
+  // Owner 21 Nov 2026: people who signed up but never clicked the email link get a reminder after 3 hours and once more after
+  // 3 days (a fresh link each time), then never again. Staff mailboxes excluded.
+  let rem = 0;
+  if (!o.only) {
+    const PE = require('./passwordEmail');
+    for (const u of (await allUsers(admin)).filter(x => x.email && !x.email_confirmed_at)) {
+      if (Date.now() > deadline) { more = true; break; }
+      const mail = String(u.email).toLowerCase(), age = now - Date.parse(u.created_at || 0); if (staff.indexOf(mail) !== -1 || !(age > 3 * 3600e3) || age > 10 * DAY) continue;
+      const key = 'journey/u-' + P.midOf(u.id) + '.json', st = Object.assign({}, await P.read(admin, key, null) || {});
+      const step = !st.r1 ? 'r1' : (!st.r2 && age > 3 * DAY ? 'r2' : null); if (!step) continue;
+      let ok = !!o.dry; if (!o.dry) { try { await PE.sendPasswordEmail(admin, u.email, { free: true, reminder: true }); ok = true; } catch (x) { ok = false; } }
+      if (ok) { st[step] = new Date(now).toISOString(); rem++; await P.write(admin, key, st); }
+    }
+  }
+  if (rem) log.push('confirm reminders: ' + rem + ' sent');
   log.push('welcome emails: ' + sent + ' sent' + (sentLog.length ? ' (' + sentLog.slice(0, 20).join(', ') + ')' : '') + (more ? ', more to do' : ''));
   return { more, log, sent };
 }

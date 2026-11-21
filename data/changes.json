@@ -254,5 +254,9 @@
  {
   "date": "2026-11-21",
   "text": "The YouTube button on the website now opens FTM's new YouTube channel."
+ },
+ {
+  "date": "2026-11-21",
+  "text": "If you sign up and don't click the email link, FTM now reminds you with a fresh link after 3 hours and once more after 3 days."
  }
 ]

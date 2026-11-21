@@ -142,19 +142,28 @@ function weekDays(w, h) {
 /* Cover image for a reel / short / video (owner 20 Nov: every video post gets its own designed cover). 1080x1920; the words
    sit in the centre square so the profile grid (3:4 / 1:1 crop) shows them. D = {top, title, big, sub, tone: 'up'|'down'|'gold', bg: a still from the video (optional)} */
 function cover(w, h) {
+  /* Covers v2 (owner 21 Nov 2026: sharper, unique, the best on the grid). Everything sits inside the centre 1080x1440
+     that Instagram shows on the profile grid; one glass card, one huge figure or hook, a live badge, a red play button. */
   const tone = D.tone === 'down' ? '#ff6b74' : D.tone === 'up' ? '#5fe39b' : '#E3B62F', land = w > h;
-  let rays = ''; for (let i = 0; i < 14; i++) { const a = i * Math.PI / 7; rays += `<path d="M50 50 L${50 + 90 * Math.cos(a - .05)} ${50 + 90 * Math.sin(a - .05)} L${50 + 90 * Math.cos(a + .05)} ${50 + 90 * Math.sin(a + .05)}Z" fill="#E3B62F" opacity=".05"/>`; }
-  const bg = D.bg && fs.existsSync(D.bg) ? `<div style="position:absolute;inset:0;background:url(data:image/${/png$/i.test(D.bg) ? 'png' : 'jpeg'};base64,${fs.readFileSync(D.bg).toString('base64')}) center/cover"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,14,44,.55),rgba(7,14,44,.25) 30%,rgba(7,14,44,.72) 50%,rgba(7,14,44,.35) 72%,rgba(7,14,44,.8))"></div>` : '';
-  return bg + `<div style="position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 50%,rgba(227,182,47,.22),transparent 70%)"></div>
-    <svg style="position:absolute;inset:0" width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${rays}</svg>
-    <div class="grid"></div>${LINE}
-    <div style="position:absolute;left:0;right:0;top:${land ? 44 : 150}px;display:flex;justify-content:center"><div class="logo">${MARK}FTM</div></div>
-    <div style="position:absolute;left:${land ? 90 : 70}px;right:${land ? 90 : 70}px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
-      ${D.top ? `<div style="font-size:${land ? 34 : 40}px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#D4AF37">${esc(D.top)}</div>` : ''}
-      ${D.big ? `<div style="font-size:${land ? 190 : 230}px;font-weight:900;letter-spacing:-.05em;line-height:1;color:${tone};margin-top:18px;text-shadow:0 20px 60px rgba(0,0,0,.45)">${esc(D.big)}</div>` : ''}
-      ${D.title ? `<div style="font-size:${land ? 96 : (D.big ? 76 : 116)}px;font-weight:900;letter-spacing:-.04em;line-height:1.02;margin-top:${D.big ? 20 : 26}px;text-wrap:balance;text-shadow:0 14px 50px rgba(0,0,0,.5)">${String(D.title).replace(/<b>/g, '<b style="color:#E3B62F">')}</div>` : ''}
-      ${D.sub ? `<div style="margin-top:34px;display:inline-block;padding:16px 34px;border-radius:999px;background:#E5323E;font-size:${land ? 34 : 40}px;font-weight:800">${esc(D.sub)}</div>` : ''}
-    </div>${land ? '' : FOOT}`;
+  const glow = D.tone === 'down' ? 'rgba(255,107,116,.35)' : D.tone === 'up' ? 'rgba(95,227,155,.35)' : 'rgba(227,182,47,.35)';
+  const bg = D.bg && fs.existsSync(D.bg) ? `<div style="position:absolute;inset:0;background:url(data:image/${/png$/i.test(D.bg) ? 'png' : 'jpeg'};base64,${fs.readFileSync(D.bg).toString('base64')}) center/cover;filter:saturate(1.1)"></div><div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,12,38,.6),rgba(6,12,38,.35) 35%,rgba(6,12,38,.75))"></div>` : '';
+  const bars = (D.bars || []).slice(0, 14), mx = Math.max(1e-9, ...bars.map(v => Math.abs(v)));
+  const barsH = bars.length ? `<div style="display:flex;align-items:flex-end;justify-content:center;gap:${land ? 8 : 10}px;height:${land ? 70 : 110}px;margin-top:${land ? 18 : 30}px">${bars.map(v => `<i style="display:block;width:${land ? 18 : 26}px;height:${Math.max(8, Math.abs(v) / mx * (land ? 70 : 110))}px;border-radius:6px;background:${v >= 0 ? '#5fe39b' : '#ff6b74'};opacity:.95"></i>`).join('')}</div>` : '';
+  const title = D.title ? String(D.title).replace(/<b>/g, '<b style="color:#E3B62F">') : '';
+  const badge = `<div style="display:inline-flex;align-items:center;gap:14px;padding:${land ? '10px 20px' : '14px 26px'};border-radius:999px;background:rgba(6,12,38,.6);border:2px solid rgba(227,182,47,.55);font-size:${land ? 24 : 30}px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#E3B62F;white-space:nowrap"><i style="width:14px;height:14px;border-radius:50%;background:#5fe39b;box-shadow:0 0 0 6px rgba(95,227,155,.18)"></i>${esc(D.top || 'FTM')}</div>`;
+  const play = `<div style="display:inline-flex;align-items:center;gap:18px;padding:${land ? '16px 30px' : '22px 40px'};border-radius:999px;background:linear-gradient(180deg,#f0414c,#d42633);font-size:${land ? 32 : 42}px;font-weight:900;box-shadow:0 18px 44px rgba(229,50,62,.45);white-space:nowrap"><svg width="${land ? 26 : 34}" height="${land ? 26 : 34}" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" fill="#fff"/></svg>${esc(D.sub || 'Watch every trade')}</div>`;
+  const big = D.big ? `<div style="font-size:${(land ? [170, 170, 170, 170, 170, 170, 150, 130, 116, 104] : [250, 250, 250, 250, 250, 250, 215, 188, 166, 148])[Math.min(9, String(D.big).length)]}px;white-space:nowrap;font-weight:900;letter-spacing:-.055em;line-height:.95;color:${tone};text-shadow:0 0 70px ${glow},0 16px 40px rgba(0,0,0,.5)">${esc(D.big)}</div>` : '';
+  const tt = title ? `<div style="font-size:${land ? (D.big ? 54 : 78) : (D.big ? 70 : 104)}px;font-weight:900;letter-spacing:-.04em;line-height:1.02;margin-top:${D.big ? (land ? 10 : 22) : 0}px;text-wrap:balance;text-shadow:0 10px 40px rgba(0,0,0,.5)">${title}</div>` : '';
+  const card = `<div style="position:relative;padding:${land ? '30px 40px' : '56px 56px 50px'};border-radius:${land ? 36 : 56}px;background:linear-gradient(160deg,rgba(31,58,147,.55),rgba(6,12,38,.72));border:3px solid transparent;background-clip:padding-box;box-shadow:0 0 0 3px rgba(227,182,47,.55),0 40px 90px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.12);text-align:center;width:100%">${big}${tt}${barsH}</div>`;
+  const logo = `<div class="logo" style="font-size:${land ? 34 : 44}px">${MARK}FTM</div>`;
+  const back = `<div style="position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 50%,rgba(227,182,47,.20),transparent 70%)"></div>
+    <div style="position:absolute;left:-20%;top:${land ? -30 : 20}%;width:140%;height:${land ? 60 : 26}%;transform:rotate(-14deg);background:linear-gradient(90deg,transparent,rgba(227,182,47,.10),transparent)"></div>
+    <div class="grid"></div>
+    <div style="position:absolute;left:0;right:0;bottom:${land ? -60 : 40}px;text-align:center;font-weight:900;font-size:${land ? 360 : 520}px;letter-spacing:-.06em;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(227,182,47,.10)">FTM</div>`;
+  if (land) return bg + back + `<div style="position:absolute;inset:44px 60px;display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;align-content:center">
+      <div style="display:flex;flex-direction:column;gap:22px;align-items:flex-start">${logo}${badge}${play}</div>${card}</div>`;
+  return bg + back + `<div style="position:absolute;left:70px;right:70px;top:240px;bottom:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px">
+      ${logo}${badge}${card}${play}</div>${FOOT}`;
 }
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
@@ -171,7 +180,7 @@ function card(w, h) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);
     await p.waitForTimeout(250);
-    await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.screenshot({ path: `${outDir}/${name}-${tag}.jpg`, type: 'jpeg', quality: 92 }); await p.close();
+    await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.screenshot({ path: `${outDir}/${name}-${tag}.jpg`, type: 'jpeg', quality: 95 }); await p.close();
   }
   await b.close(); console.log('ok', name);
 })();

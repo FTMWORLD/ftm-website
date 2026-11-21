@@ -141,7 +141,7 @@ async function sendPasswordEmail(admin, email, opts) {
   const m = await makeLink(admin, email, free);
   if (!m.link) throw new Error('no link from Supabase');
   const kind = opts.fresh ? 'fresh' : (free ? 'free' : 'paid');
-  const subject = opts.fresh ? 'Your new FTM password link' : free ? 'Welcome to FTM: create your password' : 'Welcome to FTM: create your password';
+  const subject = opts.reminder ? 'Reminder: your free FTM account is one tap away' : opts.fresh ? 'Your new FTM password link' : free ? 'Welcome to FTM: create your password' : 'Welcome to FTM: create your password';
   const redirectTo = SITE() + '/?setpw=1' + (free ? '&free=1' : '') + '&e=' + encodeURIComponent(email);
   const via = await sendOrFallback(admin, email, subject, html(kind, { link: m.link, name: opts.name, product: opts.product, free }),
     () => admin.auth.resetPasswordForEmail(email, { redirectTo }));
