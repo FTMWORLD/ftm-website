@@ -15,7 +15,7 @@ function newsroom(t) {
 function wall(t, mode) {
   const x0 = 90, y0 = 360, w = 900, h = 560, maxV = 3;
   let o = `<g><rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="26" fill="url(#wall)" stroke="#D4AF37" stroke-width="4"/>
-   <text x="${x0 + 40}" y="${y0 + 64}" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="5">THIS WEEK · FTM MASTER ACCOUNT</text>`;
+   <text x="${x0 + 40}" y="${y0 + 64}" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="5">THIS WEEK ON FTM · LIVE ACCOUNT</text>`;
   const bw = 120, gap = (w - 80 - bw * 5) / 4, negRoom = Math.max(0, ...WEEK.map(([, v]) => v != null && v < 0 ? -v / maxV * 300 : 0)), base = y0 + h - 90 - negRoom;
   let best = -1e9, worst = 1e9; WEEK.forEach(([, v]) => { if (v != null) { best = Math.max(best, v); worst = Math.min(worst, v); } });
   WEEK.forEach(([d, v], i) => {

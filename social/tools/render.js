@@ -64,7 +64,7 @@ function day(w, h) {
     : `<div class="big" style="font-size:120px">No trades today</div><div class="sub">FTM MACHINE found no setup worth taking. Waiting is part of the plan.</div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'}">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}`;
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick">FTM master account · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
+    <div class="kick">Today on FTM · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
 }
 function trades(w, h, part, parts) {
   const R = (D.rows || []).slice().sort((a, b) => a.c - b.c), per = Math.ceil(R.length / parts), L = R.slice(part * per, (part + 1) * per);
@@ -116,7 +116,7 @@ function weekBars(H) {
 function week(w, h) {
   const col = D.pct > 0 ? '#E3B62F' : D.pct < 0 ? '#ff6b74' : '#ffffff', [, m] = D.to.split('-').map(Number), markets = (D.markets || []).map(mk).filter((v, i, a) => a.indexOf(v) === i);
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick">FTM master account · weekly result</div><div class="date">${weekRange()}</div>
+    <div class="kick">This week on FTM · weekly result</div><div class="date">${weekRange()}</div>
     <div class="big" style="font-size:${h > 1500 ? 220 : 180}px;color:${col}">${pc(D.pct)}</div>
     <div class="sub">Result of this week's closed trades, Saturday to Friday</div>
     ${weekBars(h > 1500 ? 380 : 300)}
