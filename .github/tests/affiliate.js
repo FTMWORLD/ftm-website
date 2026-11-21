@@ -85,9 +85,13 @@ const BASE = process.argv[2] || 'http://localhost:8765';
     await p.fill('#afModal #afName', 'Ada'); await p.fill('#afModal #afEmail', 'a@b.com'); await p.check('#afModal #afAgree'); await p.click('#afModal button[type=submit]'); await p.waitForTimeout(300);
     ok(/being reviewed/.test(await p.textContent('#afModal')) && posted.some(d => d.action === 'apply' && d.name === 'Ada' && d.agree === true), '[' + label + '] the application is sent and confirmed');
     await p.keyboard.press('Escape');
+    const pc = await p.evaluate(() => ({ cards: [...document.querySelectorAll('#partner .partner-card h3')].map(h => h.textContent), first: (document.querySelector('#partner .partner-card a') || {}).getAttribute && document.querySelector('#partner .partner-card a').getAttribute('href'), agent: /Payment agent/.test(document.body.innerHTML) }));
+    ok(pc.cards.join('|') === 'FTM affiliate programme|Deriv affiliate via FTM|Introducing broker' && pc.first === '#affiliate' && !pc.agent, '[' + label + '] Partner with FTM: FTM affiliate first, then Deriv, then Introducing broker; no payment agent ' + JSON.stringify(pc));
     // client area page
     await p.evaluate(() => { const F = window.FTM; F.auth = Object.assign(F.auth || {}, { ready: () => true, getAccessToken: () => Promise.resolve('tok'), signOut: () => Promise.resolve() }); F.session = { email: 'aff@x.com', products: ['auto'], name: 'A' }; });
     await p.evaluate(() => FTM.loadLive().then(() => FTM.openArea('auto'))).catch(() => {}); await p.waitForTimeout(1500);
+    await p.click('#appView .um-btn'); await p.waitForTimeout(250); await p.click('#acctA .js-aff-apply'); await p.waitForTimeout(500);
+    ok(await p.evaluate(() => !document.querySelector('.app-view[data-view="aff"]').hidden), '[' + label + '] the account menu opens the affiliate page (one tap on phones)');
     await p.evaluate(() => { const n = document.querySelector('.app-nav-item[data-view="aff"]'); n.scrollIntoView(); n.click(); }); await p.waitForTimeout(700);
     const v = await p.evaluate(() => { const V = document.getElementById('affView'), W = document.documentElement.clientWidth; const over = [...V.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width && (r.right > W + 1 || r.left < -1); }).map(e => e.className).slice(0, 5);
       return { link: (V.querySelector('.af-copy code') || {}).textContent, kpis: [...V.querySelectorAll('.af-kpis b')].map(b => b.textContent), rows: V.querySelectorAll('.af-tbl tbody tr').length, st: [...V.querySelectorAll('.af-st')].map(s => s.textContent), pay: !!V.querySelector('.af-pay'), over }; });
