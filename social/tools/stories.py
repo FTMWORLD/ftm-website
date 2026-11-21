@@ -1,7 +1,7 @@
-"""FTM daily stories (owner 21 Nov 2026): 5 stories a day in total = 06:05 morning video, 11:00, 17:00, 20:00 (built here),
-23:00 day result (built by the daily result job with storyvid.js). Every story is a 10 s video: centred, moving, music,
+"""FTM daily stories (owner 21 Nov 2026): 5 own stories a day at 08:00, 11:00, 14:00, 17:00, 20:00 (built here), plus the
+reposts of the feed posts (06:05 morning video, 23:00 day result built by the daily result job with storyvid.js). Every story is a 10 s video: centred, moving, music,
 a real figure, FOMO and a call to action. Figures come from /api/v1/community?dayresult= (never typed by hand).
-python3 social/tools/stories.py YYYY-MM-DD [out-dir]  -> <out>/story-D-11.mp4, story-D-17.mp4, story-D-20.mp4
+python3 social/tools/stories.py YYYY-MM-DD [out-dir]  -> <out>/story-D-08|11|14|17|20.mp4
 python3 social/tools/stories.py YYYY-MM-DD out-dir night '<dayresult json>'  -> <out>/day-D-story.mp4 (23:00 result story)"""
 import sys, json, os, subprocess, datetime, urllib.request
 
@@ -58,6 +58,12 @@ BRAND = [
      'cta': 'Create your free account'},
     {'kicker': 'Free account', 'hook': 'See it all <b>before you pay.</b>', 'title': 'The live account, every trade, every day. <b>Free.</b>',
      'chips': ['No card needed', 'One tap'], 'cta': 'Open your free account'},
+    {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Green days and red days, posted at 11 p.m. <b>Nothing hidden.</b>',
+     'cta': 'See it free'},
+    {'kicker': 'How it works', 'hook': '3 steps. <b>About 10 minutes.</b>', 'title': 'You stay in control. <b>Pause any time.</b>',
+     'chips': ['1 · Free account', '2 · Connect your broker', '3 · FTM MACHINE trades'], 'cta': 'Start step 1 free'},
+    {'kicker': 'Community', 'hook': 'Meet people <b>running FTM MACHINE.</b>', 'title': 'Leaderboard, chat and every result. <b>Inside your free account.</b>',
+     'cta': 'Join free in one tap'},
     {'kicker': 'Every night', 'hook': 'Tonight at <b>11 p.m.</b>', 'title': 'Today\'s real result, every single trade. <b>Follow so it finds you.</b>',
      'cta': 'Follow + start free'},
 ]
@@ -82,8 +88,11 @@ def day_set(d):
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',
            'title': 'Every trade shown. <b>%d green days, %d red.</b>' % (f['green'], f['red']),
            'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 2}
-    b = dict(BRAND[datetime.date.fromisoformat(d).toordinal() % len(BRAND)]); b['seed'] = dt.day * 3 + 3
-    return [('11', s11), ('17', s17), ('20', b)]
+    o = datetime.date.fromisoformat(d).toordinal() * 3
+    br = []
+    for k in range(3):
+        b = dict(BRAND[(o + k) % len(BRAND)]); b['seed'] = dt.day * 5 + 3 + k; br.append(b)
+    return [('08', br[0]), ('11', s11), ('14', br[1]), ('17', s17), ('20', br[2])]
 
 
 def night(d, j):
