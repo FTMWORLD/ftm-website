@@ -21,7 +21,7 @@ background:radial-gradient(90% 60% at 50% 42%,#1d3590 0%,#122a7a 34%,#0b1640 70%
 .p{position:absolute;width:8px;height:8px;border-radius:50%;background:#E3B62F;box-shadow:0 0 18px #E3B62F}
 #logo{display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:40px;letter-spacing:-.04em;margin-bottom:34px}
 #logo span{width:56px;height:56px;border-radius:18px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-#col{position:absolute;left:70px;right:70px;top:300px;bottom:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#col{position:absolute;left:70px;right:70px;top:330px;bottom:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 .e{will-change:transform,opacity}
 #kick{display:inline-flex;align-items:center;gap:14px;color:#E3B62F;font-weight:800;font-size:30px;letter-spacing:.18em;text-transform:uppercase;padding:14px 26px;border:2px solid rgba(227,182,47,.45);border-radius:999px;background:rgba(11,22,64,.55)}
 #kick i{width:14px;height:14px;border-radius:50%;background:#5fe39b;box-shadow:0 0 0 0 rgba(95,227,155,.6)}
