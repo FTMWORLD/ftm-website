@@ -1,0 +1,63 @@
+/* Nov 22: "Does FTM rest at the weekend?" Real figures: Portfolio backtest (data/trades/all/100000/g2, trades held over a weekend) + live account 14 Nov. */
+const MAYA={skin:'#c68642',hair:'#1b120c',hairStyle:'curly',top:'#7a3fb0',ph:.2};
+const SAM={skin:'#f1c27d',hair:'#6b4423',hairStyle:'short',top:'#2a6fb0',beard:1,ph:.9};
+const LENA={skin:'#ffdbac',hair:'#b5562b',hairStyle:'long',top:'#d9705a',ph:1.6};
+const DEV={skin:'#8d5524',hair:'#141414',hairStyle:'short',top:'#2fa37a',glasses:1,ph:2.1};
+const ZOE={skin:'#e0ac69',hair:'#2b1810',hairStyle:'bun',top:'#E3B62F',top2:'#b8901f',ph:.6};
+const P=(b,o)=>person(Object.assign({},b,o));
+const open_=(bg)=>`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0">${bg||''}`;
+const grad=(id,a,b)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#${id})"/>`;
+const TX=(x,y,s,c,txt,w,o)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Inter" font-weight="${w||900}" font-size="${s}" fill="${c}" opacity="${o==null?1:o}">${txt}</text>`;
+function stars(t,n){let s='';for(let i=0;i<(n||60);i++){const x=(i*173)%W,y=(i*97)%1250+40;s+=`<circle cx="${x}" cy="${y}" r="${1.5+(i%3)}" fill="#fff" opacity="${.25+.35*(.5+.5*sin(t*2+i))}"/>`}return s}
+function moon(x,y,r){return `<circle cx="${x}" cy="${y}" r="${r}" fill="#f6e7b0"/><circle cx="${x+r*.45}" cy="${y-r*.2}" r="${r*.9}" fill="#0b1640"/>`}
+function stamp(t,label,col,y){const p=back(t/0.3);return `<g transform="translate(540,${y||1040}) rotate(-8) scale(${1.8-0.8*p})" opacity="${cl(t/0.12)}"><rect x="-230" y="-70" width="460" height="140" rx="18" fill="rgba(5,10,34,.6)" stroke="${col}" stroke-width="12"/>${TX(0,38,108,col,label)}</g>`}
+function count(t,a,b,dec){const v=a+(b-a)*ease(t);return v.toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0})}
+function flash(t){return t<0.18?`<rect width="${W}" height="${H}" fill="#fff" opacity="${0.5*(1-t/0.18)}"/>`:''}
+const SCN={
+ hook(t){
+  const days=['MON','TUE','WED','THU','FRI','SAT','SUN'];let cal='';
+  days.forEach((d,i)=>{const we=i>4,a=ease((t-i*0.07)/0.4),x=90+i*130;cal+=`<g opacity="${a}" transform="translate(${x},${430+(1-a)*40})"><rect x="0" y="0" width="112" height="128" rx="20" fill="${we?'rgba(212,175,55,.18)':'rgba(255,255,255,.08)'}" stroke="${we?'#D4AF37':'rgba(255,255,255,.2)'}" stroke-width="${we?4:2}"/>${TX(56,52,30,we?'#E3B62F':'#c9d0ee',d,800)}${we?TX(56,104,40,'#E3B62F','?'):TX(56,104,36,'#2fbf71','✓')}</g>`});
+  const zz=[0,1,2].map(i=>{const k=(t*0.8+i/3)%1;return TX(-200+k*0,-200,40+k*30,'#c9d0ee','z',900,1-k)}).join('');
+  const w=t>3.3;
+  return open_(grad('hg','#0b1640','#03061a'))+stars(t)+moon(900,330,46)+cal+
+   `<rect x="70" y="640" width="940" height="560" rx="44" fill="#050a22" opacity=".9" stroke="#D4AF37" stroke-width="4"/>`+
+   TX(540,760,64,'#fff','Most people think',800)+TX(540,850,78,'#E3B62F','the weekend is quiet.')+
+   TX(540,940,44,'#c9d0ee','Markets close. Nothing happens.',600,cl((t-1.1)/0.4))+zz+
+   (w?stamp(t-3.3,'WRONG','#E5323E',1090)+flash(t-3.3):'')+'</svg>'},
+ clock(t){
+  const L=[['FRI',150],['SAT',390],['SUN',630],['MON',870]];let ax='';
+  L.forEach(([d,x],i)=>{const we=i==1||i==2;ax+=`<rect x="${x-110}" y="560" width="220" height="420" rx="24" fill="${we?'rgba(212,175,55,.12)':'rgba(255,255,255,.05)'}"/>${TX(x,620,40,we?'#E3B62F':'#c9d0ee',d,800)}`});
+  const p=ease(t/2.6),x1=150+720*p;let path='M150 860';for(let x=150;x<=x1;x+=12){path+=` L${x} ${860-(x-150)*0.28+22*sin(x/40+t)}`}
+  const ex=x1,ey=860-(x1-150)*0.28+22*sin(x1/40+t);
+  const ang=t*3;
+  return open_(grad('cg','#16306e','#0b1640'))+stars(t,25)+ax+
+   `<line x1="150" y1="860" x2="${x1}" y2="860" stroke="rgba(255,255,255,.25)" stroke-dasharray="10 10" stroke-width="3"/>`+
+   `<path d="${path}" stroke="#2fbf71" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${ex}" cy="${ey}" r="${16+4*sin(t*8)}" fill="#2fbf71"/>`+
+   `<circle cx="150" cy="860" r="16" fill="#E3B62F"/>`+TX(150,930,30,'#E3B62F','Trade opens',800)+
+   (p>0.98?TX(870,930,30,'#2fbf71','Closed in profit',800):'')+
+   `<g transform="translate(540,1130)"><circle r="78" fill="#050a22" stroke="#D4AF37" stroke-width="6"/><line x1="0" y1="0" x2="${48*sin(ang)}" y2="${-48*cos(ang)}" stroke="#fff" stroke-width="8" stroke-linecap="round"/><line x1="0" y1="0" x2="${34*sin(ang/12)}" y2="${-34*cos(ang/12)}" stroke="#E3B62F" stroke-width="10" stroke-linecap="round"/></g>`+
+   TX(540,480,58,'#fff','The trade keeps running',800)+'</svg>'},
+ stats(t){
+  const C=[['577','trades held over a weekend',577,0,''],['56%','of them won',56,0,'%'],['1.9×','the average trade result',1.9,1,'×']];let g='';
+  C.forEach((c,i)=>{const a=ease((t-0.3-i*0.9)/0.5),y=440+i*275;g+=`<g opacity="${a}" transform="translate(${(1-a)*-120},0)"><rect x="90" y="${y}" width="900" height="235" rx="34" fill="rgba(5,10,34,.75)" stroke="${i==2?'#D4AF37':'rgba(255,255,255,.2)'}" stroke-width="3"/>${TX(540,y+130,112,i==2?'#E3B62F':'#2fbf71',count(cl((t-0.3-i*0.9)/1.0),0,c[2],c[3])+c[4])}${TX(540,y+195,36,'#c9d0ee',c[1],600)}</g>`});
+  return open_(grad('sg','#0b1640','#050a22'))+TX(540,370,40,'#E3B62F','PORTFOLIO · 2020 TO 2026 · BACKTEST',800)+g+'</svg>'},
+ best(t){
+  let pts='';const n=60,p=ease(t/2.2);for(let i=0;i<=n*p;i++){const x=110+i*14,y=620+(i<36?-i*1.5+12*sin(i):(-54+(i-36)*16))+8*sin(i*1.7);pts+=(i?' L':'M')+x+' '+y}
+  const v=count(cl((t-1.4)/1.2),0,18.35,2);
+  return open_(grad('bg','#16306e','#0b1640'))+
+   TX(540,380,38,'#E3B62F','BEST WEEKEND · 30 JAN → 2 FEB 2026',800)+
+   `<rect x="80" y="440" width="920" height="560" rx="36" fill="rgba(5,10,34,.7)"/>`+TX(220,500,32,'#c9d0ee','Gold',700)+
+   `<path d="${pts}" stroke="#E5323E" stroke-width="8" fill="none" stroke-linejoin="round"/>`+
+   `<g transform="translate(330,820)" opacity="${cl((t-0.4)/0.3)}"><rect x="-180" y="-46" width="360" height="92" rx="46" fill="#E5323E"/>${TX(0,17,46,'#fff','FTM: SHORT')}</g>`+
+   `<g transform="translate(540,1150) scale(${1+0.03*sin(t*5)})">${TX(0,40,150,'#2fbf71','+'+v+'%')}</g>`+
+   TX(540,1240,38,'#c9d0ee','by Monday morning',600)+'</svg>'},
+ live(t){
+  const r=150,sx=Math.abs(cos(t*1.6));
+  return open_(grad('lg','#0b1640','#03061a'))+stars(t,40)+
+   `<g transform="translate(540,640) scale(${0.3+0.7*sx},1)"><circle r="${r}" fill="#F7931A"/><circle r="${r-16}" fill="none" stroke="#ffd18a" stroke-width="6"/>${TX(0,62,190,'#fff','₿')}</g>`+
+   TX(540,880,58,'#fff','Bitcoin never closes.',800)+
+   `<g opacity="${cl((t-1)/0.4)}"><rect x="140" y="940" width="800" height="230" rx="34" fill="rgba(5,10,34,.8)" stroke="#2fbf71" stroke-width="3"/>${TX(540,1000,34,'#c9d0ee','LIVE ACCOUNT · SATURDAY 14 NOV',800)}${TX(540,1120,110,'#2fbf71','+'+count(cl((t-1)/1),0,0.64,2)+'%')}</g>`+'</svg>'},
+ cta(t,d,talk){const p=1+.04*sin(t*5);const C=[[MAYA,-1],[SAM,1],[LENA,-1],[DEV,1],[ZOE,-1]];let ppl='';
+  C.forEach(([c,dir],i)=>{const tx=180+i*180,sx=dir<0?-200:W+200,k=ease((t-i*0.15)/1.4),x=sx+(tx-sx)*k;ppl+=P(c,{x,y:1200,s:.8,t,walk:k<0.98?1:0,prop:'phone',armR:12,elR:118,mood:'smile',flip:dir>0&&k<.98})});
+  return open_(grad('ag','#1d3590','#0b1640'))+stars(t,30)+moon(900,330,40)+`<g transform="translate(540,620)"><rect x="-430" y="-200" width="860" height="400" rx="40" fill="#050a22" opacity=".9" stroke="#D4AF37" stroke-width="4"/>${TX(0,-100,58,'#fff','While you rest,',800)}${TX(0,-25,66,'#E3B62F','FTM keeps working.')}<g transform="translate(0,105) scale(${p})"><rect x="-230" y="-60" width="460" height="120" rx="60" fill="#E5323E"/>${TX(0,20,58,'#fff','Start free')}</g></g>`+ppl+'</svg>'}
+};

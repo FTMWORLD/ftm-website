@@ -79,6 +79,11 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - The country flag always comes after the name, never before (leaderboard, community, chat, profiles).
 - The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.
 
+## Posting times (owner instruction, 21 November 2026)
+- 06:00 = education, ideas, eye-openers, explaining FTM. 23:00 = the day's results.
+- Weekly or 5-day recaps go out only on Saturdays or on the last day of a month, never on other days.
+- A midday slot will come later; the owner's partner will define it.
+
 ## Profit days and loss days (owner instruction, 21 November 2026)
 - Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.
 

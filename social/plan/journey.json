@@ -67,30 +67,34 @@
   },
   {
    "date": "2026-11-22",
-   "stage": "2 · Proof",
-   "format": "Weekly recap with real figures (animated chart of the week)",
-   "title": "This week on FTM",
-   "open": "Five trading days. Every result, profit days and loss days.",
-   "hook": "Our week, in numbers.",
+   "stage": "1 · Learn",
+   "format": "Eye-opener with real statistics (weekend performance)",
+   "title": "Does FTM rest at the weekend?",
+   "open": "Most people think the weekend is quiet. Markets close, nothing happens. Wrong.",
+   "hook": "Most people think the weekend is quiet.",
    "scenes": [
     [
-     "week",
-     "Here is this week on FTM, day by day. Real numbers from the live account."
+     "clock",
+     "When a good trade is open on Friday, FTM MACHINE keeps it running through Saturday and Sunday."
+    ],
+    [
+     "stats",
+     "In our portfolio backtest, 577 trades were held over a weekend. 56 percent of them won, and on average they made almost twice a normal trade."
     ],
     [
      "best",
-     "The best day, and the lowest day. We show every single one."
+     "The best weekend: the thirtieth of January, twenty twenty six. Gold fell hard, and FTM was already short. Plus eighteen percent by Monday morning."
     ],
     [
-     "total",
-     "And the week in total."
+     "live",
+     "And Bitcoin never closes. On Saturday the fourteenth, the live account made plus zero point six four percent while most people were off."
     ],
     [
      "cta",
-     "See every trade live. Start free at ftm wealth nation dot com."
+     "While you rest, FTM keeps working. Start free at ftm wealth nation dot com."
     ]
    ],
-   "note": "Figures: real values from https://www.ftmwealthnation.com/api/v1/community?dayresult=YYYY-MM-DD for Mon 16 – Fri 20 Nov (pct per day) and mtd; never invent numbers."
+   "note": "Figures: Portfolio backtest data/trades/all/100000/g2, trades open across a Saturday (577 of 6209, win rate 56.2% vs 48.7% overall, avg +0.248% vs +0.132%; best weekend Fri 30 Jan - Mon 2 Feb 2026 = +18.35% summed, gold + HK50 shorts). Live: /api/v1/community?dayresult=2026-11-14 = +0.64% (BTCUSD). Owner 21 Nov: replaces the weekly recap (recaps only on Saturdays or the last day of a month)."
   },
   {
    "date": "2026-11-23",
