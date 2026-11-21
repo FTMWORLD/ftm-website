@@ -79,6 +79,10 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - The country flag always comes after the name, never before (leaderboard, community, chat, profiles).
 - The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.
 
+## Precision (owner instruction, 21 November 2026, repeated)
+- Things that sit side by side line up exactly: buttons, headings and bottom edges of cards in one row are on one straight line (horizontal or vertical), on the site and in the client area. Test: .github/tests/aligned-buttons.js.
+- A page refresh always starts at the top of the page, even after jumping to a menu section.
+
 ## Design first, figures fit (owner instruction, 10 November 2026)
 - Long figures (big balances, many digits) must never stretch or break a box or the layout. They shrink to fit; when shrunk, tapping them opens the full figure large in a small pop-up (class fz-on, #fzModal). Apply this everywhere.
 - After every change, check laptop and phone (and small phones) before publishing.

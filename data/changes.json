@@ -262,5 +262,9 @@
  {
   "date": "2026-11-21",
   "text": "Opening a broker account: you can now choose Deriv or Exness. \"Open account\" and the new \"No broker account yet? Create one\" link in the client area take you to the choice."
+ },
+ {
+  "date": "2026-11-21",
+  "text": "Buttons in rows of cards now line up exactly, and refreshing the page always starts at the top."
  }
 ]
