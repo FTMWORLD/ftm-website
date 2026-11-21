@@ -2,7 +2,7 @@
    node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a losing day also gets <name>-month: the month so far, every day)
    node social/tools/render.js card '<json {title, body, kicker, foot}>' out-dir name
    node social/tools/render.js week '<json from social/tools/week.py>' out-dir   -> week-<to>-post, -days, -story (Saturday 06:00 weekly summary)
-   node social/tools/render.js quiet '<dayresult json + night>' out-dir   -> day-D-quiet1..3 (no-trade day: note + live stats + trust engine)
+   node social/tools/render.js quiet '<dayresult json + night>' out-dir   -> day-D-quiet1..3 (no-trade day: note + live stats + quiet days in the backtest)
    node social/tools/render.js cover '<json {top, big, title, sub, tone}>' out-dir name   -> <name>-cover (1080x1920 reel/short cover) + <name>-thumb (1280x720 YouTube)
    Writes <name>-post.png (1080x1350) and <name>-story.png (1080x1920). */
 const { chromium } = require('playwright');
@@ -173,6 +173,17 @@ function card(w, h) {
 }
 /* No-trade day (owner 21 Nov 2026): the 11 p.m. post becomes a short note ("not every day needs a trade") and two slides of real
    statistics: the live account this month (D = the dayresult JSON) and the trust engine's Portfolio backtest. D.night = series number. */
+function quietStats() {
+  const dir = __dirname + '/../../data/trades/all/100000/g2', T = [];
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) T.push(...JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8')));
+  const key = t => new Date(t * 1000).toISOString().slice(0, 10), closed = new Set(T.map(t => key(t[1])));
+  const ds = [...closed].sort(), a = new Date(ds[0] + 'T00:00:00Z'), b = new Date(ds[ds.length - 1] + 'T00:00:00Z');
+  let all = 0, none = 0, wk = 0, run = 0, streak = 0; const yr = {};
+  for (let d = new Date(a); d <= b; d.setUTCDate(d.getUTCDate() + 1)) { all++; const k = d.toISOString().slice(0, 10), q = !closed.has(k);
+    if (q) { none++; run++; streak = Math.max(streak, run); if (d.getUTCDay() % 6) wk++; } else run = 0; }
+  T.forEach(t => { const y = key(t[1]).slice(0, 4); yr[y] = (yr[y] || 0) + t[6]; });
+  const ys = Object.keys(yr); return { none, weekdays: wk, streak, oneIn: Math.round(all / none), years: ys.filter(y => yr[y] > 0).length + ' of ' + ys.length, from: ds[0].slice(0, 4), to: ds[ds.length - 1].slice(0, 4) };
+}
 function quiet(w, h, part) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()], mon = MONTHS[m - 1];
   const cal = D.cal || [], green = cal.filter(c => c.pct > 0).length, red = cal.filter(c => c.pct < 0).length, trades = cal.reduce((a, c) => a + (c.n || 0), 0);
@@ -190,11 +201,13 @@ function quiet(w, h, part) {
     <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:${(D.mtd || 0) >= 0 ? '#5fe39b' : '#ff6b74'}">${D.mtd == null ? '—' : pc(D.mtd)}</div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('trades', trades)}${chip('green days', green, '#5fe39b')}${chip('red days', red, '#ff6b74')}${chip('best day', best ? pc(best.pct) : '—', '#5fe39b')}</div>
     <div class="body" style="margin:0">Every trade is posted here at 11 p.m., good days and bad.</div>`);
-  return frame(`${badge('Trust engine · Portfolio · 2020 to 2026')}
-    <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#5fe39b">+98,644%</div>
-    <h1 style="margin:0;font-size:72px">Five markets. <b>One account.</b></h1>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('years profitable', '7 of 7', '#E3B62F')}${chip('markets', '5')}</div>
-    <div class="body" style="margin:0">Growth profile, full backtest. See every trade behind it on the trust engine: ftmwealthnation.com</div>`);
+  // owner 21 Nov: on a quiet day the last slide shows that quiet days exist in the backtest too (not big profits)
+  const Q = quietStats();
+  return frame(`${badge('Trust engine · backtest ' + Q.from + ' to ' + Q.to)}
+    <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F">${Q.none.toLocaleString('en-US')}</div>
+    <h1 style="margin:0;font-size:68px">days without a trade. <b>About 1 day in ${Q.oneIn}.</b></h1>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%">${chip('quiet weekdays', Q.weekdays)}${chip('longest quiet run', Q.streak + ' days')}${chip('years profitable', Q.years)}</div>
+    <div class="body" style="margin:0">Quiet days are part of the plan. Every trade of the backtest is on the trust engine: ftmwealthnation.com</div>`);
 }
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
