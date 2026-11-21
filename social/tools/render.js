@@ -164,7 +164,7 @@ function cover(w, h) {
   if (land) return bg + back + `<div style="position:absolute;inset:44px 60px;display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;align-content:center">
       <div style="display:flex;flex-direction:column;gap:22px;align-items:flex-start">${logo}${badge}${play}</div>${card}</div>`;
   return bg + back + `<div style="position:absolute;left:70px;right:70px;top:240px;bottom:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px">
-      ${logo}${badge}${card}${play}</div>${FOOT}`;
+      <div style="margin-bottom:60px">${logo}</div>${badge}${card}<div style="margin-top:60px">${play}</div></div>${FOOT}`;
 }
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
