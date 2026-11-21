@@ -80,7 +80,7 @@ async function paidIds(admin) { const ids = new Set(); for (let from = 0; from <
 
 /* One run: o.deadline, o.now (tests), o.only (array of emails: send only to these, for samples), o.dry (no sending). */
 async function run(admin, o) {
-  o = o || {}; const now = o.now || Date.now(), deadline = o.deadline || (now + 40000), log = [], sentLog = [];
+  o = o || {}; const now = o.now || Date.now(), deadline = o.deadline || (Date.now() + 40000), log = [], sentLog = [];
   const users = (await allUsers(admin)).filter(u => u.email && u.email_confirmed_at && (!o.only || o.only.indexOf(String(u.email).toLowerCase()) !== -1));
   const paid = await paidIds(admin), H = require('./accountHistory'), Letter = require('./letter'), staff = StaffLib.owners();
   let more = false, sent = 0;
