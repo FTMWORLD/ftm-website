@@ -79,6 +79,9 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - The country flag always comes after the name, never before (leaderboard, community, chat, profiles).
 - The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.
 
+## Profit days and loss days (owner instruction, 21 November 2026)
+- Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.
+
 ## Precision (owner instruction, 21 November 2026, repeated)
 - Things that sit side by side line up exactly: buttons, headings and bottom edges of cards in one row are on one straight line (horizontal or vertical), on the site and in the client area. Test: .github/tests/aligned-buttons.js.
 - A page refresh always starts at the top of the page, even after jumping to a menu section.

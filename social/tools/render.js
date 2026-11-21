@@ -101,7 +101,7 @@ function month(w, h) {
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:28px;font-size:17px;color:#aeb7dc;font-weight:700;letter-spacing:.06em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN', 'WEEK'].map((x, i) => `<span style="${i === 7 ? 'color:#D4AF37' : ''}">${x}</span>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:10px">${cells}</div>
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
-    <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} green day${g === 1 ? '' : 's'} · ${r} red day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
+    <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} profit day${g === 1 ? '' : 's'} · ${r} loss day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
 }
 /* Weekly summary (owner 20 Nov: every Saturday 06:00, the week from last Saturday to this Friday). D = {from, to, pct, trades, wins, losses, mtd, balance, cur, markets, days:[{date, pct, n, wins, losses}]} */
 function weekRange() { const [y1, m1, d1] = D.from.split('-').map(Number), [y2, m2, d2] = D.to.split('-').map(Number); return (m1 === m2 ? `${d1}` : `${d1} ${MONTHS[m1 - 1]}`) + ` – ${d2} ${MONTHS[m2 - 1]} ${y2}`; }
@@ -199,8 +199,8 @@ function quiet(w, h, part) {
     <div class="body" style="margin:0;font-size:38px">FTM MACHINE only trades when its rules line up. Waiting is part of the plan. Swipe for the numbers 👉</div>`);
   if (part === 2) return frame(`${badge('Live account · ' + mon + ' so far')}
     <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:${(D.mtd || 0) >= 0 ? '#5fe39b' : '#ff6b74'}">${D.mtd == null ? '—' : pc(D.mtd)}</div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('trades', trades)}${chip('green days', green, '#5fe39b')}${chip('red days', red, '#ff6b74')}${chip('best day', best ? pc(best.pct) : '—', '#5fe39b')}</div>
-    <div class="body" style="margin:0">Every trade is posted here at 11 p.m., good days and bad.</div>`);
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('trades', trades)}${chip('profit days', green, '#5fe39b')}${chip('loss days', red, '#ff6b74')}${chip('best day', best ? pc(best.pct) : '—', '#5fe39b')}</div>
+    <div class="body" style="margin:0">Every trade is posted here at 11 p.m., profit days and loss days.</div>`);
   // owner 21 Nov: on a quiet day the last slide shows that quiet days exist in the backtest too (not big profits)
   const Q = quietStats();
   return frame(`${badge('Trust engine · backtest ' + Q.from + ' to ' + Q.to)}

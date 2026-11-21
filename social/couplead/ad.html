@@ -121,11 +121,11 @@ function setup(words, amp, lines) {
   st.appendChild($('<div id="ring"></div>'));
   // headlines on the product shots
   E.h = [];
-  hl('Every night at 23:00,', 'the real result goes live.', T.l2 + .1, T.l3); hl('Every single trade.', 'Shown.', T.l4 + .1, T.l5); hl('Good days. Bad days.', 'We show every one.', T.l6 + .1, T.l7);
+  hl('Every night at 23:00,', 'the real result goes live.', T.l2 + .1, T.l3); hl('Every single trade.', 'Shown.', T.l4 + .1, T.l5); hl('Profit days. Loss days.', 'We show every one.', T.l6 + .1, T.l7);
   hl('<span style="font-size:68px">FTM MACHINE trades for you</span>', 'on your own account.', T.l8 + .1, T.l9); hl('One tap.', 'Pause it any time.', T.l10 + .1, T.l11); hl('Free account.', 'Just your email.', T.l12 + .1, T.l13);
   // good / bad day cards
   const card = (img, txt, col, ic) => { const c = $(`<div class="card" style="background-image:url(img/${img}.jpg);background-position:0 ${-180 * 470 / 1080}px"><div class="stamp" style="background:${col}">${ic}${txt}</div></div>`); st.appendChild(c); return c; };
-  E.good = card('s12', 'GOOD DAY', '#1f9d55', TICK('rgba(255,255,255,.25)', 36)); E.bad = card('s09', 'BAD DAY · SHOWN TOO', '#E5323E', DOWN(36, '#fff', 'rgba(255,255,255,.25)'));
+  E.good = card('s12', 'PROFIT DAY', '#1f9d55', TICK('rgba(255,255,255,.25)', 36)); E.bad = card('s09', 'LOSS DAY · SHOWN TOO', '#E5323E', DOWN(36, '#fff', 'rgba(255,255,255,.25)'));
   // FTM MACHINE glass cards
   E.gN = $(`<div class="glass" style="top:1060px"><div class="row"><div class="mk">${MARK(1.3)}</div><div><div class="gt">FTM MACHINE</div><div class="gs">Working while you work</div></div><div class="run"><i></i>Running</div></div></div>`); st.appendChild(E.gN);
   E.gW = $(`<div class="glass" style="top:1060px"><div class="row"><div class="mk">${MARK(1.3)}</div><div><div class="gt">FTM MACHINE</div><div class="gs">On your own account</div></div><div class="run"><i></i>Running</div></div></div>`); st.appendChild(E.gW);

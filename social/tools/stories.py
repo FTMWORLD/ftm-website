@@ -58,7 +58,7 @@ BRAND = [
      'cta': 'Create your free account'},
     {'kicker': 'Free account', 'hook': 'See it all <b>before you pay.</b>', 'title': 'The live account, every trade, every day. <b>Free.</b>',
      'chips': ['No card needed', 'One tap'], 'cta': 'Open your free account'},
-    {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Green days and red days, posted at 11 p.m. <b>Nothing hidden.</b>',
+    {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Profit days and loss days, posted at 11 p.m. <b>Nothing hidden.</b>',
      'cta': 'See it free'},
     {'kicker': 'How it works', 'hook': '3 steps. <b>About 10 minutes.</b>', 'title': 'You stay in control. <b>Pause any time.</b>',
      'chips': ['1 · Free account', '2 · Connect your broker', '3 · FTM MACHINE trades'], 'cta': 'Start step 1 free'},
@@ -86,7 +86,7 @@ def day_set(d):
     m = y.get('mtd')
     s17 = {'kicker': 'Live account · ' + mon, 'hook': 'While you were busy,', 'big': pc(m) if m is not None else '%d trades' % f['trades'],
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',
-           'title': 'Every trade shown. <b>%d green days, %d red.</b>' % (f['green'], f['red']),
+           'title': 'Every trade shown. <b>%d profit days, %d loss days.</b>' % (f['green'], f['red']),
            'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 2}
     o = datetime.date.fromisoformat(d).toordinal() * 3
     br = []

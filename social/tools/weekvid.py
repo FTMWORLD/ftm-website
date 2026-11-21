@@ -1,4 +1,4 @@
-"""Animated, narrated weekly video (owner 20 Nov: like the newsroom week video, every day of the week shown, good and bad).
+"""Animated, narrated weekly video (owner 20 Nov: like the newsroom week video, every day of the week shown, profit days and loss days).
 python3 social/tools/weekvid.py week.json   (from social/tools/week.py)  -> social/posts/v2/vid-week-<to>.mp4"""
 import json, sys, os, subprocess, datetime as dt
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,7 +16,7 @@ scenes = [['week', 'Here is this week on FTM, day by day. Real numbers from the 
           ['cta', 'See every trade live. Start free at ftm wealth nation dot com, and follow us for every result at 11 p.m.']]
 J = json.load(open(os.path.join(root, 'plan', 'journey.json')))
 J['days'] = [d for d in J['days'] if d.get('date') != key] + [{'date': key, 'stage': '2 · Proof', 'format': 'Weekly recap (newsroom, real figures)', 'title': 'This week on FTM',
-             'open': '%s days, Saturday to Friday. Here is every result, good and bad.' % ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'][len(week)], 'hook': 'Our week, in numbers.', 'scenes': scenes}]
+             'open': '%s days, Saturday to Friday. Here is every result, profit days and loss days.' % ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'][len(week)], 'hook': 'Our week, in numbers.', 'scenes': scenes}]
 json.dump(J, open(os.path.join(root, 'plan', 'journey.json'), 'w'), indent=1, ensure_ascii=False)
 src = open(os.path.join(root, 'videos', 'assets', 'scn-week7.js')).read().replace('/*__WEEK__*/[]', json.dumps(week))
 scn = os.path.join(root, 'videos', 'assets', 'scn-%s.js' % key); open(scn, 'w').write(src)
