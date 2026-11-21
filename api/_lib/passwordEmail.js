@@ -32,8 +32,8 @@ function esc(v) { return String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '
    colours; Apple Mail and others are told the email is designed in light colours. */
 const NAVY = 'background-color:#0b1640;background-image:linear-gradient(#0b1640,#0b1640);';
 function keep(h) { return '<span class="gm-s"><span class="gm-d">' + h + '</span></span>'; }
-const HEAD = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light">'
-  + '<style>:root{color-scheme:light only;supported-color-schemes:light}u + .body .gm-s{background:#000;mix-blend-mode:screen;display:inline-block}u + .body .gm-d{background:#000;mix-blend-mode:difference;display:inline-block}</style></head><body class="body" style="margin:0;padding:0;background:#ffffff;">';
+const HEAD = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light"><meta name="format-detection" content="telephone=no,date=no,address=no,email=no">'
+  + '<style>:root{color-scheme:light only;supported-color-schemes:light}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important}u + .body .gm-s{background:#000;mix-blend-mode:screen;display:inline-block}u + .body .gm-d{background:#000;mix-blend-mode:difference;display:inline-block}</style></head><body class="body" style="margin:0;padding:0;background:#ffffff;">';
 /* shell(title, body, {head:true}) puts the title in the navy header, gold, on the right (statements and result emails). */
 function shell(title, body, o) {
   o = o || {}; const cs = o.head ? ' colspan="2"' : '';
