@@ -51,7 +51,7 @@ async function stripePromo(code) {
     if (found.data && found.data[0]) return { id: found.data[0].id };
     const p = await api('promotion_codes', { coupon, code, 'metadata[ftm_affiliate]': code });
     return { id: p.id };
-  } catch (e) { return { error: String(e.message || e).slice(0, 160) }; }
+  } catch (e) { return { error: String(e.message || e).slice(0, 400) }; }
 }
 
 async function approve(admin, code) {
@@ -61,6 +61,13 @@ async function approve(admin, code) {
   if (!a.promoId) { const s = await stripePromo(code); if (s.id) { a.promoId = s.id; a.promoError = undefined; } else a.promoError = s.error; }
   await P.write(admin, IDX, I);
   return { ok: true, aff: a, link: linkOf(code) };
+}
+/* Staff: try the Stripe 5% code again for an approved affiliate (e.g. after the Stripe key got its permissions). No email is sent. */
+async function retryPromo(admin, code) {
+  code = normCode(code); const I = await idx(admin), a = I.affs[code];
+  if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_FOUND' };
+  if (!a.promoId) { const s = await stripePromo(code); if (s.id) { a.promoId = s.id; a.promoError = undefined; } else a.promoError = s.error; await P.write(admin, IDX, I); }
+  return { ok: !a.promoError, promoError: a.promoError || null };
 }
 async function reject(admin, code) {
   code = normCode(code); const I = await idx(admin), a = I.affs[code];
@@ -153,4 +160,4 @@ async function markPaid(admin, code, by) {
   await P.write(admin, COM, L); return { ok: true, paid: Math.round(total * 100) / 100, n };
 }
 
-module.exports = { RATE, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };
+module.exports = { RATE, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, retryPromo, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };

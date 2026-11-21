@@ -6,7 +6,7 @@
      follow / unfollow {mid}     block / unblock {mid}     report {mid, reason}
      threads                     my conversations (last message, unread)
      messages {mid}              one conversation (marks it read)
-     send {mid, text, reply?}    send a direct message (paid members; no links or contact details)
+     send {mid, text, reply?}    send a direct message (paid members; links and phone numbers allowed, no selling signals)
      react {mid, t, e}           toggle a reaction on a message; unsend {mid, t} removes your own message
      typing {mid}                'is typing' signal; profile {mid} one member's public card
      feed {scope:all|following|ftm|<mid>, before?}   posts, newest first (pinned FTM posts on top)
@@ -32,7 +32,6 @@ const { createClient } = require('@supabase/supabase-js');
 
 const BUCKET = 'community';
 const RESERVED = /^(ftm|admin|support|official|moderator|staff|system)$/i;
-const LINKS = /(https?:\/\/|www\.|\b[\w-]+\.(com|net|org|io|me|ly|co|app|xyz|info|biz|link|gg|tv)\b|@[a-z0-9_]{3,}|\+?\d[\d\s().-]{7,}\d|t\.me|wa\.me|whatsapp|telegram)/i;
 const SELLING = /\b(signals?\s+for\s+sale|sell(ing)?\s+signals?|paid\s+signals?|vip\s+signals?|account\s+management)\b/i;
 let bucketReady = false;
 const sent = new Map();
@@ -252,7 +251,7 @@ module.exports = async function handler(req, res) {
       if (RESERVED.test(nick) || /^ftm[_-]?/i.test(nick)) return res.status(400).json({ ok: false, error: 'NICKNAME_RESERVED' });
       const taken = Object.keys(idx.members).some(k => k !== me && String(idx.members[k].nickname).toLowerCase() === nick.toLowerCase());
       if (taken) return res.status(409).json({ ok: false, error: 'NICKNAME_TAKEN' });
-      if (LINKS.test(bio) || SELLING.test(bio)) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+      if (SELLING.test(bio)) return res.status(400).json({ ok: false, error: 'NO_SELLING' });
       const changed = !mine || mine.nickname !== nick || (mine.bio || '') !== bio || (mine.country || '') !== country;
       idx.members[me] = Object.assign({}, mine || { since: new Date().toISOString() }, { nickname: nick, bio, country, visible, vis_set: true, auto: false, updated: new Date().toISOString() });
       await S.write('index.json', idx); mine = idx.members[me];
@@ -317,7 +316,7 @@ module.exports = async function handler(req, res) {
       if (!mine || !mine.nickname) return res.status(400).json({ ok: false, error: 'PROFILE_FIRST' });
       if (!okTarget(m)) return res.status(404).json({ ok: false, error: 'NOT_FOUND' });
       if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
-      if (LINKS.test(text) || SELLING.test(text)) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+      if (SELLING.test(text)) return res.status(400).json({ ok: false, error: 'NO_SELLING' });
       const p = 'threads/' + pair(me, m) + '.json', [paidNow, th] = await Promise.all([isPaid(admin, user.id), S.read(p, { msgs: [] })]);
       if (!paidNow) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
       const now = Date.now(), hits = (sent.get(me) || []).filter(t => now - t < 864e5); if (hits.length >= 200) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
@@ -482,7 +481,7 @@ module.exports = async function handler(req, res) {
         if (pollIn && pollIn.length < 2) return res.status(400).json({ ok: false, error: 'POLL_INVALID' });
         if (!text && !images.length) return res.status(400).json({ ok: false, error: 'EMPTY' });
         if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
-        if (!staff && (LINKS.test(text) || SELLING.test(text) || (pollIn && pollIn.some(o => LINKS.test(o))))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        if (!staff && (SELLING.test(text) || (pollIn && pollIn.some(o => SELLING.test(o))))) return res.status(400).json({ ok: false, error: 'NO_SELLING' });
         const now = Date.now(), hits = (postsSent.get(me) || []).filter(t => now - t < 864e5); if (!staff && hits.length >= 20) return res.status(429).json({ ok: false, error: 'RATE_LIMIT' });
         const id = now.toString(36) + crypto.randomBytes(3).toString('hex'), x = { id, a: me, x: text, t: new Date().toISOString(), lk: [], c: [] };
         if (asFtm) x.ftm = true;
@@ -516,7 +515,7 @@ module.exports = async function handler(req, res) {
       if (action === 'edit') {
         if (x.a !== me && !staff) return res.status(403).json({ ok: false, error: 'NOT_YOURS' });
         const text = cleanLong(body.text, 2000); if (!text && !x.img) return res.status(400).json({ ok: false, error: 'EMPTY' });
-        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        if (!staff && SELLING.test(text)) return res.status(400).json({ ok: false, error: 'NO_SELLING' });
         x.x = text; x.ed = new Date().toISOString(); await S.write('posts.json', P); return res.status(200).json({ ok: true, post: outPost(x) });
       }
       if (action === 'clike') {
@@ -527,7 +526,7 @@ module.exports = async function handler(req, res) {
       if (action === 'comment') {
         const text = cleanLong(body.text, 600); if (!text) return res.status(400).json({ ok: false, error: 'EMPTY' });
         if (!staff && !(await isPaid(admin, user.id))) return res.status(403).json({ ok: false, error: 'READ_ONLY' });
-        if (!staff && (LINKS.test(text) || SELLING.test(text))) return res.status(400).json({ ok: false, error: 'NO_LINKS' });
+        if (!staff && SELLING.test(text)) return res.status(400).json({ ok: false, error: 'NO_SELLING' });
         x.c = x.c || []; const c = { id: Date.now().toString(36) + crypto.randomBytes(2).toString('hex'), a: me, x: text, t: new Date().toISOString() }; if (asFtm) c.ftm = true;
         x.c.push(c); if (x.c.length > 200) x.c = x.c.slice(-200);
         await S.write('posts.json', P); if (x.a !== me && !x.ftm) { await notify(x.a, Object.assign({ k: 'comment', by: me, post: x.id, x: Array.from(text).slice(0, 90).join('') }, asFtm ? { f: 1 } : {})); await ping(x.a, { kind: 'social', tag: 'cmt-' + x.id, url: '/?open=community', title: '{} commented on your post', body: Array.from(text).slice(0, 140).join(''), args: { title: [asFtm ? 'FTM' : pushNick()] } }); }

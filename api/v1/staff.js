@@ -1,5 +1,5 @@
 /* /api/v1/staff: the FTM staff console (staff logins only, see api/_lib/staff.js). POST {op, ...}:
-   aff_list / aff_approve {code} / aff_reject {code} / aff_paid {code}   FTM affiliate programme
+   aff_list / aff_approve {code} / aff_reject {code} / aff_promo {code} / aff_paid {code}   FTM affiliate programme
    dashboard {force?}       board figures: customers, sign-ups per day, plans, payments (Stripe), connected accounts (engine,
                             read for every paying customer as that customer), money under copy, problems with suggested fixes
    lookup {q}               one customer: email, account number, client ID (FTM-...), Community or leaderboard nickname
@@ -174,6 +174,7 @@ module.exports = async function handler(req, res) {
       if (r.aff) r.aff = { code: r.aff.code, status: r.aff.status, promoError: r.aff.promoError || null };
       return res.status(r.ok ? 200 : 400).json(r);
     }
+    if (op === 'aff_promo') { const r = await require('../_lib/affiliate').retryPromo(admin, body.code); return res.status(200).json(r); }
     if (op === 'aff_paid') { const r = await require('../_lib/affiliate').markPaid(admin, body.code, by); return res.status(r.ok ? 200 : 400).json(r); }
     if (op === 'team') {
       const T = await StaffLib.team(admin, true), users = await allUsers(admin), byMail = {}; users.forEach(u => { if (u.email) byMail[u.email.toLowerCase()] = u; });

@@ -16,7 +16,8 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   r=await call('tokA',{action:'save',nickname:'Tanaya',bio:'Hi all',country:'de',visible:true}); ok(r[0]===200,'Tanaya saves her profile');
   r=await call('tokB',{action:'save',nickname:'tanaya',visible:true}); ok(r[0]===409&&r[1].error==='NICKNAME_TAKEN','nickname is unique (any case)');
   r=await call('tokB',{action:'save',nickname:'FTM-TRADES',visible:true}); ok(r[1].error==='NICKNAME_RESERVED','FTM names are reserved');
-  r=await call('tokB',{action:'save',nickname:'Marine',bio:'visit www.x.com',visible:true}); ok(r[1].error==='NO_LINKS','no links in a bio');
+  r=await call('tokB',{action:'save',nickname:'Marine',bio:'selling signals here',visible:true}); ok(r[1].error==='NO_SELLING','no selling signals in a bio');
+  r=await call('tokB',{action:'save',nickname:'Marine',bio:'visit www.x.com or call +49 151 2345 6789',visible:true}); ok(r[0]===200,'links and phone numbers are allowed in a bio (owner 21 Nov 2026)');
   r=await call('tokB',{action:'save',nickname:'Marine',bio:'Gold fan',visible:true}); ok(r[0]===200,'Marine saves her profile');
   r=await call('tokA',{action:'members'}); ok(r[1].members.length===1&&r[1].members[0].nickname==='Marine','Tanaya sees Marine in Discover');
   const mB=r[1].members[0].mid; r=await call('tokB',{action:'members'}); const mA=r[1].members[0].mid; ok(r[1].members[0].nickname==='Tanaya','Marine sees Tanaya');
@@ -24,7 +25,7 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   r=await call('tokA',{action:'follow',mid:mB}); r=await call('tokB',{action:'members'}); ok(r[1].members[0].followers===0,'follower count: Tanaya has none');
   r=await call('tokA',{action:'members'}); ok(r[1].members[0].following===true&&r[1].members[0].followers===1,'Tanaya follows Marine (1 follower)');
   r=await call('tokA',{action:'send',mid:mB,text:'Hello Marine!'}); ok(r[0]===200,'Tanaya messages Marine');
-  r=await call('tokA',{action:'send',mid:mB,text:'call me +49 151 2345 6789'}); ok(r[1].error==='NO_LINKS','no phone numbers or links in messages');
+  r=await call('tokA',{action:'send',mid:mB,text:'paid signals, write me'}); ok(r[1].error==='NO_SELLING','no selling signals in messages');
   r=await call('tokB',{action:'threads'}); ok(r[1].threads.length===1&&r[1].threads[0].unread&&r[1].threads[0].last==='Hello Marine!','Marine sees the new message as unread');
   r=await call('tokB',{action:'messages',mid:mA}); ok(r[1].messages.length===1&&r[1].messages[0].from==='them','Marine opens the conversation');
   r=await call('tokB',{action:'threads'}); ok(!r[1].threads[0].unread,'opening marks it read');
@@ -49,7 +50,7 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
     const jpg='data:image/jpeg;base64,'+Buffer.from([0xFF,0xD8,0xFF,0xE0,1,2,3,4,0xFF,0xD9]).toString('base64');
     r=await call('tokA',{action:'post',text:'Gold closed strong today 📈',image:jpg}); ok(r[0]===200&&r[1].post.img&&r[1].post.author.nickname==='Tanaya','Tanaya posts a photo with text');
     const pid=r[1].post.id;
-    r=await call('tokA',{action:'post',text:'join my vip signals at www.x.com'}); ok(r[1].error==='NO_LINKS','no links or selling in posts');
+    r=await call('tokA',{action:'post',text:'join my vip signals at www.x.com'}); ok(r[1].error==='NO_SELLING','no selling signals in posts');
     r=await call('tokB',{action:'feed'}); ok(r[1].posts.length===1&&r[1].posts[0].id===pid&&!r[1].posts[0].mine,'Marine sees Tanaya\'s post in the feed');
     r=await call('tokB',{action:'like',id:pid}); ok(r[1].post.likes===1&&r[1].post.liked,'Marine likes it');
     r=await call('tokB',{action:'comment',id:pid,text:'Nice one!'}); ok(r[1].post.comments.length===1&&r[1].post.comments[0].author.nickname==='Marine','Marine comments');
@@ -82,6 +83,7 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
     const sh=await new Promise(res=>{ const rs={s:200,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},end(b){res([this.s,this.h,b]);},json(j){res([this.s,{},j]);}}; h({method:'GET',query:{share:p2},headers:{}},rs); });
     ok(sh[0]===200&&/og:image" content="https:\/\/[^"]*postimg=/.test(sh[2])&&/og:title" content="Tanaya · FTM Community"/.test(sh[2]),'the share link has a preview image and title for WhatsApp, Facebook and others'); }
   r=await call('tokF',{action:'save',nickname:'FreeUser',visible:true}); r=await call('tokF',{action:'members'}); ok(r[1].members.length===2,'a free member can browse');
+  r=await call('tokB',{action:'send',mid:mA,text:'see www.x.com or call +49 151 2345 6789'}); ok(r[0]===200,'members can send links and phone numbers (owner 21 Nov 2026)');
   r=await call('tokF',{action:'send',mid:mA,text:'hey'}); ok(r[0]===403&&r[1].error==='READ_ONLY','a free member cannot send messages');
   r=await call('tokB',{action:'block',mid:mA}); r=await call('tokA',{action:'members'}); ok(!r[1].members.some(m=>m.nickname==='Marine'),'after Marine blocks Tanaya, they no longer see each other');
   r=await call('tokA',{action:'send',mid:mB,text:'still there?'}); ok(r[0]===404,'and Tanaya cannot message her');
@@ -104,6 +106,7 @@ let fails=0; const ok=(c,m)=>{ console.log((c?'OK   ':'FAIL ')+m); if(!c) fails+
   r=await call('tokO',{action:'post',text:'Morning from Gmarine',as:'me'}); ok(r[0]===200&&!r[1].post.author.ftm&&r[1].post.author.nickname==='Gmarine','owner post as their own profile');
   r=await call('tokO',{action:'post',text:'FTM update',as:'ftm'}); ok(r[0]===200&&r[1].post.author.ftm,'owner post as FTM');
   r=await call('tokS',{action:'post',text:'Staff note',as:'me'}); ok(r[0]===200&&r[1].post.author.ftm,'other staff still post as FTM even if they ask otherwise');
+  r=await call('tokO',{action:'post',text:'Our site https://www.ftmwealthnation.com and WhatsApp +49 151 2345 6789',as:'me'}); ok(r[0]===200,'links and phone numbers are allowed in posts (owner 21 Nov 2026)');
   r=await call('bad',{action:'me'}); ok(r[0]===401,'no login, no access');
   console.log(fails?'FAILED: '+fails:'COMMUNITY OK'); process.exit(fails?1:0);
 })();

@@ -24,6 +24,12 @@ const BASE = process.argv[2] || 'http://localhost:8765';
   // approve (no Stripe key here: the 5% code is reported, the programme still works)
   const ap = await A.approve(admin, 'ADA');
   ok(ap.ok && ap.aff.status === 'approved' && /\/\?ref=ADA$/.test(ap.link) && ap.aff.promoError === 'NO_STRIPE_KEY', 'approve: link ' + ap.link + ', Stripe code problem reported to staff');
+  { const gf = global.fetch; let n = 0; process.env.STRIPE_SECRET_KEY = 'rk_test';
+    global.fetch = async (u, o) => { n++; const J = (st, b) => ({ ok: st < 300, status: st, json: async () => b });
+      if (/coupons\/ftm-affiliate-5$/.test(u)) return J(404, { error: { message: 'No such coupon' } }); if (/\/coupons$/.test(u)) return J(200, { id: 'ftm-affiliate-5' });
+      if (/promotion_codes\?code=/.test(u)) return J(200, { data: [] }); if (/\/promotion_codes$/.test(u)) return J(200, { id: 'promo_ada' }); return J(404, {}); };
+    const rp = await A.retryPromo(admin, 'ADA'); global.fetch = gf; delete process.env.STRIPE_SECRET_KEY;
+    ok(rp.ok && !rp.promoError && (await A.idx(admin)).affs.ADA.promoId === 'promo_ada' && n === 4, 'staff "Create Stripe code again" creates the 5% code once the key is allowed'); }
   r = await call({ action: 'click', code: 'ada' }); r = await call({ action: 'click', code: 'ADA' }); ok(r[1].valid === true && JSON.parse(files['aff/clicks.json']).ADA.n === 2, 'link visits are counted (any letter case)');
   r = await call({ code: 'ADA' }, null, 'GET'); ok(r[1].valid === true, 'GET ?code= says whether a code is live');
   // customers
