@@ -1,0 +1,86 @@
+<title>FTM Reach Playbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one reading column, a status strip, action lists with owner/us tags, ad comparison side by side */
+:root{--bg:#f6f7fb;--fg:#0e1530;--muted:#56607f;--card:#ffffff;--line:#dfe3ef;--navy:#0B1440;--gold:#b8901f;--gold2:#E3B62F;--red:#c4252f;--green:#1f8a4c;
+--disp:'Space Grotesk',Inter,system-ui,sans-serif;--body:Inter,system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#070d2b;--fg:#eef1fb;--muted:#a6afd0;--card:#0f1a48;--line:#233069;--gold:#E3B62F;--red:#ff7a83;--green:#5fe39b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#070d2b;--fg:#eef1fb;--muted:#a6afd0;--card:#0f1a48;--line:#233069;--gold:#E3B62F;--red:#ff7a83;--green:#5fe39b;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:820px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--disp);font-size:clamp(30px,6vw,44px);line-height:1.05;letter-spacing:-.02em;margin:6px 0 10px;text-wrap:balance}
+h2{font-family:var(--disp);font-size:24px;letter-spacing:-.01em;margin:40px 0 12px;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.lead{color:var(--muted);font-size:17px;max-width:65ch}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:22px 0 6px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat b{display:block;font-family:var(--disp);font-size:28px;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+ol.acts{list-style:none;padding:0;margin:0;display:grid;gap:10px;counter-reset:a}
+ol.acts li{counter-increment:a;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 56px;position:relative;min-width:0}
+ol.acts li::before{content:counter(a);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+ol.acts b{display:block;margin-bottom:2px}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-left:6px;vertical-align:2px}
+.us{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.you{background:color-mix(in srgb,var(--gold) 20%,transparent);color:var(--gold)}
+.p{color:var(--muted);font-size:15px}
+.ads{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.ads{grid-template-columns:1fr}}
+.ad{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.ad.win{border-color:var(--gold2);box-shadow:0 0 0 2px color-mix(in srgb,var(--gold2) 35%,transparent)}
+.ad h3{font-family:var(--disp);margin:0 0 6px;font-size:19px}
+.ad ul{margin:6px 0 0;padding-left:18px}
+.warn{background:color-mix(in srgb,var(--red) 9%,var(--card));border:1px solid color-mix(in srgb,var(--red) 35%,transparent);border-radius:14px;padding:16px}
+.warn li+li,.ad li+li{margin-top:6px}
+.src{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.src a{color:inherit}
+</style>
+<div class="wrap">
+<div class="eyebrow">FTM social · research, 21 Nov 2026</div>
+<h1>How we get more people to see FTM</h1>
+<p class="lead">Two research rounds: how small finance brands grow on Instagram, TikTok, YouTube and Facebook, and what makes paid finance video ads work. Below: where we stand, the ten actions that matter most, which ad to pay for, and three decisions only you can make.</p>
+
+<div class="strip">
+<div class="stat"><b>2</b><span>people reached by our last Instagram reel</span></div>
+<div class="stat"><b>50%</b><span>swiped away in the first 3 seconds</span></div>
+<div class="stat"><b>~500</b><span>median views per TikTok post on normal accounts (Buffer)</span></div>
+<div class="stat"><b>4–12</b><span>impressions per FTM post today</span></div>
+</div>
+<p class="p">We are far below normal. That points to the accounts not being shown to new people yet, not only to the videos.</p>
+
+<h2>The ten actions that matter most</h2>
+<ol class="acts">
+<li><b>Check each account can be recommended <span class="tag you">You</span></b>Instagram: Settings → Account status → "Can be recommended". TikTok: Settings → Account status. If either is red, every other step is wasted until it is fixed.</li>
+<li><b>Win the first second <span class="tag us">We do</span></b>Frame 1 shows the payoff in big words (the result, the question, the number). We now track "skip rate" and "viewed vs swiped away" every week and change the openers that lose people.</li>
+<li><b>Make videos people send to a friend <span class="tag us">We do</span></b>Instagram's strongest signal for reaching new people is sends. A result slide is rarely sent; "What €5 a day becomes" or "Why your savings lose to inflation" is. Half of the morning videos become send-to-a-friend explainers.</li>
+<li><b>One recognisable series <span class="tag us">We do</span></b>The nightly post becomes a numbered series with a fixed opener: "Night 1 of FTM MACHINE, live". Finance creators who grew fast (Vivian Tu, Humphrey Yang) used one repeated opener and a daily streak.</li>
+<li><b>Turn numbers into things you can see <span class="tag us">We do</span></b>Coins stacking, a jar filling, a calendar of green and red days. Humphrey Yang's rice grains for $1 billion drew 2.2 million views.</li>
+<li><b>Right length per job <span class="tag us">We do</span></b>Nightly result: 10–20 s, built to loop. Morning explainers: 30–60 s. Ads: 21–34 s (TikTok's own best range).</li>
+<li><b>Search words, not hashtag piles <span class="tag us">We do</span></b>Say, show and caption the same plain phrase ("how to start investing with little money"). Instagram now allows 5 hashtags at most; we use 3–5 specific ones.</li>
+<li><b>Every video different and original <span class="tag us">We do</span></b>Platforms stop recommending repeated or look-alike videos. Posting our own clean file on all four platforms is fine; the risk is sameness, so the opener, look and script change every day.</li>
+<li><b>Comments that start conversations <span class="tag us">We do</span></b>A pinned question under every post, video replies to good comments, and "comment GUIDE for our free starter guide" (a guide, never a sign-up or a figure).</li>
+<li><b>Collab posts with small creators <span class="tag you">You choose who</span></b>Small brands get about 5× more interactions on accepted Instagram collab posts. Unpaid and educational only: paid creator promotion of trading is banned on TikTok and restricted in the UK and Nigeria.</li>
+</ol>
+
+<h2>Which ad to pay for</h2>
+<div class="ads">
+<div class="ad win"><h3>Couple ad (recommended)</h3>
+<ul><li>The question hook feels native in the feed.</li><li>"Even the bad days?" admits losses: builds trust and passes ad review more easily.</li><li>"Pause it any time" shows the customer stays in control.</li></ul>
+<p class="p"><b>Fixes we are making:</b> words on screen from frame 1 ("Real results, posted every night at 11"), a 20-second cut, the risk line large and on screen for 3 seconds, cleaner voices.</p></div>
+<div class="ad"><h3>Your voice ad</h3>
+<ul><li>The 23:00 clock hook is strong.</li><li>The phone recording costs trust: research shows poor sound makes a speaker seem less credible.</li><li>The photo people are AI-made, so Meta adds an "AI info" label.</li></ul>
+<p class="p"><b>Fixes we are making:</b> words on screen from frame 1, cleaner sound, a 15-second cut. Best with a re-recording in a quiet room, phone close to the mouth.</p></div>
+</div>
+<p class="p" style="margin-top:12px"><b>First test:</b> Meta only (Instagram and Facebook Reels and Stories), objective Leads, financial-products ad category, 2 ad sets at €10–20 a day for 7 days. Judge by how many stop scrolling, how long they watch, clicks and cost per free sign-up.</p>
+
+<h2>Three decisions only you can make</h2>
+<div class="warn"><ul>
+<li><b>Big percentage headlines in paid ads.</b> Meta rejects ads with result claims that look unrealistic, and UK and EU rules forbid them without warnings. Our rule "lead with +98,644%" will very likely get ads rejected. Recommendation: no big % in paid ads; show daily results honestly in organic posts.</li>
+<li><b>Countries.</b> Meta allows UK finance ads only from FCA-authorised firms. Nigeria's SEC now requires registration to promote investment services. Recommendation: first test outside the UK, EU and Nigeria, or get those approvals first.</li>
+<li><b>Platforms for paid ads.</b> TikTok treats forex and trading as restricted, so our paid ads there will probably be refused. YouTube needs Google's financial services verification first. Recommendation: start on Meta only.</li>
+</ul></div>
+
+<h2>Sources</h2>
+<p class="src">TikTok creative best practices (ads.tiktok.com/help/article/creative-best-practices) · Meta Reels ads tips (developers.facebook.com/blog/post/2024/11/07/unlock-the-power-of-reel-ads) · Google Shorts ads guidance (support.google.com/google-ads/answer/16041697) · Instagram signals, Mosseri (socialmediatoday.com/news/instagram-shares-algorithm-insights-2025/738034) · Instagram unoriginal-content crackdown (techcrunch.com/2026/04/30/instagram-restricts-reach-of-content-aggregators-in-new-crackdown) · Buffer posting studies (buffer.com/resources/how-often-should-you-post-on-tiktok) · Emplifi collab study (emplifi.io/resources/instagram-collaborations-boost-organic-engagement) · Vivian Tu (fortune.com/2022/11/27/how-vivian-tu-rich-bff-tiktok-became-successful-personal-finance) · Humphrey Yang (money.com/tiktok-financial-advice-humphey-yang) · Audio quality and credibility, Newman &amp; Schwarz 2018 (dornsife.usc.edu) · Meta prohibited financial products (transparency.meta.com/policies/ad-standards) · TikTok financial services ads policy (ads.tiktok.com/help/article/tiktok-ads-policy-financial-services) · FCA FG24/1 social media guidance · Nigeria SEC public notice on unregistered schemes (sec.gov.ng). Vendor and platform figures are their own and marked as such in our notes.</p>
+</div>

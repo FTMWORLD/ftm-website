@@ -32,3 +32,4 @@ __pycache__/
 social/videos/week-*/video.mp4
 social/videos/week-*/vo/
 social/videos/week-*/*.timing.json
+social/posts/v2/*.tmp/
