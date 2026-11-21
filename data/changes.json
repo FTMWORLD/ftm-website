@@ -258,5 +258,9 @@
  {
   "date": "2026-11-21",
   "text": "If you sign up and don't click the email link, FTM now reminds you with a fresh link after 3 hours and once more after 3 days."
+ },
+ {
+  "date": "2026-11-21",
+  "text": "Opening a broker account: you can now choose Deriv or Exness. \"Open account\" and the new \"No broker account yet? Create one\" link in the client area take you to the choice."
  }
 ]

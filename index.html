@@ -3501,7 +3501,7 @@ body.op-lock{overflow:hidden}
     <p class="perf-sub">No software to install. FTM runs the strategy in the cloud and your account receives the trades.</p>
     <ol class="how-steps">
       <li><b>Subscribe to FTM MACHINE</b><p>Choose a plan in a couple of minutes.</p><a class="btn btn-red btn-sm js-plans" href="#pricing">See subscription plans</a></li>
-      <li><b>Link a trading account</b><p>Link your MT5 account, or open one through FTM.</p><a class="btn btn-red btn-sm" href="https://t.deriv.link?t=ECECYN33UYBT" target="_blank" rel="noopener" data-i18n="btn.open">Open account</a></li>
+      <li><b>Link a trading account</b><p>Link your MT5 account, or open one through FTM.</p><a class="btn btn-red btn-sm" href="#open-account" data-i18n="btn.open">Open account</a></li>
       <li><b>Trading starts automatically</b><p>FTM MACHINE trades your account 24/7.</p><a class="btn btn-red btn-sm how-perf" href="/performance.html">See performance</a></li>
       <li><b>Monitor from your dashboard</b><p>Track your results. Pause or withdraw any time.</p><button class="btn btn-red btn-sm js-login" type="button" data-i18n="btn.login">Log in</button></li>
     </ol>
@@ -3665,7 +3665,7 @@ body.op-lock{overflow:hidden}
     <div class="steps-stack">
 <div class="step light">
       <div class="txt"><h3 data-i18n="step.signup">Subscribe</h3><p>Choose your plan in minutes. Link a trading account afterwards.</p><a class="btn btn-red" href="#pricing">See the plans</a></div>
-      <div class="visual"><div class="form-card"><label>Email<span>sam@example.com</span></label><label>Password<span>••••••••</span></label><a class="btn btn-red" href="https://t.deriv.link?t=ECECYN33UYBT" target="_blank" rel="noopener">Create account</a></div></div>
+      <div class="visual"><div class="form-card"><label>Email<span>sam@example.com</span></label><label>Password<span>••••••••</span></label><a class="btn btn-red" href="#open-account">Create account</a></div></div>
     </div>
     <div class="step red">
       <div class="txt"><h3 data-i18n="step.trade">AutoTrade</h3><p>Activate FTM MACHINE and let it trade for you.</p><a class="btn btn-dark" href="#pricing">Explore FTM MACHINE</a></div>
@@ -3973,6 +3973,7 @@ body.op-lock{overflow:hidden}
             <li><i>3</i><div><b>FTM MACHINE starts trading</b><small>Your figures appear here from the first trade.</small></div></li>
           </ol>
           <button type="button" class="btn btn-red ob-go" id="obGo">Connect my trading account</button>
+          <p class="cw-nobk">No broker account yet?<a href="#open-account">Create one</a></p>
           <p class="ob-safe">FTM only needs trading access. It can never withdraw your money.</p>
         </div>
         <div class="app-main">
@@ -4120,6 +4121,7 @@ body.op-lock{overflow:hidden}
               <ul class="bk-list" id="bkList" role="listbox" hidden></ul>
             </div>
             <p class="bk-hint" id="bkHint">Use the exact server name. You will find it in your broker's welcome email, or in MT5 under File, Login to Trade Account.</p>
+            <p class="cw-nobk">No broker account yet?<a href="#open-account">Create one</a></p>
             </div>
             <div class="cw-step" data-s="2">
             <label for="appAcct">MT5 account number</label>
@@ -11840,5 +11842,38 @@ tick();setInterval(tick,5000);})();
 })();
 </script>
 
+<style>
+.bkm{position:fixed;inset:0;background:rgba(5,10,36,.62);display:grid;place-items:center;z-index:9100;padding:16px}.bkm[hidden]{display:none}
+.bkm-card{background:#fff;color:#0B1440;border-radius:24px;max-width:760px;width:100%;max-height:92vh;overflow:auto;padding:28px 26px 22px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.bkm-x{position:absolute;right:12px;top:10px;border:0;background:#eef1f8;width:38px;height:38px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;color:#0B1440}
+.bkm h3{font-size:26px;letter-spacing:-.02em;margin:0 0 6px;padding-right:40px}.bkm-sub{margin:0 0 18px;color:#4a5578;font-size:15px;line-height:1.45}
+.bkm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bkm-b{border:1.5px solid #e3e7f2;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,box-shadow .2s,transform .2s}
+.bkm-b:hover{border-color:#D4AF37;box-shadow:0 14px 34px rgba(11,20,64,.12);transform:translateY(-2px)}
+.bkm-tag{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8a6d12;background:#fbf3d6;padding:4px 10px;border-radius:99px}
+.bkm-n{font-size:26px;font-weight:900;letter-spacing:-.03em}.bkm-n.dv{color:#ff444f}.bkm-n.ex{color:#1f1f1f}.bkm-n.ex i{font-style:normal;background:#ffde02;padding:0 6px;border-radius:6px}
+.bkm-b ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px;color:#33406a}.bkm-b li::before{content:'✓';color:#16a34a;font-weight:800;margin-right:8px}
+.bkm-b .btn{margin-top:auto;justify-content:center;text-align:center}
+.bkm-note{margin:14px 0 0;font-size:12.5px;color:#6b7597}
+.cw-nobk{margin:10px 0 0;font-size:14px;color:#4a5578}.cw-nobk a{color:#E5323E;font-weight:700;margin-left:4px}
+@media (max-width:620px){.bkm-grid{grid-template-columns:1fr}.bkm-card{padding:24px 18px 18px}.bkm h3{font-size:22px}}
+</style>
+<script>
+(function(){ var tr=function(x){ return (typeof I18NE!=='undefined'&&I18NE.t)?I18NE.t(x):x; };
+  var esc=function(x){ return String(x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var B=[{k:'dv',n:'Deriv',url:'https://t.deriv.link?t=ECECYN33UYBT',cta:'Open account with Deriv'},{k:'ex',n:'Exness',url:'https://one.toexness.com/boarding/sign-up/303589/a/2lnoimb9l4',cta:'Open account with Exness'}];
+  function open(){ var m=document.getElementById('bkModal');
+    if(!m){ m=document.createElement('div'); m.id='bkModal'; m.className='bkm'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); document.body.appendChild(m);
+      m.addEventListener('click',function(e){ if(e.target===m||e.target.closest('.bkm-x')) m.hidden=true; });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape') m.hidden=true; }); }
+    m.innerHTML='<div class="bkm-card"><button type="button" class="bkm-x" aria-label="'+esc(tr('Close'))+'">&times;</button><h3>'+esc(tr('Choose your broker'))+'</h3><p class="bkm-sub">'+esc(tr('Open a free MT5 account with one of our partner brokers, then come back and connect it in your client area.'))+'</p><div class="bkm-grid">'
+      +B.map(function(b){ return '<div class="bkm-b"><span class="bkm-tag">'+esc(tr('Partner broker'))+'</span><div class="bkm-n '+b.k+'" translate="no">'+(b.k==='ex'?'<i>Exness</i>':'Deriv')+'</div><ul><li>'+esc(tr('Free MT5 account'))+'</li><li>'+esc(tr('Opens in a few minutes'))+'</li><li>'+esc(tr('Works with FTM MACHINE'))+'</li></ul><a class="btn btn-red" href="'+b.url+'" target="_blank" rel="noopener" data-broker="'+b.k+'">'+esc(tr(b.cta))+'</a></div>'; }).join('')
+      +'</div><p class="bkm-note">'+esc(tr('Deriv and Exness are separate companies. FTM works with both as a partner.'))+'</p></div>';
+    m.hidden=false; }
+  window.FTM=window.FTM||{}; window.FTM.brokerPick=open;
+  document.addEventListener('click',function(e){ var a=e.target.closest&&e.target.closest('a[href="#open-account"],.js-open-account'); if(!a) return; e.preventDefault(); open(); },true);
+  if(location.hash==='#open-account') setTimeout(open,700);
+})();
+</script>
 </body>
 </html>
