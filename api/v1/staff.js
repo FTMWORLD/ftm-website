@@ -1,4 +1,5 @@
 /* /api/v1/staff: the FTM staff console (staff logins only, see api/_lib/staff.js). POST {op, ...}:
+   aff_list / aff_approve {code} / aff_reject {code} / aff_paid {code}   FTM affiliate programme
    dashboard {force?}       board figures: customers, sign-ups per day, plans, payments (Stripe), connected accounts (engine,
                             read for every paying customer as that customer), money under copy, problems with suggested fixes
    lookup {q}               one customer: email, account number, client ID (FTM-...), Community or leaderboard nickname
@@ -165,6 +166,15 @@ module.exports = async function handler(req, res) {
     if (role === 'support' && (op === 'broadcast' || op.indexOf('letter_') === 0)) return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
     if (op.indexOf('team') === 0 && role !== 'owner') return res.status(403).json({ ok: false, error: 'OWNERS_ONLY' });
 
+    // FTM affiliate programme (owner 21 Nov 2026): applications, approval (link + code + Stripe 5% code), money owed, monthly payout
+    if (op === 'aff_list') return res.status(200).json(await require('../_lib/affiliate').staffList(admin));
+    if (op === 'aff_approve' || op === 'aff_reject') {
+      const Aff = require('../_lib/affiliate'), r = op === 'aff_approve' ? await Aff.approve(admin, body.code) : await Aff.reject(admin, body.code);
+      if (r.ok && op === 'aff_approve') { try { await require('../_lib/affMail').approved(r.aff, r.link, { rate: Aff.RATE * 100, discount: Aff.DISCOUNT_PCT, holdDays: Aff.HOLD_DAYS, minPayout: Aff.MIN_PAYOUT }); } catch (e) { r.mailError = e.message; } }
+      if (r.aff) r.aff = { code: r.aff.code, status: r.aff.status, promoError: r.aff.promoError || null };
+      return res.status(r.ok ? 200 : 400).json(r);
+    }
+    if (op === 'aff_paid') { const r = await require('../_lib/affiliate').markPaid(admin, body.code, by); return res.status(r.ok ? 200 : 400).json(r); }
     if (op === 'team') {
       const T = await StaffLib.team(admin, true), users = await allUsers(admin), byMail = {}; users.forEach(u => { if (u.email) byMail[u.email.toLowerCase()] = u; });
       const row = (e, r, fixed, extra) => { const u = byMail[e]; return Object.assign({ email: e, role: r, fixed: !!fixed, has_login: !!u, confirmed: !!(u && u.email_confirmed_at), last_login: u ? u.last_sign_in_at || null : null }, extra || {}); };

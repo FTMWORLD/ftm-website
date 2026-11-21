@@ -56,6 +56,9 @@ module.exports = async function handler(req, res) {
         if (src && uid && !(user && user.user_metadata && user.user_metadata.ftm_src)) {
           try { await admin.auth.admin.updateUserById(uid, { user_metadata: Object.assign({}, (user && user.user_metadata) || {}, { ftm_src: src, ftm_src_at: new Date().toISOString() }) }); } catch (e) { console.error('auth-email: source not saved', e.message); }
         }
+        // FTM affiliate link (?ref=CODE): the new member belongs to that affiliate (first affiliate wins, never themselves)
+        const ref = String(body.ref || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 16);
+        if (ref) { try { await require('../_lib/affiliate').attribute(admin, email, ref, 'link'); } catch (e) { console.error('auth-email: affiliate not saved', e.message); } }
       }
     } else if (mode === 'login') {
       await sendLoginEmail(admin, email, { name });

@@ -83,6 +83,9 @@ module.exports = async function handler(req, res) {
   // customer getting their plan (callEngine gives up after 8 seconds).
   // A checkout is passed to the engine only after the customer's account exists (below), so the engine can
   // match the payment to them; every other billing event is passed on straight away.
+  // FTM affiliate programme (owner 21 Nov 2026): 10% of every subscription payment to the affiliate who brought the
+  // customer. Runs on every paid plan payment; never blocks or fails the Stripe reply.
+  try { await affiliatePayment(event); } catch (e) { console.error('Stripe webhook: affiliate commission failed:', e.message); }
   const syncSafe = () => syncEngine(event).catch(e => { console.error('Stripe webhook: engine sync failed:', e.message); return 'failed: ' + e.message; });
   const enginePromise = event.type === 'checkout.session.completed' ? null : syncSafe();
 
@@ -434,6 +437,30 @@ async function syncEngine(event) {
   return r.ok ? ('engine ' + (r.body.duplicate ? 'duplicate' : 'applied') + ' ' + status) : ('engine error ' + r.status);
 }
 module.exports._syncEngine = syncEngine;
+/* Affiliate commission for a plan payment. A subscription's first payment arrives as both a checkout session and an
+   invoice: the invoice counts (so renewals count the same way), the session only for one-time plan payments. Never on
+   investments. The commission store keys each row by the payment id, so a resent event is never counted twice. */
+async function affiliatePayment(event) {
+  const o = (event.data && event.data.object) || {}, Aff = require('../_lib/affiliate');
+  let admin = null; const ad = () => admin || (admin = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY));
+  const promoOf = x => { const d = (x.discounts || []).find(v => v && (v.promotion_code || (v.discount && v.discount.promotion_code))); return d ? (d.promotion_code || d.discount.promotion_code) : ((x.discount && x.discount.promotion_code) || null); };
+  if (event.type === 'checkout.session.completed') {
+    if (o.mode === 'subscription') return 'invoice counts';
+    if (o.payment_status !== 'paid') return 'not paid';
+    if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'investment';
+    if (!PAYMENT_LINK_PRODUCT[o.payment_link] && (o.amount_total || 0) < 40000) return 'not a plan';
+    const email = (o.customer_details && o.customer_details.email) || o.customer_email;
+    return Aff.onPayment(ad(), { id: o.id, email, amountCents: o.amount_total, currency: o.currency, promoId: typeof promoOf(o) === 'string' ? promoOf(o) : null, at: (o.created || event.created) * 1000, kind: 'plan' });
+  }
+  if (event.type === 'invoice.paid') {
+    if (!(o.amount_paid > 0)) return 'nothing paid';
+    const meta = o.metadata || (o.subscription_details && o.subscription_details.metadata) || {};
+    if (meta.ftm_product === 'invest') return 'investment';
+    return Aff.onPayment(ad(), { id: o.id, email: o.customer_email, amountCents: o.amount_paid, currency: o.currency, promoId: typeof promoOf(o) === 'string' ? promoOf(o) : null, at: (o.status_transitions && o.status_transitions.paid_at || o.created || event.created) * 1000, kind: o.billing_reason === 'subscription_cycle' ? 'renewal' : 'subscription' });
+  }
+  return 'not a payment';
+}
+module.exports._affiliatePayment = affiliatePayment;
 module.exports.PAYMENT_LINK_PRODUCT = PAYMENT_LINK_PRODUCT;
 module.exports.PLAN_MONTHS = PLAN_MONTHS;
 module.exports.addToCustomerList = addToCustomerList;
