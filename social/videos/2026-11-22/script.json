@@ -1,12 +1,12 @@
 [
  {
   "id": "hook",
-  "vo": "Five trading days. Here is every result, good and bad.",
+  "vo": "Five trading days. Every result, profit days and loss days.",
   "see": ""
  },
  {
   "id": "week",
-  "vo": "Here is this week on the FTM master account, day by day. Real numbers from the account.",
+  "vo": "Here is this week on FTM, day by day. Real numbers from the live account.",
   "see": ""
  },
  {

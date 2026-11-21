@@ -69,13 +69,13 @@
    "date": "2026-11-22",
    "stage": "2 · Proof",
    "format": "Weekly recap with real figures (animated chart of the week)",
-   "title": "This week on the FTM master account",
-   "open": "Five trading days. Here is every result, good and bad.",
+   "title": "This week on FTM",
+   "open": "Five trading days. Every result, profit days and loss days.",
    "hook": "Our week, in numbers.",
    "scenes": [
     [
      "week",
-     "Here is this week on the FTM master account, day by day. Real numbers from the account."
+     "Here is this week on FTM, day by day. Real numbers from the live account."
     ],
     [
      "best",
