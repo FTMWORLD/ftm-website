@@ -22,48 +22,68 @@ const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.p
 const IMG=(src,t,o)=>{o=o||{};const z=(o.z0||1)+(o.dz||0.08)*cl(t/(o.d||6)),x=(o.x||0)+(o.dx||0)*cl(t/(o.d||6)),y=(o.y||0)+(o.dy||0)*cl(t/(o.d||6));return `<img class="ph" src="${src}" style="transform:translate(${x}px,${y}px) scale(${z});filter:${o.f||'none'}">`};
 const SHADE=(a,b)=>`<div class="shade" style="background:linear-gradient(180deg,rgba(5,9,31,${a}) 0%,rgba(5,9,31,${a*0.35}) 30%,rgba(5,9,31,${a*0.4}) 55%,rgba(5,9,31,${b}) 100%)"></div>`;
 const LOGO=(s)=>`<svg viewBox="0 0 120 120" width="${s}" height="${s}"><rect width="120" height="120" rx="35" fill="#1F3A93"/><path d="M30 85 L55 57 L72 73 L96 41" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-/* Nov 22: TV newsroom, anchor + video wall with the week's REAL daily results (live account). */
-const WEEK = window.WEEK || [['Mon', 0.17], ['Tue', 2.55], ['Wed', 1.20], ['Thu', 1.70], ['Fri', -0.99]];
-const ANCHOR = {skin:'#e0ac69',hair:'#2b1810',hairStyle:'wavy',top:'#1F3A93',top2:'#14214f',ph:.8,collar:'<path d="M-30 -210 L0 -170 L30 -210" stroke="#E3B62F" stroke-width="6" fill="none"/>'};
-const fmt = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(2) + '%';
-function newsroom(t) {
-  let o = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0"><defs>
-  <linearGradient id="nbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1238"/><stop offset="1" stop-color="#02040f"/></linearGradient>
-  <linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26408a"/><stop offset="1" stop-color="#0b1640"/></linearGradient>
-  <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f1d55"/><stop offset="1" stop-color="#081034"/></linearGradient></defs>
-  <rect width="${W}" height="${H}" fill="url(#nbg)"/>`;
-  for (let i = 0; i < 12; i++) o += `<rect x="${i * 95}" y="330" width="3" height="900" fill="#1F3A93" opacity=".25"/>`;
-  for (let i = 0; i < 40; i++) { const x = (i * 211 + t * 30) % W, y = 360 + (i * 97) % 820; o += `<circle cx="${x}" cy="${y}" r="${2 + i % 3}" fill="#E3B62F" opacity="${.15 + .15 * sin(t * 2 + i)}"/>`; }
-  return o;
-}
-function wall(t, mode) {
-  const x0 = 90, y0 = 360, w = 900, h = 560, maxV = 3;
-  let o = `<g><rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="26" fill="url(#wall)" stroke="#D4AF37" stroke-width="4"/>
-   <text x="${x0 + 40}" y="${y0 + 64}" font-family="Inter" font-weight="800" font-size="34" fill="#E3B62F" letter-spacing="5">THIS WEEK ON FTM · LIVE ACCOUNT</text>`;
-  const bw = 120, gap = (w - 80 - bw * 5) / 4, negRoom = Math.max(0, ...WEEK.map(([, v]) => v != null && v < 0 ? -v / maxV * 300 : 0)), base = y0 + h - 90 - negRoom;
-  let best = -1e9, worst = 1e9; WEEK.forEach(([, v]) => { if (v != null) { best = Math.max(best, v); worst = Math.min(worst, v); } });
-  WEEK.forEach(([d, v], i) => {
-    const bx = x0 + 40 + i * (bw + gap), g = ease((t - 0.3 - i * 0.35) / 0.6);
-    const hh = v == null ? 0 : Math.abs(v) / maxV * 300 * g, up = v == null || v >= 0;
-    const hl = mode === 'best' && v != null && (v === best || v === worst);
-    o += `<text x="${bx + bw / 2}" y="${base + negRoom + 50}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="32" fill="#aeb7dc">${d}</text>`;
-    if (v == null) o += `<rect x="${bx}" y="${base - 60}" width="${bw}" height="60" rx="12" fill="none" stroke="#aeb7dc" stroke-dasharray="8 8" stroke-width="3"/><text x="${bx + bw / 2}" y="${base - 80}" text-anchor="middle" font-family="Inter" font-weight="700" font-size="26" fill="#aeb7dc">tonight</text>`;
-    else o += `<rect x="${bx}" y="${up ? base - hh : base}" width="${bw}" height="${hh}" rx="12" fill="${up ? '#2fbf71' : '#E5323E'}" opacity="${mode === 'best' && !hl ? .35 : 1}"/>
-      <text x="${bx + bw / 2}" y="${up ? base - hh - 18 : base - 18}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="34" fill="#fff" opacity="${g}">${fmt(v * g)}</text>
-      ${hl ? `<rect x="${bx - 10}" y="${base - hh - 70}" width="${bw + 20}" height="${hh + 80}" rx="16" fill="none" stroke="#E3B62F" stroke-width="5" opacity="${.6 + .4 * sin(t * 6)}"/><text x="${bx + bw / 2}" y="${base - hh - 84}" text-anchor="middle" font-family="Inter" font-weight="800" font-size="26" fill="#E3B62F">${v === best ? 'BEST' : 'LOWEST'}</text>` : ''}`;
-  });
-  return o + `<rect x="${x0 + 40}" y="${base}" width="${w - 80}" height="3" fill="#aeb7dc" opacity=".5"/></g>`;
-}
-function ticker(t) { let s = ''; let x = -((t * 180) % 1400); for (let r = 0; r < 3; r++) WEEK.forEach(([d, v]) => { s += `<text x="${x}" y="0" font-family="Inter" font-weight="800" font-size="34" fill="#fff">${d.toUpperCase()} ${v == null ? '· TONIGHT' : fmt(v)}</text>`; x += 280; }); return `<g transform="translate(0,1270)"><rect x="0" y="-48" width="${W}" height="68" fill="#E5323E"/><rect x="0" y="-48" width="200" height="68" fill="#0b1640"/><text x="24" y="-2" font-family="Inter" font-weight="900" font-size="34" fill="#fff">FTM NEWS</text><g transform="translate(220,0)"><svg x="0" y="-48" width="${W - 220}" height="68" viewBox="0 -48 ${W - 220} 68">${s}</svg></g></g>`; }
-function anchorDesk(t, talk) { return person(Object.assign({}, ANCHOR, { x: 540, y: 1240, s: 1.05, t, talk, sit: 1, armL: 25, elL: 60, armR: 25, elR: 60, look: 0, mood: 'smile' })) + `<path d="M150 1060 L930 1060 L990 1230 L90 1230Z" fill="url(#desk)"/><rect x="430" y="1110" width="220" height="60" rx="12" fill="#0b1640" stroke="#D4AF37" stroke-width="3"/><text x="540" y="1152" text-anchor="middle" font-family="Inter" font-weight="900" font-size="36" fill="#fff">FTM</text>`; }
-const SCN = {
-  hook(t) { const n = Math.min(5, Math.floor(t * 2.2) + 1); return newsroom(t) + `<g transform="translate(540,760)"><circle r="${250 + 10 * sin(t * 4)}" fill="#E3B62F" opacity=".08"/><text x="0" y="80" text-anchor="middle" font-family="Inter" font-weight="900" font-size="300" fill="#E3B62F">${n}</text></g>
-   <text text-anchor="middle" font-family="Inter" font-weight="800" font-size="70" fill="#fff"><tspan x="540" y="1000">trading days.</tspan></text><text text-anchor="middle" font-family="Inter" font-weight="800" font-size="62" fill="#fff" opacity="${ease((t - 1.6) / .4)}"><tspan x="540" y="1120">Every result,</tspan><tspan x="540" y="1200" fill="#E3B62F">profit and loss.</tspan></text></svg>`; },
-  week(t, d, talk) { return newsroom(t) + wall(t, 'week') + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
-  best(t, d, talk) { return newsroom(t) + wall(t + 3, 'best') + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
-  total(t, d, talk) { let tot = 1; WEEK.forEach(([, v]) => { if (v != null) tot *= 1 + v / 100; }); tot = (tot - 1) * 100; const g = ease(t / 1.2);
-    return newsroom(t) + `<g transform="translate(540,640)"><rect x="-430" y="-250" width="860" height="500" rx="40" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/><text x="0" y="-130" text-anchor="middle" font-family="Inter" font-weight="800" font-size="36" fill="#E3B62F" letter-spacing="5">THE WEEK SO FAR</text><text x="0" y="40" text-anchor="middle" font-family="Inter" font-weight="900" font-size="190" fill="#2fbf71">${fmt(tot * g)}</text><text x="0" y="150" text-anchor="middle" font-family="Inter" font-weight="700" font-size="34" fill="#aeb7dc">closed trades · live account</text></g>` + anchorDesk(t, talk) + ticker(t) + '</svg>'; },
-  cta(t, d, talk) { const p = 1 + .04 * sin(t * 5); return newsroom(t) + `<g transform="translate(540,620)"><rect x="-430" y="-230" width="860" height="460" rx="40" fill="#0b1640" stroke="#D4AF37" stroke-width="4"/><text x="0" y="-100" text-anchor="middle" font-family="Inter" font-weight="800" font-size="58" fill="#fff">Next week starts Monday.</text><text x="0" y="-20" text-anchor="middle" font-family="Inter" font-weight="800" font-size="58" fill="#E3B62F">Will you be in?</text><g transform="translate(0,110) scale(${p})"><rect x="-220" y="-56" width="440" height="112" rx="56" fill="#E5323E"/><text x="0" y="18" text-anchor="middle" font-family="Inter" font-weight="800" font-size="54" fill="#fff">Start free</text></g></g>` + anchorDesk(t, talk) + ticker(t) + '</svg>'; }
+/* Nov 22: "Does FTM rest at the weekend?" Real figures: Portfolio backtest (data/trades/all/100000/g2, trades held over a weekend) + live account 14 Nov. */
+const MAYA={skin:'#c68642',hair:'#1b120c',hairStyle:'curly',top:'#7a3fb0',ph:.2};
+const SAM={skin:'#f1c27d',hair:'#6b4423',hairStyle:'short',top:'#2a6fb0',beard:1,ph:.9};
+const LENA={skin:'#ffdbac',hair:'#b5562b',hairStyle:'long',top:'#d9705a',ph:1.6};
+const DEV={skin:'#8d5524',hair:'#141414',hairStyle:'short',top:'#2fa37a',glasses:1,ph:2.1};
+const ZOE={skin:'#e0ac69',hair:'#2b1810',hairStyle:'bun',top:'#E3B62F',top2:'#b8901f',ph:.6};
+const P=(b,o)=>person(Object.assign({},b,o));
+const open_=(bg)=>`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0">${bg||''}`;
+const grad=(id,a,b)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#${id})"/>`;
+const TX=(x,y,s,c,txt,w,o)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Inter" font-weight="${w||900}" font-size="${s}" fill="${c}" opacity="${o==null?1:o}">${txt}</text>`;
+function stars(t,n){let s='';for(let i=0;i<(n||60);i++){const x=(i*173)%W,y=(i*97)%1250+40;s+=`<circle cx="${x}" cy="${y}" r="${1.5+(i%3)}" fill="#fff" opacity="${.25+.35*(.5+.5*sin(t*2+i))}"/>`}return s}
+function moon(x,y,r){return `<circle cx="${x}" cy="${y}" r="${r}" fill="#f6e7b0"/><circle cx="${x+r*.45}" cy="${y-r*.2}" r="${r*.9}" fill="#0b1640"/>`}
+function stamp(t,label,col,y){const p=back(t/0.3);return `<g transform="translate(540,${y||1040}) rotate(-8) scale(${1.8-0.8*p})" opacity="${cl(t/0.12)}"><rect x="-230" y="-70" width="460" height="140" rx="18" fill="rgba(5,10,34,.6)" stroke="${col}" stroke-width="12"/>${TX(0,38,108,col,label)}</g>`}
+function count(t,a,b,dec){const v=a+(b-a)*ease(t);return v.toLocaleString('en-US',{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0})}
+function flash(t){return t<0.18?`<rect width="${W}" height="${H}" fill="#fff" opacity="${0.5*(1-t/0.18)}"/>`:''}
+const SCN={
+ hook(t){
+  const days=['MON','TUE','WED','THU','FRI','SAT','SUN'];let cal='';
+  days.forEach((d,i)=>{const we=i>4,a=ease((t-i*0.07)/0.4),x=90+i*130;cal+=`<g opacity="${a}" transform="translate(${x},${430+(1-a)*40})"><rect x="0" y="0" width="112" height="128" rx="20" fill="${we?'rgba(212,175,55,.18)':'rgba(255,255,255,.08)'}" stroke="${we?'#D4AF37':'rgba(255,255,255,.2)'}" stroke-width="${we?4:2}"/>${TX(56,52,30,we?'#E3B62F':'#c9d0ee',d,800)}${we?TX(56,104,40,'#E3B62F','?'):TX(56,104,36,'#2fbf71','✓')}</g>`});
+  const zz=[0,1,2].map(i=>{const k=(t*0.8+i/3)%1;return TX(-200+k*0,-200,40+k*30,'#c9d0ee','z',900,1-k)}).join('');
+  const w=t>3.3;
+  return open_(grad('hg','#0b1640','#03061a'))+stars(t)+moon(900,330,46)+cal+
+   `<rect x="70" y="640" width="940" height="560" rx="44" fill="#050a22" opacity=".9" stroke="#D4AF37" stroke-width="4"/>`+
+   TX(540,760,64,'#fff','Most people think',800)+TX(540,850,78,'#E3B62F','the weekend is quiet.')+
+   TX(540,940,44,'#c9d0ee','Markets close. Nothing happens.',600,cl((t-1.1)/0.4))+zz+
+   (w?stamp(t-3.3,'WRONG','#E5323E',1090)+flash(t-3.3):'')+'</svg>'},
+ clock(t){
+  const L=[['FRI',150],['SAT',390],['SUN',630],['MON',870]];let ax='';
+  L.forEach(([d,x],i)=>{const we=i==1||i==2;ax+=`<rect x="${x-110}" y="560" width="220" height="420" rx="24" fill="${we?'rgba(212,175,55,.12)':'rgba(255,255,255,.05)'}"/>${TX(x,620,40,we?'#E3B62F':'#c9d0ee',d,800)}`});
+  const p=ease(t/2.6),x1=150+720*p;let path='M150 860';for(let x=150;x<=x1;x+=12){path+=` L${x} ${860-(x-150)*0.28+22*sin(x/40+t)}`}
+  const ex=x1,ey=860-(x1-150)*0.28+22*sin(x1/40+t);
+  const ang=t*3;
+  return open_(grad('cg','#16306e','#0b1640'))+stars(t,25)+ax+
+   `<line x1="150" y1="860" x2="${x1}" y2="860" stroke="rgba(255,255,255,.25)" stroke-dasharray="10 10" stroke-width="3"/>`+
+   `<path d="${path}" stroke="#2fbf71" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${ex}" cy="${ey}" r="${16+4*sin(t*8)}" fill="#2fbf71"/>`+
+   `<circle cx="150" cy="860" r="16" fill="#E3B62F"/>`+TX(150,930,30,'#E3B62F','Trade opens',800)+
+   (p>0.98?TX(870,930,30,'#2fbf71','Closed in profit',800):'')+
+   `<g transform="translate(540,1130)"><circle r="78" fill="#050a22" stroke="#D4AF37" stroke-width="6"/><line x1="0" y1="0" x2="${48*sin(ang)}" y2="${-48*cos(ang)}" stroke="#fff" stroke-width="8" stroke-linecap="round"/><line x1="0" y1="0" x2="${34*sin(ang/12)}" y2="${-34*cos(ang/12)}" stroke="#E3B62F" stroke-width="10" stroke-linecap="round"/></g>`+
+   TX(540,480,58,'#fff','The trade keeps running',800)+'</svg>'},
+ stats(t){
+  const C=[['577','trades held over a weekend',577,0,''],['56%','of them won',56,0,'%'],['1.9×','the average trade result',1.9,1,'×']];let g='';
+  C.forEach((c,i)=>{const a=ease((t-0.3-i*0.9)/0.5),y=440+i*275;g+=`<g opacity="${a}" transform="translate(${(1-a)*-120},0)"><rect x="90" y="${y}" width="900" height="235" rx="34" fill="rgba(5,10,34,.75)" stroke="${i==2?'#D4AF37':'rgba(255,255,255,.2)'}" stroke-width="3"/>${TX(540,y+130,112,i==2?'#E3B62F':'#2fbf71',count(cl((t-0.3-i*0.9)/1.0),0,c[2],c[3])+c[4])}${TX(540,y+195,36,'#c9d0ee',c[1],600)}</g>`});
+  return open_(grad('sg','#0b1640','#050a22'))+TX(540,370,40,'#E3B62F','PORTFOLIO · 2020 TO 2026 · BACKTEST',800)+g+'</svg>'},
+ best(t){
+  let pts='';const n=60,p=ease(t/2.2);for(let i=0;i<=n*p;i++){const x=110+i*14,y=620+(i<36?-i*1.5+12*sin(i):(-54+(i-36)*16))+8*sin(i*1.7);pts+=(i?' L':'M')+x+' '+y}
+  const v=count(cl((t-1.4)/1.2),0,18.35,2);
+  return open_(grad('bg','#16306e','#0b1640'))+
+   TX(540,380,38,'#E3B62F','BEST WEEKEND · 30 JAN → 2 FEB 2026',800)+
+   `<rect x="80" y="440" width="920" height="560" rx="36" fill="rgba(5,10,34,.7)"/>`+TX(220,500,32,'#c9d0ee','Gold',700)+
+   `<path d="${pts}" stroke="#E5323E" stroke-width="8" fill="none" stroke-linejoin="round"/>`+
+   `<g transform="translate(330,820)" opacity="${cl((t-0.4)/0.3)}"><rect x="-180" y="-46" width="360" height="92" rx="46" fill="#E5323E"/>${TX(0,17,46,'#fff','FTM: SHORT')}</g>`+
+   `<g transform="translate(540,1150) scale(${1+0.03*sin(t*5)})">${TX(0,40,150,'#2fbf71','+'+v+'%')}</g>`+
+   TX(540,1240,38,'#c9d0ee','by Monday morning',600)+'</svg>'},
+ live(t){
+  const r=150,sx=Math.abs(cos(t*1.6));
+  return open_(grad('lg','#0b1640','#03061a'))+stars(t,40)+
+   `<g transform="translate(540,640) scale(${0.3+0.7*sx},1)"><circle r="${r}" fill="#F7931A"/><circle r="${r-16}" fill="none" stroke="#ffd18a" stroke-width="6"/>${TX(0,62,190,'#fff','₿')}</g>`+
+   TX(540,880,58,'#fff','Bitcoin never closes.',800)+
+   `<g opacity="${cl((t-1)/0.4)}"><rect x="140" y="940" width="800" height="230" rx="34" fill="rgba(5,10,34,.8)" stroke="#2fbf71" stroke-width="3"/>${TX(540,1000,34,'#c9d0ee','LIVE ACCOUNT · SATURDAY 14 NOV',800)}${TX(540,1120,110,'#2fbf71','+'+count(cl((t-1)/1),0,0.64,2)+'%')}</g>`+'</svg>'},
+ cta(t,d,talk){const p=1+.04*sin(t*5);const C=[[MAYA,-1],[SAM,1],[LENA,-1],[DEV,1],[ZOE,-1]];let ppl='';
+  C.forEach(([c,dir],i)=>{const tx=180+i*180,sx=dir<0?-200:W+200,k=ease((t-i*0.15)/1.4),x=sx+(tx-sx)*k;ppl+=P(c,{x,y:1200,s:.8,t,walk:k<0.98?1:0,prop:'phone',armR:12,elR:118,mood:'smile',flip:dir>0&&k<.98})});
+  return open_(grad('ag','#1d3590','#0b1640'))+stars(t,30)+moon(900,330,40)+`<g transform="translate(540,620)"><rect x="-430" y="-200" width="860" height="400" rx="40" fill="#050a22" opacity=".9" stroke="#D4AF37" stroke-width="4"/>${TX(0,-100,58,'#fff','While you rest,',800)}${TX(0,-25,66,'#E3B62F','FTM keeps working.')}<g transform="translate(0,105) scale(${p})"><rect x="-230" y="-60" width="460" height="120" rx="60" fill="#E5323E"/>${TX(0,20,58,'#fff','Start free')}</g></g>`+ppl+'</svg>'}
 };
 
 let S=[],T=[],TOTAL=0;

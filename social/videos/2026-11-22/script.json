@@ -1,27 +1,32 @@
 [
  {
   "id": "hook",
-  "vo": "Five trading days. Every result, profit days and loss days.",
+  "vo": "Most people think the weekend is quiet. Markets close, nothing happens. Wrong.",
   "see": ""
  },
  {
-  "id": "week",
-  "vo": "Here is this week on FTM, day by day. Real numbers from the live account.",
+  "id": "clock",
+  "vo": "When a good trade is open on Friday, FTM MACHINE keeps it running through Saturday and Sunday.",
+  "see": ""
+ },
+ {
+  "id": "stats",
+  "vo": "In our portfolio backtest, 577 trades were held over a weekend. 56 percent of them won, and on average they made almost twice a normal trade.",
   "see": ""
  },
  {
   "id": "best",
-  "vo": "The best day, and the lowest day. We show every single one.",
+  "vo": "The best weekend: the thirtieth of January, twenty twenty six. Gold fell hard, and FTM was already short. Plus eighteen percent by Monday morning.",
   "see": ""
  },
  {
-  "id": "total",
-  "vo": "And the week in total.",
+  "id": "live",
+  "vo": "And Bitcoin never closes. On Saturday the fourteenth, the live account made plus zero point six four percent while most people were off.",
   "see": ""
  },
  {
   "id": "cta",
-  "vo": "See every trade live. Start free at ftm wealth nation dot com.",
+  "vo": "While you rest, FTM keeps working. Start free at ftm wealth nation dot com.",
   "see": ""
  }
 ]
