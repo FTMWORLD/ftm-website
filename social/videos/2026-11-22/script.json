@@ -1,32 +1,47 @@
 [
  {
   "id": "hook",
-  "vo": "Most people think the weekend is quiet. Markets close, nothing happens. Wrong.",
+  "vo": "Monday to Friday, you work. Then the weekend comes, and it's finally yours.",
+  "see": ""
+ },
+ {
+  "id": "party",
+  "vo": "Saturday night: music, friends, a party.",
+  "see": ""
+ },
+ {
+  "id": "friends",
+  "vo": "Sunday: brunch with friends, a game in the park.",
+  "see": ""
+ },
+ {
+  "id": "home",
+  "vo": "Then cooking, cleaning, a little rest on the sofa.",
   "see": ""
  },
  {
   "id": "clock",
-  "vo": "When a good trade is open on Friday, FTM MACHINE keeps it running through Saturday and Sunday.",
+  "vo": "You are busy living your weekend. FTM MACHINE is still in the market, working for you.",
   "see": ""
  },
  {
   "id": "stats",
-  "vo": "In our portfolio backtest, 577 trades were held over a weekend. 56 percent of them won, and on average they made almost twice a normal trade.",
+  "vo": "In our portfolio backtest, 577 trades stayed open over a weekend. 56 percent won, and on average they made almost twice a normal trade.",
   "see": ""
  },
  {
   "id": "best",
-  "vo": "The best weekend: the thirtieth of January, twenty twenty six. Gold fell hard, and FTM was already short. Plus eighteen percent by Monday morning.",
+  "vo": "The best weekend: the thirtieth of January, twenty twenty six. Gold fell, and FTM was already short. Plus eighteen percent by Monday morning.",
   "see": ""
  },
  {
   "id": "live",
-  "vo": "And Bitcoin never closes. On Saturday the fourteenth, the live account made plus zero point six four percent while most people were off.",
+  "vo": "And Bitcoin never closes. Saturday the fourteenth, live account: plus zero point six four percent.",
   "see": ""
  },
  {
   "id": "cta",
-  "vo": "While you rest, FTM keeps working. Start free at ftm wealth nation dot com.",
+  "vo": "Live your weekend. FTM keeps working. Start free at ftm wealth nation dot com.",
   "see": ""
  }
 ]

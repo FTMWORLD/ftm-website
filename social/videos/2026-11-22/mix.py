@@ -6,7 +6,7 @@ vo=np.zeros(n)
 for i,sid in enumerate(ids):
     raw=subprocess.run(['ffmpeg','-loglevel','error','-i','vo/%s.wav'%sid,'-af','aresample=48000:resampler=soxr','-f','f32le','-ac','1','-'],capture_output=True).stdout
     d=np.frombuffer(raw,dtype=np.float32).astype(float);a=int(T['T'][i]*sr);vo[a:a+len(d)]+=d[:max(0,n-a)]
-bpm=96;beat=60/bpm;ch=[[164.81,246.94,329.63],[130.81,196,261.63],[196,293.66,392],[146.83,220,293.66]]
+bpm=104;beat=60/bpm;ch=[[146.83,220,293.66],[116.54,174.61,233.08],[174.61,261.63,349.23],[130.81,196,261.63]]
 mus=np.zeros(n);bar=beat*4
 def add(a,sig):
     a=int(a*sr);b=min(n,a+len(sig))
