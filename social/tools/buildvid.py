@@ -53,10 +53,10 @@ for sid, vo in lines:
         sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(max(.3, len(a) / sr - .2), 2))  # 0.6 s scene pad - 0.2 = a natural 0.4 s turn
         hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
-    voice = 'af_heart'  # couple videos (owner 22 Nov): a line starting "HIM:" uses a male voice, "HER:" the female voice
+    voice = os.environ.get('NARRATOR', 'af_heart')  # NARRATOR=bm_george etc. for one narrator; couple videos: "HIM:" male, "HER:" female
     if txt.startswith('HIM:'): voice, txt = 'am_michael', txt[4:].strip()
     elif txt.startswith('HER:'): txt = txt[4:].strip()
-    a, sr = k.create(txt, voice=voice, speed=1.02, lang='en-us'); sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
+    a, sr = k.create(txt, voice=voice, speed=float(os.environ.get('SPEED', '1.02')), lang='en-gb' if voice.startswith('b') else 'en-us'); sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
     hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
     m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]
 json.dump(durs, open(os.path.join(D, 'vo', 'durs.json'), 'w')); json.dump(amp, open(os.path.join(D, 'vo', 'amp.json'), 'w'))

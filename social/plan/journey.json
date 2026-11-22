@@ -117,28 +117,36 @@
    "stage": "Retirement · build wealth for later",
    "format": "Handwritten letter from the viewer's 65-year-old self, ChatGPT photos of one man at 30, 45 and 65, no voiceover",
    "title": "A letter from you at 65",
-   "open": "A letter from you. Age 65.",
+   "open": "A letter from you, at sixty-five.",
    "hook": "A letter from you. Age 65.",
    "scenes": [
     [
-     "m0",
-     "Midnight. Markets in Asia open, and I start watching."
+     "d1",
+     "Dear me. I'm writing to you from the year twenty sixty-one."
     ],
     [
-     "m1",
-     "Morning. Gold moves. I follow my rules, not my mood."
+     "d2",
+     "You're thirty. You think there's still time. There is, but only if you start."
     ],
     [
-     "m2",
-     "Afternoon. New York opens. I check every setup."
+     "d3",
+     "Saving alone wasn't enough. Prices grew faster than my savings."
     ],
     [
-     "m3",
-     "Night. You are asleep. I'm still here."
+     "d4",
+     "What worked was a plan with fixed rules. No panic on loss days. No greed on profit days."
+    ],
+    [
+     "d5",
+     "A little every month. Every trade shown. Years, not days."
+    ],
+    [
+     "d6",
+     "Thank you for starting. Love, you, at sixty-five."
     ],
     [
      "cta",
-     "I work. You live. Start free at ftm wealth nation dot com."
+     "FTM MACHINE. Fixed rules, tested on over six thousand trades. Start your plan for later. Link below."
     ]
    ],
    "audience": "25–45, worried about their pension",
