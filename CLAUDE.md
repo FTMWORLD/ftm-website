@@ -82,7 +82,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Posting times (owner instruction, 22 November 2026; replaces 21 Nov)
 - From Tuesday 24 Nov 2026: 09:30 = education and insights about FTM; 13:00 = the couple videos (owner and his wife); the evening results post (time being confirmed with the owner). Monday 23 Nov is the last day with a 23:00 post. Chosen from Metricool's audience data: our people are most active at 10:00, 12:00–13:00 and 18:00.
 - Weekly or 5-day recaps go out only on Saturdays or on the last day of a month, never on other days.
-- Instagram Trial Reels: "share to followers automatically when it performs well" is ON (owner 22 Nov).
+- Instagram: post videos as normal REELS, not Trial Reels (owner 22 Nov: followers must see every video). Metricool cannot switch on "share trial to followers automatically", so a Trial Reel would stay hidden from followers. Normal Reels still reach non-followers through the Reels tab and Explore.
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
 ## Why FTM exists: the 09:30 content pillars (owner and his wife, 22 November 2026)
