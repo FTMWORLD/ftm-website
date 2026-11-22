@@ -114,11 +114,11 @@
   },
   {
    "date": "2026-11-23",
-   "stage": "1 · Learn",
-   "format": "First person: the machine tells its own day (robot narrator, digital look)",
-   "title": "24 hours in the life of FTM MACHINE",
-   "open": "I never sleep. Let me show you my day.",
-   "hook": "A day in the life of a trading machine.",
+   "stage": "Pillar · Time",
+   "format": "Real day, real person: a 12-hour shift vs FTM's live trades on Thu 12 Nov (+10.16%); on-screen words, no voiceover, ChatGPT photos",
+   "title": "The 12-hour shift",
+   "open": "She worked 12 hours on Thursday. Not one look at the markets.",
+   "hook": "She worked 12 hours on Thursday. Not one look at the markets.",
    "scenes": [
     [
      "m0",
@@ -140,7 +140,9 @@
      "cta",
      "I work. You live. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "audience": "shift workers (nurses, drivers, shop and factory staff)",
+   "brief": "social/briefs/2026-11-23-0930.md"
   },
   {
    "date": "2026-11-24",
