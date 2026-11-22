@@ -4,7 +4,7 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
-## 2026-11-22 — FTM MACHINE 4.0 ON THE MASTER (prop stays on 3.9) + engine package for it (not committed yet; live 17:16 Berlin with the owner's yes in chat)
+## 2026-11-22 — FTM MACHINE 4.0 ON THE MASTER (prop stays on 3.9) + engine package for it (not committed yet; live 17:28 (engine, API restarted) / 17:35 (master terminal, EA_UPDATE_OK) Berlin with the owner's "Yes, both now" in chat)
 
 - WEBSITE: eight NEW strategies appear in the strategy lists (codes FTMM-34677 … FTMM-34684, names "FTM MACHINE 4.0 - XS … (day-close)"),
   markets HK50 (34677, 34680), USDJPY (34678, 34684), US Tech 100 (34679, 34681, 34683), Bitcoin (34682). Every account that follows
