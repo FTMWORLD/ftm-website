@@ -88,7 +88,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Images and scripts (owner instruction, 22 November 2026)
 - Every 09:30 and 13:00 video uses ChatGPT's realistic images (mixed with our own animation is fine, but always with his images). For every script, write a brief file in social/briefs/ (script + numbered image prompts: same characters, 9:16, no text/logos, calm top 20% and bottom 30%, FTM colours) and send it to the owner, who gets the images from ChatGPT. The 18:00 results need no images.
-- The 13:00 couple video: a short dialogue between HER and HIM, always built on FTM's ideology, principles, values, goals and vision, with real statistics from the website (live account, trust engine). Voices: lines start with "HER:" or "HIM:" (buildvid.py picks the voice).
+- The 13:00 couple video: a short dialogue between HER and HIM, always built on FTM's ideology, principles, values, goals and vision, with real statistics from the website (live account, trust engine). Voices (owner 22 Nov): the owner and his wife record the voiceover themselves. Every couple brief has a voiceover table (one numbered file per line, who, feeling, ~time); build with their recordings (one wav per scene in videos/<id>/vo/, durations from the audio). Only if their files are not there by 1 hour before posting, use the TTS voices (lines start with "HER:"/"HIM:") and swap in their voices later.
 
 ## Why FTM exists: the 09:30 content pillars (owner and his wife, 22 November 2026)
 Every 09:30 video takes ONE of these and tells it through a fresh, concrete scenario (there are 100 ways to tell each):
