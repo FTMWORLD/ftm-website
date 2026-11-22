@@ -10,6 +10,7 @@ OUT = sys.argv[2] if len(sys.argv) > 2 else 'social/posts/v3'
 MODE = sys.argv[3] if len(sys.argv) > 3 else 'day'
 HERE = os.path.dirname(os.path.abspath(__file__))
 MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+EVE = D >= '2026-11-24'  # owner 22 Nov: from Tue 24 Nov the result post is at 6 p.m. (yesterday's full result)
 WD = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 
@@ -58,13 +59,13 @@ BRAND = [
      'cta': 'Create your free account'},
     {'kicker': 'Free account', 'hook': 'See it all <b>before you pay.</b>', 'title': 'The live account, every trade, every day. <b>Free.</b>',
      'chips': ['No card needed', 'One tap'], 'cta': 'Open your free account'},
-    {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Profit days and loss days, posted at 11 p.m. <b>Nothing hidden.</b>',
+    {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Profit days and loss days, posted at %s. <b>Nothing hidden.</b>' % ('6 p.m.' if EVE else '11 p.m.'),
      'cta': 'See it free'},
     {'kicker': 'How it works', 'hook': '3 steps. <b>About 10 minutes.</b>', 'title': 'You stay in control. <b>Pause any time.</b>',
      'chips': ['1 · Free account', '2 · Connect your broker', '3 · FTM MACHINE trades'], 'cta': 'Start step 1 free'},
     {'kicker': 'Community', 'hook': 'Meet people <b>running FTM MACHINE.</b>', 'title': 'Leaderboard, chat and every result. <b>Inside your free account.</b>',
      'cta': 'Join free in one tap'},
-    {'kicker': 'Every night', 'hook': 'Tonight at <b>11 p.m.</b>', 'title': 'Today\'s real result, every single trade. <b>Follow so it finds you.</b>',
+    {'kicker': 'Every evening' if EVE else 'Every night', 'hook': 'Today at <b>6 p.m.</b>' if EVE else 'Tonight at <b>11 p.m.</b>', 'title': ('Yesterday\'s real result, every single trade. ' if EVE else 'Today\'s real result, every single trade. ') + '<b>Follow so it finds you.</b>',
      'cta': 'Follow + start free'},
 ]
 
@@ -82,7 +83,7 @@ def day_set(d):
         s11 = {'kicker': 'Best day in ' + mon, 'hook': 'One day. <b>One account.</b>', 'big': pc(bd['pct']), 'bigTone': 'up',
                'bigLabel': '%s %d %s on the live account' % (WD[bdt.weekday()], bdt.day, mon[:3])}
     s11.update({'title': ('%s so far: <b>%s</b>' % (mon, pc(y['mtd']))) if y.get('mtd') is not None else 'Every trade shown.',
-           'chips': ['Tonight 11 p.m.: today\'s result'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 1})
+           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 1})
     m = y.get('mtd')
     s17 = {'kicker': 'Live account · ' + mon, 'hook': 'While you were busy,', 'big': pc(m) if m is not None else '%d trades' % f['trades'],
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',

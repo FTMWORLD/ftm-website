@@ -144,195 +144,224 @@
   },
   {
    "date": "2026-11-24",
-   "stage": "1 · Learn",
-   "format": "Money explainer (animated coins and a melting price tag)",
-   "title": "What inflation does to money that sits still",
-   "open": "Your money is shrinking, even when the number stays the same.",
-   "hook": "Money that sits still loses value.",
+   "stage": "Pillar · Emotion",
+   "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
+   "title": "Revenge trading",
+   "open": "One loss. Then you try to win it back. Then it gets worse.",
+   "hook": "One loss. Then you try to win it back. Then it gets worse.",
    "scenes": [
     [
-     "c1",
-     "If prices rise, the same money buys less every year."
+     "loss",
+     "It starts with one small loss. Nothing serious."
     ],
     [
-     "c2",
-     "That is why many people put part of their savings to work in the markets."
+     "revenge",
+     "But it hurts. So you jump straight back in, bigger, to win it back."
     ],
     [
-     "c3",
-     "FTM MACHINE does that for you, on your own account, by fixed rules."
+     "spiral",
+     "Another loss. Then another. One bad hour turns into a bad month."
+    ],
+    [
+     "machine",
+     "FTM MACHINE has no ego. After a loss it waits for the next setup, with the same size, every time."
     ],
     [
      "cta",
-     "Let your money work. Start free at ftm wealth nation dot com."
+     "No emotions, just rules. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-25",
-   "stage": "3 · Action",
-   "format": "Tutorial: real website walkthrough on a phone (screen-style)",
-   "title": "How to start with FTM in 60 seconds",
-   "open": "Sixty seconds. That is all it takes. Watch.",
-   "hook": "From zero to connected in 60 seconds.",
+   "stage": "Pillar · Time",
+   "format": "Pillar Time: short story with characters (rig), one clear scenario",
+   "title": "While you were cooking",
+   "open": "Gold moved two percent while you were making dinner.",
+   "hook": "Gold moved two percent while you were making dinner.",
    "scenes": [
     [
-     "s1",
-     "Step one. Open ftm wealth nation dot com and create a free account."
+     "kitchen",
+     "Six p.m. You are cooking for the family. Phone in the other room."
     ],
     [
-     "s2",
-     "Step two. Connect your trading account in seconds."
+     "move",
+     "Meanwhile gold makes its biggest move of the day."
     ],
     [
-     "s3",
-     "Step three. Watch every trade, and get your daily results."
+     "miss",
+     "By the time you look, the chance is gone."
+    ],
+    [
+     "machine",
+     "FTM MACHINE was there. It watches five markets around the clock, so you don't have to."
     ],
     [
      "cta",
-     "Your turn. Start free at ftm wealth nation dot com."
+     "Cook in peace. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-26",
-   "stage": "2 · Proof",
-   "format": "Checklist (three ticks fill in one by one)",
-   "title": "3 questions before you trust any system",
-   "open": "Never trust a trading system before you ask these three questions.",
-   "hook": "Ask these three questions.",
+   "stage": "Pillar · System",
+   "format": "Pillar System: short story with characters (rig), one clear scenario",
+   "title": "Two people, one market",
+   "open": "Same market. Same day. One wins, one loses. Why?",
+   "hook": "Same market. Same day. One wins, one loses. Why?",
    "scenes": [
     [
-     "q1",
-     "One. Can I see every trade?"
+     "split",
+     "Meet Sam and Lena. Same market, same day."
     ],
     [
-     "q2",
-     "Two. Does my money stay in my own account?"
+     "sam",
+     "Sam trades on a feeling. No plan, no stop, a different size every time."
     ],
     [
-     "q3",
-     "Three. Are the losing days shown too?"
+     "lena",
+     "Lena follows fixed rules. Same entry checks, same risk, every single trade."
     ],
     [
-     "a",
-     "At FTM, the answer is yes, yes and yes."
+     "result",
+     "Over a year, the rules win. Not because of luck, because of discipline."
+    ],
+    [
+     "machine",
+     "FTM MACHINE is Lena on autopilot: tested rules, followed every time."
     ],
     [
      "cta",
-     "Check it yourself. Start free at ftm wealth nation dot com."
+     "Trade like Lena. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-27",
-   "stage": "2 · Proof",
-   "format": "Honest case study: a real losing day this month and how the month went on",
-   "title": "We show our losing days",
-   "open": "This was our worst day this month. We are showing it anyway.",
-   "hook": "Here's why we show losses.",
+   "stage": "Pillar · Emotion",
+   "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
+   "title": "Fear closes too early",
+   "open": "You were right. You still took the small profit. Sound familiar?",
+   "hook": "You were right. You still took the small profit. Sound familiar?",
    "scenes": [
     [
-     "l1",
-     "Every system has losing days. Here is ours, from this month."
+     "entry",
+     "You buy. The trade goes your way."
     ],
     [
-     "l2",
-     "Judge any system by months, not by one day. Here is the month so far."
+     "fear",
+     "Then it dips a little, and fear takes over. You close it early."
     ],
     [
-     "l3",
-     "That is why we post every result, every evening."
+     "regret",
+     "An hour later it runs to the target without you."
+    ],
+    [
+     "machine",
+     "FTM MACHINE doesn't feel fear. It holds to its exit rule, win or lose."
     ],
     [
      "cta",
-     "Honest results. Start free at ftm wealth nation dot com."
+     "Let the rules decide. Start free at ftm wealth nation dot com."
     ]
    ],
-   "note": "Figures: worst day and month-to-date from the dayresult feed for November; never invent numbers."
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-28",
-   "stage": "3 · Action",
-   "format": "FAQ rapid-fire (chat bubbles: question in, answer out)",
-   "title": "Your 4 biggest questions, answered",
-   "open": "These are the four questions people ask us most.",
-   "hook": "You asked. We answered.",
+   "stage": "Pillar · Time",
+   "format": "Pillar Time: short story with characters (rig), one clear scenario",
+   "title": "The move while you slept",
+   "open": "The biggest moves often happen while you sleep.",
+   "hook": "The biggest moves often happen while you sleep.",
    "scenes": [
     [
-     "f1",
-     "Do I need trading experience? No."
+     "night",
+     "Two a.m. You are fast asleep."
     ],
     [
-     "f2",
-     "Who holds my money? You do. It stays in your own account."
+     "asia",
+     "On the other side of the world, the Asian markets open, and prices start to move."
     ],
     [
-     "f3",
-     "Can I stop it? Yes, pause any time."
+     "morning",
+     "You wake up, and the move already happened."
     ],
     [
-     "f4",
-     "Can I try first? Yes. Open a free account and watch it trade live."
+     "machine",
+     "FTM MACHINE never sleeps. It is in the market at two a.m. as it is at two p.m."
     ],
     [
      "cta",
-     "Start free at ftm wealth nation dot com."
+     "Sleep well. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-29",
-   "stage": "1 · Learn",
-   "format": "Market explainer (gold bars, animated price line, world map)",
-   "title": "Why FTM MACHINE trades gold",
-   "open": "People have traded gold for thousands of years. Here is why it still matters.",
-   "hook": "Gold, explained in 30 seconds.",
+   "stage": "Pillar · Emotion",
+   "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
+   "title": "After a win",
+   "open": "The most dangerous moment in trading? Right after a big win.",
+   "hook": "The most dangerous moment in trading? Right after a big win.",
    "scenes": [
     [
-     "g1",
-     "Gold is one of the most traded markets in the world."
+     "win",
+     "A big win. You feel unstoppable."
     ],
     [
-     "g2",
-     "It moves on news, on fear and on interest rates, around the clock."
+     "over",
+     "So you double the size on the next trade, without a real setup."
     ],
     [
-     "g3",
-     "FTM MACHINE follows those moves by fixed rules, together with four other markets."
+     "give",
+     "And you give the whole win back in one go."
+    ],
+    [
+     "machine",
+     "FTM MACHINE keeps the same risk after a win as after a loss. Calm, every time."
     ],
     [
      "cta",
-     "Follow the market with us. Start free at ftm wealth nation dot com."
+     "Stay calm with FTM. Start free at ftm wealth nation dot com."
     ]
-   ]
+   ],
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "2026-11-30",
-   "stage": "3 · Action",
-   "format": "Month recap with real November numbers (calendar fills day by day)",
-   "title": "November with FTM MACHINE",
-   "open": "November is over. Here is every day, in thirty seconds.",
-   "hook": "Our November, day by day.",
+   "stage": "Pillar · System",
+   "format": "Pillar System: short story with characters (rig), one clear scenario",
+   "title": "What tested rules mean",
+   "open": "Six years. Six thousand trades. One set of rules.",
+   "hook": "Six years. Six thousand trades. One set of rules.",
    "scenes": [
     [
-     "cal",
-     "Here is November on the FTM master account. Green days, red days, all of them."
+     "years",
+     "FTM MACHINE's rules were tested on six years of market data, from 2020 to 2026."
     ],
     [
-     "tot",
-     "And the month in total."
+     "trades",
+     "Over six thousand trades across five markets, every one shown on the trust engine."
     ],
     [
-     "dec",
-     "Start December with a system that works while you do."
+     "same",
+     "The same rules decide every trade: when to enter, how much to risk, when to exit."
+    ],
+    [
+     "machine",
+     "No mood, no guessing. Just a system that does the same thing every time."
     ],
     [
      "cta",
-     "Start free at ftm wealth nation dot com."
+     "See every trade yourself. Start free at ftm wealth nation dot com."
     ]
    ],
-   "note": "Figures: real November day results and month total from the dayresult feed; never invent numbers."
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
   },
   {
    "date": "week-2026-11-20",
