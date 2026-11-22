@@ -107,6 +107,9 @@ Every 09:30 video takes ONE of these and tells it through a fresh, concrete scen
 3. System: even calm people fail with a bad strategy or poor execution (late entries, no stop, moving targets).
 FTM MACHINE answers all three: it is in the market around the clock, has no emotions, and follows fixed, tested rules.
 
+## Percentages in captions (owner instruction, 23 November 2026)
+- Captions never show money amounts. Open trades (floating) and every result are written as a percentage only, e.g. "Open trades right now: +0.52%", never "+$579.43".
+
 ## Profit days and loss days (owner instruction, 21 November 2026)
 - Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.
 
