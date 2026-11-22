@@ -400,7 +400,7 @@
    "scenes": [
     [
      "confess",
-     "HIM: Maybe... fifty?"
+     "HIM: Mmm… maybe fifty?"
     ],
     [
      "ask",
@@ -428,7 +428,7 @@
     ],
     [
      "what",
-     "HIM: So what do I do now?"
+     "HIM: So what should I do now?"
     ],
     [
      "twist",
@@ -440,10 +440,11 @@
     ],
     [
      "cta2",
-     "HER: We check the result together, every evening at six."
+     "HER: We check the results together, every evening at six. See you!"
     ]
    ],
-   "note": "Live account 1-21 Nov 2026: 94 closed trades, mtd +10.45%, 8 profit days, 7 loss days (dayresult 2026-11-21)."
+   "note": "Live account 1-21 Nov 2026: 94 closed trades, mtd +10.45%, 8 profit days, 7 loss days (dayresult 2026-11-21).",
+   "voice": "own recording (owner and his wife), social/videos/assets/2026-11-22-couple/vo/"
   }
  ]
 }

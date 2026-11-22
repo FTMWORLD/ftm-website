@@ -6,7 +6,7 @@
  },
  {
   "id": "confess",
-  "vo": "HIM: Maybe... fifty?",
+  "vo": "HIM: Mmm\u2026 maybe fifty?",
   "see": ""
  },
  {
@@ -41,7 +41,7 @@
  },
  {
   "id": "what",
-  "vo": "HIM: So what do I do now?",
+  "vo": "HIM: So what should I do now?",
   "see": ""
  },
  {
@@ -56,7 +56,7 @@
  },
  {
   "id": "cta2",
-  "vo": "HER: We check the result together, every evening at six.",
+  "vo": "HER: We check the results together, every evening at six. See you!",
   "see": ""
  }
 ]

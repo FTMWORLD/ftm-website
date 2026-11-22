@@ -31,9 +31,15 @@ from kokoro_onnx import Kokoro
 import soundfile as sf
 k = Kokoro(os.path.join(T, 'kokoro-v1.0.onnx'), os.path.join(T, 'voices-v1.0.bin'))
 durs, amp = [], {}
+OWN = os.environ.get('OWN_VO')  # owner 22 Nov: folder of the owner's own recordings, one <scene id>.wav each
 for sid, vo in lines:
     txt = re.sub(r'\b([Ll])ive (your|the|life|well|it|a|more)\b', r'\1iv \2', vo)  # owner 22 Nov: verb 'live' = /lɪv/, not 'lyve'
     txt = txt.replace('ftm wealth nation dot com', 'F T M wealth nation dot com').replace('FTM MACHINE', 'F T M Machine').replace('FTM', 'F T M')
+    if OWN and os.path.exists(os.path.join(OWN, sid + '.wav')):
+        a, sr = sf.read(os.path.join(OWN, sid + '.wav')); a = a if a.ndim == 1 else a.mean(1)
+        sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
+        hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
+        m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
     voice = 'af_heart'  # couple videos (owner 22 Nov): a line starting "HIM:" uses a male voice, "HER:" the female voice
     if txt.startswith('HIM:'): voice, txt = 'am_michael', txt[4:].strip()
     elif txt.startswith('HER:'): txt = txt[4:].strip()
