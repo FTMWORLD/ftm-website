@@ -97,11 +97,11 @@ function month(w, h) {
   let cells = ''; for (let i = 0; i < slots.length; i += 7) { const L = slots.slice(i, i + 7); cells += L.map(x => x ? cell(x) : '<div></div>').join('') + wk(L); }
   return `<div class="grid"></div><div class="wrap" style="padding-top:40px;padding-bottom:30px"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:30px">Every day shown · ${MONTHS[m - 1]} ${y}</div>
-    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">Losing days are part of trading.<br><span style="color:#E3B62F;white-space:nowrap">We show you every one.</span></div>
+    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">${(D.variant || 1) === 2 ? 'Quiet days, profit days, loss days.' : 'Loss days are part of trading.'}<br><span style="color:#E3B62F;white-space:nowrap">We show you every one.</span></div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:28px;font-size:17px;color:#aeb7dc;font-weight:700;letter-spacing:.06em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN', 'WEEK'].map((x, i) => `<span style="${i === 7 ? 'color:#D4AF37' : ''}">${x}</span>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:10px">${cells}</div>
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
-    <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} profit day${g === 1 ? '' : 's'} · ${r} loss day${r === 1 ? '' : 's'} · results posted every day at 11 p.m.</div></div>${FOOT}`;
+    <div style="margin-top:14px;font-size:26px;color:#c9d0ee;font-weight:600">${g} profit day${g === 1 ? '' : 's'} · ${r} loss day${r === 1 ? '' : 's'} · results posted every day at ${D.date >= '2026-11-22' ? '6 p.m.' : '11 p.m.'}</div></div>${FOOT}`;
 }
 /* Weekly summary (owner 20 Nov: every Saturday 06:00, the week from last Saturday to this Friday). D = {from, to, pct, trades, wins, losses, mtd, balance, cur, markets, days:[{date, pct, n, wins, losses}]} */
 function weekRange() { const [y1, m1, d1] = D.from.split('-').map(Number), [y2, m2, d2] = D.to.split('-').map(Number); return (m1 === m2 ? `${d1}` : `${d1} ${MONTHS[m1 - 1]}`) + ` – ${d2} ${MONTHS[m2 - 1]} ${y2}`; }
@@ -182,7 +182,10 @@ function quietStats() {
   for (let d = new Date(a); d <= b; d.setUTCDate(d.getUTCDate() + 1)) { all++; const k = d.toISOString().slice(0, 10), q = !closed.has(k);
     if (q) { none++; run++; streak = Math.max(streak, run); if (d.getUTCDay() % 6) wk++; } else run = 0; }
   T.forEach(t => { const y = key(t[1]).slice(0, 4); yr[y] = (yr[y] || 0) + t[6]; });
-  const ys = Object.keys(yr); return { none, weekdays: wk, streak, oneIn: Math.round(all / none), years: ys.filter(y => yr[y] > 0).length + ' of ' + ys.length, from: ds[0].slice(0, 4), to: ds[ds.length - 1].slice(0, 4) };
+  let wdays = 0; for (let d = new Date(a); d <= b; d.setUTCDate(d.getUTCDate() + 1)) if (d.getUTCDay() % 6) wdays++;
+  const tradedWd = ds.filter(k => new Date(k + 'T00:00:00Z').getUTCDay() % 6).length;
+  const ys = Object.keys(yr); return { none, weekdays: wk, streak, oneIn: Math.round(all / none), years: ys.filter(y => yr[y] > 0).length + ' of ' + ys.length, from: ds[0].slice(0, 4), to: ds[ds.length - 1].slice(0, 4),
+    trades: T.length, perDay: (T.length / ds.length).toFixed(1), tradedPct: Math.round(tradedWd / wdays * 100), daysPerWeek: (tradedWd / (wdays / 5)).toFixed(1) };
 }
 function quiet(w, h, part) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()], mon = MONTHS[m - 1];
@@ -193,6 +196,19 @@ function quiet(w, h, part) {
   const frame = inner => `<div style="position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 48%,rgba(227,182,47,.18),transparent 70%)"></div><div class="grid"></div>
     <div style="position:absolute;left:84px;right:84px;top:60px;bottom:${h > 1500 ? 130 : 96}px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:34px">
     <div class="logo">${MARK}FTM</div>${inner}</div>${FOOT}`;
+  if ((D.variant || 1) === 2) {
+    const Q2 = quietStats(), wkend = [0, 6].includes(new Date(Date.UTC(y, m - 1, d)).getUTCDay());
+    if (part === 1) return frame(`${badge((D.daily ? 'Daily #' + D.daily + ' · ' : '') + wd + ' ' + d + ' ' + mon.slice(0, 3))}
+    <div style="font-size:210px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F;text-shadow:0 0 70px rgba(227,182,47,.3)">0 trades</div>
+    <h1 style="margin:0;font-size:84px">${wkend ? 'The markets rested. <b>So did FTM MACHINE.</b>' : 'No setup, <b>no trade.</b>'}</h1>
+    <div class="body" style="margin:0;font-size:38px">${wkend ? 'Gold, the indices and USD/JPY close at the weekend. FTM MACHINE waits for Monday with fresh rules, not fresh emotions.' : 'FTM MACHINE trades only when every rule lines up. Today they did not.'} Swipe 👉</div>`);
+    if (part === 2) return month(w, h);
+    return frame(`${badge('How selective? · ' + Q2.from + '–' + Q2.to)}
+    <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F">${Q2.perDay}</div>
+    <h1 style="margin:0;font-size:66px">trades on an average trading day. <b>Not hundreds. A few, by the rules.</b></h1>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%">${chip('weekdays with a trade', Q2.tradedPct + '%')}${chip('trading days a week', Q2.daysPerWeek)}${chip('years profitable', Q2.years)}</div>
+    <div class="body" style="margin:0">${Q2.trades.toLocaleString('en-US')} trades over the years, every one on the trust engine: ftmwealthnation.com</div>`);
+  }
   if (part === 1) return frame(`${badge((D.daily ? 'Daily #' + D.daily + ' · ' : D.night ? 'Night ' + D.night + ' · ' : '') + wd + ' ' + d + ' ' + mon.slice(0, 3))}
     <div style="font-size:210px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F;text-shadow:0 0 70px rgba(227,182,47,.3)">0 trades</div>
     <h1 style="margin:0;font-size:86px">Not every day <b>needs a trade.</b></h1>
@@ -200,7 +216,7 @@ function quiet(w, h, part) {
   if (part === 2) return frame(`${badge('Live account · ' + mon + ' so far')}
     <div style="font-size:200px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:${(D.mtd || 0) >= 0 ? '#5fe39b' : '#ff6b74'}">${D.mtd == null ? '—' : pc(D.mtd)}</div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;width:100%">${chip('trades', trades)}${chip('profit days', green, '#5fe39b')}${chip('loss days', red, '#ff6b74')}${chip('best day', best ? pc(best.pct) : '—', '#5fe39b')}</div>
-    <div class="body" style="margin:0">Every trade is posted here at 11 p.m., profit days and loss days.</div>`);
+    <div class="body" style="margin:0">Every trade is posted here at ${D.date >= '2026-11-22' ? '6 p.m.' : '11 p.m.'}, profit days and loss days.</div>`);
   // owner 21 Nov: on a quiet day the last slide shows that quiet days exist in the backtest too (not big profits)
   const Q = quietStats();
   return frame(`${badge('Trust engine · backtest ' + Q.from + ' to ' + Q.to)}
@@ -221,5 +237,8 @@ function quiet(w, h, part) {
     await p.waitForTimeout(250);
     await p.screenshot({ path: `${outDir}/${name}-${tag}.png` }); await p.screenshot({ path: `${outDir}/${name}-${tag}.jpg`, type: 'jpeg', quality: 95 }); await p.close();
   }
-  await b.close(); console.log('ok', name);
+  await b.close();
+  // owner 22 Nov: TikTok and YouTube Shorts show the video's first frame, so the cover becomes the video's first frame
+  if (kind === 'cover') { const mp4 = `${outDir}/${name}.mp4`; if (fs.existsSync(mp4)) require('child_process').spawnSync('python3', [require('path').join(__dirname, 'coverfirst.py'), mp4, `${outDir}/${name}-cover.jpg`], { stdio: 'inherit' }); }
+  console.log('ok', name);
 })();

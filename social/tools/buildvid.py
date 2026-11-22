@@ -56,4 +56,7 @@ subprocess.run(['python3', 'mix.py', 'video.mp4', out], cwd=D, check=True)
 for f in ('_v.wav', '_m.wav', '_mix.wav'):
     try: os.remove(os.path.join(D, f))
     except OSError: pass
+cov = out[:-4] + '-cover.jpg'  # owner 22 Nov: the cover is the first frame (TikTok / YouTube Shorts show frame 1)
+if os.path.exists(cov):
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import coverfirst; coverfirst.apply(out, cov)
 print('ok', out)
