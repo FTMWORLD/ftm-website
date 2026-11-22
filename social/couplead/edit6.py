@@ -27,7 +27,7 @@ def off(t0, t1):  # last speech frame in [t0, t1]
 # (pieces as [coarse start, coarse end] from the word timings, speaker); refined by the energy envelope below
 L = [([(0.0, 3.78)], 'her'), ([(3.78, 6.58)], 'him'), ([(6.58, 7.68)], 'her'), ([(7.68, 11.18)], 'him'), ([(11.18, 12.72)], 'her'),
      ([(12.72, 16.76)], 'him'), ([(16.76, 18.18)], 'her'), ([(18.18, 23.18)], 'him'), ([(23.18, 25.08)], 'her'), ([(25.08, 28.92)], 'him'),
-     ([(28.92, 30.30)], 'her'), ([(30.30, 32.82), (36.2, 37.02)], "him"), ([(37.02, 38.20)], 'her'), ([(38.20, 40.22)], "him")]
+     ([(28.92, 30.30)], 'her'), ([(30.30, 32.82), (36.2, 37.02)], "him"), ([(37.02, 38.20)], 'her'), ([(39.0, 40.22)], "him")]  # the breath before 'See you at 6' is cut
 GAP = {1: .26, 3: .22, 5: .22, 7: .3, 9: .3, 11: .28, 13: .4}
 out = [np.zeros(int(.12 * sr))]; t0 = .12; lines = []; words = []
 for i, (pieces, who) in enumerate(L):
