@@ -25,8 +25,9 @@ function person(o) {
       <g transform="translate(0,58) rotate(${el * side})"><path d="M-17 0 Q-20 30 -15 58 L15 58 Q19 30 17 0 Z" fill="url(#${id}t)"/><path d="M-15 52 h30 v9 h-30z" fill="${top2}"/>
       ${hand(0, 72)}${side > 0 ? `<g transform="translate(0,-56)">${propSvg}</g>` : ''}</g></g>`; };
   const legs = o.sit ? `<path d="M-50 -22 h100 v34 q0 14 -14 14 h-72 q-14 0 -14 -14z" fill="url(#${id}p)"/>` :
-    `<path d="M-46 -40 L-8 -40 L-12 92 L-44 92 Z" fill="url(#${id}p)"/><path d="M8 -40 L46 -40 L44 92 L12 92 Z" fill="url(#${id}p)"/>
-     <path d="M-50 90 h42 q8 0 8 10 v6 h-56 q-4 0 -4 -6z" fill="${shoes}"/><path d="M8 90 h42 q8 0 8 10 v6 h-50z" fill="${shoes}"/>`;
+    (() => { const sw = o.walk ? 24 * Math.sin(t * (o.walkSpeed || 7)) : 0;
+      return `<g transform="rotate(${sw} -27 -40)"><path d="M-46 -40 L-8 -40 L-12 92 L-44 92 Z" fill="url(#${id}p)"/><path d="M-50 90 h42 q8 0 8 10 v6 h-56 q-4 0 -4 -6z" fill="${shoes}"/></g>
+     <g transform="rotate(${-sw} 27 -40)"><path d="M8 -40 L46 -40 L44 92 L12 92 Z" fill="url(#${id}p)"/><path d="M8 90 h42 q8 0 8 10 v6 h-50z" fill="${shoes}"/></g>`; })();
   const mouthOpen = Math.max(0, Math.min(1, talk));
   const mouth = mouthOpen > 0.08 ? `<path d="M-15 30 Q0 ${30 + 6 + 16 * mouthOpen} 15 30 Q0 ${34 + 4 * mouthOpen} -15 30Z" fill="#5a1f22"/><path d="M-9 ${31 + 9 * mouthOpen} q9 5 18 0" stroke="#e98a8a" stroke-width="4" fill="none" opacity="${mouthOpen}"/>`
     : { smile: '<path d="M-16 28 Q0 42 16 28" stroke="#6a2a2a" stroke-width="4.5" fill="none" stroke-linecap="round"/>', neutral: '<path d="M-12 32 Q0 35 12 32" stroke="#6a2a2a" stroke-width="4.5" fill="none" stroke-linecap="round"/>',
@@ -45,15 +46,15 @@ function person(o) {
   const beard = o.beard ? `<path d="M-50 4 Q-46 60 0 66 Q46 60 50 4 Q40 40 0 44 Q-40 40 -50 4Z" fill="${hr}" opacity=".85"/>` : '';
   const glasses = o.glasses ? `<g fill="none" stroke="#1a1a1a" stroke-width="3.5"><rect x="-38" y="-20" width="30" height="24" rx="8"/><rect x="8" y="-20" width="30" height="24" rx="8"/><path d="M-8 -10 h16"/></g>` : '';
   const collar = o.collar || '';
-  return `<g transform="translate(${o.x},${o.y}) scale(${(o.flip ? -1 : 1) * s},${s})">${defs}
+  return `<g transform="translate(${o.x},${o.y - (o.walk ? 8 * Math.abs(Math.sin(t * (o.walkSpeed || 7))) : 0) - (o.jump || 0)}) rotate(${o.lean || 0}) scale(${(o.flip ? -1 : 1) * s},${s})">${defs}
     <ellipse cx="0" cy="${o.sit ? 30 : 104}" rx="${o.sit ? 90 : 70}" ry="14" fill="#000" opacity=".25"/>
     ${legs}
     <g transform="scale(1,${breathe})" style="transform-origin:0 -40px">
-     ${arm(-1, o.armL == null ? 8 : o.armL, o.elL || 0)}
+     ${arm(-1, (o.armL == null ? 8 : o.armL) + (o.walk ? -18 * Math.sin(t * (o.walkSpeed || 7)) : 0), o.elL || 0)}
      <path d="M-66 -196 Q-74 -120 -58 -36 L58 -36 Q74 -120 66 -196 Q34 -214 0 -214 Q-34 -214 -66 -196Z" fill="url(#${id}t)"/>
      <path d="M-58 -36 L58 -36 L56 -24 L-56 -24Z" fill="${shade(top2, -0.15)}"/>${collar}
      <path d="M-16 -222 h32 v28 q-16 10 -32 0z" fill="${skd}"/>
-     ${arm(1, o.armR == null ? 8 : o.armR, o.elR || 0)}
+     ${arm(1, (o.armR == null ? 8 : o.armR) + (o.walk && !o.prop ? 18 * Math.sin(t * (o.walkSpeed || 7)) : 0), o.elR || 0)}
      <g transform="translate(${look * 3},-286) rotate(${o.tilt || 0})">
       ${hairBack}<ellipse cx="-62" cy="4" rx="11" ry="16" fill="${skd}"/><ellipse cx="62" cy="4" rx="11" ry="16" fill="${skd}"/>
       <path d="M-60 -8 Q-62 -76 0 -78 Q62 -76 60 -8 Q60 52 0 70 Q-60 52 -60 -8Z" fill="url(#${id}f)"/>

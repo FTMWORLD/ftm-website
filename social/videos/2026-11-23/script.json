@@ -1,32 +1,42 @@
 [
  {
   "id": "hook",
-  "vo": "I never sleep. Let me show you my day.",
+  "vo": "A letter from you, at sixty-five.",
   "see": ""
  },
  {
-  "id": "m0",
-  "vo": "Midnight. Markets in Asia open, and I start watching.",
+  "id": "d1",
+  "vo": "Dear me. I'm writing to you from the year twenty sixty-one.",
   "see": ""
  },
  {
-  "id": "m1",
-  "vo": "Morning. Gold moves. I follow my rules, not my mood.",
+  "id": "d2",
+  "vo": "You're thirty. You think there's still time. There is, but only if you start.",
   "see": ""
  },
  {
-  "id": "m2",
-  "vo": "Afternoon. New York opens. I check every setup.",
+  "id": "d3",
+  "vo": "Saving alone wasn't enough. Prices grew faster than my savings.",
   "see": ""
  },
  {
-  "id": "m3",
-  "vo": "Night. You are asleep. I'm still here.",
+  "id": "d4",
+  "vo": "What worked was a plan with fixed rules. No panic on loss days. No greed on profit days.",
+  "see": ""
+ },
+ {
+  "id": "d5",
+  "vo": "A little every month. Every trade shown. Years, not days.",
+  "see": ""
+ },
+ {
+  "id": "d6",
+  "vo": "Thank you for starting. Love, you, at sixty-five.",
   "see": ""
  },
  {
   "id": "cta",
-  "vo": "I work. You live. Start free at ftm wealth nation dot com.",
+  "vo": "FTM MACHINE. Fixed rules, tested on over six thousand trades. Start your plan for later. Link below.",
   "see": ""
  }
 ]
