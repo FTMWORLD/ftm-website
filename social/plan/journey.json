@@ -70,12 +70,12 @@
    "stage": "1 · Learn",
    "format": "Weekend story (party, friends, play, cook, clean, rest) + real statistics",
    "title": "Does FTM rest at the weekend?",
-   "open": "Be honest. What did your money do last weekend? Ours didn't take the weekend off.",
-   "hook": "Be honest: what did your money do last weekend?",
+   "open": "Stop scrolling if you work Monday to Friday. This one is for you.",
+   "hook": "Stop scrolling if you work Monday to Friday.",
    "scenes": [
     [
      "week",
-     "Monday to Friday, you work. Then the weekend comes, and it's finally yours."
+     "Five days a week, you give your time to work. Then the weekend comes, and it's finally yours."
     ],
     [
      "party",

@@ -35,7 +35,7 @@ const SCN={
    TX(540,760,64,'#fff','Most people think',800)+TX(540,850,78,'#E3B62F','the weekend is quiet.')+
    TX(540,940,44,'#c9d0ee','Markets close. Nothing happens.',600,cl((t-1.1)/0.4))+zz+
    (w?stamp(t-3.3,'WRONG','#E5323E',1090)+flash(t-3.3):'')+'</svg>'},
- hook(t){
+ hookPoll(t){
   const q=ease(t/0.5),opts=[['😴','It slept',0],['🛍️','I spent it',0],['📈','It worked',1]];let o='';
   opts.forEach(([e,l,win],i)=>{const a=ease((t-1.3-i*0.35)/0.35),y=1010+i*125,sel=win&&t>3.0,pulse=sel?1+0.03*sin(t*8):1;
    o+=`<g opacity="${a}" transform="translate(${540+(1-a)*300},${y}) scale(${pulse})"><rect x="-380" y="-50" width="760" height="100" rx="50" fill="${sel?'#2fbf71':'rgba(255,255,255,.1)'}" stroke="${sel?'#2fbf71':'rgba(255,255,255,.3)'}" stroke-width="3"/><text x="-320" y="16" font-family="Inter" font-size="46">${e}</text><text x="-250" y="16" font-family="Inter" font-weight="800" font-size="44" fill="#fff">${l}</text>${sel?`<circle cx="320" cy="0" r="30" fill="#fff"/><path d="M304 0 l11 11 l22 -22" stroke="#2fbf71" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}</g>`});
@@ -119,4 +119,16 @@ const SCN={
  home(t,d){return xfade(t,d,[5,6,7])+open_()+tag(t-0.2,'COOK · CLEAN · REST',560,'#7fe3ff')+machine(t,360)+'</svg>'},
  clock(t,d){const sw=d*0.5;if(t<sw)return photo(8,t,{z0:1.0,dz:0.18})+open_()+machine(t,360)+'</svg>';return SCN.clockChart(t-sw+0.4)},
  cta(t){const p=1+.04*sin(t*5);return photo(9,t,{dy:-20})+open_()+`<g transform="translate(540,640)"><rect x="-430" y="-200" width="860" height="400" rx="40" fill="#050a22" opacity=".82" stroke="#D4AF37" stroke-width="4"/>${TX(0,-100,58,'#fff','Live your weekend.',800)}${TX(0,-25,66,'#E3B62F','FTM keeps working.')}<g transform="translate(0,105) scale(${p})"><rect x="-230" y="-60" width="460" height="120" rx="60" fill="#E5323E"/>${TX(0,20,58,'#fff','Start free')}</g></g>`+'</svg>'},
+ hook(t){
+  const sc=t<0.55?t*2600:0,stop=t>=0.55;let feed='';
+  for(let i=0;i<9;i++){const y=((i*300-sc)%2700+2700)%2700-400;feed+=`<rect x="90" y="${y}" width="900" height="260" rx="30" fill="rgba(255,255,255,${.06+.03*(i%3)})"/><rect x="130" y="${y+40}" width="${300+(i*97)%400}" height="26" rx="13" fill="rgba(255,255,255,.12)"/><rect x="130" y="${y+90}" width="${200+(i*53)%300}" height="20" rx="10" fill="rgba(255,255,255,.08)"/>`}
+  const days=['MON','TUE','WED','THU','FRI'];let g='';
+  days.forEach((d,i)=>{const a=ease((t-1.3-i*0.12)/0.3),x=130+i*205;g+=`<g opacity="${a}" transform="translate(${x},${1040+(1-a)*40})"><rect x="-90" y="-60" width="180" height="120" rx="22" fill="rgba(5,10,34,.85)" stroke="rgba(255,255,255,.3)" stroke-width="2"/>${TX(0,-10,34,'#c9d0ee',d,800)}${TX(0,38,30,'#E5323E','WORK',900)}</g>`});
+  const k=back((t-0.55)/0.3),shake=stop&&t<0.9?sin(t*120)*10:0;
+  return open_(grad('hk','#0b1640','#03061a'))+`<g opacity="${stop?0.35:1}" style="filter:blur(${stop?0:2}px)">${feed}</g>`+
+   (stop?`<g transform="translate(${540+shake},620) scale(${1.6-0.6*k})" opacity="${cl((t-0.55)/0.1)}"><rect x="-420" y="-110" width="840" height="220" rx="36" fill="#E5323E"/>${TX(0,-18,92,'#fff','STOP')}${TX(0,72,72,'#fff','SCROLLING')}</g>`:'')+
+   (t>0.9?TX(540,860,58,'#fff','if you work',800,cl((t-0.9)/0.3))+TX(540,940,72,'#E3B62F','Monday to Friday.',900,cl((t-1.0)/0.3)):'')+g+
+   (t>2.2?TX(540,1230,46,'#c9d0ee','This one is for you.',700,cl((t-2.2)/0.3)):'')+(stop?flash(t-0.55):'')+'</svg>'},
+ week(t){const k=ease((t-1.6)/0.5);
+  return photo(1,t,{dy:-30})+open_()+(t>1.6?`<g transform="translate(540,620) scale(${0.6+0.4*k})" opacity="${k}"><rect x="-330" y="-70" width="660" height="140" rx="70" fill="#E3B62F"/>${TX(0,20,58,'#0b1640','SAT · SUN = YOURS')}</g>`:'')+'</svg>'},
 };
