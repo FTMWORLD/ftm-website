@@ -10,7 +10,7 @@ OUT = sys.argv[2] if len(sys.argv) > 2 else 'social/posts/v3'
 MODE = sys.argv[3] if len(sys.argv) > 3 else 'day'
 HERE = os.path.dirname(os.path.abspath(__file__))
 MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-EVE = D >= '2026-11-24'  # owner 22 Nov: from Tue 24 Nov the result post is at 6 p.m. (yesterday's full result)
+EVE = D >= '2026-11-23'  # owner 22 Nov: from Mon 23 Nov the result post is at 6 p.m. (yesterday's full result)
 WD = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 

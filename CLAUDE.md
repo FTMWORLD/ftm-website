@@ -80,10 +80,14 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.
 
 ## Posting times (owner instruction, 22 November 2026; replaces 21 Nov)
-- From Tuesday 24 Nov 2026: 09:30 = education and insights about FTM; 13:00 = the couple videos (owner and his wife); 18:00 = YESTERDAY's full, exact day result (Saturday 18:00 = the weekly summary instead). Monday 23 Nov is the last day with a 23:00 post. Chosen from Metricool's audience data: our people are most active at 10:00, 12:00–13:00 and 18:00.
+- From Sunday 22 Nov 2026: 09:30 = education and insights about FTM; 13:00 = the couple video (owner and his wife); 18:00 = YESTERDAY's full, exact day result (Saturday 18:00 = the weekly summary instead). Sunday 22 Nov 23:00 is the last 23:00 post; the 18:00 results start Monday 23 Nov. Monday 23 Nov 09:30 = Video A. Chosen from Metricool's audience data: our people are most active at 10:00, 12:00–13:00 and 18:00.
 - Weekly or 5-day recaps go out only on Saturdays or on the last day of a month, never on other days.
 - Instagram: post videos as normal REELS, not Trial Reels (owner 22 Nov: followers must see every video). Metricool cannot switch on "share trial to followers automatically", so a Trial Reel would stay hidden from followers. Normal Reels still reach non-followers through the Reels tab and Explore.
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
+
+## Images and scripts (owner instruction, 22 November 2026)
+- Every 09:30 and 13:00 video uses ChatGPT's realistic images (mixed with our own animation is fine, but always with his images). For every script, write a brief file in social/briefs/ (script + numbered image prompts: same characters, 9:16, no text/logos, calm top 20% and bottom 30%, FTM colours) and send it to the owner, who gets the images from ChatGPT. The 18:00 results need no images.
+- The 13:00 couple video: a short dialogue between HER and HIM, always built on FTM's ideology, principles, values, goals and vision, with real statistics from the website (live account, trust engine). Voices: lines start with "HER:" or "HIM:" (buildvid.py picks the voice).
 
 ## Why FTM exists: the 09:30 content pillars (owner and his wife, 22 November 2026)
 Every 09:30 video takes ONE of these and tells it through a fresh, concrete scenario (there are 100 ways to tell each):
