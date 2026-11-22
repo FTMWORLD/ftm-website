@@ -31,13 +31,26 @@ from kokoro_onnx import Kokoro
 import soundfile as sf
 k = Kokoro(os.path.join(T, 'kokoro-v1.0.onnx'), os.path.join(T, 'voices-v1.0.bin'))
 durs, amp = [], {}
+def clean_own(a, sr):
+    """Owner/wife recordings: remove steady room noise, trim the silence at both ends to 60 ms, fade 25 ms in and out."""
+    import noisereduce as nr
+    hop = int(.01 * sr); env = np.array([np.sqrt(np.mean(a[i:i + hop] ** 2)) for i in range(0, max(1, len(a) - hop), hop)])
+    q = np.argsort(env)[:max(5, len(env) // 8)]  # the quietest 10 ms frames = the noise sample
+    noise = np.concatenate([a[i * hop:(i + 1) * hop] for i in q])
+    if len(noise) > sr // 10: a = nr.reduce_noise(y=a, sr=sr, y_noise=noise, stationary=True, prop_decrease=.9)
+    env = np.array([np.sqrt(np.mean(a[i:i + hop] ** 2)) for i in range(0, max(1, len(a) - hop), hop)])
+    on = np.where(env > env.max() * .06)[0]
+    if len(on): a = a[max(0, on[0] - 6) * hop:min(len(a), (on[-1] + 7) * hop)].copy()
+    f = min(int(.025 * sr), len(a) // 4); a[:f] *= np.linspace(0, 1, f) ** 2; a[-f:] *= np.linspace(1, 0, f) ** 2
+    return a
 OWN = os.environ.get('OWN_VO')  # owner 22 Nov: folder of the owner's own recordings, one <scene id>.wav each
 for sid, vo in lines:
     txt = re.sub(r'\b([Ll])ive (your|the|life|well|it|a|more)\b', r'\1iv \2', vo)  # owner 22 Nov: verb 'live' = /lɪv/, not 'lyve'
     txt = txt.replace('ftm wealth nation dot com', 'F T M wealth nation dot com').replace('FTM MACHINE', 'F T M Machine').replace('FTM', 'F T M')
     if OWN and os.path.exists(os.path.join(OWN, sid + '.wav')):
         a, sr = sf.read(os.path.join(OWN, sid + '.wav')); a = a if a.ndim == 1 else a.mean(1)
-        sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
+        a = clean_own(a, sr)  # owner 22 Nov: no background noise, no clicks, no long pauses ("hiccups") between the lines
+        sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(max(.3, len(a) / sr - .2), 2))  # 0.6 s scene pad - 0.2 = a natural 0.4 s turn
         hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
     voice = 'af_heart'  # couple videos (owner 22 Nov): a line starting "HIM:" uses a male voice, "HER:" the female voice
@@ -59,4 +72,8 @@ for f in ('_v.wav', '_m.wav', '_mix.wav'):
 cov = out[:-4] + '-cover.jpg'  # owner 22 Nov: the cover is the first frame (TikTok / YouTube Shorts show frame 1)
 if os.path.exists(cov):
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); import coverfirst; coverfirst.apply(out, cov)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import audiocheck  # owner 22 Nov: listen before posting - dropouts, clicks, long pauses, noise jumps
+bad = audiocheck.check(out)
+print('SOUND CHECK:', '; '.join(bad) if bad else 'clean')
 print('ok', out)

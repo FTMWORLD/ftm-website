@@ -61,7 +61,13 @@ Ls = int(3.4 * sr); ts = np.arange(Ls) / sr; add(fx, EV['see'] + 1.3, sum(np.sin
 add(fx, EV['see'] + 1.3, S(tone(1760, 2.5, 1.6), .5 * tone(2637, 2, 1.8)), .07)
 mus /= np.abs(mus).max() + 1e-9; mus *= .24; mus *= np.minimum(1, t / .3) * np.minimum(1, (tot - t) / 2.2)
 fx /= np.abs(fx).max() + 1e-9; fx *= .4
-env = np.convolve((np.abs(vo) > .02).astype(float), np.ones(int(.3 * sr)) / (.3 * sr), 'same'); mus *= 1 - .55 * np.clip(env * 2, 0, 1)
+def duck(vo, sr, depth):  # owner 22 Nov: music dips smoothly under the voice and stays down between words (no pumping / hiccups)
+    h = int(sr * .01); fr = np.array([np.abs(vo[i:i + h]).max() for i in range(0, len(vo), h)]) > .02
+    held = np.convolve(fr.astype(float), np.ones(71), 'same') > 0   # bridge gaps up to 0.35 s on each side
+    g = np.zeros(len(held)); x = 0.
+    for i, v in enumerate(held): x += (v - x) * (.25 if v > x else .03); g[i] = x   # ~40 ms down, ~330 ms back up
+    return 1 - depth * np.interp(np.arange(len(vo)) / h, np.arange(len(g)), g)
+mus *= duck(vo, sr, .55)
 for name, arr in (('_v.wav', vo), ('_m.wav', mus + fx)):
     o = wave.open(name, 'w'); o.setnchannels(1); o.setsampwidth(2); o.setframerate(sr); o.writeframes((np.clip(arr, -1, 1) * 32767).astype(np.int16).tobytes()); o.close()
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', '_v.wav', '-i', '_m.wav', '-filter_complex', '[0]acompressor=threshold=-20dB:ratio=2.5:attack=5:release=120,volume=1.6[v];[1]aecho=0.8:0.5:45|80:0.2|0.12,pan=stereo|c0=c0|c1=c0[m];[v]pan=stereo|c0=c0|c1=c0[vs];[vs][m]amix=inputs=2:normalize=0,alimiter=limit=0.9,loudnorm=I=-14:TP=-1.5:LRA=9', '-ar', '48000', '-ac', '2', '_mix.wav'], check=True)

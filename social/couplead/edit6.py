@@ -5,9 +5,14 @@ python3 edit6.py <take.m4a> <words.json from faster-whisper: [[start,end,word], 
 import subprocess, json, sys, numpy as np, wave
 src, wpath = sys.argv[1], sys.argv[2]
 sr = 48000
-raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', src, '-af', 'highpass=f=85,afftdn=nf=-30:tn=1,equalizer=f=250:t=q:w=1.2:g=-2.5,equalizer=f=3800:t=q:w=1:g=2.5,equalizer=f=9000:t=q:w=1:g=1',
+raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', src, '-af', 'highpass=f=85,equalizer=f=250:t=q:w=1.2:g=-2.5,equalizer=f=3800:t=q:w=1:g=2.5,equalizer=f=9000:t=q:w=1:g=1',
                       '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'], capture_output=True).stdout
 a = np.frombuffer(raw, np.float32).astype(float)
+# owner 22 Nov: no background noise. The room hum was audible inside every line and silent between lines, so it switched on and off
+# at each cut ("hiccups"). Remove it properly with spectral gating, using the quiet 2 s in the take as the noise sample.
+import noisereduce as nr
+NOISE = tuple(float(x) for x in (sys.argv[3].split('-') if len(sys.argv) > 3 else ('34.0', '36.0')))
+a = nr.reduce_noise(y=a, sr=sr, y_noise=a[int(NOISE[0] * sr):int(NOISE[1] * sr)], stationary=True, prop_decrease=0.97, n_fft=2048)
 W = json.load(open(wpath))
 def rms(x): return np.sqrt(np.mean(x ** 2) + 1e-12)
 hop = int(.01 * sr); env = np.array([rms(a[i:i + hop]) for i in range(0, len(a) - hop, hop)]); thr = np.percentile(env, 15) * 4.0  # about 12 dB above the room noise
@@ -38,12 +43,12 @@ for i, (pieces, who) in enumerate(L):
         segs.append((s, e))
     line_start = t0
     for k, (s, e) in enumerate(segs):
-        seg = a[int(s * sr):int(e * sr)].copy(); f = int(.015 * sr); seg[:f] *= np.linspace(0, 1, f); seg[-f:] *= np.linspace(1, 0, f)
+        seg = a[int(s * sr):int(e * sr)].copy(); f = int(.03 * sr); seg[:f] *= np.linspace(0, 1, f) ** 2; seg[-f:] *= np.linspace(1, 0, f) ** 2
         for (ws, we, w) in W:   # a word belongs to this piece when it ends inside it (whisper often starts a word early, in the pause before it)
             if we > s + .04 and ws < e - .04:
                 words.append([round(t0 + max(0, ws - s), 3), round(t0 + max(.05, min(we, e) - s), 3), w])
         out.append(seg); t0 += len(seg) / sr
-        if k < len(segs) - 1: out.append(np.zeros(int(.09 * sr))); t0 += .09
+        if k < len(segs) - 1: out.append(np.zeros(int(.16 * sr))); t0 += .16
     lines.append([round(line_start, 3), round(t0, 3), who])
     g = GAP.get(i, .24); out.append(np.zeros(int(g * sr))); t0 += g
 v = np.concatenate(out + [np.zeros(int(.2 * sr))])
@@ -52,7 +57,7 @@ for (ls, le, who) in lines:
     x = v[int(ls * sr):int(le * sr)]; loud = x[np.abs(x) > np.percentile(np.abs(x), 60)]
     if len(loud): v[int(ls * sr):int(le * sr)] = x * (10 ** (-17 / 20)) / rms(loud)
 o = wave.open('_raw.wav', 'w'); o.setnchannels(1); o.setsampwidth(2); o.setframerate(sr); o.writeframes((np.clip(v, -1, 1) * 32767).astype(np.int16).tobytes()); o.close()
-subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', '_raw.wav', '-af', 'acompressor=threshold=-24dB:ratio=3:attack=4:release=110:makeup=2,deesser=i=0.4,loudnorm=I=-16:TP=-1.5:LRA=6', '-ar', str(sr), '-ac', '1', 'vo.wav'], check=True)
+subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', '_raw.wav', '-af', 'acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=2,deesser=i=0.3,loudnorm=I=-16:TP=-1.5:LRA=7', '-ar', str(sr), '-ac', '1', 'vo.wav'], check=True)
 raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', 'vo.wav', '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'], capture_output=True).stdout
 v = np.frombuffer(raw, np.float32).astype(float); h = sr // 30
 e2 = np.array([rms(v[i:i + h]) for i in range(0, len(v), h)]); e2 = np.clip(e2 / np.percentile(e2, 97), 0, 1)
