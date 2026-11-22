@@ -12,7 +12,7 @@ a = np.frombuffer(raw, np.float32).astype(float)
 # at each cut ("hiccups"). Remove it properly with spectral gating, using the quiet 2 s in the take as the noise sample.
 import noisereduce as nr
 NOISE = tuple(float(x) for x in (sys.argv[3].split('-') if len(sys.argv) > 3 else ('34.0', '36.0')))
-a = nr.reduce_noise(y=a, sr=sr, y_noise=a[int(NOISE[0] * sr):int(NOISE[1] * sr)], stationary=True, prop_decrease=0.97, n_fft=2048)
+a = nr.reduce_noise(y=a, sr=sr, y_noise=a[int(NOISE[0] * sr):int(NOISE[1] * sr)], stationary=True, prop_decrease=0.6, n_fft=2048)  # gentle: strong settings gate the voice into choppy holes between words
 W = json.load(open(wpath))
 def rms(x): return np.sqrt(np.mean(x ** 2) + 1e-12)
 hop = int(.01 * sr); env = np.array([rms(a[i:i + hop]) for i in range(0, len(a) - hop, hop)]); thr = np.percentile(env, 15) * 4.0  # about 12 dB above the room noise
@@ -29,33 +29,47 @@ L = [([(0.0, 3.78)], 'her'), ([(3.78, 6.58)], 'him'), ([(6.58, 7.68)], 'her'), (
      ([(12.72, 16.76)], 'him'), ([(16.76, 18.18)], 'her'), ([(18.18, 23.18)], 'him'), ([(23.18, 25.08)], 'her'), ([(25.08, 28.92)], 'him'),
      ([(28.92, 30.30)], 'her'), ([(30.30, 32.82), (36.2, 37.02)], "him"), ([(37.02, 38.20)], 'her'), ([(39.0, 40.22)], "him")]  # the breath before 'See you at 6' is cut
 GAP = {1: .26, 3: .22, 5: .22, 7: .3, 9: .3, 11: .28, 13: .4}
-out = [np.zeros(int(.12 * sr))]; t0 = .12; lines = []; words = []
-for i, (pieces, who) in enumerate(L):
+# owner 22 Nov ("glitches, stuttering"): never cut to digital silence. A continuous room tone from the take runs under the whole
+# track and every piece is cross-faded into it, so the background never switches on and off and there are no dead holes.
+room = a[int(NOISE[0] * sr):int(NOISE[1] * sr)].copy()
+def tone(n):
+    out = np.zeros(n); pos = 0; x = int(.05 * sr); rng = np.random.default_rng(3)
+    while pos < n:
+        k = int(rng.integers(0, len(room) - sr // 2)); seg = room[k:k + sr // 2].copy(); m = min(len(seg), n - pos)
+        w = np.ones(len(seg)); w[:x] = np.linspace(0, 1, x); w[-x:] = np.linspace(1, 0, x)
+        out[pos:pos + m] += (seg * w)[:m]; pos += len(seg) - x
+    return out
+pieces = []; t0 = .12; lines = []; words = []
+for i, (pcs, who) in enumerate(L):
     segs = []
-    for (cs, ce) in pieces:
+    for (cs, ce) in pcs:
         inside = [w for w in W if cs - .01 <= w[0] < ce]
         before = [w for w in W if w[0] < cs - .01]; after = [w for w in W if w[0] >= ce]
-        lo = before[-1][1] + .02 if before else 0          # never reach back into the previous word
-        hi = after[0][0] - .02 if after else len(a) / sr   # never run on into the next word
+        lo = before[-1][1] + .02 if before else 0
+        hi = after[0][0] - .02 if after else len(a) / sr
         last = inside[-1] if inside else (cs, ce, '')
-        s = max(lo, on(max(lo, cs - .25), ce) - .05)
-        e = min(hi, off(last[0], min(hi, last[1] + .2)) + .07)
-        segs.append((s, e))
+        s0 = max(lo, on(max(lo, cs - .25), ce) - .05)
+        e0 = min(hi, off(last[0], min(hi, last[1] + .2)) + .07)
+        segs.append((s0, e0))
+    # level the whole line once (her and his voice match), before it goes onto the room tone
+    x = np.concatenate([a[int(s0 * sr):int(e0 * sr)] for s0, e0 in segs]); loud = x[np.abs(x) > np.percentile(np.abs(x), 60)]
+    g = (10 ** (-17 / 20)) / rms(loud) if len(loud) else 1.
     line_start = t0
-    for k, (s, e) in enumerate(segs):
-        seg = a[int(s * sr):int(e * sr)].copy(); f = int(.03 * sr); seg[:f] *= np.linspace(0, 1, f) ** 2; seg[-f:] *= np.linspace(1, 0, f) ** 2
-        for (ws, we, w) in W:   # a word belongs to this piece when it ends inside it (whisper often starts a word early, in the pause before it)
-            if we > s + .04 and ws < e - .04:
-                words.append([round(t0 + max(0, ws - s), 3), round(t0 + max(.05, min(we, e) - s), 3), w])
-        out.append(seg); t0 += len(seg) / sr
-        if k < len(segs) - 1: out.append(np.zeros(int(.16 * sr))); t0 += .16
+    for k, (s0, e0) in enumerate(segs):
+        seg = a[int(s0 * sr):int(e0 * sr)] * g
+        for (ws, we, w) in W:
+            if we > s0 + .04 and ws < e0 - .04:
+                words.append([round(t0 + max(0, ws - s0), 3), round(t0 + max(.05, min(we, e0) - s0), 3), w])
+        pieces.append((t0, seg)); t0 += len(seg) / sr
+        if k < len(segs) - 1: t0 += .1
     lines.append([round(line_start, 3), round(t0, 3), who])
-    g = GAP.get(i, .24); out.append(np.zeros(int(g * sr))); t0 += g
-v = np.concatenate(out + [np.zeros(int(.2 * sr))])
-# level each line to the same loudness (her and his voice match)
-for (ls, le, who) in lines:
-    x = v[int(ls * sr):int(le * sr)]; loud = x[np.abs(x) > np.percentile(np.abs(x), 60)]
-    if len(loud): v[int(ls * sr):int(le * sr)] = x * (10 ** (-17 / 20)) / rms(loud)
+    t0 += GAP.get(i, .24)
+n = int((t0 + .2) * sr); room_g = np.median([(10 ** (-17 / 20)) / rms(p[np.abs(p) > np.percentile(np.abs(p), 60)]) for _, p in pieces])
+v = tone(n) * room_g   # the room tone at the same gain as the voices
+f = int(.03 * sr)
+for (st, seg) in pieces:
+    i0 = int(st * sr); w = np.ones(len(seg)); w[:f] = np.sin(np.linspace(0, np.pi / 2, f)) ** 2; w[-f:] = np.cos(np.linspace(0, np.pi / 2, f)) ** 2
+    v[i0:i0 + len(seg)] = v[i0:i0 + len(seg)] * (1 - w) + seg * w
 o = wave.open('_raw.wav', 'w'); o.setnchannels(1); o.setsampwidth(2); o.setframerate(sr); o.writeframes((np.clip(v, -1, 1) * 32767).astype(np.int16).tobytes()); o.close()
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', '_raw.wav', '-af', 'acompressor=threshold=-24dB:ratio=2.5:attack=8:release=160:makeup=2,deesser=i=0.3,loudnorm=I=-16:TP=-1.5:LRA=7', '-ar', str(sr), '-ac', '1', 'vo.wav'], check=True)
 raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', 'vo.wav', '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'], capture_output=True).stdout
