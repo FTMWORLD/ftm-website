@@ -4,6 +4,27 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-22 — FTM MACHINE 4.0 ON THE MASTER (prop stays on 3.9) + engine package for it (not committed yet; live 17:16 Berlin with the owner's yes in chat)
+
+- WEBSITE: eight NEW strategies appear in the strategy lists (codes FTMM-34677 … FTMM-34684, names "FTM MACHINE 4.0 - XS … (day-close)"),
+  markets HK50 (34677, 34680), USDJPY (34678, 34684), US Tech 100 (34679, 34681, 34683), Bitcoin (34682). Every account that follows
+  the master is subscribed to them from the start, like any auto-added strategy. No API field changed.
+- EA 4.0 (master only) = 3.9 + eight day-close trades (one decision a day at 22:45 broker time, HK50 20:30; stop = the 20-day average
+  range; held 2-10 days; closed by the EA, no take profit), a loss pause (after 3 losses in a row Day Momentum, Range Breakout and the
+  day-close streams 1-5 sit out their next 5 signals), M and W 4 stop pad 5 (the live 3.9 charts ran 0; the staged charts set 5), the
+  Asian Breakout log line only when orders are really placed. Prop accounts never trade the new strategies (g_propOn).
+- ENGINE (one package with the EA, ENGINE CHANGES 4.0.md): (1) the eight strategies registered with their names BEFORE the first trade
+  through the engine's own auto-strategy path (scripts/register-40-strategies.js --commit); (2) small-account rule R25 for accounts whose
+  sizing base is under 2,000 USD: Bitcoin and USDJPY minimum-lot factor 3 -> 1.5; the day-close strategies copy only when the true lot
+  reaches the broker minimum (factor 1, never rounded up), 34682 Bitcoin at 1.5; gold / US Tech 100 / HK50 unchanged at 1.5; 2,000 USD and
+  up unchanged (3 on everything). The group copy (R27) and the claim's size guard use the same factors (src/services/min-lot-rule.js now
+  takes the master magic; execution-planner.js, group-copy.js, trade-guards.js pass it). Kill switches in .env: COPY_SMALL_MIN_LOT_FACTOR_BTC=3
+  / _JPY=3 (pre-4.0 factors), COPY_SMALL_MIN_LOT_FACTOR_XS=1.5 (day-close like the old markets) — each needs an API restart.
+- PROOF: scripts/verify-min-lot-40.js 6/6 and scripts/verify-small-min-lot.js 7/7 on the staged code (real DB, rolled back): factor table,
+  registration with names and subscriptions, planner dry run at 500 / 1,000 / 2,500 / 100,000 USD for 34679 / 34682 / 34666 / 34656 / 34684,
+  group copy with a day-close anchor, claim guard. EA: 3.9 source + FTM MACHINE's patch = the delivered 4.0 file byte for byte
+  (sha256 26b2f05e…4802d), compiled here 0 errors / 0 warnings (ex5 e6a2b640…4ab8). FTM MACHINE's proof: 5,872 of 5,872 tested trades identical.
+
 ## 2026-11-20 — FTM MACHINE 3.9 ON THE PROP TERMINAL AND THE MASTER (not committed yet; live 13:02 / 13:13 Berlin with the owner's "Yes, install both now")
 
 - WEBSITE: nothing to change. No API field changed. No new magic number (3.9 uses the same strategies and offsets as 3.8).
