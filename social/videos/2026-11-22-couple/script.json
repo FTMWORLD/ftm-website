@@ -1,0 +1,62 @@
+[
+ {
+  "id": "hook",
+  "vo": "HER: Be honest. How many times did you check the markets this week?",
+  "see": ""
+ },
+ {
+  "id": "confess",
+  "vo": "HIM: Maybe... fifty?",
+  "see": ""
+ },
+ {
+  "id": "ask",
+  "vo": "HER: And how did that go?",
+  "see": ""
+ },
+ {
+  "id": "fear",
+  "vo": "HIM: I closed one too early because I was scared,",
+  "see": ""
+ },
+ {
+  "id": "anger",
+  "vo": "HIM: and jumped back in too late because I was angry.",
+  "see": ""
+ },
+ {
+  "id": "machine",
+  "vo": "HER: FTM MACHINE took 94 trades this month. No fear. No anger. The same rules, every single time.",
+  "see": ""
+ },
+ {
+  "id": "andq",
+  "vo": "HIM: And?",
+  "see": ""
+ },
+ {
+  "id": "proof",
+  "vo": "HER: November so far: plus 10.45 percent. 8 profit days, 7 loss days. Every one shown.",
+  "see": ""
+ },
+ {
+  "id": "what",
+  "vo": "HIM: So what do I do now?",
+  "see": ""
+ },
+ {
+  "id": "twist",
+  "vo": "HER: You put the phone down, and come to lunch.",
+  "see": ""
+ },
+ {
+  "id": "cta1",
+  "vo": "HIM: Free account, link in our bio.",
+  "see": ""
+ },
+ {
+  "id": "cta2",
+  "vo": "HER: We check the result together, every evening at six.",
+  "see": ""
+ }
+]
