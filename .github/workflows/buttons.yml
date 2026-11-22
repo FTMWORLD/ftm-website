@@ -2,6 +2,12 @@ name: Client area buttons
 on:
   push:
     branches: [main]
+    # social media files, briefs and notes cannot change the client area: no 27-minute run (and no failure mail) for them
+    paths-ignore:
+      - 'social/**'
+      - 'CLAUDE.md'
+      - 'HANDOFF.md'
+      - 'docs/**'
   schedule:
     - cron: '41 4 * * *'
   workflow_dispatch:

@@ -181,7 +181,7 @@ if(require.main!==module){ module.exports={gen,oracle,engine}; } else (async()=>
       { const Lp=PS.filter(x=>x.dir==='BUY'), Sp=PS.filter(x=>x.dir==='SELL'); ok(V.ls===Lp.length+' / '+Sp.length,'Long / short trades: shown '+V.ls+', expected '+Lp.length+' / '+Sp.length);
         const pc=a=>a.length?(a.filter(x=>c2(x.net)>0).length/a.length*100).toFixed(2)+'%':'—'; ok(V.lsw===pc(Lp)+' / '+pc(Sp),'Long / short won: shown '+V.lsw+', expected '+pc(Lp)+' / '+pc(Sp)); }
       { const ddm=null; }
-      const tp=PS.map(x=>x.net/O.balAt(x.open!=null?x.open:x.close)*100);
+      const tp=PS.map(x=>{ const b0=O.balAt(x.open!=null?x.open:x.close); return b0>0?x.net/b0*100:0; }); // a % of a balance of zero or less has no meaning (docs/statistics.md): such a trade counts as 0, like the client area
       if(V.best['Best trade']) eq(V.best['Best trade'],Math.max(...tp),0.0051,'Best trade %');
       if(V.worst['Worst trade']) eq(V.worst['Worst trade'],Math.min(...tp),0.0051,'Worst trade %');
       const p2=x=>(x<10?'0':'')+x, K={d:t=>{const d=new Date(t);return [d.getFullYear(),d.getMonth(),d.getDate()];}, w:t=>{const d=new Date(t);const m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return [m.getFullYear(),m.getMonth(),m.getDate()];}, m:t=>{const d=new Date(t);return [d.getFullYear(),d.getMonth(),1];}};

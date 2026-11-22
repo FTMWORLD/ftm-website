@@ -53,3 +53,5 @@ balance = start_balance + deposits - withdrawals + closed P/L + fees_and_adjustm
 ## When the engine and the website disagree
 The browser sends `history_gap`, `return_gap` or `pl_gap` to `/api/v1/client-log` (Vercel logs). Tell FTM ENGINE (via
 FTM MACHINE). Never patch one account by hand.
+
+- Best / worst trade % (Performance, best and worst): the trade's net result divided by the balance just before it opened. When that balance was zero or less the % has no meaning, so the trade counts as 0 (stats-fuzz.js checks the same rule).
