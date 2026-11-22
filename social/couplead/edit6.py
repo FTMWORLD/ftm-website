@@ -18,11 +18,11 @@ def rms(x): return np.sqrt(np.mean(x ** 2) + 1e-12)
 hop = int(.01 * sr); env = np.array([rms(a[i:i + hop]) for i in range(0, len(a) - hop, hop)]); thr = np.percentile(env, 15) * 4.0  # about 12 dB above the room noise
 def on(t0, t1):   # first speech frame in [t0, t1]
     for i in range(max(0, int(t0 * 100)), min(len(env), int(t1 * 100))):
-        if env[i] > thr and env[i:i + 4].mean() > thr: return i / 100
+        if env[i] > 3 * thr and (env[i:i + 8] > 3 * thr).sum() >= 7: return i / 100   # clear, sustained speech: not a lip smack or a breath
     return t0
 def off(t0, t1):  # last speech frame in [t0, t1]
     for i in range(min(len(env) - 1, int(t1 * 100)), max(0, int(t0 * 100)), -1):
-        if env[i] > thr and env[max(0, i - 3):i + 1].mean() > thr: return (i + 1) / 100
+        if env[i] > thr and (env[max(0, i - 7):i + 1] > thr).sum() >= 7: return (i + 1) / 100
     return t1
 # (pieces as [coarse start, coarse end] from the word timings, speaker); refined by the energy envelope below
 L = [([(0.0, 3.78)], 'her'), ([(3.78, 6.58)], 'him'), ([(6.58, 7.68)], 'her'), ([(7.68, 11.18)], 'him'), ([(11.18, 12.72)], 'her'),
@@ -56,10 +56,32 @@ for i, (pcs, who) in enumerate(L):
     g = (10 ** (-17 / 20)) / rms(loud) if len(loud) else 1.
     line_start = t0
     for k, (s0, e0) in enumerate(segs):
-        seg = a[int(s0 * sr):int(e0 * sr)] * g
+        # owner 22 Nov ("sharp"): a pause inside a line longer than 0.4 s is shortened to 0.3 s (cross-faded, room tone kept)
+        fr = range(int(s0 * 100), int(e0 * 100)); quiet = set(j for j in fr if env[j] < 2 * thr); cuts = []; run = []
+        for j in fr:
+            if j in quiet: run.append(j)
+            else:
+                if len(run) > 40: cuts.append((run[0] / 100 + .15, run[-1] / 100 - .15))
+                run = []
+        keep = []; c0 = s0
+        for (x0, x1) in cuts: keep.append((c0, x0)); c0 = x1
+        keep.append((c0, e0))
+        def mp(t, base=t0):  # source time -> output time
+            out = base
+            for (k0, k1) in keep:
+                if t <= k1: return out + max(0, t - k0)
+                out += k1 - k0
+            return out
         for (ws, we, w) in W:
             if we > s0 + .04 and ws < e0 - .04:
-                words.append([round(t0 + max(0, ws - s0), 3), round(t0 + max(.05, min(we, e0) - s0), 3), w])
+                words.append([round(mp(max(ws, s0)), 3), round(max(mp(max(ws, s0)) + .05, mp(min(we, e0))), 3), w])
+        xf = int(.03 * sr); seg = None
+        for (k0, k1) in keep:
+            part = a[int(k0 * sr):int(k1 * sr)] * g
+            if seg is None: seg = part
+            else:
+                fo = np.cos(np.linspace(0, np.pi / 2, xf)) ** 2; seg = np.concatenate([seg[:-xf], seg[-xf:] * fo + part[:xf] * (1 - fo), part[xf:]])
+        if cuts: print('  shortened', len(cuts), 'pause(s) in line', i)
         pieces.append((t0, seg)); t0 += len(seg) / sr
         if k < len(segs) - 1: t0 += .1
     lines.append([round(line_start, 3), round(t0, 3), who])
