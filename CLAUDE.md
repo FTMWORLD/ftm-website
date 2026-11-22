@@ -79,10 +79,18 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - The country flag always comes after the name, never before (leaderboard, community, chat, profiles).
 - The leaderboard (and every official place) uses the Know Your Customer country. The Community country is the member's own free choice and is never overwritten by KYC, and KYC is never overwritten by Community.
 
-## Posting times (owner instruction, 21 November 2026)
-- 06:00 = education, ideas, eye-openers, explaining FTM. 23:00 = the day's results.
+## Posting times (owner instruction, 22 November 2026; replaces 21 Nov)
+- From Tuesday 24 Nov 2026: 09:30 = education and insights about FTM; 13:00 = the couple videos (owner and his wife); the evening results post (time being confirmed with the owner). Monday 23 Nov is the last day with a 23:00 post. Chosen from Metricool's audience data: our people are most active at 10:00, 12:00–13:00 and 18:00.
 - Weekly or 5-day recaps go out only on Saturdays or on the last day of a month, never on other days.
-- A midday slot will come later; the owner's partner will define it.
+- Instagram Trial Reels: "share to followers automatically when it performs well" is ON (owner 22 Nov).
+- Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
+
+## Why FTM exists: the 09:30 content pillars (owner and his wife, 22 November 2026)
+Every 09:30 video takes ONE of these and tells it through a fresh, concrete scenario (there are 100 ways to tell each):
+1. Time: most people cannot be in the market 24 hours. They are working, sleeping, cooking, shopping, with family; the market moves without them and the chance is gone.
+2. Emotion: when people do trade, fear and greed decide. A loss makes them want to "win it back" (revenge trading); a win makes them overconfident.
+3. System: even calm people fail with a bad strategy or poor execution (late entries, no stop, moving targets).
+FTM MACHINE answers all three: it is in the market around the clock, has no emotions, and follows fixed, tested rules.
 
 ## Profit days and loss days (owner instruction, 21 November 2026)
 - Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.
