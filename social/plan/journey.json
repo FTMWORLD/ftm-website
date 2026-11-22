@@ -114,11 +114,11 @@
   },
   {
    "date": "2026-11-23",
-   "stage": "Pillar · Time",
-   "format": "Real day, real person: a 12-hour shift vs FTM's live trades on Thu 12 Nov (+10.16%); on-screen words, no voiceover, ChatGPT photos",
-   "title": "The 12-hour shift",
-   "open": "She worked 12 hours on Thursday. Not one look at the markets.",
-   "hook": "She worked 12 hours on Thursday. Not one look at the markets.",
+   "stage": "Retirement · build wealth for later",
+   "format": "Handwritten letter from the viewer's 65-year-old self, ChatGPT photos of one man at 30, 45 and 65, no voiceover",
+   "title": "A letter from you at 65",
+   "open": "A letter from you. Age 65.",
+   "hook": "A letter from you. Age 65.",
    "scenes": [
     [
      "m0",
@@ -141,7 +141,7 @@
      "I work. You live. Start free at ftm wealth nation dot com."
     ]
    ],
-   "audience": "shift workers (nurses, drivers, shop and factory staff)",
+   "audience": "25–45, worried about their pension",
    "brief": "social/briefs/2026-11-23-0930.md"
   },
   {
