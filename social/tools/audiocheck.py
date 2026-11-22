@@ -27,8 +27,9 @@ def check(path, maxpause=0.9):
     d = np.abs(np.diff(a)); w = int(sr * .002); cand = np.where(d > .05)[0]; last = -1
     for k in cand:
         if k - last < sr * .05 or k < w or k > len(d) - w: continue
-        around = np.concatenate([d[k - w:k - 1], d[k + 2:k + w]])
-        if d[k] > 4 * around.max(): out.append('click at %.3f s' % (k / sr)); last = k
+        before, after = d[k - w:k - 1], d[k + 2:k + w]
+        # a glitch is a jump with smooth sound on BOTH sides; a drum hit starts a burst of rough sound after it
+        if d[k] > 4 * before.max() and d[k] > 4 * after.max(): out.append('click at %.3f s' % (k / sr)); last = k
     # voice band envelope: speech vs pause
     import numpy.fft as F
     spec_hop = int(sr * .05); vb = []

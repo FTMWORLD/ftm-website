@@ -11,7 +11,8 @@ def finance_bed(tot, cuts=(), sr=48000, bpm=122, seed=5):
         if a < 0 or a >= n: return
         L[a:b] += g * (1 - max(0, pan)) * sig[:b - a]; R[a:b] += g * (1 + min(0, pan)) * sig[:b - a]
 
-    def env(Ln, att, dec): tt = np.arange(int(Ln * sr)) / sr; return tt, np.minimum(1, tt / att) * np.exp(-tt * dec)
+    def env(Ln, att, dec):  # every note fades out over its last 10 ms (owner 22 Nov: notes that stop mid-wave click)
+        tt = np.arange(int(Ln * sr)) / sr; e = np.minimum(1, tt / att) * np.exp(-tt * dec); f = min(len(e), int(.01 * sr)); e[-f:] *= np.linspace(1, 0, f); return tt, e
     def saw(f, tt): return 2 * ((f * tt) % 1) - 1
     def lp(x, k): return np.convolve(x, np.ones(k) / k, 'same')
     # Am - F - C - G (A minor: serious, driving)
@@ -54,6 +55,7 @@ def finance_bed(tot, cuts=(), sr=48000, bpm=122, seed=5):
             add(s0 + j * s16, nz * e, .05 if j % 4 == 2 else .028, .4 if j % 2 else -.4)
         k += 1
     # sidechain pump on the music (not on drums would be ideal; a gentle pump on everything keeps it vibrant)
+    pump = np.convolve(pump, np.ones(int(.006 * sr)) / int(.006 * sr), 'same')  # owner 22 Nov: no instant gain steps (they click)
     L *= pump; R *= pump
     # impact at the start, riser + whoosh into every cut, final hit
     tt, e = env(2.2, .001, 2.2); boom = np.sin(2 * np.pi * (40 + 70 * np.exp(-tt * 9)) * tt) * e; add(0, boom, .6)
