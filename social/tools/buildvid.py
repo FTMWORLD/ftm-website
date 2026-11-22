@@ -32,7 +32,8 @@ import soundfile as sf
 k = Kokoro(os.path.join(T, 'kokoro-v1.0.onnx'), os.path.join(T, 'voices-v1.0.bin'))
 durs, amp = [], {}
 for sid, vo in lines:
-    txt = vo.replace('ftm wealth nation dot com', 'F T M wealth nation dot com').replace('FTM MACHINE', 'F T M Machine').replace('FTM', 'F T M')
+    txt = re.sub(r'\b([Ll])ive (your|the|life|well|it|a|more)\b', r'\1iv \2', vo)  # owner 22 Nov: verb 'live' = /lɪv/, not 'lyve'
+    txt = txt.replace('ftm wealth nation dot com', 'F T M wealth nation dot com').replace('FTM MACHINE', 'F T M Machine').replace('FTM', 'F T M')
     a, sr = k.create(txt, voice='af_heart', speed=1.02, lang='en-us'); sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
     hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
     m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]

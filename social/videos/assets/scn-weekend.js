@@ -20,6 +20,10 @@ function machine(t,y){const n=24;let d='';for(let i=0;i<n;i++){const x=i*7,yy=18
 function tag(t,txt,y,col){const a=back(t/0.4);return `<g transform="translate(540,${y}) scale(${a})"><rect x="-300" y="-46" width="600" height="92" rx="46" fill="${col||'#E3B62F'}"/>${TX(0,16,44,'#0b1640',txt)}</g>`}
 function beams(t){let b='';const C=['#E5323E','#E3B62F','#7fe3ff','#b07cff','#2fbf71'];for(let i=0;i<5;i++){const a=-30+60*(.5+.5*sin(t*1.6+i*1.3));b+=`<path d="M${180+i*180} 430 L${180+i*180+Math.tan(a*PI/180)*900-120} 1330 L${180+i*180+Math.tan(a*PI/180)*900+120} 1330 Z" fill="${C[i]}" opacity=".16"/>`}return b}
 function ballSvg(x,y,r){return `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff"/><path d="M${x-r} ${y} Q${x} ${y-r*.5} ${x+r} ${y} M${x} ${y-r} Q${x+r*.5} ${y} ${x} ${y+r}" stroke="#0b1640" stroke-width="5" fill="none"/>`}
+
+const WK=n=>'../assets/wk/wk'+n+'.jpg';
+function photo(n,t,o){return IMG(WK(n),t,Object.assign({z0:1.04,dz:0.1,d:5},o||{}))+SHADE(.55,.85)}
+function xfade(t,d,list){const k=list.length,seg=d/k;let h='';list.forEach((n,i)=>{const lt=t-i*seg,a=i==0?1:cl(lt/0.35);if(lt>-0.4)h+=`<div style="position:absolute;inset:0;opacity:${a}">${photo(n,Math.max(0,lt),{dx:i%2?-30:30})}</div>`});return h}
 const SCN={
  hookOld(t){
   const days=['MON','TUE','WED','THU','FRI','SAT','SUN'];let cal='';
@@ -32,6 +36,14 @@ const SCN={
    TX(540,940,44,'#c9d0ee','Markets close. Nothing happens.',600,cl((t-1.1)/0.4))+zz+
    (w?stamp(t-3.3,'WRONG','#E5323E',1090)+flash(t-3.3):'')+'</svg>'},
  hook(t){
+  const q=ease(t/0.5),opts=[['😴','It slept',0],['🛍️','I spent it',0],['📈','It worked',1]];let o='';
+  opts.forEach(([e,l,win],i)=>{const a=ease((t-1.3-i*0.35)/0.35),y=1010+i*125,sel=win&&t>3.0,pulse=sel?1+0.03*sin(t*8):1;
+   o+=`<g opacity="${a}" transform="translate(${540+(1-a)*300},${y}) scale(${pulse})"><rect x="-380" y="-50" width="760" height="100" rx="50" fill="${sel?'#2fbf71':'rgba(255,255,255,.1)'}" stroke="${sel?'#2fbf71':'rgba(255,255,255,.3)'}" stroke-width="3"/><text x="-320" y="16" font-family="Inter" font-size="46">${e}</text><text x="-250" y="16" font-family="Inter" font-weight="800" font-size="44" fill="#fff">${l}</text>${sel?`<circle cx="320" cy="0" r="30" fill="#fff"/><path d="M304 0 l11 11 l22 -22" stroke="#2fbf71" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`:''}</g>`});
+  let qs='';for(let i=0;i<6;i++){const x=(i*190+80)%W,y=470+((t*90+i*170)%420);qs+=TX(x,y,90,'#E3B62F','?',900,.12)}
+  return open_(grad('hk','#0b1640','#03061a'))+stars(t,40)+qs+
+   `<g opacity="${q}" transform="translate(0,${(1-q)*40})">`+TX(540,500,40,'#E3B62F','BE HONEST',800)+TX(540,620,84,'#fff','What did your')+TX(540,720,84,'#fff','money do')+TX(540,820,84,'#E3B62F','last weekend?')+'</g>'+o+
+   (t>3.0?flash(t-3.0):'')+'</svg>'},
+ weekOld(t){
   const days=['MON','TUE','WED','THU','FRI'];let g='';
   days.forEach((d,i)=>{const a=ease((t-i*0.18)/0.35),x=130+i*205;g+=`<g opacity="${a}" transform="translate(${x},${470+(1-a)*40})"><rect x="-90" y="-60" width="180" height="120" rx="22" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.25)" stroke-width="2"/>${TX(0,-10,34,'#c9d0ee',d,800)}${TX(0,38,30,'#E5323E','WORK',900)}</g>`});
   const desk=`<rect x="300" y="1010" width="480" height="24" rx="8" fill="#3a4a86"/><rect x="330" y="1030" width="16" height="170" fill="#2a3566"/><rect x="734" y="1030" width="16" height="170" fill="#2a3566"/><rect x="610" y="900" width="160" height="104" rx="10" fill="#1a2550" stroke="#8a94b8" stroke-width="5"/><rect x="590" y="1000" width="200" height="12" rx="6" fill="#8a94b8"/><circle cx="690" cy="952" r="${8+3*sin(t*5)}" fill="#E5323E"/>`;
@@ -39,20 +51,20 @@ const SCN={
   const we=sw?`<g transform="translate(540,640) scale(${0.6+0.4*k})" opacity="${k}"><rect x="-330" y="-70" width="660" height="140" rx="70" fill="#E3B62F"/>${TX(0,20,58,'#0b1640','SAT · SUN = YOURS')}</g>`:'';
   return open_(grad('wg','#16306e','#0b1640'))+g+we+desk+P(SAM,{x:540,y:1200,s:1,t,talk:0,sit:1,prop:'laptop',mood:sw?'smile':'neutral',armR:40,elR:60})+
    `<g opacity="${1-cl(k)}">${TX(540,800,46,'#c9d0ee','Monday to Friday: work.',800)}</g>`+'</svg>'},
- party(t){
+ partyOld(t){
   let lights='';for(let i=0;i<12;i++){lights+=`<circle cx="${80+i*85}" cy="${470+10*sin(i)}" r="12" fill="${['#E5323E','#E3B62F','#7fe3ff','#b07cff'][i%4]}" opacity="${.5+.5*sin(t*8+i)}"/>`}
   const C=[[MAYA,200],[KAI,400],[LENA,640],[DEV,860]];let ppl='';
   C.forEach(([c,x],i)=>{const j=Math.abs(sin(t*6+i))*40,u=sin(t*6+i)>0;ppl+=P(c,{x,y:1230,s:.85,t,jump:j,armL:u?-155:-125,elL:0,armR:u?-125:-155,elR:0,mood:'smile',talk:.4})});
   const notes=[0,1,2].map(i=>{const k=(t*0.6+i/3)%1;return TX(200+i*330,900-k*300,60,'#E3B62F','♪',900,1-k)}).join('');
   return open_(grad('pg','#2a0f4a','#0b0620'))+beams(t)+lights+`<g transform="translate(540,600) rotate(${t*40})"><circle r="70" fill="#c9d0ee"/>${[0,1,2,3,4,5].map(i=>`<rect x="-12" y="-70" width="24" height="140" fill="#8a94b8" transform="rotate(${i*30})"/>`).join('')}<circle r="70" fill="none" stroke="#fff" stroke-width="4"/></g>`+notes+ppl+tag(t-0.2,'SATURDAY NIGHT',760,'#E5323E')+machine(t,360)+'</svg>'},
- friends(t){
+ friendsOld(t){
   const by=980-Math.abs(sin(t*4))*260;
   return open_(grad('fg','#7fc6ff','#2a6fb0'))+`<circle cx="880" cy="520" r="70" fill="#ffe27a" opacity=".95"/><rect x="0" y="1100" width="${W}" height="400" fill="#3f9a5a"/>`+
    `<rect x="160" y="1010" width="360" height="22" rx="10" fill="#8a5a3c"/><rect x="330" y="1030" width="22" height="120" fill="#6b4423"/>`+
    P(ZOE,{x:170,y:1190,s:.8,t,sit:1,prop:'coffee',armR:40,elR:90,mood:'smile',talk:.5*Math.abs(sin(t*5))})+P(SAM,{x:510,y:1190,s:.8,t,sit:1,flip:1,prop:'coffee',armR:40,elR:90,mood:'smile'})+
    ballSvg(800,by,34)+P(DEV,{x:800,y:1230,s:.85,t,jump:Math.abs(sin(t*4))*30,armL:-150,armR:-150,elL:0,elR:0,mood:'smile'})+
    tag(t-0.2,'SUNDAY: FRIENDS + PLAY',680,'#E3B62F')+machine(t,360)+'</svg>'},
- home(t){
+ homeOld(t){
   let steam='';for(let i=0;i<4;i++){const k=(t*0.7+i/4)%1;steam+=`<path d="M${120+i*24} ${980-k*160} q14 -20 0 -40" stroke="#fff" stroke-width="6" fill="none" opacity="${.6*(1-k)}"/>`}
   const pan=`<rect x="40" y="1020" width="250" height="160" rx="12" fill="#cfd6e6"/><rect x="60" y="1040" width="210" height="10" rx="5" fill="#8a94b8"/><ellipse cx="160" cy="1005" rx="95" ry="24" fill="#2b2b2b"/><rect x="250" y="998" width="100" height="14" rx="7" fill="#2b2b2b"/>`;
   const broom=`<g transform="translate(680,900) rotate(${18*sin(t*4)})"><rect x="-6" y="0" width="12" height="260" fill="#8a5a3c"/><path d="M-50 260 h100 l14 60 h-128 z" fill="#E3B62F"/></g>`;
@@ -60,7 +72,7 @@ const SCN={
   return open_(grad('hg2','#3a2a1a','#1a120b'))+`<rect x="0" y="1170" width="${W}" height="330" fill="#5a4330"/>`+pan+steam+P(LENA,{x:380,y:1230,s:.8,t,flip:1,armR:70,elR:50,mood:'smile',talk:.3})+broom+P(KAI,{x:590,y:1230,s:.8,t,armR:60,elR:40,armL:50,elL:40,mood:'neutral',lean:4*sin(t*4)})+
    sofa+P(MAYA,{x:890,y:1180,s:.8,t,sit:1,prop:'phone',armR:12,elR:118,mood:'smile'})+TX(950,900,44,'#c9d0ee','z',900,.5+.5*sin(t*3))+
    tag(t-0.2,'COOK · CLEAN · REST',680,'#7fe3ff')+machine(t,360)+'</svg>'},
- clock(t){
+ clockChart(t){
   const L=[['FRI',150],['SAT',390],['SUN',630],['MON',870]];let ax='';
   L.forEach(([d,x],i)=>{const we=i==1||i==2;ax+=`<rect x="${x-110}" y="560" width="220" height="420" rx="24" fill="${we?'rgba(212,175,55,.12)':'rgba(255,255,255,.05)'}"/>${TX(x,620,40,we?'#E3B62F':'#c9d0ee',d,800)}`});
   const p=ease(t/2.6),x1=150+720*p;let path='M150 860';for(let x=150;x<=x1;x+=12){path+=` L${x} ${860-(x-150)*0.28+22*sin(x/40+t)}`}
@@ -93,7 +105,18 @@ const SCN={
    `<g transform="translate(540,640) scale(${0.3+0.7*sx},1)"><circle r="${r}" fill="#F7931A"/><circle r="${r-16}" fill="none" stroke="#ffd18a" stroke-width="6"/>${TX(0,62,190,'#fff','₿')}</g>`+
    TX(540,880,58,'#fff','Bitcoin never closes.',800)+
    `<g opacity="${cl((t-1)/0.4)}"><rect x="140" y="940" width="800" height="230" rx="34" fill="rgba(5,10,34,.8)" stroke="#2fbf71" stroke-width="3"/>${TX(540,1000,34,'#c9d0ee','LIVE ACCOUNT · SATURDAY 14 NOV',800)}${TX(540,1120,110,'#2fbf71','+'+count(cl((t-1)/1),0,0.64,2)+'%')}</g>`+'</svg>'},
- cta(t,d,talk){const p=1+.04*sin(t*5);const C=[[MAYA,-1],[SAM,1],[LENA,-1],[DEV,1],[ZOE,-1]];let ppl='';
+ ctaOld(t,d,talk){const p=1+.04*sin(t*5);const C=[[MAYA,-1],[SAM,1],[LENA,-1],[DEV,1],[ZOE,-1]];let ppl='';
   C.forEach(([c,dir],i)=>{const tx=180+i*180,sx=dir<0?-200:W+200,k=ease((t-i*0.15)/1.4),x=sx+(tx-sx)*k;ppl+=P(c,{x,y:1200,s:.8,t,walk:k<0.98?1:0,prop:'phone',armR:12,elR:118,mood:'smile',flip:dir>0&&k<.98})});
   return open_(grad('ag','#1d3590','#0b1640'))+stars(t,30)+moon(900,330,40)+`<g transform="translate(540,620)"><rect x="-430" y="-200" width="860" height="400" rx="40" fill="#050a22" opacity=".9" stroke="#D4AF37" stroke-width="4"/>${TX(0,-100,58,'#fff','Live your weekend.',800)}${TX(0,-25,66,'#E3B62F','FTM keeps working.')}<g transform="translate(0,105) scale(${p})"><rect x="-230" y="-60" width="460" height="120" rx="60" fill="#E5323E"/>${TX(0,20,58,'#fff','Start free')}</g></g>`+ppl+'</svg>'}
+,
+ week(t){
+  const days=['MON','TUE','WED','THU','FRI'];let g='';
+  days.forEach((d,i)=>{const a=ease((t-0.2-i*0.18)/0.35),x=130+i*205;g+=`<g opacity="${a}" transform="translate(${x},${470+(1-a)*40})"><rect x="-90" y="-60" width="180" height="120" rx="22" fill="rgba(5,10,34,.7)" stroke="rgba(255,255,255,.3)" stroke-width="2"/>${TX(0,-10,34,'#c9d0ee',d,800)}${TX(0,38,30,'#E5323E','WORK',900)}</g>`});
+  const k=ease((t-2.4)/0.5);
+  return photo(1,t,{dy:-30})+open_()+g+(t>2.4?`<g transform="translate(540,660) scale(${0.6+0.4*k})" opacity="${k}"><rect x="-330" y="-70" width="660" height="140" rx="70" fill="#E3B62F"/>${TX(0,20,58,'#0b1640','SAT · SUN = YOURS')}</g>`:'')+'</svg>'},
+ party(t){return photo(2,t,{dx:-40})+open_()+tag(t-0.2,'SATURDAY NIGHT',560,'#E5323E')+machine(t,360)+'</svg>'},
+ friends(t,d){return xfade(t,d,[3,4])+open_()+tag(t-0.2,'SUNDAY: FRIENDS + PLAY',560,'#E3B62F')+machine(t,360)+'</svg>'},
+ home(t,d){return xfade(t,d,[5,6,7])+open_()+tag(t-0.2,'COOK · CLEAN · REST',560,'#7fe3ff')+machine(t,360)+'</svg>'},
+ clock(t,d){const sw=d*0.5;if(t<sw)return photo(8,t,{z0:1.0,dz:0.18})+open_()+machine(t,360)+'</svg>';return SCN.clockChart(t-sw+0.4)},
+ cta(t){const p=1+.04*sin(t*5);return photo(9,t,{dy:-20})+open_()+`<g transform="translate(540,640)"><rect x="-430" y="-200" width="860" height="400" rx="40" fill="#050a22" opacity=".82" stroke="#D4AF37" stroke-width="4"/>${TX(0,-100,58,'#fff','Live your weekend.',800)}${TX(0,-25,66,'#E3B62F','FTM keeps working.')}<g transform="translate(0,105) scale(${p})"><rect x="-230" y="-60" width="460" height="120" rx="60" fill="#E5323E"/>${TX(0,20,58,'#fff','Start free')}</g></g>`+'</svg>'},
 };

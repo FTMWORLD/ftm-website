@@ -70,20 +70,24 @@
    "stage": "1 · Learn",
    "format": "Weekend story (party, friends, play, cook, clean, rest) + real statistics",
    "title": "Does FTM rest at the weekend?",
-   "open": "Monday to Friday, you work. Then the weekend comes, and it's finally yours.",
-   "hook": "Monday to Friday, you work. The weekend is finally yours.",
+   "open": "Be honest. What did your money do last weekend? Ours didn't take the weekend off.",
+   "hook": "Be honest: what did your money do last weekend?",
    "scenes": [
+    [
+     "week",
+     "Monday to Friday, you work. Then the weekend comes, and it's finally yours."
+    ],
     [
      "party",
      "Saturday night: music, friends, a party."
     ],
     [
      "friends",
-     "Sunday: brunch with friends, a game in the park."
+     "Sunday: brunch with friends, then a game in the park with the kids."
     ],
     [
      "home",
-     "Then cooking, cleaning, a little rest on the sofa."
+     "Then cooking, a little cleaning, and a lazy nap on the sofa."
     ],
     [
      "clock",
