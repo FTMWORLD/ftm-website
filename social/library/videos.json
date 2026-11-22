@@ -91,13 +91,6 @@
   "at": 8
  },
  {
-  "file": "v2/vid-2026-11-23.mp4",
-  "title": "A day in the life of FTM MACHINE (23 Nov, 6 a.m.)",
-  "date": "2026-11-23",
-  "kind": "Coming next",
-  "at": 8
- },
- {
   "file": "day-2026-11-20-short.mp4",
   "title": "Daily result 20 Nov: \u22120.99%",
   "date": "2026-11-20",
@@ -124,5 +117,19 @@
   "date": "2026-11-22",
   "kind": "Daily result",
   "at": 18
+ },
+ {
+  "file": "v2/vid-2026-11-23.mp4",
+  "title": "A letter from you at 65 (23 Nov, 9:30)",
+  "date": "2026-11-23",
+  "kind": "Morning video",
+  "at": 9
+ },
+ {
+  "file": "v2/video-A.mp4",
+  "title": "Why are you smiling at your phone? (23 Nov, 13:00)",
+  "date": "2026-11-23",
+  "kind": "Couple video",
+  "at": 13
  }
 ]
