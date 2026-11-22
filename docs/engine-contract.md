@@ -4,6 +4,12 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-23 — FTM MACHINE 4.1 ON THE MASTER (prop stays on 3.9; no engine change; live 00:23 Berlin with the owner's "Yes, install now" in chat)
+
+- US Tech 100 chart on normal accounts only: Range Breakout (magic 34686) off, M and W 5-minute stop pad 20 % of leg 2 (was 5), Day Momentum and M and W 1h / 4h risk x1.25. Every other market and the prop terminal untouched. No chart input changed (the change is in the code).
+- Source = 4.0 source + patch-4.0-to-4.1.diff byte for byte (sha256 b873fe91...b475), compiled here 0/0 -> ex5 c0a4935e...7b37. Copy sizing dry run (API/scripts/dryrun-41-ustec.js, real planner, rolled back): 500 / 1,000 USD accounts skip US Tech DM and M and W copies exactly as before, 2,500 USD copies at the broker minimum as before, 100,000 USD copies follow the master 1:1.
+- Master had no Range Breakout trade open; the US Tech M and W 4 sell stop was re-placed by the restart rule with the wider pad (2.20 -> 1.50 lots). Backup C:FTMMT5_MasterFTM_EA_BACKUP-20261123-001740.
+
 ## 2026-11-22 — FTM MACHINE 4.0 ON THE MASTER (prop stays on 3.9) + engine package for it (not committed yet; live 17:28 (engine, API restarted) / 17:35 (master terminal, EA_UPDATE_OK) Berlin with the owner's "Yes, both now" in chat)
 
 - WEBSITE: eight NEW strategies appear in the strategy lists (codes FTMM-34677 … FTMM-34684, names "FTM MACHINE 4.0 - XS … (day-close)"),
