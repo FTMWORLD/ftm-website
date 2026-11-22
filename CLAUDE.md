@@ -93,6 +93,11 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Every 09:30 and 13:00 video uses ChatGPT's realistic images (mixed with our own animation is fine, but always with his images). For every script, write a brief file in social/briefs/ (script + numbered image prompts: same characters, 9:16, no text/logos, calm top 20% and bottom 30%, FTM colours) and send it to the owner, who gets the images from ChatGPT. The 18:00 results need no images.
 - The 13:00 couple video: a short dialogue between HER and HIM, always built on FTM's ideology, principles, values, goals and vision, with real statistics from the website (live account, trust engine). Voices (owner 22 Nov): the owner and his wife record the voiceover themselves. Every couple brief has a voiceover table (one numbered file per line, who, feeling, ~time); build with their recordings (one wav per scene in videos/<id>/vo/, durations from the audio). Only if their files are not there by 1 hour before posting, use the TTS voices (lines start with "HER:"/"HIM:") and swap in their voices later.
 
+## Every post different, every audience reached (owner instruction, 22 November 2026)
+- No two posts alike: post 2 must differ from post 1 in hook, story, look and angle, while keeping FTM's principles, logic, ideology and doctrine.
+- Rotate the target audience: people who trade themselves (traders), working people, busy people, people not working (students, at home, retired), people struggling with trading, emotional traders (fear, revenge, greed), families/couples, sceptics who want proof. Speak to ONE of them per video, in their words and their situation, and name them in the hook ("Stop scrolling if you trade gold and keep moving your stop…").
+- Faceless videos can reach millions: win with the hook (first second), a real story, real figures and clean sound. Log each post's audience and angle in social/plan/journey.json so the next one is different.
+
 ## Why FTM exists: the 09:30 content pillars (owner and his wife, 22 November 2026)
 Every 09:30 video takes ONE of these and tells it through a fresh, concrete scenario (there are 100 ways to tell each):
 1. Time: most people cannot be in the market 24 hours. They are working, sleeping, cooking, shopping, with family; the market moves without them and the chance is gone.
