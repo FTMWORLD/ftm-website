@@ -83,6 +83,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - From Sunday 22 Nov 2026: 09:30 = education and insights about FTM; 13:00 = the couple video (owner and his wife); 18:00 = YESTERDAY's full, exact day result (Saturday 18:00 = the weekly summary instead). Sunday 22 Nov 23:00 is the last 23:00 post; the 18:00 results start Monday 23 Nov. Monday 23 Nov 09:30 = Video A. Chosen from Metricool's audience data: our people are most active at 10:00, 12:00–13:00 and 18:00.
 - Weekly or 5-day recaps go out only on Saturdays or on the last day of a month, never on other days.
 - Instagram: post videos as normal REELS, not Trial Reels (owner 22 Nov: followers must see every video). Metricool cannot switch on "share trial to followers automatically", so a Trial Reel would stay hidden from followers. Normal Reels still reach non-followers through the Reels tab and Explore.
+- LinkedIn (owner 22 Nov): every feed post (09:30, 13:00, 18:00, Saturday weekly) also goes to LinkedIn as its own Metricool post at the same time: the video (no stories), videoThumbnailUrl = the cover, linkedinData {type post}, the same caption with a link https://www.ftmwealthnation.com/?start=li instead of "link in our bio", and a few professional hashtags (#FinTech #Investing).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
 ## Images and scripts (owner instruction, 22 November 2026)

@@ -388,6 +388,62 @@
      "See every trade live. Start free at ftm wealth nation dot com, and follow us for every result at 11 p.m."
     ]
    ]
+  },
+  {
+   "date": "2026-11-22-couple",
+   "slot": "13:00",
+   "stage": "Couple · Emotion",
+   "format": "Couple dialogue with ChatGPT photos",
+   "title": "How many times did you check?",
+   "open": "HER: Be honest. How many times did you check the markets this week?",
+   "hook": "How many times did you check the markets this week?",
+   "scenes": [
+    [
+     "confess",
+     "HIM: Maybe... fifty?"
+    ],
+    [
+     "ask",
+     "HER: And how did that go?"
+    ],
+    [
+     "fear",
+     "HIM: I closed one too early because I was scared,"
+    ],
+    [
+     "anger",
+     "HIM: and jumped back in too late because I was angry."
+    ],
+    [
+     "machine",
+     "HER: FTM MACHINE took 94 trades this month. No fear. No anger. The same rules, every single time."
+    ],
+    [
+     "andq",
+     "HIM: And?"
+    ],
+    [
+     "proof",
+     "HER: November so far: plus 10.45 percent. 8 profit days, 7 loss days. Every one shown."
+    ],
+    [
+     "what",
+     "HIM: So what do I do now?"
+    ],
+    [
+     "twist",
+     "HER: You put the phone down, and come to lunch."
+    ],
+    [
+     "cta1",
+     "HIM: Free account, link in our bio."
+    ],
+    [
+     "cta2",
+     "HER: We check the result together, every evening at six."
+    ]
+   ],
+   "note": "Live account 1-21 Nov 2026: 94 closed trades, mtd +10.45%, 8 profit days, 7 loss days (dayresult 2026-11-21)."
   }
  ]
 }

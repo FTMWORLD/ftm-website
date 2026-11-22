@@ -32,7 +32,7 @@ window.render=function(t){
  const st=document.getElementById('stage');st.innerHTML=SCN[s.id](Math.max(0,lt+0.3),dur,talkAt(s.id,Math.max(0,lt)));
  const fade=Math.min(ease((lt+0.3)/0.3),1-ease((lt-(dur-0.35))/0.3));st.style.opacity=.1+.9*fade;
  const hide=/^hook/.test(s.id);
- const words=s.vo.replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ const words=s.vo.replace(/^(HER|HIM):\s*/,'').replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
  document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|myth|fact|week|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
  document.getElementById('cap').style.opacity=hide?0:fade;
 };
