@@ -100,13 +100,15 @@ def night(d, j):
     dt = datetime.date.fromisoformat(d); mon = MON[dt.month - 1]; fl = j.get('floating') or {}
     if j.get('trades', 0) == 0:
         cal = j.get('cal') or []; best = max(cal, key=lambda c: c.get('pct', 0)) if cal else None
-        cfg = {'kicker': 'No trades today · %d %s' % (dt.day, mon[:3]), 'hook': 'Not every day <b>needs a trade.</b>',
+        Y = j.get('when') == 'yesterday'  # owner 22 Nov: 18:00 post = yesterday's result
+        cfg = {'kicker': ('No trades yesterday · %d %s' if Y else 'No trades today · %d %s') % (dt.day, mon[:3]), 'hook': 'Not every day <b>needs a trade.</b>',
                'big': pc(j['mtd']) if j.get('mtd') is not None else '0 trades', 'bigTone': 'up' if (j.get('mtd') or 0) >= 0 else 'down',
                'bigLabel': mon + ' so far on FTM', 'title': 'FTM MACHINE waits for its setups. <b>Waiting is part of the plan.</b>'}
         if best and best.get('pct', 0) > 0:
             bd = datetime.date.fromisoformat(best['date']); cfg['chips0'] = ['Best day: %s (%d %s)' % (pc(best['pct']), bd.day, mon[:3])]
     else:
-        cfg = {'kicker': 'Today on FTM · %d %s' % (dt.day, mon[:3]), 'hook': 'Today\'s result:', 'big': pc(j['pct']),
+        Y = j.get('when') == 'yesterday'
+        cfg = {'kicker': ('Yesterday on FTM · %d %s' if Y else 'Today on FTM · %d %s') % (dt.day, mon[:3]), 'hook': 'Yesterday\'s result:' if Y else 'Today\'s result:', 'big': pc(j['pct']),
                'bigTone': 'up' if j['pct'] >= 0 else 'down', 'bigLabel': '%d trades · every one shown' % j['trades'],
                'title': ('%s so far: <b>%s</b>' % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}
     chips = cfg.pop('chips0', [])

@@ -58,14 +58,14 @@ function day(w, h) {
   const markets = (D.markets || []).map(mk).filter((v, i, a) => a.indexOf(v) === i);
   const body = D.trades
     ? `<div class="big" style="font-size:${h > 1500 ? 230 : 200}px;color:${col}">${pc(D.pct)}</div>
-       <div class="sub">Result of today's closed trades</div>
+       <div class="sub">Result of ${D.when === 'yesterday' ? 'the day\'s' : 'today\'s'} closed trades</div>
        <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'};margin-top:18px">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}
        ${markets.length ? `<div class="mk">Markets: ${esc(markets.join(' · '))}</div>` : ''}`
     : `<div class="big" style="font-size:120px">No trades today</div><div class="sub">FTM MACHINE found no setup worth taking. Waiting is part of the plan.</div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'}">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}`;
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick">Today on FTM · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
+    <div class="kick">${D.when === 'yesterday' ? 'Yesterday' : 'Today'} on FTM · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
 }
 function trades(w, h, part, parts) {
   const R = (D.rows || []).slice().sort((a, b) => a.c - b.c), per = Math.ceil(R.length / parts), L = R.slice(part * per, (part + 1) * per);
@@ -193,7 +193,7 @@ function quiet(w, h, part) {
   const frame = inner => `<div style="position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 48%,rgba(227,182,47,.18),transparent 70%)"></div><div class="grid"></div>
     <div style="position:absolute;left:84px;right:84px;top:60px;bottom:${h > 1500 ? 130 : 96}px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:34px">
     <div class="logo">${MARK}FTM</div>${inner}</div>${FOOT}`;
-  if (part === 1) return frame(`${badge((D.night ? 'Night ' + D.night + ' · ' : '') + wd + ' ' + d + ' ' + mon.slice(0, 3))}
+  if (part === 1) return frame(`${badge((D.daily ? 'Daily #' + D.daily + ' · ' : D.night ? 'Night ' + D.night + ' · ' : '') + wd + ' ' + d + ' ' + mon.slice(0, 3))}
     <div style="font-size:210px;font-weight:900;letter-spacing:-.055em;line-height:.95;color:#E3B62F;text-shadow:0 0 70px rgba(227,182,47,.3)">0 trades</div>
     <h1 style="margin:0;font-size:86px">Not every day <b>needs a trade.</b></h1>
     <div class="body" style="margin:0;font-size:38px">FTM MACHINE only trades when its rules line up. Waiting is part of the plan. Swipe for the numbers 👉</div>`);
