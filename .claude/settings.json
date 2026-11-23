@@ -4,12 +4,19 @@
       "mcp__Metricool_Social_Media_Management",
       "mcp__claude-code-remote__send_later",
       "mcp__claude-code-remote__update_trigger",
-      "Bash(git push:*)",
-      "Bash(git commit:*)",
+      "mcp__claude-code-remote__get_trigger",
+      "WebSearch",
+      "Bash(git:*)",
+      "Bash(cd:*)",
       "Bash(node:*)",
       "Bash(python3:*)",
       "Bash(ffmpeg:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(sed:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(for:*)"
     ]
   }
 }
