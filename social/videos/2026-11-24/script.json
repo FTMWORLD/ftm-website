@@ -1,0 +1,42 @@
+[
+ {
+  "id": "hook",
+  "vo": "Three twelve a.m. You're asleep. The market isn't.",
+  "see": ""
+ },
+ {
+  "id": "btc",
+  "vo": "Bitcoin moves while the world sleeps. Nobody is watching.",
+  "see": ""
+ },
+ {
+  "id": "tokyo",
+  "vo": "Eight forty. Tokyo is trading the yen, while you're stuck in traffic.",
+  "see": ""
+ },
+ {
+  "id": "ny",
+  "vo": "Three thirty. New York opens. You're in a meeting.",
+  "see": ""
+ },
+ {
+  "id": "gold",
+  "vo": "Seven p.m. Dinner with friends. Gold is still moving.",
+  "see": ""
+ },
+ {
+  "id": "machine",
+  "vo": "FTM MACHINE trades five markets, twenty-four seven, with fixed rules.",
+  "see": ""
+ },
+ {
+  "id": "proof",
+  "vo": "And every trade is public. You can watch it all, free.",
+  "see": ""
+ },
+ {
+  "id": "cta",
+  "vo": "When do you check the markets? A, every hour. B, only after work. Vote in the comments, then tap our name for your free account.",
+  "see": ""
+ }
+]
