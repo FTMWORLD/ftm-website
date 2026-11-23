@@ -490,7 +490,7 @@
    "date": "2026-11-25",
    "slot": "09:30",
    "stage": "Education · Time",
-   "format": "POV",
+   "format": "Statistic hook, then POV",
    "audience": "mothers and parents at home",
    "sound": "lofi",
    "voice": "af_heart",
@@ -500,15 +500,15 @@
     "a": "Never",
     "b": "Late at night"
    },
-   "open": "P O V: you're a mum, and your day has no break.",
+   "open": "Around the world, women do seventy-six percent of all unpaid care work. More than three times as much as men.",
    "scenes": [
+    [
+     "pov",
+     "P O V: you're a mum, and your day has no break."
+    ],
     [
      "shift",
      "School run. Laundry. Cooking. Cleaning. Again."
-    ],
-    [
-     "stat",
-     "Around the world, women do seventy-six percent of all unpaid care work. More than three times as much as men."
     ],
     [
      "rice",

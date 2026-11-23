@@ -12,15 +12,16 @@ const say = (t, l1, l2, top, c2) => {
 const pov = t => `<div style="position:absolute;left:0;right:0;top:360px;text-align:center;opacity:${ease(t / .3)}"><span style="display:inline-block;padding:14px 34px;border-radius:40px;background:rgba(5,10,34,.6);border:2px solid rgba(212,175,55,.7);color:#E3B62F;font-weight:900;font-size:34px;letter-spacing:.18em">POV</span></div>`;
 const shift = (t, items) => `<div style="position:absolute;left:40px;right:40px;top:1470px;text-align:center">${items.map((x, i) => { const a = ease((t - .2 - i * .45) / .35); return `<div style="display:inline-block;margin:8px;padding:16px 26px;border-radius:24px;background:rgba(5,10,34,.62);border:1.5px solid rgba(255,255,255,.22);font-size:34px;font-weight:800;opacity:${a};transform:translateY(${(1 - a) * 20}px)"><span style="color:#E3B62F;font-variant-numeric:tabular-nums">${x[0]}</span> · ${x[1]}</div>`; }).join('')}</div>`;
 const SCN = {
-  hook(t, d) { return ph(1, t, { dz: .09 }) + pov(t) + say(t, 'POV: you’re a mum.', 'Your day has no break.', 1180); },
-  shift(t, d) { return ph(2, t, { dx: -20 }) + shift(t, [['06:00', 'school run'], ['09:00', 'laundry'], ['12:00', 'cooking'], ['16:00', 'cleaning']]) + say(t, 'School run. Laundry.', 'Cooking. Again.', 1210); },
-  stat(t, d) {
-    const a = ease(t / .4), n = (76.2 * ease(t / 1.4)).toFixed(1);
-    return ph(3, t, { dz: .06 }) + `<div style="position:absolute;left:110px;right:110px;top:1440px;opacity:${a}"><div class="glass" style="position:relative;padding:22px 30px;text-align:center">
-      <div style="font-size:30px;font-weight:800;letter-spacing:.14em;color:#E3B62F">UNPAID CARE WORK · WORLDWIDE</div>
-      <div style="font-size:120px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums">${n}%</div>
-      <div style="font-size:36px;font-weight:700;color:#dfe4ff">is done by women · ILO</div></div></div>` + say(t, 'More than three times', 'as much as men.', 1170);
+  hook(t, d) {
+    const a = ease(t / .25 + .6), n = (76.2 * Math.min(1, .55 + .45 * ease(t / 1.2))).toFixed(1);
+    return ph(3, t, { dz: .08 }) + `<div style="position:absolute;left:0;right:0;top:1060px;text-align:center;opacity:${a}">
+      <div style="display:inline-block;padding:12px 30px;border-radius:40px;background:rgba(5,10,34,.6);border:2px solid rgba(212,175,55,.7);color:#E3B62F;font-weight:900;font-size:30px;letter-spacing:.14em">AROUND THE WORLD · ILO</div>
+      <div style="font-size:210px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:18px;font-variant-numeric:tabular-nums;text-shadow:0 10px 50px rgba(0,0,0,.6)">${n}%</div>
+      <div style="font-size:58px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;text-shadow:0 6px 30px rgba(0,0,0,.8)">of unpaid care work is done by women.</div>
+      <div style="font-size:52px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;color:#E3B62F;margin-top:10px;opacity:${ease((t - 1.2) / .4)};text-shadow:0 6px 30px rgba(0,0,0,.8)">More than three times as much as men.</div></div>`;
   },
+  pov(t, d) { return ph(1, t, { dz: .09 }) + pov(t) + say(t, 'POV: you’re a mum.', 'Your day has no break.', 1180); },
+  shift(t, d) { return ph(2, t, { dx: -20 }) + shift(t, [['06:00', 'school run'], ['09:00', 'laundry'], ['12:00', 'cooking'], ['16:00', 'cleaning']]) + say(t, 'School run. Laundry.', 'Cooking. Again.', 1210); },
   rice(t, d) { return ph(4, t, { dx: 20 }) + say(t, 'The markets kept moving.', 'You kept moving too.'); },
   machine(t, d) { return ph(5, t, { dz: .07 }) + say(t, 'FTM MACHINE trades for you.', 'Fixed rules. 24/7.'); },
   yours(t, d) { return ph(6, t, { dz: .07 }) + say(t, 'Your money stays yours.', 'Pause in one tap.'); },
