@@ -13,7 +13,7 @@
      post {text, image?}         new post (paid members and FTM); like {id}; comment {id, text}; delpost {id}; delcomment {id, cid}; pin {id} (FTM)
      notifs {read?}              likes, comments, new followers and FTM posts for me
      post also takes images[] (up to 4) and poll {options[2-4]}; vote {id, i}; bookmark {id} (scope 'saved'); edit {id, text}; clike {id, cid}; trending
-     GET ?dayresult=YYYY-MM-DD    the master account's posted day result (% and counts only) for social posts
+     GET ?dayresult=YYYY-MM-DD    the master account's posted day result (% and counts only) for social posts (&last24=1 adds the 18:00-to-18:00 result)
                                   (&preview=1: today so far, built from the engine before the 23:00 post, for the owner's preview)
                                   floating: the open trades right now {pl, pct of balance, n, equity} when the day is today (or the preview)
      GET ?postjson=<id>          public view of one post for share links (/p/<id>); GET ?share=<id> the share page with preview tags
@@ -150,7 +150,7 @@ module.exports = async function handler(req, res) {
         c = R0.dayCard(dayMemo.h, 'USD', y0, m0, d0); void endOfDay;
       }
       const rows = c.rows || [], wins = rows.filter(r => r.pl > 0).length, losses = rows.filter(r => r.pl < 0).length;
-      let mtd = null, balance = null, cal = null;
+      let mtd = null, balance = null, cal = null, last24 = null;
       try {
         const R = require('../_lib/results'), [y, m, d] = day.split('-').map(Number), nx = new Date(Date.UTC(y, m - 1, d + 1));
         if (!dayMemo.h || Date.now() - dayMemo.at > 600e3) { const mm = await within(20000, R.master(admin), 'master'); dayMemo = { at: Date.now(), h: mm.h, reader: mm.reader }; }
@@ -159,6 +159,9 @@ module.exports = async function handler(req, res) {
         // the month so far, day by day (the same time-weighted seg as every view), for the losing-day "whole month" slide
         cal = []; for (let i = 1; i <= d; i++) { const a2 = R.midnight(y, m, i, R.TZ), n2 = new Date(Date.UTC(y, m - 1, i + 1)), z2 = R.midnight(n2.getUTCFullYear(), n2.getUTCMonth() + 1, n2.getUTCDate(), R.TZ), s2 = dayMemo.h.M.seg(a2, z2), k = dayMemo.h.closed.filter(t => t.closeTime >= a2 && t.closeTime < z2 && t.pl != null).length;
           cal.push({ date: y + '-' + String(m).padStart(2, '0') + '-' + String(i).padStart(2, '0'), pct: s2 && isFinite(s2.pct) ? +s2.pct.toFixed(2) : 0, n: k }); }
+        // the 6 p.m. post (owner 23 Nov): 18:00 the day before to 18:00 this day, Berlin time, with the same shared seg as every view
+        if (req.query.last24 === '1') { const z3 = R.midnight(nx.getUTCFullYear(), nx.getUTCMonth() + 1, nx.getUTCDate(), R.TZ) - 6 * 3600e3, a3 = R.midnight(y, m, d, R.TZ) - 6 * 3600e3, s3 = dayMemo.h.M.seg(a3, Math.min(z3, Date.now())), n3 = dayMemo.h.closed.filter(t => t.closeTime >= a3 && t.closeTime < z3 && t.pl != null).length;
+          last24 = { from: a3, to: z3, pct: s3 && isFinite(s3.pct) ? +s3.pct.toFixed(2) : 0, n: n3 }; }
       } catch (e) { mtd = null; }
       // open trades right now (owner 20 Nov: the 23:00 post shows the floating P/L, money and % of the balance), straight from the engine
       let floating = null;
@@ -172,7 +175,7 @@ module.exports = async function handler(req, res) {
       } catch (e) { floating = null; }
       const markets = [...new Set(rows.map(r => r.s))];
       res.setHeader('Cache-Control', floating || (req.query.preview === '1' && !days[day]) ? 'no-store' : 'public, max-age=120');
-      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD', floating });
+      return res.status(200).json({ ok: true, date: c.date, pct: +(+c.pct).toFixed(2), trades: c.n, wins, losses, markets, mtd, balance, cal, rows: rows.map(r => ({ c: r.c, s: r.s, d: r.d, v: r.v, pl: r.pl })), cur: c.cur || 'USD', floating, last24 });
     } catch (e) { return res.status(500).json({ ok: false, error: 'UNAVAILABLE' }); }
   }
   if (req.method === 'GET' && req.query && (req.query.postjson || req.query.share)) {

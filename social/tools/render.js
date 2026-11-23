@@ -1,5 +1,5 @@
 /* Renders FTM social images with the official FTM logo.
-   node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a losing day also gets <name>-month: the month so far, every day)
+   node social/tools/render.js day '<json from /api/v1/community?dayresult=>' out-dir   (a loss day or small day under +0.5% also gets <name>-month: the month so far, every day)
    node social/tools/render.js card '<json {title, body, kicker, foot}>' out-dir name
    node social/tools/render.js week '<json from social/tools/week.py>' out-dir   -> week-<to>-post, -days, -story (Saturday 06:00 weekly summary)
    node social/tools/render.js quiet '<dayresult json + night>' out-dir   -> day-D-quiet1..3 (no-trade day: note + live stats + quiet days in the backtest)
@@ -86,7 +86,7 @@ function trades(w, h, part, parts) {
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.when === 'last24' ? 'Last 24 hours' : 'Day result'}</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
-/* Losing days only: the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
+/* Loss days and small days (owner 23 Nov: small wins add up): the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
 function month(w, h) {
   const [y, m, d] = D.date.split('-').map(Number), C = D.cal || [], first = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
   const g = C.filter(x => x.n && x.pct > 0).length, r = C.filter(x => x.n && x.pct < 0).length;
@@ -99,7 +99,7 @@ function month(w, h) {
   let cells = ''; for (let i = 0; i < slots.length; i += 7) { const L = slots.slice(i, i + 7); cells += L.map(x => x ? cell(x) : '<div></div>').join('') + wk(L); }
   return `<div class="grid"></div><div class="wrap" style="padding-top:40px;padding-bottom:30px"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:30px">Every day shown · ${MONTHS[m - 1]} ${y}</div>
-    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">${(D.variant || 1) === 2 ? 'Quiet days, profit days, loss days.' : 'Loss days are part of trading.'}<br><span style="color:#E3B62F;white-space:nowrap">We show you every one.</span></div>
+    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">${D.pct >= 0 ? 'Small profit days add up.' : (D.variant || 1) === 2 ? 'Quiet days, profit days, loss days.' : 'Loss days are part of trading.'}<br><span style="color:#E3B62F;white-space:nowrap">${D.pct >= 0 ? 'One day at a time.' : 'We show you every one.'}</span></div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:28px;font-size:17px;color:#aeb7dc;font-weight:700;letter-spacing:.06em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN', 'WEEK'].map((x, i) => `<span style="${i === 7 ? 'color:#D4AF37' : ''}">${x}</span>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:10px">${cells}</div>
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
@@ -233,7 +233,7 @@ function quiet(w, h, part) {
   const name = nameArg || (kind === 'day' || kind === 'quiet' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
   const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : kind === 'quiet' ? [['quiet1', 1080, 1350, () => quiet(1080, 1350, 1)], ['quiet2', 1080, 1350, () => quiet(1080, 1350, 2)], ['quiet3', 1080, 1350, () => quiet(1080, 1350, 3)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
-  if (kind === 'day' && D.pct < 0 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
+  if (kind === 'day' && D.pct < 0.5 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);
