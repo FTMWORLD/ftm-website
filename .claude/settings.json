@@ -1,22 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "mcp__Metricool_Social_Media_Management",
-      "mcp__claude-code-remote__send_later",
-      "mcp__claude-code-remote__update_trigger",
-      "mcp__claude-code-remote__get_trigger",
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
       "WebSearch",
-      "Bash(git:*)",
-      "Bash(cd:*)",
-      "Bash(node:*)",
-      "Bash(python3:*)",
-      "Bash(ffmpeg:*)",
-      "Bash(curl:*)",
-      "Bash(grep:*)",
-      "Bash(sed:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(for:*)"
+      "WebFetch",
+      "ToolSearch",
+      "Agent",
+      "Skill",
+      "Artifact",
+      "SendUserFile",
+      "ReadNotifications",
+      "mcp__Metricool_Social_Media_Management",
+      "mcp__claude-code-remote",
+      "mcp__github"
     ]
   }
 }
