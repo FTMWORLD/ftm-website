@@ -1,5 +1,5 @@
 """Build a morning video with the character rig.
-python3 social/tools/buildvid.py DATE social/videos/assets/scn-xxx.js [bpm] [chords 0-3]
+[STYLE=drive|lofi|news|cinema|bright] [NARRATOR=voice] python3 social/tools/buildvid.py DATE social/videos/assets/scn-xxx.js [bpm] [chords 0-3]
 Script = journey.json 'open' (as scene 'hook') + the day's scenes. Output: social/posts/v2/vid-DATE.mp4"""
 import sys, os, json, shutil, subprocess, wave, numpy as np
 date, scn = sys.argv[1], sys.argv[2]
@@ -23,6 +23,9 @@ CH = ['[[220,261.63,329.63],[174.61,220,261.63],[196,261.63,329.63],[196,246.94,
       '[[130.81,164.81,196],[110,130.81,164.81],[174.61,220,261.63],[196,246.94,293.66]]']
 import re
 mix = re.sub(r'bpm=\d+;beat=60/bpm;ch=\[\[.*?\]\]', 'bpm=%d;beat=60/bpm;ch=%s' % (bpm, CH[chord % 4]), mix)
+STYLE = os.environ.get('STYLE', '')  # owner 23 Nov 2026: a different sound each video -> drive, lofi, news, cinema, bright (finbed.py)
+if STYLE:
+    mix = mix.replace("mus/=np.abs(mus).max()+1e-9;", "import sys as _s;_s.path.insert(0,%r);from finbed import finance_bed as _fb;_L,_R=_fb(tot,seed=%d,bpm=%d,style=%r);mus=((_L+_R)/2)[:n] if len(_L)>=n else np.pad((_L+_R)/2,(0,n-len(_L)));mus/=np.abs(mus).max()+1e-9;" % (os.path.dirname(os.path.abspath(__file__)), sum(map(ord, date)) % 97, bpm, STYLE), 1)
 open(os.path.join(D, 'mix.py'), 'w').write(mix)
 lines = [['hook', day['open']]] + day['scenes']
 json.dump([{'id': a, 'vo': b, 'see': ''} for a, b in lines], open(os.path.join(D, 'script.json'), 'w'), indent=1)
