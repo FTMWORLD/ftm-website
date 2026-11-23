@@ -16,7 +16,7 @@ const BTN = (href, t) => '<p style="margin:22px 0 8px;"><a href="' + esc(href) +
 async function received(a, acct) {
   acct = acct || {};
   const w = await words({ subject: 'We received your FTM affiliate application', title: 'Thank you for applying', hi: 'Hello ' + a.name + ',',
-    l1: 'We received your application to become an FTM affiliate. Our team reviews every application, usually within two working days.',
+    l1: 'We received your application to become an FTM affiliate. Our team reviews every application within 24 hours.',
     l2: 'When you are approved, you get your own link and code by email, and your affiliate page opens in your FTM client area.',
     acc: 'Your free FTM account is ready. Create your password to log in: you can follow the FTM master account and see your application on your Affiliate page.',
     cta: 'Create my password', ex: 'Log in to FTM with your account to follow your application on your Affiliate page.', cta2: 'Open my affiliate page' }, a.lang);
@@ -28,10 +28,10 @@ async function received(a, acct) {
 }
 
 async function approved(a, link, r) {
-  const w = await words({ subject: 'You are now an FTM affiliate', title: 'Welcome to the FTM affiliate programme', hi: 'Hello ' + a.name + ',',
-    l1: 'Your application is approved. Share your link or your code:',
+  const w = await words({ subject: 'Congratulations: you are now an FTM affiliate', title: 'Congratulations, you are approved', hi: 'Congratulations, ' + a.name + '!',
+    l1: 'Your application to the FTM affiliate programme is approved, and you are now an official FTM affiliate. Share your link or your code:',
     l2: 'You earn ' + r.rate + '% of every subscription payment your customers make, for as long as they stay subscribed. Your customers get ' + r.discount + '% off their first payment with your code.',
-    l3: 'Commission becomes payable ' + r.holdDays + ' days after each payment and is paid every month by bank transfer or PayPal, from ' + r.minPayout + ' EUR. Add your payout details on your affiliate page.',
+    l3: 'Commission becomes payable ' + r.holdDays + ' days after each payment and is paid every month in USDT to your crypto wallet, from ' + r.minPayout + ' EUR. You can also invest it in FTM instead. Add your USDT wallet on your affiliate page.',
     l4: 'Please never promise profits or income, always say that you are an FTM affiliate, and do not run paid ads on the FTM name.',
     link: 'Your link', code: 'Your code', cta: 'Open my affiliate page' }, a.lang);
   const body = p(esc(w.hi)) + p(esc(w.l1)) + box(esc(w.link) + ': <a href="' + esc(link) + '" style="color:#0b1640;">' + esc(link) + '</a><br>' + esc(w.code) + ': ' + esc(a.code))
@@ -41,8 +41,8 @@ async function approved(a, link, r) {
 }
 
 async function master(a, link, r) {
-  const w = await words({ subject: 'You are now an FTM Master affiliate', title: 'Welcome to Master affiliate', hi: 'Hello ' + a.name + ',',
-    l1: 'Congratulations: you are now an FTM Master affiliate.',
+  const w = await words({ subject: 'Congratulations: you are now an FTM Master affiliate', title: 'Congratulations, Master affiliate', hi: 'Congratulations, ' + a.name + '!',
+    l1: 'You are now an FTM Master affiliate. Thank you for the people you have brought to FTM.',
     l2: 'From today you earn ' + r.rate + '% of every subscription payment of the customers you bring to FTM, the first payment and every renewal, for as long as they stay subscribed.',
     l3: 'Your link and your code stay the same. Thank you for growing FTM with us.',
     cta: 'Open my affiliate page' }, a.lang);
@@ -52,4 +52,13 @@ async function master(a, link, r) {
   await sendMail({ to: SUPPORT(), subject: 'New FTM Master affiliate: ' + a.name, html: Tpl.shell('New Master affiliate', p('<b>' + esc(a.name) + '</b> (' + esc(a.email) + ', code ' + esc(a.code) + ') is now a Master affiliate and earns ' + r.rate + '%. ' + (a.masterBy === 'auto' ? 'Reached ' + r.at + ' paying customers.' : 'Set in the staff console.'))) }).catch(() => {});
 }
 
-module.exports = { received, approved, master };
+async function invested(a, amount, currency) {
+  const site = (process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, ''), amt = currency + ' ' + Number(amount).toFixed(2);
+  const w = await words({ subject: 'Your commission is now invested in FTM', title: 'Invested in FTM', hi: 'Hello ' + a.name + ',',
+    l1: 'You chose to invest your commission instead of withdrawing it. ' + amt + ' is now part of your FTM investment.',
+    l2: 'You can follow it on the Investment page of your client area.', cta: 'Open my investment' }, a.lang);
+  await sendMail({ to: a.email, subject: w.subject, html: Tpl.shell(w.title, p(esc(w.hi)) + box(esc(w.l1)) + p(esc(w.l2)) + BTN(site + '/?open=invest', w.cta)) });
+  await sendMail({ to: SUPPORT(), subject: 'Affiliate commission invested: ' + a.name, html: Tpl.shell('Commission invested', p('<b>' + esc(a.name) + '</b> (' + esc(a.email) + ', code ' + esc(a.code) + ') invested ' + esc(amt) + ' of payable commission in FTM instead of a USDT payout. Recorded with the engine; nothing to pay.')) }).catch(() => {});
+}
+
+module.exports = { received, approved, master, invested };

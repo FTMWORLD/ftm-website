@@ -42,7 +42,7 @@ function ftmAppOpen(){ var a=document.querySelectorAll('.app'); for(var i=0;i<a.
 function ftmIdleExpired(){ try{ var t=+(localStorage.getItem('ftm_app_seen')||0); return !!t && (Date.now()-t)>FTM_IDLE_MS; }catch(e){ return false; } }
 var ftmFromEmailLink=/access_token=|[?&]code=|type=(signup|magiclink|invite|recovery)/.test(location.hash+location.search);
 var ftmIdleExpiredAtLoad=ftmIdleExpired() && !ftmFromEmailLink;
-(function(){ try{ if(/[?&]open=aff(&|$)/.test(location.search)) sessionStorage.setItem('ftm_open','aff'); }catch(e){} })();
+(function(){ try{ var o=/[?&]open=(aff|invest)(&|$)/.exec(location.search); if(o) sessionStorage.setItem('ftm_open',o[1]); }catch(e){} })();
 (function(){ try{ var n=performance.getEntriesByType&&performance.getEntriesByType('navigation')[0], rl=n?n.type==='reload':(performance.navigation&&performance.navigation.type===1); if(rl&&!ftmFromEmailLink&&/^#[a-z][\w-]*$/i.test(location.hash||'')&&history.replaceState){ history.replaceState(null,'',location.pathname+location.search); if('scrollRestoration' in history) history.scrollRestoration='manual'; window.scrollTo(0,0); } }catch(e){} })();
 function ftmStamp(){ try{ if(document.visibilityState!=='hidden' && ftmAppOpen()) localStorage.setItem('ftm_app_seen',String(Date.now())); }catch(e){} }
 setInterval(ftmStamp,10000);
@@ -3311,7 +3311,7 @@ body.op-lock{overflow:hidden}
           </div>
           <div class="dd-cta"><span class="gs-reel dx-reel dd-reel r3" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 45 L20 40 L34 42 L50 32 L64 34 L80 22 L94 24 L108 12 L120 8 L120 50 L0 50 Z"/><path class="gr-l" d="M0 45 L20 40 L34 42 L50 32 L64 34 L80 22 L94 24 L108 12 L120 8"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>Recurring</b><small>commission</small></span><span class="gr-s" style="animation-delay:2.5s"><b>Revenue share</b><small>CPA or hybrid</small></span><span class="gr-s" style="animation-delay:5.0s"><b>Deriv</b><small>master affiliate</small></span><span class="gr-s" style="animation-delay:7.5s"><b>Marketing kit</b><small>landing pages included</small></span><i class="gr-live">FTM</i></span>
             <b>Start earning with FTM</b>
-            <p>Apply in two minutes. We answer within two working days.</p>
+            <p>Apply in two minutes. We answer within 24 hours.</p>
             <a class="btn btn-red btn-sm" href="#affiliate">Apply as a partner</a>
           </div>
         </div>
@@ -4832,6 +4832,10 @@ body.op-lock{overflow:hidden}
               <p class="hint">Withdraw the profit share that has unlocked. Your capital stays invested until the end of year 5.</p>
               <div class="wd-avail"><span>Available now</span><b id="ivWAvail">&mdash;</b></div>
               <div class="app-form" style="margin-top:16px">
+                <label for="ivWNet">USDT network</label>
+                <select id="ivWNet"><option value="TRC20">TRON (TRC-20)</option><option value="ERC20">Ethereum (ERC-20)</option><option value="BEP20">BNB Smart Chain (BEP-20)</option><option value="SOL">Solana</option><option value="POLYGON">Polygon</option></select>
+                <label for="ivWAddr">USDT wallet address</label>
+                <input type="text" id="ivWAddr" autocomplete="off" spellcheck="false" placeholder="T… / 0x…">
                 <label for="ivWAmt">Amount to withdraw</label>
                 <input type="number" id="ivWAmt" min="0" step="0.01" placeholder="0.00" autocomplete="off">
                 <button class="btn btn-red" type="button" id="ivWBtn">Request withdrawal</button>
@@ -4842,7 +4846,7 @@ body.op-lock{overflow:hidden}
               <h3>Good to know</h3>
               <ul class="wd-notes">
                 <li>In months 13, 25, 37 and 49, 20% of your profit share unlocks. What you leave stays available.</li>
-                <li>Withdrawals are paid to the bank account you gave when you invested.</li>
+                <li>Withdrawals are paid in USDT (cryptocurrency) to the wallet you give here.</li>
                 <li>Processing times and any fees are set out in your investor agreement.</li>
                               </ul>
             </div>
@@ -9375,6 +9379,9 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
     };
     document.querySelectorAll('.iv-item').forEach(function(b){ b.addEventListener('click',function(){ show(b.dataset.iv); }); });
 
+    (function(){ var sec=document.querySelector('.iv-view[data-iv="withdraw"]'); if(!sec||!window.MutationObserver) return; var done=false;
+      new MutationObserver(function(){ if(sec.hidden||done||!(F.auth&&F.auth.getAccessToken&&F.session)) return; done=true;
+        F.auth.getAccessToken().then(function(tk){ return fetch('/api/v1/affiliate',{method:'POST',headers:{'content-type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({action:'wallet'})}); }).then(function(r){ return r.json(); }).then(function(j){ var w=j&&j.wallet; if(w&&!$('ivWAddr').value){ $('ivWNet').value=w.network; $('ivWAddr').value=w.address; } }).catch(function(){ done=false; }); }).observe(sec,{attributes:true,attributeFilter:['hidden']}); })();
     $('ivWBtn').addEventListener('click',function(){
       var btn0=this; if(!btn0._ok&&parseFloat($('ivWAmt').value)>0&&F.warnFirst){ F.warnFirst('withdraw',function(){ btn0._ok=true; btn0.click(); }); return; } btn0._ok=false;
       var m=F.investMetrics(), msg=$('ivWMsg'), amt=parseFloat($('ivWAmt').value), btn=this;
@@ -9384,9 +9391,12 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
       if(m.live){
         var row=m.rows.filter(function(r){return r.withdrawable+0.001>=amt;})[0] || m.rows.filter(function(r){return r.withdrawable>0;})[0] || m.rows.filter(function(r){return r.status==='ACTIVE';})[0] || m.rows[0];
         if(!row){ msg.textContent=t('Nothing can be withdrawn yet.'); return; }
+        var wNet=$('ivWNet').value, wAd=$('ivWAddr').value.trim();
+        if(!(F.walletOk&&F.walletOk(wNet,wAd))){ msg.textContent=t('This is not a valid USDT address for the chosen network.'); return; }
         btn.disabled=true; msg.textContent=t('Sending your request…');
         var rid; try{ rid=crypto.randomUUID(); }catch(e){ rid='w'+Date.now(); }
         F.remote.requestInvestmentWithdrawal(row.id, amt, rid).then(function(){
+          try{ F.auth.getAccessToken().then(function(tk){ fetch('/api/v1/affiliate',{method:'POST',headers:{'content-type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({action:'withdraw_note',amount:amt,network:wNet,address:wAd})}).catch(function(){}); }); }catch(eW){}
           btn.disabled=false; $('ivWAmt').value=''; msg.textContent=t('Request received. FTM confirms it and pays it to you.');
           F.remote.fetchInvestments().then(function(list){ F.invest.live=list; F.invest.investments=list; F.renderInvest(); }).catch(function(){});
         }).catch(function(e){ btn.disabled=false; msg.textContent=F.why?F.why(e,'Your request could not be sent. Please try again.'):t('Your request could not be sent. Please try again.'); });
@@ -10545,22 +10555,27 @@ tick();setInterval(tick,5000);})();
   var ROLES={owner:'Owner: everything, and manages the team',staff:'Staff: every tool',support:'Support: customers, problems and one-to-one help; no group sends, posts, payments or team'};
   function affLoad(){ var p=pane('aff'); p.innerHTML='<div class="app-card stf-card"><p class="stf-note">Loading affiliates…</p></div>';
     S({op:'aff_list'}).then(function(j){ var L=j.affiliates||[], m=function(v){ return '€'+(+v||0).toFixed(2); };
-      var pend=L.filter(function(a){ return a.status==='pending'; }), act=L.filter(function(a){ return a.status==='approved'; }), owed=act.reduce(function(t,a){ return t+(a.payable||0); },0);
-      var row=function(a){ var po=a.payout?(a.payout.method==='paypal'?'PayPal '+esc(a.payout.paypal):'Bank '+esc(a.payout.holder||'')+' '+esc(a.payout.iban||'')+(a.payout.bic?' / '+esc(a.payout.bic):'')):'<em>no payout details yet</em>';
+      var pend=L.filter(function(a){ return a.status==='pending'; }), act=L.filter(function(a){ return a.status==='approved'; }), rev=L.filter(function(a){ return a.status==='revoked'||a.status==='rejected'; }), owed=act.reduce(function(t,a){ return t+(a.payable||0); },0);
+      var row=function(a){ var po=a.payout&&a.payout.address?'USDT '+esc(a.payout.network||'')+' <code>'+esc(a.payout.address)+'</code>':'<em>no USDT wallet yet</em>';
         return '<div class="stf-row stf-aff" data-code="'+esc(a.code)+'"><div><b>'+esc(a.name)+'</b> <span class="stf-tag">'+esc(a.code)+'</span> <span class="stf-tag'+(a.status==='approved'?' ok':a.status==='pending'?' warn':'')+'">'+esc(a.status)+'</span>'+(a.master?' <span class="stf-tag stf-master">★ Master affiliate · '+(a.rate||20)+'%</span>':'')+'<br><small>'+esc(a.email)+(a.country?' · '+esc(a.country):'')+'</small>'
           +(a.status==='pending'?'<br><small>Shares FTM on: '+esc(a.channel||'-')+' · Audience: '+esc(a.audience||'-')+(a.message?'<br>'+esc(a.message):'')+'</small>':'')
-          +(a.status==='approved'?'<br><small>'+n0(a.clicks)+' link visits · '+n0(a.signups)+' sign-ups · '+n0(a.paying)+' paying customers'+(a.master?(a.masterBy==='auto'?' · master since '+esc(String(a.masterAt||'').slice(0,10))+' (reached '+j.masterAt+')':' · made master by staff'):' · '+Math.max(0,j.masterAt-(a.paying||0))+' more to become master')+' · pending '+m(a.pending)+' · payable '+m(a.payable)+' · paid '+m(a.paid)+'<br>Payout: '+po+'</small>':'')
+          +(a.status==='approved'?'<br><small>'+n0(a.clicks)+' link visits · '+n0(a.signups)+' sign-ups · '+n0(a.paying)+' paying customers'+(a.master?(a.masterBy==='auto'?' · master since '+esc(String(a.masterAt||'').slice(0,10))+' (reached '+j.masterAt+')':' · made master by staff'):' · '+Math.max(0,j.masterAt-(a.paying||0))+' more to become master')+' · pending '+m(a.pending)+' · payable '+m(a.payable)+' · paid in USDT '+m(a.paid)+(a.invested?' · invested in FTM '+m(a.invested):'')+'<br>Payout: '+po+'</small>':'')
+          +(a.status==='revoked'||a.status==='rejected'?'<br><small>'+esc(a.status)+(a.revoked?' on '+esc(String(a.revoked).slice(0,10)):'')+' · paid in USDT '+m(a.paid)+(a.payable?' · still payable '+m(a.payable):'')+'</small>':'')
           +(a.promoError?'<br><small class="bad">Stripe 5% code not created: '+esc(a.promoError)+'</small>':'')+'</div><div class="stf-acts">'
           +(a.status==='pending'?'<button type="button" class="btn btn-sm btn-red" data-aff="aff_approve">Approve</button> <button type="button" class="btn btn-sm btn-dark" data-aff="aff_reject">Reject</button>':'')
           +(a.status==='approved'?(a.master?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_unmaster">Remove master</button> ':'<button type="button" class="btn btn-sm btn-gold" data-aff="aff_master">Make master affiliate ('+j.masterRate+'%)</button> '):'')
-          +(a.status==='approved'&&a.promoError?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_promo">Create Stripe code again</button> ':'')+(a.status==='approved'&&a.payable>=j.minPayout?'<button type="button" class="btn btn-sm btn-red" data-aff="aff_paid">Mark '+m(a.payable)+' paid</button>':'')+'</div></div>'; };
-      p.innerHTML='<div class="app-card stf-card"><h3>Affiliates</h3><p class="stf-note">10% of every subscription payment of the customers each affiliate brings (Master affiliates 20%: automatic at '+j.masterAt+' paying customers, or press “Make master affiliate”); customers get 5% off their first payment with the code. A commission becomes payable 30 days after the payment; pay monthly from €'+j.minPayout+', then press “Mark paid”.</p>'
+          +(a.status==='approved'&&a.promoError?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_promo">Create Stripe code again</button> ':'')+(a.status==='approved'&&a.payable>=j.minPayout?'<button type="button" class="btn btn-sm btn-red" data-aff="aff_paid">Mark '+m(a.payable)+' paid in USDT</button> ':'')
+          +(a.status==='approved'?'<button type="button" class="btn btn-sm btn-outline" data-aff="aff_revoke">Revoke</button>':'')+(a.status==='revoked'||a.status==='rejected'?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_restore">Restore</button>':'')+'</div></div>'; };
+      p.innerHTML='<div class="app-card stf-card"><h3>Affiliates</h3><p class="stf-note">Applications are approved automatically; revoke anyone here. 10% of every subscription payment of the customers each affiliate brings (Master affiliates 20%: automatic at '+j.masterAt+' paying customers, or press “Make master affiliate”); paid in USDT, or invested in FTM if the affiliate chooses; customers get 5% off their first payment with the code. A commission becomes payable 30 days after the payment; pay monthly from €'+j.minPayout+', then press “Mark paid”.</p>'
         +'<div class="stf-kpis"><div><b>'+pend.length+'</b><span>applications waiting</span></div><div><b>'+act.length+'</b><span>active affiliates</span></div><div><b>'+act.filter(function(a){ return a.master; }).length+'</b><span>master affiliates</span></div><div><b>'+m(owed)+'</b><span>payable now</span></div></div></div>'
         +'<div class="app-card stf-card"><h3>Applications</h3>'+(pend.length?pend.map(row).join(''):'<p class="stf-note">No applications waiting.</p>')+'</div>'
-        +'<div class="app-card stf-card"><h3>Active affiliates</h3>'+(act.length?act.map(row).join(''):'<p class="stf-note">No active affiliates yet.</p>')+'</div>';
+        +'<div class="app-card stf-card"><h3>Active affiliates</h3>'+(act.length?act.map(row).join(''):'<p class="stf-note">No active affiliates yet.</p>')+'</div>'
+        +(rev.length?'<div class="app-card stf-card"><h3>Revoked or rejected</h3>'+rev.map(row).join('')+'</div>':'');
       if(!p._affOn){ p._affOn=1; p.addEventListener('click',function(e){ var b=e.target.closest('[data-aff]'); if(!b) return; var code=b.closest('[data-code]').dataset.code; b.disabled=true;
         if(b.dataset.aff==='aff_unmaster'&&!confirm('Remove Master affiliate? New commissions go back to 10%.')){ b.disabled=false; return; }
-        S({op:b.dataset.aff,code:code}).then(function(r){ if(r&&r.mailError) alertNote('Approved, but the email could not be sent: '+r.mailError); affLoad(); }).catch(function(er){ b.disabled=false; b.textContent='Failed: '+(er.code||er.message); }); }); }
+        if(b.dataset.aff==='aff_revoke'&&!confirm('Revoke this affiliate? Their link and code stop working and they earn no new commission.')){ b.disabled=false; return; }
+        var tx=null; if(b.dataset.aff==='aff_paid'){ tx=prompt('Paid in USDT. Paste the transaction hash (optional):',''); if(tx===null){ b.disabled=false; return; } }
+        S({op:b.dataset.aff,code:code,tx:tx}).then(function(r){ if(r&&r.mailError) alertNote('Approved, but the email could not be sent: '+r.mailError); affLoad(); }).catch(function(er){ b.disabled=false; b.textContent='Failed: '+(er.code||er.message); }); }); }
     }).catch(function(e){ p.innerHTML='<div class="app-card stf-card"><p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p></div>'; }); }
   function alertNote(t){ var p=pane('aff'), n=document.createElement('p'); n.className='stf-note bad'; n.textContent=t; p.prepend(n); }
   function teamLoad(){ var p=pane('team');
@@ -10586,6 +10601,8 @@ tick();setInterval(tick,5000);})();
     if(e===who) return; who=e; remove(); if(!e) return;
     C({op:'check'}).then(function(j){ if(j.staff&&who===e){ ROLE=j.role||'staff'; build(); } }).catch(function(){}); }
   setInterval(tick,2500); setTimeout(tick,600);
+  function pulse(){ if(!nav||document.hidden||!F().navSignal) return; S({op:'pulse'}).then(function(j){ if(j&&j.sig) F().navSignal('staff',j.sig); }).catch(function(){}); }
+  setTimeout(pulse,5000); setInterval(pulse,60000);
   setInterval(function(){ if(view&&!view.hidden&&tab==='board'&&D&&Date.now()-Date.parse(D.at)>5*60e3) load(false); },60000);
 })();
 </script>
@@ -11923,7 +11940,9 @@ tick();setInterval(tick,5000);})();
 .af-copy{display:flex;gap:8px;align-items:center;border:1px solid #cfd5ea;border-radius:12px;padding:8px 8px 8px 14px;background:#f7f8fd;min-width:0}.af-copy code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 15px/1.3 Inter,system-ui,sans-serif;color:#0b1640}
 .af-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.af-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.af-kpis div{border:1px solid #e3e7f3;border-radius:14px;padding:12px 14px;min-width:0}.af-kpis b{display:block;font-size:22px;color:#0b1640;font-variant-numeric:tabular-nums}.af-kpis span{font-size:12.5px;color:#5a6390}
 .af-tbl{width:100%;border-collapse:collapse;font-size:14px}.af-tbl th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#5a6390;padding:8px 6px;border-bottom:1px solid #e3e7f3}.af-tbl td{padding:10px 6px;border-bottom:1px solid #eef1f8;font-variant-numeric:tabular-nums}
-.af-st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px}.af-st.pending{background:#fbf3d9;color:#9a7612}.af-st.payable{background:#e3f6ec;color:#1f9d55}.af-st.paid{background:#e8ecf8;color:#1F3A93}
+.af-st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px}.af-st.pending{background:#fbf3d9;color:#9a7612}.af-st.payable{background:#e3f6ec;color:#1f9d55}.af-st.paid{background:#e8ecf8;color:#1F3A93}.af-st.invested{background:#fbf3d9;color:#8a6a10}
+.af-inv{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 16px;align-items:center;border:1.5px solid rgba(212,175,55,.55);background:linear-gradient(135deg,#fffaf0,#fff)}.af-inv h3{margin:0 0 4px}.af-inv .af-err{grid-column:1/-1;margin:0}
+@media (max-width:600px){.af-inv{grid-template-columns:minmax(0,1fr)}.af-inv .btn{width:100%}}
 .af-rules{margin:0;padding-left:18px;color:#2a3366;font-size:14px;display:grid;gap:6px}.af-note{font-size:13px;color:#5a6390;margin:6px 0 0}
 .af-modal{position:fixed;inset:0;background:rgba(5,10,36,.6);display:grid;place-items:center;z-index:9000;padding:16px;overscroll-behavior:contain}.af-modal[hidden]{display:none}.af-mcard{background:#fff;border-radius:22px;max-width:560px;width:100%;max-height:90vh;max-height:90dvh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:24px;position:relative}
 .af-mh{background:linear-gradient(135deg,#0b1640,#1F3A93);color:#fff;border-radius:18px;padding:18px 20px;margin-right:34px}.af-mh h3{color:#fff;margin:0 0 10px;font-size:20px;letter-spacing:-.01em}
@@ -11948,10 +11967,13 @@ tick();setInterval(tick,5000);})();
       q.delete('ref'); if(history.replaceState) history.replaceState(null,'',location.pathname+(q.toString()?'?'+q.toString():'')+location.hash); } }catch(e){}
   function api(body,auth){ var go=function(t){ var h={'content-type':'application/json'}; if(t) h.Authorization='Bearer '+t; return fetch('/api/v1/affiliate',{method:'POST',headers:h,body:JSON.stringify(body)}).then(function(r){ return r.json().then(function(j){ if(!r.ok){ var e=new Error(j.error||('HTTP '+r.status)); e.code=j.error; throw e; } return j; }); }); };
     return auth&&F.auth&&F.auth.getAccessToken?F.auth.getAccessToken().then(go):go(null); }
+  var NETS=[['TRC20','TRON (TRC-20)'],['ERC20','Ethereum (ERC-20)'],['BEP20','BNB Smart Chain (BEP-20)'],['SOL','Solana'],['POLYGON','Polygon']];
+  function walletOk(n,a){ return n==='TRC20'?/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(a):n==='SOL'?/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(a):/^0x[0-9a-fA-F]{40}$/.test(a); }
+  F.walletNets=NETS; F.walletOk=walletOk;
   function money(v,c){ try{ return new Intl.NumberFormat(window.FTM_LOCALE||undefined,{style:'currency',currency:c||'EUR'}).format(+v||0); }catch(e){ return (c||'EUR')+' '+(+v||0).toFixed(2); } }
   function date(d){ try{ return new Date(d).toLocaleDateString(window.FTM_LOCALE||undefined,{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return String(d).slice(0,10); } }
   function hero(a){ var M=a&&a.master; return '<div class="af-hero'+(M?' af-m':'')+'"><h3>'+esc(tr('FTM affiliate programme'))+(M?' <span class="af-mb">★ '+esc(tr('Master affiliate'))+'</span>':'')+'</h3><p>'+esc(tr(M?'As a Master affiliate you earn 20% of every subscription payment of the people you bring to FTM, for as long as they stay subscribed.':'Earn 10% of every subscription payment of the people you bring to FTM, for as long as they stay subscribed.'))+'</p>'
-    +'<div class="af-pts"><div><b>'+(M?'20%':'10%')+'</b>'+esc(tr('of every payment, the first and every renewal'))+'</div><div><b>5%</b>'+esc(tr('off the first payment for your customers with your code'))+'</div><div><b>€50</b>'+esc(tr('paid every month, 30 days after each payment'))+'</div></div></div>'; }
+    +'<div class="af-pts"><div><b>'+(M?'20%':'10%')+'</b>'+esc(tr('of every payment, the first and every renewal'))+'</div><div><b>5%</b>'+esc(tr('off the first payment for your customers with your code'))+'</div><div><b>USDT</b>'+esc(tr('paid in crypto every month from €50, 30 days after each payment'))+'</div></div></div>'; }
   function rules(){ return '<div class="app-card"><h3>'+esc(tr('Affiliate rules'))+'</h3><ul class="af-rules"><li>'+esc(tr('Never promise profits, income or guaranteed results.'))+'</li><li>'+esc(tr('Always say that you are an FTM affiliate.'))+'</li><li>'+esc(tr('No paid ads on the FTM name, and no buying through your own link.'))+'</li><li>'+esc(tr('FTM may end the partnership if these rules are broken.'))+'</li></ul></div>'; }
   function form(email){ return '<form class="af-form" novalidate><div class="af-two"><label>'+esc(tr('Full name'))+'<input id="afName" name="name" autocomplete="name" required></label><label>'+esc(tr('Email'))+'<input id="afEmail" name="email" type="email" autocomplete="email" value="'+esc(email||'')+'" required></label></div>'
     +'<div class="af-two"><label>'+esc(tr('Country'))+'<input id="afCountry" name="country" autocomplete="country-name"></label><label>'+esc(tr('How many people follow you?'))+'<select id="afAud" name="audience"><option value="<1k">'+esc(tr('Under 1,000'))+'</option><option value="1k-10k">1,000–10,000</option><option value="10k-100k">10,000–100,000</option><option value=">100k">'+esc(tr('Over 100,000'))+'</option></select></label></div>'
@@ -11964,10 +11986,10 @@ tick();setInterval(tick,5000);})();
       er.textContent=''; b.disabled=true; api({action:'apply',name:name,email:email,country:g('afCountry'),audience:g('afAud'),channel:g('afChan'),message:g('afMsg'),agree:true,lang:document.documentElement.lang||'en'}).then(function(){ done(email.toLowerCase()); })
         .catch(function(){ b.disabled=false; er.textContent=tr('Something went wrong. Please try again.'); }); }); }
   function state(icon,title,text){ return '<div class="app-card"><div class="af-state"><i>'+icon+'</i><div><h3>'+esc(tr(title))+'</h3><p>'+esc(tr(text))+'</p></div></div></div>'; }
-  var SENT='Thank you. Your application is in. We usually answer within two working days.';
+  var SENT='Thank you. Your application is in. We answer within 24 hours.';
   function render(j){ var v=document.getElementById('affView'); if(!v) return; var a=j&&j.aff, h=hero(a);
     if(!a){ v.innerHTML='<div class="af-wrap">'+h+'<div class="app-card"><h3>'+esc(tr('Apply to become an FTM affiliate'))+'</h3>'+form(F.session&&F.session.email)+'</div>'+rules()+'</div>'; bindForm(v,function(){ v.innerHTML='<div class="af-wrap">'+h+state('✓','Your application is being reviewed',SENT)+'</div>'; }); return; }
-    if(a.status==='pending'){ v.innerHTML='<div class="af-wrap">'+h+state('⏳','Your application is being reviewed','We usually answer within two working days. You will get an email with your link and code.')+rules()+'</div>'; return; }
+    if(a.status==='pending'){ v.innerHTML='<div class="af-wrap">'+h+state('⏳','Your application is being reviewed','We answer within 24 hours. You will get an email with your link and code.')+rules()+'</div>'; return; }
     if(a.status==='rejected'){ v.innerHTML='<div class="af-wrap">'+h+state('!','Your application was not approved','Questions? Write to ftmwebnation@gmail.com.')+'</div>'; return; }
     var s=j.stats||{}, c=s.currency||'EUR', L=j.list||[], po=a.payout||{method:'bank'};
     var kp=[[s.clicks||0,'Link visits'],[s.signups||0,'Customers'],[money(s.pending,c),'Pending'],[money(s.payable,c),'Payable now'],[money(s.paid,c),'Paid to you']];
@@ -11978,15 +12000,18 @@ tick();setInterval(tick,5000);})();
       +'<div class="af-kpis">'+kp.map(function(k){ return '<div><b>'+esc(k[0])+'</b><span>'+esc(tr(k[1]))+'</span></div>'; }).join('')+'</div>'
       +(a.master?'':(function(){ var n=Math.min(10,+s.paying||0); return '<div class="app-card af-prog"><div class="af-pg-top"><h3>'+esc(tr('Master affiliate'))+'</h3><b>'+esc(tr('{} of 10 paying customers').replace('{}',n))+'</b></div><div class="af-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="'+n+'"><i style="width:'+(n*10)+'%"></i></div><p class="af-note">'+esc(tr('At 10 paying customers you become a Master affiliate and earn 20% of every payment.'))+'</p></div>'; })())
       +'<div class="app-card"><h3>'+esc(tr('Your commissions'))+'</h3>'+(L.length?'<div style="overflow-x:auto"><table class="af-tbl"><thead><tr><th>'+esc(tr('Date'))+'</th><th class="af-hide">'+esc(tr('Customer'))+'</th><th class="af-hide">'+esc(tr('Payment'))+'</th><th>'+esc(tr('Commission'))+'</th><th>'+esc(tr('Status'))+'</th></tr></thead><tbody>'
-        +L.map(function(r){ var st=r.status==='paid'?'Paid':r.status==='payable'?'Payable':'Pending'; return '<tr><td>'+esc(date(r.at))+'</td><td class="af-hide">'+esc(r.customer)+'</td><td class="af-hide">'+esc(money(r.amount,r.currency))+'</td><td><b>'+esc(money(r.commission,r.currency))+'</b></td><td><span class="af-st '+r.status+'" data-tip="'+esc(r.status==='pending'?tr('Payable from')+' '+date(r.payable):'')+'">'+esc(tr(st))+'</span></td></tr>'; }).join('')+'</tbody></table></div>':'<p>'+esc(tr('No commissions yet. Share your link to get started.'))+'</p>')
+        +L.map(function(r){ var st=r.status==='invested'?'Invested in FTM':r.status==='paid'?'Paid':r.status==='payable'?'Payable':'Pending'; return '<tr><td>'+esc(date(r.at))+'</td><td class="af-hide">'+esc(r.customer)+'</td><td class="af-hide">'+esc(money(r.amount,r.currency))+'</td><td><b>'+esc(money(r.commission,r.currency))+'</b></td><td><span class="af-st '+r.status+'" data-tip="'+esc(r.status==='pending'?tr('Payable from')+' '+date(r.payable):'')+'">'+esc(tr(st))+'</span></td></tr>'; }).join('')+'</tbody></table></div>':'<p>'+esc(tr('No commissions yet. Share your link to get started.'))+'</p>')
         +'<p class="af-note">'+esc(tr('Pending commissions become payable 30 days after the payment. We pay every month from €50.'))+'</p></div>'
-      +'<div class="app-card"><h3>'+esc(tr('Payout details'))+'</h3><form class="af-form af-pay"><label>'+esc(tr('Payout method'))+'<select id="afPm"><option value="bank"'+(po.method!=='paypal'?' selected':'')+'>'+esc(tr('Bank transfer'))+'</option><option value="paypal"'+(po.method==='paypal'?' selected':'')+'>PayPal</option></select></label>'
-        +'<div class="af-bank"><div class="af-two"><label>'+esc(tr('Account holder'))+'<input id="afHolder" value="'+esc(po.holder||'')+'"></label><label>IBAN<input id="afIban" value="'+esc(po.iban||'')+'"></label></div><label>BIC / SWIFT<input id="afBic" value="'+esc(po.bic||'')+'"></label></div>'
-        +'<label class="af-pp">'+esc(tr('PayPal email'))+'<input id="afPp" type="email" value="'+esc(po.paypal||'')+'"></label><p class="af-err" aria-live="polite"></p><button type="submit" class="btn btn-dark">'+esc(tr('Save payout details'))+'</button></form></div>'
+      +(s.payable>0?'<div class="app-card af-inv"><div><h3>'+esc(tr('Invest instead of withdrawing'))+'</h3><p class="af-note">'+esc(tr('Put your payable commission into your FTM investment instead of a USDT payout. It is added to your Investment page at once.'))+'</p></div><button type="button" class="btn btn-gold" id="afInvest">'+esc(tr('Invest {} in FTM').replace('{}',money(s.payable,c)))+'</button><p class="af-err" id="afInvMsg" aria-live="polite"></p></div>':'')
+      +'<div class="app-card"><h3>'+esc(tr('USDT payout wallet'))+'</h3><p class="af-note" style="margin:0 0 12px">'+esc(tr('FTM pays every commission in USDT (cryptocurrency). Choose the network your wallet uses: a wrong network can lose the payment.'))+'</p><form class="af-form af-pay"><div class="af-two"><label>'+esc(tr('Network'))+'<select id="afNet">'+NETS.map(function(n){ return '<option value="'+n[0]+'"'+(po.network===n[0]?' selected':'')+'>'+esc(n[1])+'</option>'; }).join('')+'</select></label><label>'+esc(tr('USDT wallet address'))+'<input id="afAddr" autocomplete="off" spellcheck="false" value="'+esc(po.address||'')+'"></label></div>'
+        +'<p class="af-err" aria-live="polite"></p><button type="submit" class="btn btn-dark">'+esc(tr('Save my USDT wallet'))+'</button></form></div>'
       +rules()+'</div>';
-    var pm=v.querySelector('#afPm'), sync=function(){ v.querySelector('.af-bank').hidden=pm.value!=='bank'; v.querySelector('.af-pp').hidden=pm.value!=='paypal'; }; pm.addEventListener('change',sync); sync();
-    v.querySelector('.af-pay').addEventListener('submit',function(e){ e.preventDefault(); var er=this.querySelector('.af-err'), b=this.querySelector('button'); b.disabled=true; var g=function(id){ return v.querySelector('#'+id).value; };
-      api({action:'payout',method:pm.value,holder:g('afHolder'),iban:g('afIban'),bic:g('afBic'),paypal:g('afPp')},true).then(function(){ b.disabled=false; er.className='af-ok'; er.textContent=tr('Saved'); }).catch(function(){ b.disabled=false; er.className='af-err'; er.textContent=tr('Something went wrong. Please try again.'); }); });
+    v.querySelector('.af-pay').addEventListener('submit',function(e){ e.preventDefault(); var er=this.querySelector('.af-err'), b=this.querySelector('button'), net=v.querySelector('#afNet').value, ad=v.querySelector('#afAddr').value.trim();
+      if(!walletOk(net,ad)){ er.className='af-err'; er.textContent=tr('This is not a valid USDT address for the chosen network.'); return; }
+      b.disabled=true; api({action:'payout',network:net,address:ad},true).then(function(){ b.disabled=false; er.className='af-ok'; er.textContent=tr('Saved'); }).catch(function(x){ b.disabled=false; er.className='af-err'; er.textContent=tr(x&&x.code==='ADDRESS'?'This is not a valid USDT address for the chosen network.':'Something went wrong. Please try again.'); }); });
+    var ib=v.querySelector('#afInvest'); if(ib) ib.addEventListener('click',function(){ if(!confirm(tr('Invest your payable commission in FTM instead of a USDT payout?'))) return; var m=v.querySelector('#afInvMsg'); ib.disabled=true; m.className='af-err'; m.textContent='';
+      api({action:'invest'},true).then(function(r){ m.className='af-ok'; m.textContent=tr('Done. {} is now part of your FTM investment.').replace('{}',money(r.invested,r.currency)); setTimeout(F.affLoad,2500); })
+        .catch(function(){ ib.disabled=false; m.className='af-err'; m.textContent=tr('That did not work. Please try again.'); }); });
     v.querySelectorAll('[data-copy]').forEach(function(b){ b.addEventListener('click',function(){ var t=b.dataset.copy, ok=function(){ b.textContent=tr('Copied'); setTimeout(function(){ b.textContent=tr('Copy'); },1600); };
       try{ navigator.clipboard.writeText(t).then(ok,function(){ ok(); }); }catch(e){ ok(); } }); }); }
   F.affLoad=function(){ var v=document.getElementById('affView'); if(!v) return; if(!v.innerHTML) v.innerHTML='<div class="af-wrap">'+hero(null)+'</div>';
@@ -12000,7 +12025,7 @@ tick();setInterval(tick,5000);})();
   function openPublic(){ if(F.session&&F.session.email&&F.showView){ if(F.openArea&&document.getElementById('appView').hidden) F.openArea('auto'); F.showView('aff'); F.affLoad(); return; }
     var m=document.getElementById('afModal'); if(!m){ m=document.createElement('div'); m.id='afModal'; m.className='af-modal'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-labelledby','afMT'); document.body.appendChild(m);
       m.addEventListener('click',function(e){ if(e.target===m||e.target.closest('.af-x')) closePublic(); }); document.addEventListener('keydown',function(e){ if(e.key==='Escape') closePublic(); }); }
-    m.innerHTML='<div class="af-mcard"><button type="button" class="af-x" aria-label="'+esc(tr('Close'))+'">&times;</button><div class="af-wrap"><div class="af-mh"><h3 id="afMT">'+esc(tr('Apply to become an FTM affiliate'))+'</h3><div class="af-chips"><span><b>10%</b> '+esc(tr('of every payment, the first and every renewal'))+'</span><span><b>5%</b> '+esc(tr('off the first payment for your customers with your code'))+'</span><span><b>€50</b> '+esc(tr('paid every month, 30 days after each payment'))+'</span></div></div>'
+    m.innerHTML='<div class="af-mcard"><button type="button" class="af-x" aria-label="'+esc(tr('Close'))+'">&times;</button><div class="af-wrap"><div class="af-mh"><h3 id="afMT">'+esc(tr('Apply to become an FTM affiliate'))+'</h3><div class="af-chips"><span><b>10%</b> '+esc(tr('of every payment, the first and every renewal'))+'</span><span><b>5%</b> '+esc(tr('off the first payment for your customers with your code'))+'</span><span><b>USDT</b> '+esc(tr('paid in crypto every month from €50, 30 days after each payment'))+'</span></div></div>'
       +form('').replace('>'+esc(tr('Apply now'))+'</button>','>'+esc(tr('Apply and create my free account'))+'</button><p class="af-note">'+esc(tr('We create your free FTM account with this email. You get an email to set your password, and your Affiliate page is in your client area.'))+'</p>')
       +'<ul class="af-rules"><li>'+esc(tr('Never promise profits, income or guaranteed results.'))+'</li><li>'+esc(tr('Always say that you are an FTM affiliate.'))+'</li><li>'+esc(tr('No paid ads on the FTM name, and no buying through your own link.'))+'</li><li>'+esc(tr('FTM may end the partnership if these rules are broken.'))+'</li></ul></div></div>';
     m.hidden=false; lock(true); m.querySelector('.af-mcard').scrollTop=0; setTimeout(function(){ var n=m.querySelector('#afName'); if(n&&matchMedia('(hover:hover)').matches) n.focus(); },60);
@@ -12009,9 +12034,11 @@ tick();setInterval(tick,5000);})();
   F.affApply=openPublic;
   document.addEventListener('click',function(e){ var a=e.target.closest&&e.target.closest('a[href="#affiliate"],.js-aff-apply'); if(!a) return; e.preventDefault(); document.querySelectorAll('.um-btn[aria-expanded="true"]').forEach(function(x){ x.click(); }); openPublic(); });
   if(location.hash==='#affiliate') setTimeout(openPublic,700);
-  try{ var oq=new URLSearchParams(location.search); if(oq.get('open')==='aff'){ sessionStorage.setItem('ftm_open','aff'); oq.delete('open'); if(history.replaceState) history.replaceState(null,'',location.pathname+(oq.toString()?'?'+oq.toString():'')+location.hash); } }catch(e){}
+  try{ var oq=new URLSearchParams(location.search); if(oq.get('open')==='invest'){ sessionStorage.setItem('ftm_open','invest'); oq.delete('open'); if(history.replaceState) history.replaceState(null,'',location.pathname+(oq.toString()?'?'+oq.toString():'')+location.hash); } if(oq.get('open')==='aff'){ sessionStorage.setItem('ftm_open','aff'); oq.delete('open'); if(history.replaceState) history.replaceState(null,'',location.pathname+(oq.toString()?'?'+oq.toString():'')+location.hash); } }catch(e){}
   (function(){ var t=setInterval(function(){ var want=null; try{ want=sessionStorage.getItem('ftm_open'); }catch(e){} if(!want){ clearInterval(t); return; }
-      var app=document.getElementById('appView'); if(F.session&&F.session.email&&app&&!app.hidden&&F.showView){ try{ sessionStorage.removeItem('ftm_open'); }catch(e){} clearInterval(t);
+      var app=document.getElementById('appView'), inv=document.getElementById('invView'); if(want==='invest'&&F.session&&F.session.email&&F.openArea&&((app&&!app.hidden)||(inv&&!inv.hidden))){ try{ sessionStorage.removeItem('ftm_open'); }catch(e){} clearInterval(t); F.openArea('invest'); return; }
+      if(F.session&&F.session.email&&app&&!app.hidden&&F.showView){ try{ sessionStorage.removeItem('ftm_open'); }catch(e){} clearInterval(t);
+        if(want==='invest'){ if(F.openArea) F.openArea('invest'); return; }
         var go=function(){ var v=document.querySelector('#appView .app-view[data-view="aff"]'); if(v&&v.hidden) F.showView('aff'); var a=document.getElementById('affView'); if(a&&!a.querySelector('.af-state,.af-kpis,.af-form')) F.affLoad(); };
         go(); setTimeout(go,1200); setTimeout(go,3000); } },500);
     setTimeout(function(){ clearInterval(t); },10*60e3); })();

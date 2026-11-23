@@ -6,28 +6,32 @@ const BASE = process.argv[2] || 'http://localhost:8765';
 (async () => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'k'; process.env.SUPABASE_URL = 'https://x.supabase.co'; delete process.env.STRIPE_SECRET_KEY; delete process.env.STRIPE_API_KEY; delete process.env.ANTHROPIC_API_KEY;
   const files = {}, mails = [];
+  const engine = []; process.env.FTM_ENGINE_URL = 'https://engine.test'; process.env.FTM_WEBSITE_API_TOKEN = 't';
   const users = [{ id: 'old', email: 'has@pw.com', user_metadata: { password_set: true } }], links = [];
   const fake = { createClient: () => ({ auth: { getUser: async t => ({ data: { user: t === 'tokA' ? { id: 'a', email: 'aff@x.com' } : t === 'tokC' ? { id: 'c', email: 'cust@x.com' } : null } }),
       admin: { listUsers: async () => ({ data: { users } }), updateUserById: async (id, o) => { const u = users.find(x => x.id === id); if (u) u.user_metadata = o.user_metadata; return {}; },
         generateLink: async o => { links.push(o); let u = users.find(x => x.email === o.email); if (!u) { u = { id: 'u' + users.length, email: o.email, user_metadata: {} }; users.push(u); } return { data: { user: u, properties: { action_link: 'https://auth/link?to=' + encodeURIComponent(o.options.redirectTo) } } }; } } },
     storage: { from: () => ({ download: async p => files[p] ? { data: { text: async () => files[p] } } : { error: { message: 'nf' } }, upload: async (p, b) => { files[p] = b.toString(); return { error: null }; } }) } }) };
-  const orig = Module._load; Module._load = function (r, ...a) { if (r === '@supabase/supabase-js') return fake; if (r === 'stripe') return function () { return { webhooks: { constructEvent: () => ({}) } }; }; if (/_lib\/mail$/.test(r) || r === './mail') return { sendMail: async o => { mails.push(o); return 'test'; } }; return orig.call(this, r, ...a); };
+  const orig = Module._load; Module._load = function (r, ...a) { if (r === '@supabase/supabase-js') return fake; if (r === 'stripe') return function () { return { webhooks: { constructEvent: () => ({}) } }; }; if (/_lib\/mail$/.test(r) || r === './mail') return { sendMail: async o => { mails.push(o); return 'test'; } }; if (r === './engineClient') return { callEngine: async (pth, o) => { engine.push([pth, o]); return pth.endsWith('/investment') ? { ok: true, body: { contract: null, terms: { terms_version: '2026-11-06' } } } : { ok: true, body: { recorded: true } }; } }; return orig.call(this, r, ...a); };
   const A = require(path.join(__dirname, '../../api/_lib/affiliate.js')), H = require(path.join(__dirname, '../../api/v1/affiliate.js'));
   const call = (body, tok, method) => new Promise(res => { const r = { s: 0, setHeader() {}, status(c) { this.s = c; return this; }, json(j) { res([this.s, j]); } }; H({ method: method || 'POST', headers: tok ? { authorization: 'Bearer ' + tok } : {}, body, query: body }, r); });
   // apply
   let r = await call({ action: 'apply', name: 'Ada Lovelace', email: 'aff@x.com', country: 'Germany', channel: 'Instagram', audience: '1k-10k', agree: true });
-  ok(r[0] === 200 && r[1].status === 'pending' && r[1].code === 'ADA', 'apply: pending, code from the first name (' + JSON.stringify(r[1]) + ')');
+  ok(r[0] === 200 && r[1].status === 'approved' && r[1].code === 'ADA', 'apply: approved automatically, code from the first name (' + JSON.stringify(r[1]) + ')');
   ok(mails.some(m => m.to === 'aff@x.com' && /received your FTM affiliate application/.test(m.subject)) && mails.some(m => /New FTM affiliate application/.test(m.subject)), 'apply: the applicant and FTM support get an email');
   ok(r[1].account === 'created' && users.some(u => u.email === 'aff@x.com' && u.user_metadata.full_name === 'Ada Lovelace'), 'apply: a free FTM account is created with their name (' + r[1].account + ')');
-  { const m = mails.find(m => m.to === 'aff@x.com'); ok(/Create my password/.test(m.html) && /being|reviews every application/.test(m.html) && /setpw%3D1.*open%3Daff/.test(m.html), 'apply: one email says it is being reviewed and carries the create-password button that opens the Affiliate page'); }
+  { const m = mails.find(m => m.to === 'aff@x.com'); ok(/Create my password/.test(m.html) && /within 24 hours/.test(m.html) && !/working days/.test(m.html) && /setpw%3D1.*open%3Daff/.test(m.html), 'apply: the first email says "within 24 hours" and carries the create-password button that opens the Affiliate page'); }
+  { const m = mails.filter(m => m.to === 'aff@x.com')[1]; ok(m && /^Congratulations/.test(m.subject) && /Congratulations, Ada Lovelace!/.test(m.html) && /USDT/.test(m.html) && !/PayPal|bank transfer/.test(m.html), 'approval email: Congratulations, link and code, paid in USDT'); }
   r = await call({ action: 'apply', name: 'Has Pw', email: 'has@pw.com', agree: true });
   ok(r[1].account === 'existing' && /Open my affiliate page/.test(mails.filter(m => m.to === 'has@pw.com').pop().html), 'apply with an existing FTM login: no new account, the email says log in to the Affiliate page');
-  r = await call({ action: 'apply', name: 'Ada', email: 'aff@x.com', agree: true }); ok(r[1].already && r[1].status === 'pending', 'apply twice: no second application');
+  r = await call({ action: 'apply', name: 'Ada', email: 'aff@x.com', agree: true }); ok(r[1].already && r[1].status === 'approved', 'apply twice: no second application');
   r = await call({ action: 'apply', name: 'Bob', email: 'bob@x.com', agree: false }); ok(r[0] === 400 && r[1].error === 'AGREE', 'apply: the rules must be accepted');
-  // before approval the code does nothing
-  r = await call({ action: 'click', code: 'ADA' }); ok(r[1].valid === false, 'a code is not live before approval');
   const admin = fake.createClient();
-  ok((await A.attribute(admin, 'cust@x.com', 'ADA')).ok === false, 'no customers before approval');
+  r = await call({ code: 'ADA' }, null, 'GET'); ok(r[1].valid === true, 'the code is live straight after applying');
+  { const rv = await A.revoke(admin, 'ADA', 'owner@ftm'); const g = await call({ code: 'ADA' }, null, 'GET');
+    ok(rv.ok && g[1].valid === false && (await A.attribute(admin, 'cust@x.com', 'ADA')).ok === false, 'staff Revoke: the code stops working and brings no new customers');
+    r = await call({ action: 'apply', name: 'Ada', email: 'aff@x.com', agree: true }); ok(r[1].already && r[1].status === 'revoked', 'a revoked affiliate cannot re-approve themselves by applying again');
+    ok((await A.restore(admin, 'ADA')).ok && (await call({ code: 'ADA' }, null, 'GET'))[1].valid === true, 'staff Restore: the code works again'); }
   // approve (no Stripe key here: the 5% code is reported, the programme still works)
   const ap = await A.approve(admin, 'ADA');
   ok(ap.ok && ap.aff.status === 'approved' && /\/\?ref=ADA$/.test(ap.link) && ap.aff.promoError === 'NO_STRIPE_KEY', 'approve: link ' + ap.link + ', Stripe code problem reported to staff');
@@ -68,13 +72,16 @@ const BASE = process.argv[2] || 'http://localhost:8765';
   ok(r[1].list.every(l => /^cu•••@x\.com$/.test(l.customer)), 'customers are shown masked');
   r = await call({ action: 'me' }, 'tokC'); ok(r[0] === 200 && r[1].aff === null, 'a member who is not an affiliate sees the application');
   r = await call({ action: 'me' }, null); ok(r[0] === 401, 'the affiliate page needs a login');
-  r = await call({ action: 'payout', method: 'bank', holder: 'Ada Lovelace', iban: 'de89 3704 0044 0532 0130 00', bic: 'cobadeffxxx' }, 'tokA'); ok(r[0] === 200 && r[1].payout.iban === 'DE89 3704 0044 0532 0130 00', 'payout details are saved');
+  r = await call({ action: 'payout', network: 'TRC20', address: '0x12' }, 'tokA'); ok(r[0] === 400 && r[1].error === 'ADDRESS', 'a wrong USDT address for the network is refused');
+  r = await call({ action: 'payout', network: 'TRC20', address: 'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE' }, 'tokA'); ok(r[0] === 200 && r[1].payout.method === 'usdt' && r[1].payout.network === 'TRC20', 'the USDT payout wallet is saved');
+  r = await call({ action: 'wallet' }, 'tokA'); ok(r[1].wallet && r[1].wallet.address === 'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE', 'the same wallet is used for every FTM payment to this member');
   r = await call({ action: 'payout', method: 'paypal', paypal: 'x@y.com' }, 'tokC'); ok(r[0] === 400, 'only affiliates save payout details');
   // staff payout
   const L1 = await A.staffList(admin), ada = L1.affiliates.find(a => a.code === 'ADA');
-  ok(ada.payable === 49.9 && ada.pending === 49.9 && ada.payout && ada.payout.method === 'bank', 'staff see what is owed and where to pay it');
-  const mp = await A.markPaid(admin, 'ADA', 'owner@ftm'); ok(mp.ok && mp.paid === 49.9 && mp.n === 1, 'mark paid pays everything payable');
+  ok(ada.payable === 49.9 && ada.pending === 49.9 && ada.payout && ada.payout.method === 'usdt' && ada.payout.address, 'staff see what is owed and the USDT wallet to pay it to');
+  const mp = await A.markPaid(admin, 'ADA', 'owner@ftm', '0xabc123'); ok(mp.ok && mp.paid === 49.9 && mp.n === 1, 'mark paid pays everything payable');
   ok((await A.markPaid(admin, 'ADA')).error === 'NOTHING_PAYABLE', 'nothing is paid twice');
+  ok(JSON.parse(files['aff/commissions.json']).list.find(x => x.id === 'in_1').tx === '0xabc123', 'the USDT transaction hash is kept with the payout');
   r = await call({ action: 'me' }, 'tokA'); ok(r[1].stats.paid === 49.9 && r[1].stats.payable === 0 && r[1].list.some(l => l.status === 'paid'), 'the affiliate sees the payout');
   // Master affiliate (owner 23 Nov 2026): 20% from the 10th paying customer, or set by staff
   let paying = new Set(JSON.parse(files['aff/commissions.json']).list.filter(r => r.code === 'ADA').map(r => r.customer)).size, last;
@@ -95,6 +102,16 @@ const BASE = process.argv[2] || 'http://localhost:8765';
   ok((await A.setMaster(admin, 'NOPE', true)).ok === false, 'only approved affiliates can become master');
   { const I2 = JSON.parse(files['aff/index.json']); I2.affs.ADA.master = false; files['aff/index.json'] = JSON.stringify(I2);
     await A.staffList(admin); ok(JSON.parse(files['aff/index.json']).affs.ADA.master === true, 'an affiliate who already has 10 paying customers becomes master automatically (catch-up)'); }
+  // invest instead of withdrawing
+  x = await W._affiliatePayment(ev('invoice.paid', { id: 'in_old2', amount_paid: 30000, currency: 'eur', customer_email: 'm2@x.com', created: Math.floor(Date.now() / 1000) - 45 * 86400 }));
+  r = await call({ action: 'me' }, 'tokA'); const pay0 = r[1].stats.payable;
+  r = await call({ action: 'invest' }, 'tokA');
+  ok(r[0] === 200 && r[1].invested === pay0 && pay0 > 0, 'Invest instead of withdrawing moves everything payable (' + pay0 + ') into the FTM investment');
+  ok(engine.some(e => /investment\/contracts$/.test(e[0]) && e[1].body.amount === pay0.toFixed(2) && e[1].authEmail === 'aff@x.com'), 'the engine records it as the affiliate\'s own investment');
+  r = await call({ action: 'me' }, 'tokA'); ok(r[1].stats.payable === 0 && r[1].stats.invested === pay0 && r[1].list.some(l => l.status === 'invested'), 'the affiliate page shows it as invested, nothing left to pay');
+  ok(mails.some(m => m.to === 'aff@x.com' && /invested in FTM/.test(m.subject)), 'the affiliate gets an email confirming the investment');
+  r = await call({ action: 'invest' }, 'tokA'); ok(r[0] === 400 && r[1].error === 'NOTHING_PAYABLE', 'nothing is invested twice');
+  r = await call({ action: 'withdraw_note', amount: 120, network: 'ERC20', address: '0x' + 'a'.repeat(40) }, 'tokC'); ok(r[0] === 200 && mails.some(m => /USDT/.test(m.subject) && /0xaaaa/.test(m.html)), 'investor withdrawal: the USDT wallet is saved and FTM support is told where to pay');
   // browser
   let pw; try { pw = require('playwright'); } catch (e) { pw = require('/opt/node-tools/node_modules/playwright'); }
   const b = await pw.chromium.launch();
@@ -129,6 +146,8 @@ const BASE = process.argv[2] || 'http://localhost:8765';
       return { link: (V.querySelector('.af-copy code') || {}).textContent, kpis: [...V.querySelectorAll('.af-kpis b')].map(b => b.textContent), rows: V.querySelectorAll('.af-tbl tbody tr').length, st: [...V.querySelectorAll('.af-st')].map(s => s.textContent), pay: !!V.querySelector('.af-pay'), over }; });
     ok(v.link === 'https://www.ftmwealthnation.com/?ref=ADA' && v.kpis[0] === '12' && v.kpis[1] === '3' && v.rows === 2 && v.st.join() === 'Pending,Payable' && v.pay, '[' + label + '] affiliate page: link, code, figures, commissions, payout form');
     ok(!v.over.length, '[' + label + '] affiliate page fits the screen ' + JSON.stringify(v.over));
+    const u = await p.evaluate(() => { const V = document.getElementById('affView'); return { inv: !!V.querySelector('#afInvest'), invTxt: (V.querySelector('#afInvest') || {}).textContent || '', net: [...V.querySelectorAll('#afNet option')].map(o => o.value).join(','), noBank: !/IBAN|PayPal/.test(V.textContent) }; });
+    ok(u.inv && /Invest/.test(u.invTxt) && u.net === 'TRC20,ERC20,BEP20,SOL,POLYGON' && u.noBank, '[' + label + '] affiliate page: Invest in FTM button and USDT wallet (no bank or PayPal)');
     const pg = await p.evaluate(() => { const c = document.querySelector('#affView .af-prog'); return c ? c.textContent : ''; });
     ok(/2 of 10 paying customers/.test(pg) && /20%/.test(pg), '[' + label + '] progress to Master affiliate: ' + pg.slice(0, 80));
     await p.unroute('**/api/v1/affiliate'); await p.route('**/api/v1/affiliate', rt => rt.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, aff: { code: 'ADA', status: 'approved', master: true, rate: 20, link: 'https://www.ftmwealthnation.com/?ref=ADA', payout: null }, stats: { clicks: 40, signups: 14, paying: 11, pending: 0, payable: 0, paid: 0, currency: 'EUR' }, list: [] }) }));

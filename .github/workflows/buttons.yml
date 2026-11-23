@@ -36,6 +36,7 @@ jobs:
           node .github/tests/month-popup-card.js http://localhost:8765
           node .github/tests/positions-live.js http://localhost:8765
           node .github/tests/affiliate-apply-path.js http://localhost:8765
+          node .github/tests/staff-dot.js http://localhost:8765
           node .github/tests/market-links.js http://localhost:8765
           node .github/tests/community-api.js
           node .github/tests/leaderboard-community.js

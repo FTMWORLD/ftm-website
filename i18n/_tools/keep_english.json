@@ -145,5 +145,10 @@
  "JPMorgan",
  "Meta",
  "TSMC",
- "Tesla"
+ "Tesla",
+ "TRON (TRC-20)",
+ "Ethereum (ERC-20)",
+ "BNB Smart Chain (BEP-20)",
+ "Solana",
+ "Polygon"
 ]

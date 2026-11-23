@@ -5,7 +5,9 @@
    - Commission: 10% of every subscription payment that customer makes (first payment and every renewal), never on investments.
    - Master affiliate (owner 23 Nov 2026): 20% instead of 10%. Automatic when 10 different customers have paid through the affiliate
      (the 10th customer's payment is already at 20%), or set by staff in the staff console. Earlier commissions keep their rate.
-   - A commission becomes payable 30 days after the payment; staff pay monthly (bank transfer or PayPal), minimum 50 EUR.
+   - A commission becomes payable 30 days after the payment; staff pay monthly in USDT (owner 23 Nov 2026: every FTM payment is crypto), minimum 50 EUR.
+   - Approval is automatic right after applying (owner 23 Nov 2026); staff can still reject or revoke, and restore.
+   - Instead of a payout, the affiliate can move what is payable into their FTM investment (engine contract/deposit).
    Storage (private bucket, api/_lib/push.js): aff/index.json, aff/customers.json, aff/commissions.json, aff/clicks.json */
 const P = require('./push');
 
@@ -73,6 +75,16 @@ async function retryPromo(admin, code) {
   if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_FOUND' };
   if (!a.promoId) { const s = await stripePromo(code); if (s.id) { a.promoId = s.id; a.promoError = undefined; } else a.promoError = s.error; await P.write(admin, IDX, I); }
   return { ok: !a.promoError, promoError: a.promoError || null };
+}
+async function revoke(admin, code, by) {
+  code = normCode(code); const I = await idx(admin), a = I.affs[code];
+  if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_FOUND' };
+  a.status = 'revoked'; a.revoked = new Date().toISOString(); a.revokedBy = by || null; await P.write(admin, IDX, I); return { ok: true, aff: a };
+}
+async function restore(admin, code) {
+  code = normCode(code); const I = await idx(admin), a = I.affs[code];
+  if (!a || (a.status !== 'revoked' && a.status !== 'rejected')) return { ok: false, error: 'NOT_FOUND' };
+  a.status = 'approved'; a.revoked = undefined; a.rejected = undefined; await P.write(admin, IDX, I); return { ok: true, aff: a };
 }
 async function reject(admin, code) {
   code = normCode(code); const I = await idx(admin), a = I.affs[code];
@@ -159,37 +171,64 @@ async function summary(admin, email) {
   await catchUp(admin, I, L);
   out.aff.master = !!a.master; out.aff.masterAt = a.masterAt || null; out.aff.rate = rateOf(a) * 100;
   const mine = ((L && L.list) || []).filter(r => r.code === a.code).sort((x, y) => y.at.localeCompare(x.at)), now = Date.now();
-  const sum = s => Math.round(mine.filter(r => statusOf(r, now) === s).reduce((t, r) => t + r.commission, 0) * 100) / 100;
+  const sum = s => Math.round(mine.filter(r => statusOf(r, now) === s && !(s === 'paid' && r.paidHow === 'invested')).reduce((t, r) => t + r.commission, 0) * 100) / 100;
   const custs = Object.keys(C || {}).filter(e => C[e].code === a.code), paying = new Set(mine.map(r => r.customer));
   out.aff.link = linkOf(a.code);
   out.stats = { clicks: (K && K[a.code] && K[a.code].n) || 0, signups: custs.length, paying: paying.size, pending: sum('pending'), payable: sum('payable'), paid: sum('paid'),
     total: Math.round(mine.reduce((t, r) => t + r.commission, 0) * 100) / 100, currency: (mine[0] && mine[0].currency) || 'EUR' };
-  out.list = mine.slice(0, 200).map(r => ({ at: r.at, customer: mask(r.customer), amount: r.amount, commission: r.commission, rate: r.rate || RATE * 100, currency: r.currency, status: statusOf(r, now), payable: r.payable, paidOut: r.paidOut || null }));
+  out.stats.invested = Math.round(mine.filter(r => r.paidHow === 'invested').reduce((t, r) => t + r.commission, 0) * 100) / 100;
+  out.list = mine.slice(0, 200).map(r => ({ at: r.at, customer: mask(r.customer), amount: r.amount, commission: r.commission, rate: r.rate || RATE * 100, currency: r.currency, status: r.paidHow === 'invested' ? 'invested' : statusOf(r, now), payable: r.payable, paidOut: r.paidOut || null, tx: r.tx || null }));
   return out;
 }
 async function setPayout(admin, email, b) {
   const I = await idx(admin), a = byEmail(I, email);
   if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_AFFILIATE' };
-  const method = b.method === 'paypal' ? 'paypal' : 'bank';
-  a.payout = { method, holder: clean(b.holder, 80), iban: method === 'bank' ? clean(b.iban, 40).toUpperCase() : '', bic: method === 'bank' ? clean(b.bic, 15).toUpperCase() : '', paypal: method === 'paypal' ? normEmail(b.paypal).slice(0, 120) : '', at: new Date().toISOString() };
+  const W = require('./wallet'), w = await W.set(admin, email, b.network, b.address);
+  if (!w.ok) return w;
+  a.payout = { method: 'usdt', network: w.wallet.network, address: w.wallet.address, at: w.wallet.at };
   await P.write(admin, IDX, I); return { ok: true, payout: a.payout };
+}
+/* Invest instead of withdrawing: everything payable now goes into the affiliate's FTM investment (engine contract or
+   deposit, the same calls as a paid investment), and those commissions are marked as invested. */
+async function invest(admin, user) {
+  const I = await idx(admin), a = byEmail(I, user.email);
+  if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_AFFILIATE' };
+  const L = await P.read(admin, COM, { list: [] }) || { list: [] }, now = Date.now();
+  const rows = (L.list || []).filter(r => r.code === a.code && statusOf(r, now) === 'payable');
+  const total = Math.round(rows.reduce((t, r) => t + r.commission, 0) * 100) / 100;
+  if (!(total > 0)) return { ok: false, error: 'NOTHING_PAYABLE' };
+  if (!process.env.FTM_ENGINE_URL || !process.env.FTM_WEBSITE_API_TOKEN) return { ok: false, error: 'ENGINE_UNAVAILABLE' };
+  const { callEngine } = require('./engineClient'), who = { authSubject: user.id, authEmail: user.email };
+  const h = require('crypto').createHash('sha256').update('ftm-aff-invest:' + rows.map(r => r.id).sort().join(',')).digest('hex');
+  const client_request_id = h.slice(0, 8) + '-' + h.slice(8, 12) + '-4' + h.slice(13, 16) + '-a' + h.slice(17, 20) + '-' + h.slice(20, 32), amount = total.toFixed(2);
+  const cur = await callEngine('/api/v1/customer/investment', Object.assign({ method: 'GET' }, who));
+  const c = cur.ok && cur.body && cur.body.contract, open = c && (c.status === 'PENDING_FUNDING' || c.status === 'ACTIVE');
+  const r = open ? await callEngine('/api/v1/customer/investment/deposits', Object.assign({ method: 'POST', body: { amount, client_request_id } }, who))
+    : await callEngine('/api/v1/customer/investment/contracts', Object.assign({ method: 'POST', body: { amount, terms_version: (cur.body && cur.body.terms && cur.body.terms.terms_version) || '2026-11-06', client_request_id } }, who));
+  if (!r.ok) return { ok: false, error: (r.body && r.body.error) || 'ENGINE_REFUSED', message: (r.body && r.body.message) || null };
+  const t = new Date().toISOString();
+  rows.forEach(x => { x.paidOut = t; x.paidHow = 'invested'; x.investRef = client_request_id; });
+  await P.write(admin, COM, L);
+  try { await require('./affMail').invested(a, total, (rows[0] && rows[0].currency) || 'EUR'); } catch (e) { console.error('aff invest mail', e.message); }
+  return { ok: true, invested: total, n: rows.length, currency: (rows[0] && rows[0].currency) || 'EUR' };
 }
 
 /* Staff: every affiliate with what is owed; markPaid pays out everything payable for one affiliate. */
 async function staffList(admin) {
   const [I, L, C, K] = await Promise.all([idx(admin), P.read(admin, COM, { list: [] }), P.read(admin, CUS, {}), P.read(admin, CLK, {})]), now = Date.now();
   await catchUp(admin, I, L);
-  const rows = Object.values(I.affs).map(a => { const mine = ((L && L.list) || []).filter(r => r.code === a.code), s = st => Math.round(mine.filter(r => statusOf(r, now) === st).reduce((t, r) => t + r.commission, 0) * 100) / 100;
+  const rows = Object.values(I.affs).map(a => { const mine = ((L && L.list) || []).filter(r => r.code === a.code), s = st => Math.round(mine.filter(r => st === 'invested' ? r.paidHow === 'invested' : statusOf(r, now) === st && !(st === 'paid' && r.paidHow === 'invested')).reduce((t, r) => t + r.commission, 0) * 100) / 100;
     return { code: a.code, name: a.name, email: a.email, country: a.country, channel: a.channel, audience: a.audience, message: a.message, status: a.status, applied: a.applied, approved: a.approved || null, promoError: a.promoError || null,
-      payout: a.payout || null, master: !!a.master, masterBy: a.masterBy || null, masterAt: a.masterAt || null, rate: rateOf(a) * 100, paying: payingOf(L, a.code), clicks: (K && K[a.code] && K[a.code].n) || 0, signups: Object.keys(C || {}).filter(e => C[e].code === a.code).length, pending: s('pending'), payable: s('payable'), paid: s('paid') }; });
+      payout: a.payout || null, master: !!a.master, masterBy: a.masterBy || null, masterAt: a.masterAt || null, rate: rateOf(a) * 100, paying: payingOf(L, a.code), clicks: (K && K[a.code] && K[a.code].n) || 0, signups: Object.keys(C || {}).filter(e => C[e].code === a.code).length, pending: s('pending'), payable: s('payable'), paid: s('paid'), invested: s('invested'), revoked: a.revoked || null }; });
   rows.sort((x, y) => (x.status === 'pending' ? 0 : 1) - (y.status === 'pending' ? 0 : 1) || String(y.applied).localeCompare(String(x.applied)));
   return { ok: true, affiliates: rows, minPayout: MIN_PAYOUT, masterAt: MASTER_AT, rate: RATE * 100, masterRate: MASTER_RATE * 100 };
 }
-async function markPaid(admin, code, by) {
+async function markPaid(admin, code, by, tx) {
   code = normCode(code); const L = await P.read(admin, COM, { list: [] }) || { list: [] }, now = Date.now(), t = new Date().toISOString(); let total = 0, n = 0;
-  (L.list || []).forEach(r => { if (r.code === code && statusOf(r, now) === 'payable') { r.paidOut = t; r.paidBy = by || null; total += r.commission; n++; } });
+  tx = clean(tx, 120);
+  (L.list || []).forEach(r => { if (r.code === code && statusOf(r, now) === 'payable') { r.paidOut = t; r.paidBy = by || null; r.paidHow = 'usdt'; if (tx) r.tx = tx; total += r.commission; n++; } });
   if (!n) return { ok: false, error: 'NOTHING_PAYABLE' };
   await P.write(admin, COM, L); return { ok: true, paid: Math.round(total * 100) / 100, n };
 }
 
-module.exports = { RATE, MASTER_RATE, MASTER_AT, rateOf, setMaster, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, retryPromo, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };
+module.exports = { RATE, MASTER_RATE, MASTER_AT, rateOf, setMaster, revoke, restore, invest, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, retryPromo, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };
