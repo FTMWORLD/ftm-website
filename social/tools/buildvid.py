@@ -48,9 +48,17 @@ def clean_own(a, sr):
     if len(on): a = a[max(0, on[0] - 6) * hop:min(len(a), (on[-1] + 7) * hop)].copy()
     f = min(int(.025 * sr), len(a) // 4); a[:f] *= np.linspace(0, 1, f) ** 2; a[-f:] *= np.linspace(1, 0, f) ** 2
     return a
+# owner 23 Nov: pronunciation check. Words with two pronunciations are printed with the sounds the voice will use;
+# a known wrong reading stops the build (reword the line, or PRON_OK=1 after listening).
+from kokoro_onnx.tokenizer import Tokenizer as _Tok
+_tk, _bad = _Tok(), []
+TRAPS = {'lives': 'laɪvz', 'close': 'kloʊs', 'closes': 'kloʊsɪz', 'lead': 'lɛd', 'wind': 'waɪnd', 'tear': 'tɛɹ', 'minute': 'maɪnuːt', 'wound': 'waʊnd', 'refuse': 'ɹɛfjuːs', 'object': 'ɑbdʒɛkt', 'present': 'pɹɛzənt', 'record': 'ɹɛkɚd', 'content': 'kɑntɛnt', 'live': 'laɪv', 'read': 'ɹiːd', 'row': 'ɹaʊ', 'bow': 'baʊ', 'use': 'juːs'}
 OWN = os.environ.get('OWN_VO')  # owner 22 Nov: folder of the owner's own recordings, one <scene id>.wav each
 for sid, vo in lines:
     txt = re.sub(r'\b([Ll])ive (your|the|life|well|it|a|more)\b', r'\1iv \2', vo)  # owner 22 Nov: verb 'live' = /lɪv/, not 'lyve'
+    # owner 23 Nov ("where Nvidia lives" was read with a long i): verbs the voice engine reads wrongly are respelled for the voice only
+    txt = re.sub(r'\b([A-Z][A-Za-z0-9]+|it|he|she|money|nobody|everyone|who|that) lives\b', r'\1 livs', txt)
+    txt = re.sub(r'\b([Cc])lose (the|a|your|it|all|every|positions|trades?|out)\b', r'\1loze \2', txt)
     txt = txt.replace('ftm wealth nation dot com', 'F T M wealth nation dot com').replace('FTM MACHINE', 'F T M Machine').replace('FTM', 'F T M')
     if OWN and os.path.exists(os.path.join(OWN, sid + '.wav')):
         a, sr = sf.read(os.path.join(OWN, sid + '.wav')); a = a if a.ndim == 1 else a.mean(1)
@@ -58,12 +66,19 @@ for sid, vo in lines:
         sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(max(.3, len(a) / sr - .2), 2))  # 0.6 s scene pad - 0.2 = a natural 0.4 s turn
         hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
+    for w in re.findall(r"[A-Za-z']+", txt):
+        if w.lower() in TRAPS:
+            ph = _tk.phonemize(txt, 'en-us')
+            print('PRONUNCIATION CHECK:', sid, '|', w, '|', ph)
+            if w.lower() in ('lives', 'close') and TRAPS[w.lower()] in ph.replace('ˈ', '').replace('ˌ', ''): _bad.append((sid, w, txt))
     voice = os.environ.get('NARRATOR', 'af_heart')  # NARRATOR=bm_george etc. for one narrator; couple videos: "HIM:" male, "HER:" female
     if txt.startswith('HIM:'): voice, txt = 'am_michael', txt[4:].strip()
     elif txt.startswith('HER:'): txt = txt[4:].strip()
     a, sr = k.create(txt, voice=voice, speed=float(os.environ.get('SPEED', '1.02')), lang='en-gb' if voice.startswith('b') else 'en-us'); sf.write(os.path.join(D, 'vo', sid + '.wav'), a, sr); durs.append(round(len(a) / sr, 2))
     hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
     m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]
+if _bad and not os.environ.get('PRON_OK'):
+    sys.exit('STOP: words the voice will read wrongly: ' + '; '.join('%s: %s in "%s"' % b for b in _bad) + ' -> reword the line (e.g. "home of Nvidia" instead of "where Nvidia lives").')
 json.dump(durs, open(os.path.join(D, 'vo', 'durs.json'), 'w')); json.dump(amp, open(os.path.join(D, 'vo', 'amp.json'), 'w'))
 env = dict(os.environ, NODE_PATH='/opt/node-tools/node_modules')
 if os.environ.get('TEST'):
