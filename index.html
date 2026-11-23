@@ -1166,6 +1166,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .pill-lock{background:#EEF2FF;color:var(--blue);font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;white-space:nowrap}
   .pill-pend{background:#FFF6DC;color:#8a6a00;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:99px;white-space:nowrap}
   .wd-avail{background:var(--ink);border-radius:16px;padding:18px 20px;margin-top:14px}
+  .app-form input.is-bad,.app-form select.is-bad,.af-form input.is-bad{border-color:#E5323E!important;background:#fff5f5!important;box-shadow:0 0 0 3px rgba(229,50,62,.18)!important}
+  .wd-msg{margin-top:10px;font-weight:600}.wd-msg.bad{color:#E5323E}.wd-msg.ok{color:#1f9d55}
   .wd-avail span{display:block;font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.65)}
   .wd-avail b{display:block;font-size:34px;color:var(--gold-light);letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:4px}
   .wd-notes{margin:10px 0 0;padding-left:18px;display:grid;gap:10px;font-size:14px;color:var(--text);line-height:1.5}
@@ -9382,29 +9384,33 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
     (function(){ var sec=document.querySelector('.iv-view[data-iv="withdraw"]'); if(!sec||!window.MutationObserver) return; var done=false;
       new MutationObserver(function(){ if(sec.hidden||done||!(F.auth&&F.auth.getAccessToken&&F.session)) return; done=true;
         F.auth.getAccessToken().then(function(tk){ return fetch('/api/v1/affiliate',{method:'POST',headers:{'content-type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({action:'wallet'})}); }).then(function(r){ return r.json(); }).then(function(j){ var w=j&&j.wallet; if(w&&!$('ivWAddr').value){ $('ivWNet').value=w.network; $('ivWAddr').value=w.address; } }).catch(function(){ done=false; }); }).observe(sec,{attributes:true,attributeFilter:['hidden']}); })();
+    ['ivWAmt','ivWAddr','ivWNet'].forEach(function(id){ var e=$(id); if(e) e.addEventListener('input',function(){ e.classList.remove('is-bad'); if(id==='ivWNet') $('ivWAddr').classList.remove('is-bad'); var mm=$('ivWMsg'); if(mm&&mm.classList.contains('bad')) mm.hidden=true; }); });
     $('ivWBtn').addEventListener('click',function(){
-      var btn0=this; if(!btn0._ok&&parseFloat($('ivWAmt').value)>0&&F.warnFirst){ F.warnFirst('withdraw',function(){ btn0._ok=true; btn0.click(); }); return; } btn0._ok=false;
-      var m=F.investMetrics(), msg=$('ivWMsg'), amt=parseFloat($('ivWAmt').value), btn=this;
-      msg.hidden=false;
-      if(!(amt>0)){ msg.textContent=t('Enter the amount you want to withdraw.'); return; }
-      if(!m.live && amt>m.available+0.001){ msg.textContent=m.available>0?t('You can withdraw up to {} right now.').replace('{}',eur(m.available,2)):(m.next?t('Your next allowance unlocks on {}.').replace('{}',fmt(m.next.eligibleOn)):t('Nothing can be withdrawn yet.')); return; }
+      var btn=this, m=F.investMetrics(), msg=$('ivWMsg'), amtEl=$('ivWAmt'), adEl=$('ivWAddr'), amt=parseFloat(amtEl.value), wNet=$('ivWNet').value, wAd=adEl.value.trim();
+      var say=function(text,kind){ msg.hidden=false; msg.className='hint wd-msg '+(kind||''); msg.textContent=text; try{ msg.scrollIntoView({block:'nearest',behavior:'smooth'}); }catch(e){} };
+      var bad=function(el,text){ [amtEl,adEl].forEach(function(e){ e.classList.remove('is-bad'); }); if(el){ el.classList.add('is-bad'); try{ el.focus({preventScroll:true}); }catch(e){} } say(text,'bad'); btn._ok=false; };
+      [amtEl,adEl].forEach(function(e){ e.classList.remove('is-bad'); });
+      if(!wAd) return bad(adEl,t('Enter your USDT wallet address.'));
+      if(!(F.walletOk&&F.walletOk(wNet,wAd))) return bad(adEl,t('This is not a valid USDT address for the chosen network.'));
+      if(!(amt>0)) return bad(amtEl,t('Enter the amount you want to withdraw.'));
+      if(!(m.available>0)) return bad(amtEl,t('Insufficient funds. Nothing can be withdrawn yet.')+(m.next&&m.next.eligibleOn?' '+t('Your next allowance unlocks on {}.').replace('{}',fmt(m.next.eligibleOn)):''));
+      if(amt>m.available+0.001) return bad(amtEl,t('Insufficient funds. You can withdraw up to {} right now.').replace('{}',eur(m.available,2)));
+      if(!btn._ok&&F.warnFirst){ F.warnFirst('withdraw',function(){ btn._ok=true; btn.click(); }); return; } btn._ok=false;
       if(m.live){
-        var row=m.rows.filter(function(r){return r.withdrawable+0.001>=amt;})[0] || m.rows.filter(function(r){return r.withdrawable>0;})[0] || m.rows.filter(function(r){return r.status==='ACTIVE';})[0] || m.rows[0];
-        if(!row){ msg.textContent=t('Nothing can be withdrawn yet.'); return; }
-        var wNet=$('ivWNet').value, wAd=$('ivWAddr').value.trim();
-        if(!(F.walletOk&&F.walletOk(wNet,wAd))){ msg.textContent=t('This is not a valid USDT address for the chosen network.'); return; }
-        btn.disabled=true; msg.textContent=t('Sending your request…');
+        var row=m.rows.filter(function(r){return r.withdrawable+0.001>=amt;})[0];
+        if(!row) return bad(amtEl,t('Insufficient funds. You can withdraw up to {} right now.').replace('{}',eur(Math.max.apply(null,m.rows.map(function(r){ return r.withdrawable||0; }).concat([0])),2)));
+        btn.disabled=true; say(t('Sending your request…'));
         var rid; try{ rid=crypto.randomUUID(); }catch(e){ rid='w'+Date.now(); }
         F.remote.requestInvestmentWithdrawal(row.id, amt, rid).then(function(){
           try{ F.auth.getAccessToken().then(function(tk){ fetch('/api/v1/affiliate',{method:'POST',headers:{'content-type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify({action:'withdraw_note',amount:amt,network:wNet,address:wAd})}).catch(function(){}); }); }catch(eW){}
-          btn.disabled=false; $('ivWAmt').value=''; msg.textContent=t('Request received. FTM confirms it and pays it to you.');
+          btn.disabled=false; amtEl.value=''; say(t('Request received. FTM confirms it and pays it to you.'),'ok');
           F.remote.fetchInvestments().then(function(list){ F.invest.live=list; F.invest.investments=list; F.renderInvest(); }).catch(function(){});
-        }).catch(function(e){ btn.disabled=false; msg.textContent=F.why?F.why(e,'Your request could not be sent. Please try again.'):t('Your request could not be sent. Please try again.'); });
+        }).catch(function(e){ btn.disabled=false; say(F.why?F.why(e,'Your request could not be sent. Please try again.'):t('Your request could not be sent. Please try again.'),'bad'); });
         return;
       }
       F.invest.withdrawals.push({t:Date.now(),amount:Math.round(amt*100)/100,status:t('Pending')});
-      $('ivWAmt').value='';
-      msg.textContent=t('Preview only. In your live client area this request goes to FTM.');
+      amtEl.value='';
+      say(t('Preview only. In your live client area this request goes to FTM.'),'ok');
       F.renderInvest();
     });
 
@@ -12007,7 +12013,9 @@ tick();setInterval(tick,5000);})();
         +'<p class="af-err" aria-live="polite"></p><button type="submit" class="btn btn-dark">'+esc(tr('Save my USDT wallet'))+'</button></form></div>'
       +rules()+'</div>';
     v.querySelector('.af-pay').addEventListener('submit',function(e){ e.preventDefault(); var er=this.querySelector('.af-err'), b=this.querySelector('button'), net=v.querySelector('#afNet').value, ad=v.querySelector('#afAddr').value.trim();
-      if(!walletOk(net,ad)){ er.className='af-err'; er.textContent=tr('This is not a valid USDT address for the chosen network.'); return; }
+      var adI=v.querySelector('#afAddr'); adI.classList.remove('is-bad');
+      if(!ad){ adI.classList.add('is-bad'); adI.focus(); er.className='af-err'; er.textContent=tr('Enter your USDT wallet address.'); return; }
+      if(!walletOk(net,ad)){ adI.classList.add('is-bad'); adI.focus(); er.className='af-err'; er.textContent=tr('This is not a valid USDT address for the chosen network.'); return; }
       b.disabled=true; api({action:'payout',network:net,address:ad},true).then(function(){ b.disabled=false; er.className='af-ok'; er.textContent=tr('Saved'); }).catch(function(x){ b.disabled=false; er.className='af-err'; er.textContent=tr(x&&x.code==='ADDRESS'?'This is not a valid USDT address for the chosen network.':'Something went wrong. Please try again.'); }); });
     var ib=v.querySelector('#afInvest'); if(ib) ib.addEventListener('click',function(){ if(!confirm(tr('Invest your payable commission in FTM instead of a USDT payout?'))) return; var m=v.querySelector('#afInvMsg'); ib.disabled=true; m.className='af-err'; m.textContent='';
       api({action:'invest'},true).then(function(r){ m.className='af-ok'; m.textContent=tr('Done. {} is now part of your FTM investment.').replace('{}',money(r.invested,r.currency)); setTimeout(F.affLoad,2500); })

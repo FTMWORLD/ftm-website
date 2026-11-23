@@ -310,5 +310,9 @@
  {
   "date": "2026-11-23",
   "text": "Affiliates can tap \"Invest in FTM\" to put their payable commission straight into their FTM investment instead of a payout."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "Investment withdrawals: a missing or wrong USDT address or amount is marked in red, and a request above what is available says \"Insufficient funds\" before anything is sent."
  }
 ]
