@@ -1,5 +1,6 @@
 """Turns result slides into a 9:16 video with FTM's own vibrant finance music (no third-party music, so no copyright claims).
-python3 social/tools/slidevideo.py out.mp4 slide1.jpg slide2.jpg ...   (each slide 5 s, slow zoom, soft crossfade)"""
+python3 social/tools/slidevideo.py out.mp4 slide1.jpg slide2.jpg ...   (each slide 5 s, slow zoom, soft crossfade)
+Owner 23 Nov: the one result video carries the red "Tap our name for the link" badge (TAP=0 turns it off), centred in the top band."""
 import sys, subprocess, wave, numpy as np, os, tempfile
 out, slides = sys.argv[1], sys.argv[2:]
 per, fade, sr = float(os.environ.get('PER', 5)), 0.6, 48000
@@ -35,5 +36,17 @@ L, R = finance_bed(tot, cuts, sr)
 wav = os.path.join(tmp, 'm.wav')
 st = np.empty(2 * len(L)); st[0::2], st[1::2] = L, R
 o = wave.open(wav, 'w'); o.setnchannels(2); o.setsampwidth(2); o.setframerate(sr); o.writeframes((np.clip(st, -1, 1) * 32767).astype(np.int16).tobytes()); o.close()
+if os.environ.get('TAP', '1') != '0':
+    from PIL import Image, ImageDraw, ImageFont
+    S2 = 2; fnt = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf' if os.path.exists('/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf') else '/usr/share/fonts/opentype/inter/InterDisplay-Medium.otf', 34 * S2)
+    txt = os.environ.get('TAPTEXT', 'Tap our name for the link'); tw = int(fnt.getlength(txt)); H = 74 * S2; W = tw + 112 * S2
+    im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([0, 0, W - 1, H - 1], radius=H // 2, fill=(229, 50, 62, 240))
+    ax, ay = 30 * S2, 19 * S2; d.line([(ax + 34 * S2, ay + 36 * S2), (ax + 4 * S2, ay + 6 * S2)], fill='white', width=6 * S2); d.line([(ax + 4 * S2, ay + 28 * S2), (ax + 4 * S2, ay + 4 * S2), (ax + 28 * S2, ay + 4 * S2)], fill='white', width=6 * S2, joint='curve')
+    d.text((86 * S2, H // 2), txt, font=fnt, fill='white', anchor='lm')
+    im = im.resize((W // S2, H // S2), Image.LANCZOS); tapf = os.path.join(tmp, 'tap.png'); im.save(tapf)
+    v2 = os.path.join(tmp, 'vt.mp4')
+    subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', vid, '-loop', '1', '-i', tapf, '-filter_complex', "[1]format=rgba,fade=in:st=0.3:d=0.4:alpha=1[t];[0][t]overlay=(W-w)/2:150:shortest=1,format=yuv420p", '-c:v', 'libx264', '-preset', 'medium', '-crf', '20', v2], check=True)
+    vid = v2
 subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', vid, '-i', wav, '-filter_complex', '[1]loudnorm=I=-14:TP=-1.5:LRA=7[a]', '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-ac', '2', '-shortest', '-movflags', '+faststart', out], check=True)
 print('ok', out, round(tot, 1))

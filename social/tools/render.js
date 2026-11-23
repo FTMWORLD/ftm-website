@@ -9,6 +9,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const [, , kind, raw, outDir, nameArg] = process.argv;
 const D = JSON.parse(raw);
+if (D.floating && !(D.floating.pct > 0)) D.floating = null; // owner 23 Nov: open trades are shown only when they are in profit
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

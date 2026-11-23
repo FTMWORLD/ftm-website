@@ -26,5 +26,6 @@ L = t.get('last24') or {}
 if L.get('n') == len(R) and L.get('pct') is not None: f = 1 + L['pct'] / 100   # the site's shared seg (same formula as every FTM view) decides the figure
 out = {'ok': True, 'date': T.isoformat(), 'when': 'last24', 'range': '%s 18:00 – %s 18:00' % (wd(Y), wd(T)), 'pct': round((f - 1) * 100, 2) if R else 0,
        'trades': len(R), 'wins': sum(1 for r in R if r['pl'] > 0), 'losses': sum(1 for r in R if r['pl'] < 0), 'markets': sorted({r['s'] for r in R}),
-       'mtd': t.get('mtd', y.get('mtd')), 'balance': bal, 'rows': R, 'cur': t.get('cur') or y.get('cur'), 'floating': t.get('floating') or y.get('floating'), 'cal': t.get('cal') or y.get('cal')}
+       'mtd': t.get('mtd', y.get('mtd')), 'balance': bal, 'rows': R, 'cur': t.get('cur') or y.get('cur'), 'floating': (lambda F: F if F and (F.get('pct') or 0) > 0 else None)(t.get('floating') or y.get('floating')),  # owner 23 Nov: open trades only when in profit
+       'cal': t.get('cal') or y.get('cal')}
 print(json.dumps(out))

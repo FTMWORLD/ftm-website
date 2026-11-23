@@ -158,7 +158,7 @@ def night(d, j):
                'bigTone': 'up' if j['pct'] >= 0 else 'down', 'bigLabel': '%d trades · every one shown' % j['trades'],
                'title': (('Small wins add up. <b>%s so far: %s</b>' if 0 <= j['pct'] < 0.5 else '%s so far: <b>%s</b>') % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}  # owner 23 Nov: the words fit the day
     chips = cfg.pop('chips0', [])
-    if fl.get('n'):
+    if fl.get('n') and (fl.get('pct') or 0) > 0:  # owner 23 Nov: open trades only when in profit
         chips.append('Open trades: %s' % pc(fl.get('pct', 0)))  # owner 23 Nov: percentages only on social media
     chips.append('Swipe the post for every trade' if j.get('trades', 0) else 'Swipe the post for the numbers')
     chips = chips[:2]
