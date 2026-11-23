@@ -57,14 +57,14 @@ function day(w, h) {
   const markets = (D.markets || []).map(mk).filter((v, i, a) => a.indexOf(v) === i);
   const body = D.trades
     ? `<div class="big" style="font-size:${h > 1500 ? 230 : 200}px;color:${col}">${pc(D.pct)}</div>
-       <div class="sub">Result of ${D.when === 'yesterday' ? 'the day\'s' : 'today\'s'} closed trades</div>
+       <div class="sub">${D.when === 'last24' ? 'Result of the trades closed in the last 24 hours' : 'Result of ' + (D.when === 'yesterday' ? 'the day\'s' : 'today\'s') + ' closed trades'}</div>
        <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'};margin-top:18px">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}
        ${markets.length ? `<div class="mk">Markets: ${esc(markets.join(' · '))}</div>` : ''}`
     : `<div class="big" style="font-size:120px">No trades today</div><div class="sub">FTM MACHINE found no setup worth taking. Waiting is part of the plan.</div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'}">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}`;
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick">${D.when === 'yesterday' ? 'Yesterday' : 'Today'} on FTM · daily result</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y}</div>${body}</div>${FOOT}`;
+    <div class="kick">${D.when === 'last24' ? 'Last 24 hours on FTM' : (D.when === 'yesterday' ? 'Yesterday' : 'Today') + ' on FTM · daily result'}</div><div class="date">${D.when === 'last24' && D.range ? esc(D.range) : wd + ', ' + d + ' ' + MONTHS[m - 1] + ' ' + y}</div>${body}</div>${FOOT}`;
 }
 function trades(w, h, part, parts) {
   const R = (D.rows || []).slice().sort((a, b) => a.c - b.c), per = Math.ceil(R.length / parts), L = R.slice(part * per, (part + 1) * per);
@@ -81,9 +81,9 @@ function trades(w, h, part, parts) {
     <span><b style="font-size:.72em;padding:6px 14px;border-radius:99px;background:${/buy/i.test(r.d) ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${/buy/i.test(r.d) ? 'BUY' : 'SELL'}</b></span>
     <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(ALL.find(x => x === r) || r)}</span></div>`).join('');
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick" style="margin-top:40px">${D.when === 'yesterday' ? 'Yesterday' : 'Today'}'s trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
+    <div class="kick" style="margin-top:40px">${D.when === 'last24' ? 'Last 24 hours · trades' : (D.when === 'yesterday' ? 'Yesterday' : 'Today') + '\'s trades'} · ${part + 1} of ${parts}</div><div class="date">${D.when === 'last24' && D.range ? esc(D.range) : wd + ', ' + d + ' ' + MONTHS[m - 1] + ' ' + y} · Berlin time</div>
     <div style="margin-top:30px;display:grid;grid-template-columns:122px 1fr 100px 118px 210px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Time</span><span>Market</span><span>Lots</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
-    ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Day result</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
+    ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.when === 'last24' ? 'Last 24 hours' : 'Day result'}</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
 /* Losing days only: the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
