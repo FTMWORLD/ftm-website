@@ -103,18 +103,24 @@ async function run(admin, o) {
     }
     await P.write(admin, key, st);
   }
-  // Owner 21 Nov 2026: people who signed up but never clicked the email link get a reminder after 3 hours and once more after
-  // 3 days (a fresh link each time), then never again. Staff mailboxes excluded.
+  // Owner 21 Nov 2026: people who signed up but never clicked the email link get a reminder with a fresh link.
+  // Owner 23 Nov 2026: three reminders - after 3 hours (r1), 3 days (r2) and 7 days (r3, the last) - each in the person's
+  // language, saying how long it has been and what they are missing. Staff mailboxes excluded.
   let rem = 0;
   if (!o.only) {
-    const PE = require('./passwordEmail');
+    const PE = require('./passwordEmail'), Letter = require('./letter'); let mtd;
+    try { const y = new Date(now - DAY).toISOString().slice(0, 10), j = await (await fetch(SITE() + '/api/v1/community?dayresult=' + y)).json(); mtd = j && j.mtd; } catch (x) { mtd = null; }
     for (const u of (await allUsers(admin)).filter(x => x.email && !x.email_confirmed_at)) {
       if (Date.now() > deadline) { more = true; break; }
       const mail = String(u.email).toLowerCase(), age = now - Date.parse(u.created_at || 0); if (staff.indexOf(mail) !== -1 || !(age > 3 * 3600e3) || age > 10 * DAY) continue;
       const key = 'journey/u-' + P.midOf(u.id) + '.json', st = Object.assign({}, await P.read(admin, key, null) || {});
-      const step = !st.r1 ? 'r1' : (!st.r2 && age > 3 * DAY ? 'r2' : null); if (!step) continue;
-      let ok = !!o.dry; if (!o.dry) { try { await PE.sendPasswordEmail(admin, u.email, { free: true, reminder: true }); ok = true; } catch (x) { ok = false; } }
-      if (ok) { st[step] = new Date(now).toISOString(); rem++; await P.write(admin, key, st); }
+      const step = !st.r1 ? (age > 7 * DAY ? 'r3' : age > 3 * DAY ? 'r2' : 'r1') : !st.r2 && age > 3 * DAY ? (age > 7 * DAY ? 'r3' : 'r2') : !st.r3 && age > 7 * DAY ? 'r3' : null; if (!step) continue;
+      let lang = 'en'; try { lang = Letter.langOf(u, await P.getBox(admin, P.midOf(u.id)).catch(() => null)) || 'en'; } catch (x) { lang = 'en'; }
+      const W = PE.remindWords(step); let w = W;
+      if (lang !== 'en') { const ck = 'journey/i18n-' + lang + '-rem' + step + '.json', have = await P.read(admin, ck, null);
+        if (have && have.src === JSON.stringify(W)) w = have.w; else { try { w = await Letter.translate(W, lang); await P.write(admin, ck, { src: JSON.stringify(W), w }); } catch (x) { w = W; } } }
+      let ok = !!o.dry; if (!o.dry) { try { await PE.sendReminderEmail(admin, u.email, { step, words: w, lang, name: nameOf(u), mtd }); ok = true; } catch (x) { ok = false; } }
+      if (ok) { st[step] = new Date(now).toISOString(); if (step === 'r3') { st.r1 = st.r1 || st.r3; st.r2 = st.r2 || st.r3; } else if (step === 'r2') st.r1 = st.r1 || st.r2; rem++; await P.write(admin, key, st); }
     }
   }
   if (rem) log.push('confirm reminders: ' + rem + ' sent');

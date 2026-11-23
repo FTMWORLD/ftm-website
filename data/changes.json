@@ -266,5 +266,9 @@
  {
   "date": "2026-11-21",
   "text": "Buttons in rows of cards now line up exactly, and refreshing the page always starts at the top."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "If you signed up but have not activated your free account yet, we now remind you after 3 hours, 3 days and 7 days, in your language."
  }
 ]

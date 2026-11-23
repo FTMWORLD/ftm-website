@@ -169,4 +169,36 @@ async function sendResetEmail(admin, email, opts) {
     () => admin.auth.resetPasswordForEmail(email, { redirectTo: SITE() + '/' }));
 }
 
-module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, makeLink, html, shell, keep, NAVY };
+
+/* Owner 23 Nov 2026: reminders to people who signed up but never clicked the link: after 3 hours (r1), 3 days (r2) and
+   7 days (r3, the last one). Each says how long it has been and what they are missing. w = translated words (journeyMail). */
+const REMIND_WORDS = {
+  r1: { subject: 'Your free FTM account is waiting', lead: 'You started your free FTM account a few hours ago, but it is not active yet. One tap on the button below and it is ready.' },
+  r2: { subject: '3 days ago you started your free FTM account', lead: 'It has been 3 days since you started your free FTM account, and it is still waiting for you. It takes one tap to finish.' },
+  r3: { subject: '7 days on: your free FTM account is still waiting', lead: 'It has been 7 days since you started your free FTM account. It is still waiting for you, and this is the last reminder we will send.' },
+  all: { hello: 'Hello', hello_name: 'Hello {},', miss: 'What you are missing:', b1: "FTM's live account, with every trade shown: profit days and loss days.",
+    b2: "Yesterday's real result, every day at 6 p.m.", b3: 'The FTM community and leaderboard: meet other people running FTM MACHINE.',
+    b4: 'When you are ready: FTM MACHINE trades on your own account, with fixed rules and no emotions.', fig: 'This month so far on our live account: {}',
+    fig2: 'Our trust engine: 7 of 7 years profitable (2020 to 2026), every trade published.', free: 'It is free. No card needed.', btn: 'Activate my free account',
+    tip: 'Tip: so you never miss an FTM email, add no-reply@ftmwealthnation.com to your contacts or move this email to your main inbox.',
+    ignore: 'If you did not sign up for FTM, you can ignore this email.' }
+};
+function remindWords(step) { return Object.assign({}, REMIND_WORDS.all, REMIND_WORDS[step] || REMIND_WORDS.r1); }
+function remindHtml(w, o) {
+  const first = String(o.name || '').split(' ')[0], li = t => '<tr><td style="padding:0 10px 10px 0;vertical-align:top;color:#D4AF37;font-size:18px;">&#10003;</td><td style="padding:0 0 10px;font-size:16px;line-height:1.5;color:#333;">' + esc(t) + '</td></tr>';
+  const fig = o.mtd != null && o.mtd > 0 ? w.fig.replace('{}', '+' + (+o.mtd).toFixed(2) + '%') : w.fig2;
+  return shell(w.subject, '<div' + (o.rtl ? ' dir="rtl"' : '') + '>' + P(first ? esc(w.hello_name.replace('{}', first)) : esc(w.hello) + ',') + P(esc(w.lead))
+    + P('<b>' + esc(w.miss) + '</b>') + '<table cellpadding="0" cellspacing="0" style="margin:0 0 8px;">' + li(w.b1) + li(w.b2) + li(w.b3) + li(w.b4) + '</table>'
+    + P('<b style="color:#0b1640;">' + esc(fig) + '</b>') + P(esc(w.free)) + BTN(o.link, w.btn) + P(esc(w.tip), true) + P(esc(w.ignore), true) + '</div>');
+}
+async function sendReminderEmail(admin, email, o) {
+  o = o || {}; const w = o.words || remindWords(o.step);
+  const m = await makeLink(admin, email, true);
+  if (!m.link) throw new Error('no link from Supabase');
+  const redirectTo = SITE() + '/?setpw=1&free=1&e=' + encodeURIComponent(email);
+  const via = await sendOrFallback(admin, email, w.subject, remindHtml(w, { link: m.link, name: o.name, mtd: o.mtd, rtl: ['ar', 'he', 'fa', 'ur'].indexOf(o.lang) !== -1 }),
+    () => admin.auth.resetPasswordForEmail(email, { redirectTo }));
+  return { userId: m.userId, via };
+}
+
+module.exports = { sendPasswordEmail, sendLoginEmail, sendResetEmail, sendReminderEmail, remindWords, remindHtml, makeLink, html, shell, keep, NAVY };
