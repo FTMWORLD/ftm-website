@@ -66,7 +66,7 @@ body.th-paper .o,body.th-gold .o{background:#fff;color:#0b1640;border-color:#0b1
 <path d="M0 500 L120 450 L180 478 L300 380 L360 410 L480 300 L540 330 L660 220 L720 250 L860 120 L920 150 L1080 40" fill="none" stroke="#E3B62F" stroke-width="6" stroke-linejoin="round"/></g></svg>
 <div id="parts"></div>
 
-<div id="tap"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17 7 7M7 15V7h8"/></svg>${esc(D.tapText || 'Tap our name for the link')}</div>
+<div id="tap"${D.tap === false ? ' style="display:none"' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 17 7 7M7 15V7h8"/></svg>${esc(D.tapText || 'Tap our name for the link')}</div>
 <div id="col">
  <div id="logo"><span><svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
  ${D.kicker ? `<div id="kick" class="e"><i></i>${esc(D.kicker)}</div>` : ''}
@@ -77,7 +77,7 @@ body.th-paper .o,body.th-gold .o{background:#fff;color:#0b1640;border-color:#0b1
  ${(D.opts || []).length ? `<div id="opts">${D.opts.map((o, i) => `<div class="o e ${i ? 'dn' : 'up'}"><i>${'AB'[i] || ''}</i>${esc(o)}</div>`).join('')}</div>` : ''}
  ${D.src ? `<div id="src" class="e">${esc(D.src)}</div>` : ''}
  ${(D.chips || []).length ? `<div id="chips">${D.chips.map(c => `<div class="c e">${esc(c)}</div>`).join('')}</div>` : ''}
- <div id="cta" class="e"><div id="btn"><div id="ring"></div>${esc(D.cta || 'Start free today')}</div><div id="cs">${D.ctaSub || 'Link in our bio · <b>ftmwealthnation.com</b>'}</div></div>
+ <div id="cta" class="e"${D.cta === false ? ' style="display:none"' : ''}><div id="btn"><div id="ring"></div>${esc(D.cta || 'Start free today')}</div><div id="cs">${D.ctaSub || 'Link in our bio · <b>ftmwealthnation.com</b>'}</div></div>
 </div>
 <div id="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>
 <script>
@@ -103,7 +103,7 @@ window.R=function(t){
  inn(document.getElementById('bl'),1.1,t,30);inn(document.getElementById('title'),1.5,t,50);
  document.querySelectorAll('.c').forEach((c,i)=>inn(c,2.1+i*.25,t,40));
  document.querySelectorAll('.mf').forEach((c,i)=>inn(c,1.2+i*.7,t,40));document.querySelectorAll('.o').forEach((c,i)=>{inn(c,1.2+i*.3,t,40);if(t>2.4)c.style.transform='scale('+(1+.03*Math.sin((t+i)*4))+')'});inn(document.getElementById('src'),1.8,t,20);
- const cta=document.getElementById('cta');const ct=3.3;const cg=ease((t-ct)/.4),ck=back((t-ct)/.55);cta.style.height=(cta._h*cg)+'px';cta.style.marginTop=(cta._m*cg)+'px';cta.style.opacity=Math.min(1,Math.max(0,(t-ct)/.25));cta.style.transform='translateY('+((1-ck)*120)+'px)';
+ const cta=document.getElementById('cta');const ct=${+D.ctaAt || 3.3};const cg=ease((t-ct)/.4),ck=back((t-ct)/.55);cta.style.height=(cta._h*cg)+'px';cta.style.marginTop=(cta._m*cg)+'px';cta.style.opacity=Math.min(1,Math.max(0,(t-ct)/.25));cta.style.transform='translateY('+((1-ck)*120)+'px)';
  const btn=document.getElementById('btn');if(t>ct+.6)btn.style.transform='scale('+(1+.04*Math.sin((t-ct)*5))+')';
  const r=document.getElementById('ring'),rp=((t-ct)*1.1)%1;r.style.opacity=t>ct?(1-rp):0;r.style.transform='scale('+(1+rp*.25)+')';
  const tap=document.getElementById('tap');const tk=ease((t-ct-.4)/.4);tap.style.opacity=tk;tap.style.transform='translate('+(6*Math.sin(t*6))+'px,'+(-6*Math.abs(Math.sin(t*6))+(1-tk)*-30)+'px)';

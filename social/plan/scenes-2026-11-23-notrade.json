@@ -1,0 +1,53 @@
+[
+ {
+  "kicker": "Yesterday on FTM · no trades",
+  "hook": "Our worst day <b>this month.</b>",
+  "big": "−3.43%",
+  "bigTone": "down",
+  "bigLabel": "6 November, on the live account",
+  "title": "Three days later: <b>−3.38% again.</b>",
+  "theme": "night",
+  "cta": false,
+  "tap": false,
+  "seed": 3
+ },
+ {
+  "kicker": "What most people do next",
+  "hook": "Trade more. <b>Win it back.</b>",
+  "title": "That's how a bad day becomes <b>a blown account.</b>",
+  "chips": [
+   "Revenge trading",
+   "Overtrading",
+   "No stop"
+  ],
+  "theme": "paper",
+  "cta": false,
+  "tap": false,
+  "seed": 5
+ },
+ {
+  "kicker": "What FTM MACHINE did",
+  "hook": "Yesterday it made <b>0 trades.</b>",
+  "title": "No setup met the rules. <b>No trade beats a bad trade.</b>",
+  "chips": [
+   "Fixed rules",
+   "No feelings"
+  ],
+  "theme": "navy",
+  "cta": false,
+  "tap": false,
+  "seed": 7
+ },
+ {
+  "kicker": "Live account · November",
+  "hook": "7 days without <b>a single trade.</b>",
+  "big": "+10.45%",
+  "bigTone": "up",
+  "bigLabel": "November so far on FTM",
+  "title": "Every trade shown. <b>8 profit days, 7 loss days.</b>",
+  "theme": "gold",
+  "cta": "Start free · link in bio",
+  "ctaAt": 3.0,
+  "seed": 9
+ }
+]
