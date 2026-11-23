@@ -286,5 +286,13 @@
  {
   "date": "2026-11-23",
   "text": "Homepage markets: every Learn more now opens that market on the trust engine (Forex: USD/JPY, Stocks: US Tech 100, Commodities: Gold, Crypto: Bitcoin, Stock indices: HK50)."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "Client area: open positions refresh every 5 seconds, and a trade that opens or closes updates your closed trades, balance and statistics at once."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "Affiliates: Master affiliate earns 20% of every subscription payment. You become one automatically at 10 paying customers, and your Affiliate page shows your progress."
  }
 ]

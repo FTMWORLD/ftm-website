@@ -69,6 +69,25 @@ const BASE = process.argv[2] || 'http://localhost:8765';
   const mp = await A.markPaid(admin, 'ADA', 'owner@ftm'); ok(mp.ok && mp.paid === 49.9 && mp.n === 1, 'mark paid pays everything payable');
   ok((await A.markPaid(admin, 'ADA')).error === 'NOTHING_PAYABLE', 'nothing is paid twice');
   r = await call({ action: 'me' }, 'tokA'); ok(r[1].stats.paid === 49.9 && r[1].stats.payable === 0 && r[1].list.some(l => l.status === 'paid'), 'the affiliate sees the payout');
+  // Master affiliate (owner 23 Nov 2026): 20% from the 10th paying customer, or set by staff
+  let paying = new Set(JSON.parse(files['aff/commissions.json']).list.filter(r => r.code === 'ADA').map(r => r.customer)).size, last;
+  for (let k = 1; paying < 10; k++) { const em = 'm' + k + '@x.com'; await A.attribute(admin, em, 'ADA');
+    last = await W._affiliatePayment(ev('invoice.paid', { id: 'in_m' + k, amount_paid: 10000, currency: 'eur', customer_email: em })); paying++;
+    if (paying === 9) ok(last.row.commission === 10 && !last.promoted, '9 paying customers: still 10% (' + last.row.commission + ')'); }
+  ok(last.promoted && last.row.commission === 20 && last.row.rate === 20, 'the 10th paying customer makes the affiliate a Master affiliate, and that payment is already 20%');
+  ok(JSON.parse(files['aff/index.json']).affs.ADA.master === true && JSON.parse(files['aff/index.json']).affs.ADA.masterBy === 'auto', 'master is saved (automatic)');
+  ok(mails.some(m => m.to === 'aff@x.com' && /Master affiliate/.test(m.subject)) && mails.some(m => /New FTM Master affiliate/.test(m.subject)), 'the new Master affiliate and FTM support get an email');
+  x = await W._affiliatePayment(ev('invoice.paid', { id: 'in_m_ren', amount_paid: 10000, currency: 'eur', customer_email: 'm1@x.com', billing_reason: 'subscription_cycle' }));
+  ok(x.row.commission === 20, 'renewals of every customer now earn 20%');
+  ok(JSON.parse(files['aff/commissions.json']).list.find(r => r.id === 'in_1').commission === 49.9, 'earlier commissions keep their 10%');
+  r = await call({ action: 'me' }, 'tokA'); ok(r[1].aff.master === true && r[1].aff.rate === 20 && r[1].stats.paying >= 10, 'affiliate page says Master affiliate, 20%');
+  let sm = await A.setMaster(admin, 'ZED', true, 'owner@ftm'); ok(sm.ok && sm.master, 'staff can make any affiliate a Master affiliate');
+  x = await W._affiliatePayment(ev('invoice.paid', { id: 'in_z2', amount_paid: 10000, currency: 'eur', customer_email: 'coded@x.com' })); ok(x.row.code === 'ZED' && x.row.commission === 20, 'a staff-made Master affiliate earns 20% at once');
+  const zl = (await A.staffList(admin)).affiliates.find(a => a.code === 'ZED'); ok(zl.master && zl.rate === 20 && /^staff/.test(zl.masterBy), 'staff list shows master, rate and who set it');
+  sm = await A.setMaster(admin, 'ZED', false, 'owner@ftm'); x = await W._affiliatePayment(ev('invoice.paid', { id: 'in_z3', amount_paid: 10000, currency: 'eur', customer_email: 'coded@x.com' })); ok(x.row.commission === 10, 'staff can take master back: 10% again');
+  ok((await A.setMaster(admin, 'NOPE', true)).ok === false, 'only approved affiliates can become master');
+  { const I2 = JSON.parse(files['aff/index.json']); I2.affs.ADA.master = false; files['aff/index.json'] = JSON.stringify(I2);
+    await A.staffList(admin); ok(JSON.parse(files['aff/index.json']).affs.ADA.master === true, 'an affiliate who already has 10 paying customers becomes master automatically (catch-up)'); }
   // browser
   let pw; try { pw = require('playwright'); } catch (e) { pw = require('/opt/node-tools/node_modules/playwright'); }
   const b = await pw.chromium.launch();
@@ -103,6 +122,12 @@ const BASE = process.argv[2] || 'http://localhost:8765';
       return { link: (V.querySelector('.af-copy code') || {}).textContent, kpis: [...V.querySelectorAll('.af-kpis b')].map(b => b.textContent), rows: V.querySelectorAll('.af-tbl tbody tr').length, st: [...V.querySelectorAll('.af-st')].map(s => s.textContent), pay: !!V.querySelector('.af-pay'), over }; });
     ok(v.link === 'https://www.ftmwealthnation.com/?ref=ADA' && v.kpis[0] === '12' && v.kpis[1] === '3' && v.rows === 2 && v.st.join() === 'Pending,Payable' && v.pay, '[' + label + '] affiliate page: link, code, figures, commissions, payout form');
     ok(!v.over.length, '[' + label + '] affiliate page fits the screen ' + JSON.stringify(v.over));
+    const pg = await p.evaluate(() => { const c = document.querySelector('#affView .af-prog'); return c ? c.textContent : ''; });
+    ok(/2 of 10 paying customers/.test(pg) && /20%/.test(pg), '[' + label + '] progress to Master affiliate: ' + pg.slice(0, 80));
+    await p.unroute('**/api/v1/affiliate'); await p.route('**/api/v1/affiliate', rt => rt.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, aff: { code: 'ADA', status: 'approved', master: true, rate: 20, link: 'https://www.ftmwealthnation.com/?ref=ADA', payout: null }, stats: { clicks: 40, signups: 14, paying: 11, pending: 0, payable: 0, paid: 0, currency: 'EUR' }, list: [] }) }));
+    await p.evaluate(() => FTM.affLoad()); await p.waitForTimeout(500);
+    const mv = await p.evaluate(() => { const V = document.getElementById('affView'), W = document.documentElement.clientWidth; return { badge: !!V.querySelector('.af-mb'), pct: V.querySelector('.af-pts b').textContent, prog: !!V.querySelector('.af-prog'), txt: V.querySelector('.af-hero p').textContent, over: [...V.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width && r.right > W + 1; }).length }; });
+    ok(mv.badge && mv.pct === '20%' && !mv.prog && /20%/.test(mv.txt) && !mv.over, '[' + label + '] Master affiliate page: badge, 20%, no progress bar, fits the screen');
     ok(!errs.length, '[' + label + '] no script errors ' + errs.join(' | '));
     await p.close();
   }

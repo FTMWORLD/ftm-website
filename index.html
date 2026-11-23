@@ -856,7 +856,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 .stf-av{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#0B1440,#152a7a);color:#E3B62F;font-weight:800;font-size:18px}
 .stf-2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.stf-kv{display:grid;grid-template-columns:minmax(80px,40%) minmax(0,1fr);gap:6px 12px;margin:0;font-size:13px}.stf-kv dt{color:var(--muted)}.stf-kv dd{margin:0;color:var(--ink);font-weight:600;word-break:break-word}
 .stf-accs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}.stf-acct{border:1px solid var(--line);border-radius:14px;padding:14px}.stf-ah{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px}.stf-acct .btn{margin-top:12px;margin-right:8px}.stf-astats{margin-top:12px;max-height:340px;overflow:auto}
-.stf-acts{display:flex;flex-wrap:wrap;gap:8px}.stf-aff{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line,rgba(127,127,127,.2));min-width:0}.stf-aff>div:first-child{min-width:0;overflow-wrap:anywhere}.stf-aff small{color:var(--muted)}.stf-aff .bad{color:#E5323E}.stf-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(127,127,127,.15)}.stf-tag.ok{background:rgba(47,191,113,.18);color:#1f9d55}.stf-tag.warn{background:rgba(227,182,47,.2);color:#9a7612}.stf-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.stf-kpis>div{border:1px solid var(--line,rgba(127,127,127,.2));border-radius:12px;padding:10px 12px}.stf-kpis b{display:block;font-size:20px}.stf-kpis span{font-size:12px;color:var(--muted)}@media (max-width:600px){.stf-aff{flex-direction:column}.stf-kpis{grid-template-columns:1fr}}.stf-mini{display:grid;gap:10px}.stf-mini input,.stf-mini select,.stf-mini textarea{margin:0!important}.stf-mini .btn{justify-self:start}
+.stf-acts{display:flex;flex-wrap:wrap;gap:8px}.stf-tag.stf-master{background:linear-gradient(180deg,#F1CF62,#D4AF37);color:#0b1640;font-weight:800}.stf-aff{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line,rgba(127,127,127,.2));min-width:0}.stf-aff>div:first-child{min-width:0;overflow-wrap:anywhere}.stf-aff small{color:var(--muted)}.stf-aff .bad{color:#E5323E}.stf-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(127,127,127,.15)}.stf-tag.ok{background:rgba(47,191,113,.18);color:#1f9d55}.stf-tag.warn{background:rgba(227,182,47,.2);color:#9a7612}.stf-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.stf-kpis>div{border:1px solid var(--line,rgba(127,127,127,.2));border-radius:12px;padding:10px 12px}.stf-kpis b{display:block;font-size:20px}.stf-kpis span{font-size:12px;color:var(--muted)}@media (max-width:600px){.stf-aff{flex-direction:column}.stf-kpis{grid-template-columns:1fr}}.stf-mini{display:grid;gap:10px}.stf-mini input,.stf-mini select,.stf-mini textarea{margin:0!important}.stf-mini .btn{justify-self:start}
 .stf-t3{grid-template-columns:repeat(3,minmax(0,1fr))!important}.stf-prog{height:6px;border-radius:6px;background:#EEF1F8;overflow:hidden;margin-top:10px}.stf-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#152a7a,#D4AF37);transition:width .4s}
 .stf-chc .stf-ch{background:none;padding:0;margin:0 0 18px}.stf-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
 .stf-facts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border-radius:14px;overflow:hidden;border:1px solid var(--line)}.stf-facts>div{background:#F7F8FB;padding:12px 14px;min-width:0}.stf-facts span{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}.stf-facts b{display:block;margin-top:4px;font-size:14px;color:var(--ink);overflow-wrap:anywhere}
@@ -7161,17 +7161,29 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
       },1600);
     }
 
-    var livePositionsPoll=setInterval(function(){
+    var posBusy=false, posKey=null, posAcct=null, posReload=0;
+    function livePositionsPoll(){
+      if(posBusy || document.hidden) return;
       if(!F.remote || !F.remote.ready()) return;
       var app=document.getElementById('appView');
       if(!app || app.hidden) return;
       var liveAcct=(F.viewedAccount && F.viewedAccount()) || (F.data.accounts||[]).filter(function(a){return a.active;})[0];
       if(!liveAcct) return;
+      if(posAcct!==liveAcct.accountId){ posAcct=liveAcct.accountId; posKey=null; }
+      posBusy=true;
       F.remote.fetchPositions(liveAcct.accountId).then(function(open){
+        if(posAcct!==liveAcct.accountId) return;
+        var key=open.map(function(t){ return String(t.positionRef||(t.symbol+'@'+t.openTime))+':'+t.lots; }).sort().join(',');
+        var changed=posKey!==null && key!==posKey; posKey=key;
         F.data.open=open;
         drawOpen(F.metrics()); if(F.liveStrip) F.liveStrip();
-      }).catch(function(err){ console.warn('FTM live positions poll failed:', err); });
-    },25000);
+        if(changed && F.loadLive && Date.now()-posReload>8000){ posReload=Date.now(); return F.loadLive(); }
+      }).catch(function(err){ console.warn('FTM live positions poll failed:', err); }).then(function(){ posBusy=false; });
+    }
+    F.livePositionsPoll=livePositionsPoll;
+    setInterval(livePositionsPoll,5000);
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden) livePositionsPoll(); });
+    window.addEventListener('focus',livePositionsPoll);
   })();
 
   (function(){
@@ -10530,22 +10542,23 @@ tick();setInterval(tick,5000);})();
     S({op:'log'}).then(function(j){ p.querySelector('#stfL').innerHTML=j.items.length?'<div class="app-scroll"><table class="stf-tbl"><thead><tr><th>When</th><th>Who</th><th>What</th><th>Customer / group</th><th>Result</th></tr></thead><tbody>'+j.items.map(function(x){ return '<tr><td>'+esc(when(x.at))+'</td><td>'+esc(x.by)+'</td><td>'+esc(x.op.replace(/_/g,' '))+'</td><td>'+esc(x.target)+'</td><td>'+esc(x.detail)+'</td></tr>'; }).join('')+'</tbody></table></div>':'<p class="stf-note">No staff actions yet.</p>'; })
       .catch(function(e){ p.querySelector('#stfL').innerHTML='<p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p>'; }); }
   var ROLES={owner:'Owner: everything, and manages the team',staff:'Staff: every tool',support:'Support: customers, problems and one-to-one help; no group sends, posts, payments or team'};
-  // FTM affiliate programme: applications to approve, money owed per affiliate, payout (owner 21 Nov 2026)
   function affLoad(){ var p=pane('aff'); p.innerHTML='<div class="app-card stf-card"><p class="stf-note">Loading affiliates…</p></div>';
     S({op:'aff_list'}).then(function(j){ var L=j.affiliates||[], m=function(v){ return '€'+(+v||0).toFixed(2); };
       var pend=L.filter(function(a){ return a.status==='pending'; }), act=L.filter(function(a){ return a.status==='approved'; }), owed=act.reduce(function(t,a){ return t+(a.payable||0); },0);
       var row=function(a){ var po=a.payout?(a.payout.method==='paypal'?'PayPal '+esc(a.payout.paypal):'Bank '+esc(a.payout.holder||'')+' '+esc(a.payout.iban||'')+(a.payout.bic?' / '+esc(a.payout.bic):'')):'<em>no payout details yet</em>';
-        return '<div class="stf-row stf-aff" data-code="'+esc(a.code)+'"><div><b>'+esc(a.name)+'</b> <span class="stf-tag">'+esc(a.code)+'</span> <span class="stf-tag'+(a.status==='approved'?' ok':a.status==='pending'?' warn':'')+'">'+esc(a.status)+'</span><br><small>'+esc(a.email)+(a.country?' · '+esc(a.country):'')+'</small>'
+        return '<div class="stf-row stf-aff" data-code="'+esc(a.code)+'"><div><b>'+esc(a.name)+'</b> <span class="stf-tag">'+esc(a.code)+'</span> <span class="stf-tag'+(a.status==='approved'?' ok':a.status==='pending'?' warn':'')+'">'+esc(a.status)+'</span>'+(a.master?' <span class="stf-tag stf-master">★ Master affiliate · '+(a.rate||20)+'%</span>':'')+'<br><small>'+esc(a.email)+(a.country?' · '+esc(a.country):'')+'</small>'
           +(a.status==='pending'?'<br><small>Shares FTM on: '+esc(a.channel||'-')+' · Audience: '+esc(a.audience||'-')+(a.message?'<br>'+esc(a.message):'')+'</small>':'')
-          +(a.status==='approved'?'<br><small>'+n0(a.clicks)+' link visits · '+n0(a.signups)+' customers · pending '+m(a.pending)+' · payable '+m(a.payable)+' · paid '+m(a.paid)+'<br>Payout: '+po+'</small>':'')
+          +(a.status==='approved'?'<br><small>'+n0(a.clicks)+' link visits · '+n0(a.signups)+' sign-ups · '+n0(a.paying)+' paying customers'+(a.master?(a.masterBy==='auto'?' · master since '+esc(String(a.masterAt||'').slice(0,10))+' (reached '+j.masterAt+')':' · made master by staff'):' · '+Math.max(0,j.masterAt-(a.paying||0))+' more to become master')+' · pending '+m(a.pending)+' · payable '+m(a.payable)+' · paid '+m(a.paid)+'<br>Payout: '+po+'</small>':'')
           +(a.promoError?'<br><small class="bad">Stripe 5% code not created: '+esc(a.promoError)+'</small>':'')+'</div><div class="stf-acts">'
           +(a.status==='pending'?'<button type="button" class="btn btn-sm btn-red" data-aff="aff_approve">Approve</button> <button type="button" class="btn btn-sm btn-dark" data-aff="aff_reject">Reject</button>':'')
+          +(a.status==='approved'?(a.master?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_unmaster">Remove master</button> ':'<button type="button" class="btn btn-sm btn-gold" data-aff="aff_master">Make master affiliate ('+j.masterRate+'%)</button> '):'')
           +(a.status==='approved'&&a.promoError?'<button type="button" class="btn btn-sm btn-dark" data-aff="aff_promo">Create Stripe code again</button> ':'')+(a.status==='approved'&&a.payable>=j.minPayout?'<button type="button" class="btn btn-sm btn-red" data-aff="aff_paid">Mark '+m(a.payable)+' paid</button>':'')+'</div></div>'; };
-      p.innerHTML='<div class="app-card stf-card"><h3>Affiliates</h3><p class="stf-note">10% of every subscription payment of the customers each affiliate brings; customers get 5% off their first payment with the code. A commission becomes payable 30 days after the payment; pay monthly from €'+j.minPayout+', then press “Mark paid”.</p>'
-        +'<div class="stf-kpis"><div><b>'+pend.length+'</b><span>applications waiting</span></div><div><b>'+act.length+'</b><span>active affiliates</span></div><div><b>'+m(owed)+'</b><span>payable now</span></div></div></div>'
+      p.innerHTML='<div class="app-card stf-card"><h3>Affiliates</h3><p class="stf-note">10% of every subscription payment of the customers each affiliate brings (Master affiliates 20%: automatic at '+j.masterAt+' paying customers, or press “Make master affiliate”); customers get 5% off their first payment with the code. A commission becomes payable 30 days after the payment; pay monthly from €'+j.minPayout+', then press “Mark paid”.</p>'
+        +'<div class="stf-kpis"><div><b>'+pend.length+'</b><span>applications waiting</span></div><div><b>'+act.length+'</b><span>active affiliates</span></div><div><b>'+act.filter(function(a){ return a.master; }).length+'</b><span>master affiliates</span></div><div><b>'+m(owed)+'</b><span>payable now</span></div></div></div>'
         +'<div class="app-card stf-card"><h3>Applications</h3>'+(pend.length?pend.map(row).join(''):'<p class="stf-note">No applications waiting.</p>')+'</div>'
         +'<div class="app-card stf-card"><h3>Active affiliates</h3>'+(act.length?act.map(row).join(''):'<p class="stf-note">No active affiliates yet.</p>')+'</div>';
       if(!p._affOn){ p._affOn=1; p.addEventListener('click',function(e){ var b=e.target.closest('[data-aff]'); if(!b) return; var code=b.closest('[data-code]').dataset.code; b.disabled=true;
+        if(b.dataset.aff==='aff_unmaster'&&!confirm('Remove Master affiliate? New commissions go back to 10%.')){ b.disabled=false; return; }
         S({op:b.dataset.aff,code:code}).then(function(r){ if(r&&r.mailError) alertNote('Approved, but the email could not be sent: '+r.mailError); affLoad(); }).catch(function(er){ b.disabled=false; b.textContent='Failed: '+(er.code||er.message); }); }); }
     }).catch(function(e){ p.innerHTML='<div class="app-card stf-card"><p class="stf-note bad">Could not load ('+esc(e.code||e.message)+').</p></div>'; }); }
   function alertNote(t){ var p=pane('aff'), n=document.createElement('p'); n.className='stf-note bad'; n.textContent=t; p.prepend(n); }
@@ -11024,8 +11037,6 @@ tick();setInterval(tick,5000);})();
     var O=((F.data&&F.data.open)||[]).filter(function(t){return t.symbol;});
     if(!O.length){ box.hidden=true; return; }
     var chips=O.map(function(t){ var pl=t.pl, up=pl!=null&&pl>=0; return '<span class="lv-c"><b>'+String(t.symbol).replace(/</g,'')+'</b><em>'+tr(String(t.dir||'').toUpperCase()==='SELL'?'Sell':'Buy')+(t.lots!=null?' · '+t.lots.toFixed(2):'')+'</em><strong class="'+(pl==null?'':(up?'up':'dn'))+'">'+(pl==null?'—':sgn(pl,2))+'</strong></span>'; }).join('');
-    // every open position, moving right to left without end (two copies make the loop seamless); the same track is kept so
-    // a refresh only updates the figures and never restarts the movement
     var tk=L.querySelector('.lv-track'); if(!tk){ L.innerHTML='<div class="lv-track"><div class="lv-set"></div><div class="lv-set" aria-hidden="true"></div></div>'; tk=L.querySelector('.lv-track'); }
     tk.children[0].innerHTML=chips; tk.children[1].innerHTML=chips; tk.style.setProperty('--lv-dur',Math.max(18,O.length*7)+'s');
     box.hidden=false;
@@ -11914,13 +11925,16 @@ tick();setInterval(tick,5000);})();
 .af-st{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px}.af-st.pending{background:#fbf3d9;color:#9a7612}.af-st.payable{background:#e3f6ec;color:#1f9d55}.af-st.paid{background:#e8ecf8;color:#1F3A93}
 .af-rules{margin:0;padding-left:18px;color:#2a3366;font-size:14px;display:grid;gap:6px}.af-note{font-size:13px;color:#5a6390;margin:6px 0 0}
 .af-modal{position:fixed;inset:0;background:rgba(5,10,36,.6);display:grid;place-items:center;z-index:9000;padding:16px}.af-modal[hidden]{display:none}.af-mcard{background:#fff;border-radius:22px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:24px;position:relative}.af-x{position:absolute;right:12px;top:10px;border:0;background:#eef1f8;width:36px;height:36px;border-radius:50%;font-size:20px;cursor:pointer}
+.af-mb{display:inline-block;vertical-align:middle;margin-left:8px;padding:4px 12px;border-radius:99px;background:linear-gradient(180deg,#F1CF62,#D4AF37);color:#0b1640;font-size:13px;font-weight:800;letter-spacing:.02em}
+.af-hero.af-m{background:linear-gradient(135deg,#0b1640 0%,#1F3A93 60%,#5a4a12 140%);box-shadow:inset 0 0 0 1px rgba(227,182,47,.55)}
+.af-pg-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}.af-pg-top h3{margin:0}.af-pg-top b{color:#0b1640;font-variant-numeric:tabular-nums}
+.af-bar{height:10px;border-radius:99px;background:#eef1f8;overflow:hidden;margin:12px 0 4px}.af-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D4AF37,#F1CF62);transition:width .8s cubic-bezier(.2,.8,.2,1)}
 @media (max-width:760px){.af-pts,.af-grid2,.af-two{grid-template-columns:1fr}.af-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.af-kpis div:last-child{grid-column:1/-1}.af-tbl .af-hide{display:none}}
 </style>
 <script>
 (function(){ var F=window.FTM=window.FTM||{};
   var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; }, esc=function(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var LS=function(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } };
-  // affiliate link: ?ref=CODE remembered 60 days (the first affiliate wins), counted once per visit
   F.affRef=function(){ try{ var r=JSON.parse(LS('ftm_ref')||'null'); if(r&&r.c&&Date.now()-r.t<60*864e5) return r.c; }catch(e){} return ''; };
   try{ var q=new URLSearchParams(location.search), rf=String(q.get('ref')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,16);
     if(rf){ if(!F.affRef()) LS('ftm_ref',JSON.stringify({c:rf,t:Date.now()})); fetch('/api/v1/affiliate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'click',code:rf})}).catch(function(){});
@@ -11929,8 +11943,8 @@ tick();setInterval(tick,5000);})();
     return auth&&F.auth&&F.auth.getAccessToken?F.auth.getAccessToken().then(go):go(null); }
   function money(v,c){ try{ return new Intl.NumberFormat(window.FTM_LOCALE||undefined,{style:'currency',currency:c||'EUR'}).format(+v||0); }catch(e){ return (c||'EUR')+' '+(+v||0).toFixed(2); } }
   function date(d){ try{ return new Date(d).toLocaleDateString(window.FTM_LOCALE||undefined,{day:'numeric',month:'short',year:'numeric'}); }catch(e){ return String(d).slice(0,10); } }
-  function hero(){ return '<div class="af-hero"><h3>'+esc(tr('FTM affiliate programme'))+'</h3><p>'+esc(tr('Earn 10% of every subscription payment of the people you bring to FTM, for as long as they stay subscribed.'))+'</p>'
-    +'<div class="af-pts"><div><b>10%</b>'+esc(tr('of every payment, the first and every renewal'))+'</div><div><b>5%</b>'+esc(tr('off the first payment for your customers with your code'))+'</div><div><b>€50</b>'+esc(tr('paid every month, 30 days after each payment'))+'</div></div></div>'; }
+  function hero(a){ var M=a&&a.master; return '<div class="af-hero'+(M?' af-m':'')+'"><h3>'+esc(tr('FTM affiliate programme'))+(M?' <span class="af-mb">★ '+esc(tr('Master affiliate'))+'</span>':'')+'</h3><p>'+esc(tr(M?'As a Master affiliate you earn 20% of every subscription payment of the people you bring to FTM, for as long as they stay subscribed.':'Earn 10% of every subscription payment of the people you bring to FTM, for as long as they stay subscribed.'))+'</p>'
+    +'<div class="af-pts"><div><b>'+(M?'20%':'10%')+'</b>'+esc(tr('of every payment, the first and every renewal'))+'</div><div><b>5%</b>'+esc(tr('off the first payment for your customers with your code'))+'</div><div><b>€50</b>'+esc(tr('paid every month, 30 days after each payment'))+'</div></div></div>'; }
   function rules(){ return '<div class="app-card"><h3>'+esc(tr('Affiliate rules'))+'</h3><ul class="af-rules"><li>'+esc(tr('Never promise profits, income or guaranteed results.'))+'</li><li>'+esc(tr('Always say that you are an FTM affiliate.'))+'</li><li>'+esc(tr('No paid ads on the FTM name, and no buying through your own link.'))+'</li><li>'+esc(tr('FTM may end the partnership if these rules are broken.'))+'</li></ul></div>'; }
   function form(email){ return '<form class="af-form" novalidate><div class="af-two"><label>'+esc(tr('Full name'))+'<input id="afName" name="name" autocomplete="name" required></label><label>'+esc(tr('Email'))+'<input id="afEmail" name="email" type="email" autocomplete="email" value="'+esc(email||'')+'" required></label></div>'
     +'<div class="af-two"><label>'+esc(tr('Country'))+'<input id="afCountry" name="country" autocomplete="country-name"></label><label>'+esc(tr('How many people follow you?'))+'<select id="afAud" name="audience"><option value="<1k">'+esc(tr('Under 1,000'))+'</option><option value="1k-10k">1,000–10,000</option><option value="10k-100k">10,000–100,000</option><option value=">100k">'+esc(tr('Over 100,000'))+'</option></select></label></div>'
@@ -11944,7 +11958,7 @@ tick();setInterval(tick,5000);})();
         .catch(function(){ b.disabled=false; er.textContent=tr('Something went wrong. Please try again.'); }); }); }
   function state(icon,title,text){ return '<div class="app-card"><div class="af-state"><i>'+icon+'</i><div><h3>'+esc(tr(title))+'</h3><p>'+esc(tr(text))+'</p></div></div></div>'; }
   var SENT='Thank you. Your application is in. We usually answer within two working days.';
-  function render(j){ var v=document.getElementById('affView'); if(!v) return; var a=j&&j.aff, h=hero();
+  function render(j){ var v=document.getElementById('affView'); if(!v) return; var a=j&&j.aff, h=hero(a);
     if(!a){ v.innerHTML='<div class="af-wrap">'+h+'<div class="app-card"><h3>'+esc(tr('Apply to become an FTM affiliate'))+'</h3>'+form(F.session&&F.session.email)+'</div>'+rules()+'</div>'; bindForm(v,function(){ v.innerHTML='<div class="af-wrap">'+h+state('✓','Your application is being reviewed',SENT)+'</div>'; }); return; }
     if(a.status==='pending'){ v.innerHTML='<div class="af-wrap">'+h+state('⏳','Your application is being reviewed','We usually answer within two working days. You will get an email with your link and code.')+rules()+'</div>'; return; }
     if(a.status==='rejected'){ v.innerHTML='<div class="af-wrap">'+h+state('!','Your application was not approved','Questions? Write to ftmwebnation@gmail.com.')+'</div>'; return; }
@@ -11955,6 +11969,7 @@ tick();setInterval(tick,5000);})();
       +'<div class="af-grid2"><div class="app-card"><h3>'+esc(tr('Your link'))+'</h3><div class="af-copy"><code>'+esc(a.link)+'</code><button type="button" class="btn btn-sm btn-dark" data-copy="'+esc(a.link)+'">'+esc(tr('Copy'))+'</button></div><p style="margin:12px 0 0"><a class="btn btn-sm btn-red" href="'+esc(wa)+'" target="_blank" rel="noopener">'+esc(tr('Share on WhatsApp'))+'</a></p></div>'
       +'<div class="app-card"><h3>'+esc(tr('Your code'))+'</h3><div class="af-copy"><code>'+esc(a.code)+'</code><button type="button" class="btn btn-sm btn-dark" data-copy="'+esc(a.code)+'">'+esc(tr('Copy'))+'</button></div><p class="af-note">'+esc(tr('Customers can also type your code when they pay. It gives them 5% off their first payment.'))+'</p></div></div>'
       +'<div class="af-kpis">'+kp.map(function(k){ return '<div><b>'+esc(k[0])+'</b><span>'+esc(tr(k[1]))+'</span></div>'; }).join('')+'</div>'
+      +(a.master?'':(function(){ var n=Math.min(10,+s.paying||0); return '<div class="app-card af-prog"><div class="af-pg-top"><h3>'+esc(tr('Master affiliate'))+'</h3><b>'+esc(tr('{} of 10 paying customers').replace('{}',n))+'</b></div><div class="af-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="'+n+'"><i style="width:'+(n*10)+'%"></i></div><p class="af-note">'+esc(tr('At 10 paying customers you become a Master affiliate and earn 20% of every payment.'))+'</p></div>'; })())
       +'<div class="app-card"><h3>'+esc(tr('Your commissions'))+'</h3>'+(L.length?'<div style="overflow-x:auto"><table class="af-tbl"><thead><tr><th>'+esc(tr('Date'))+'</th><th class="af-hide">'+esc(tr('Customer'))+'</th><th class="af-hide">'+esc(tr('Payment'))+'</th><th>'+esc(tr('Commission'))+'</th><th>'+esc(tr('Status'))+'</th></tr></thead><tbody>'
         +L.map(function(r){ var st=r.status==='paid'?'Paid':r.status==='payable'?'Payable':'Pending'; return '<tr><td>'+esc(date(r.at))+'</td><td class="af-hide">'+esc(r.customer)+'</td><td class="af-hide">'+esc(money(r.amount,r.currency))+'</td><td><b>'+esc(money(r.commission,r.currency))+'</b></td><td><span class="af-st '+r.status+'" data-tip="'+esc(r.status==='pending'?tr('Payable from')+' '+date(r.payable):'')+'">'+esc(tr(st))+'</span></td></tr>'; }).join('')+'</tbody></table></div>':'<p>'+esc(tr('No commissions yet. Share your link to get started.'))+'</p>')
         +'<p class="af-note">'+esc(tr('Pending commissions become payable 30 days after the payment. We pay every month from €50.'))+'</p></div>'
@@ -11967,10 +11982,9 @@ tick();setInterval(tick,5000);})();
       api({action:'payout',method:pm.value,holder:g('afHolder'),iban:g('afIban'),bic:g('afBic'),paypal:g('afPp')},true).then(function(){ b.disabled=false; er.className='af-ok'; er.textContent=tr('Saved'); }).catch(function(){ b.disabled=false; er.className='af-err'; er.textContent=tr('Something went wrong. Please try again.'); }); });
     v.querySelectorAll('[data-copy]').forEach(function(b){ b.addEventListener('click',function(){ var t=b.dataset.copy, ok=function(){ b.textContent=tr('Copied'); setTimeout(function(){ b.textContent=tr('Copy'); },1600); };
       try{ navigator.clipboard.writeText(t).then(ok,function(){ ok(); }); }catch(e){ ok(); } }); }); }
-  F.affLoad=function(){ var v=document.getElementById('affView'); if(!v) return; if(!v.innerHTML) v.innerHTML='<div class="af-wrap">'+hero()+'</div>';
+  F.affLoad=function(){ var v=document.getElementById('affView'); if(!v) return; if(!v.innerHTML) v.innerHTML='<div class="af-wrap">'+hero(null)+'</div>';
     api({action:'me'},true).then(render).catch(function(){ render(null); }); };
   document.addEventListener('click',function(e){ var n=e.target.closest&&e.target.closest('.app-nav-item[data-view="aff"]'); if(n) setTimeout(F.affLoad,0); });
-  // public application (visitors without an FTM login): menus link to #affiliate
   function openPublic(){ if(F.session&&F.session.email&&F.showView){ F.showView('aff'); F.affLoad(); return; }
     var m=document.getElementById('afModal'); if(!m){ m=document.createElement('div'); m.id='afModal'; m.className='af-modal'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); document.body.appendChild(m);
       m.addEventListener('click',function(e){ if(e.target===m||e.target.closest('.af-x')) m.hidden=true; }); document.addEventListener('keydown',function(e){ if(e.key==='Escape') m.hidden=true; }); }

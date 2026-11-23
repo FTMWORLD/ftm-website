@@ -3,11 +3,16 @@
    - The code is also a Stripe promotion code: 5% off the customer's first payment.
    - A customer belongs to the first affiliate that brought them (link before sign-up, or the code at checkout); never to themselves.
    - Commission: 10% of every subscription payment that customer makes (first payment and every renewal), never on investments.
+   - Master affiliate (owner 23 Nov 2026): 20% instead of 10%. Automatic when 10 different customers have paid through the affiliate
+     (the 10th customer's payment is already at 20%), or set by staff in the staff console. Earlier commissions keep their rate.
    - A commission becomes payable 30 days after the payment; staff pay monthly (bank transfer or PayPal), minimum 50 EUR.
    Storage (private bucket, api/_lib/push.js): aff/index.json, aff/customers.json, aff/commissions.json, aff/clicks.json */
 const P = require('./push');
 
-const RATE = 0.10, HOLD_DAYS = 30, MIN_PAYOUT = 50, DISCOUNT_PCT = 5;
+const RATE = 0.10, MASTER_RATE = 0.20, MASTER_AT = 10, HOLD_DAYS = 30, MIN_PAYOUT = 50, DISCOUNT_PCT = 5;
+const rateOf = a => (a && a.master ? MASTER_RATE : RATE);
+const payingOf = (L, code) => new Set(((L && L.list) || []).filter(r => r.code === code).map(r => r.customer)).size;
+async function masterMail(a) { try { await require('./affMail').master(a, linkOf(a.code), { rate: MASTER_RATE * 100, at: MASTER_AT }); } catch (e) { console.error('aff master mail', e.message); } }
 const IDX = 'aff/index.json', CUS = 'aff/customers.json', COM = 'aff/commissions.json', CLK = 'aff/clicks.json';
 const SITE = () => (process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
 const clean = (s, n) => Array.from(String(s == null ? '' : s).replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, n).join('');
@@ -111,29 +116,55 @@ async function onPayment(admin, p) {
   const L = await P.read(admin, COM, { list: [] }) || { list: [] }; L.list = L.list || [];
   if (L.list.some(x => x.id === p.id)) return { ok: true, skipped: 'already counted' };
   const at = p.at ? new Date(p.at) : new Date();
-  const row = { id: p.id, code: owner, customer: email, amount: cents / 100, commission: Math.round(cents * RATE) / 100, currency: String(p.currency || 'eur').toUpperCase(),
+  let promoted = false;
+  if (!a.master) { const seen = new Set(L.list.filter(r => r.code === owner).map(r => r.customer)); seen.add(email);
+    if (seen.size >= MASTER_AT) { a.master = true; a.masterAt = new Date().toISOString(); a.masterBy = 'auto'; promoted = true; await P.write(admin, IDX, I); } }
+  const rate = rateOf(a);
+  const row = { id: p.id, code: owner, customer: email, amount: cents / 100, commission: Math.round(cents * rate) / 100, rate: rate * 100, currency: String(p.currency || 'eur').toUpperCase(),
     at: at.toISOString(), payable: new Date(at.getTime() + HOLD_DAYS * 864e5).toISOString(), kind: p.kind || 'payment' };
   L.list.push(row); await P.write(admin, COM, L);
-  return { ok: true, row };
+  if (promoted) await masterMail(a);
+  return { ok: true, row, promoted };
 }
 
 function statusOf(r, now) { return r.paidOut ? 'paid' : (Date.parse(r.payable) <= (now || Date.now()) ? 'payable' : 'pending'); }
 const mask = e => { const [u, d] = String(e).split('@'); return (u || '').slice(0, 2) + '•••@' + (d || ''); };
 
+/* Affiliates who already reached 10 paying customers before the master rule existed become master the next time anyone looks. */
+async function catchUp(admin, I, L) {
+  const up = Object.values(I.affs).filter(a => a.status === 'approved' && !a.master && payingOf(L, a.code) >= MASTER_AT);
+  if (!up.length) return;
+  up.forEach(a => { a.master = true; a.masterAt = new Date().toISOString(); a.masterBy = 'auto'; });
+  await P.write(admin, IDX, I); for (const a of up) await masterMail(a);
+}
+/* Staff: make an affiliate a master affiliate (20%) or take it back. */
+async function setMaster(admin, code, on, by) {
+  code = normCode(code); const I = await idx(admin), a = I.affs[code];
+  if (!a || a.status !== 'approved') return { ok: false, error: 'NOT_FOUND' };
+  const was = !!a.master; a.master = !!on;
+  if (on && !was) { a.masterAt = new Date().toISOString(); a.masterBy = 'staff' + (by ? ':' + by : ''); }
+  if (!on) { a.masterAt = undefined; a.masterBy = undefined; }
+  await P.write(admin, IDX, I);
+  if (on && !was) await masterMail(a);
+  return { ok: true, master: a.master };
+}
+
 /* Everything an affiliate sees on their page. */
 async function summary(admin, email) {
   const I = await idx(admin), a = byEmail(I, email);
   if (!a) return { ok: true, aff: null };
-  const out = { ok: true, aff: { code: a.code, name: a.name, status: a.status, applied: a.applied, approved: a.approved || null, payout: a.payout || null } , rules: { rate: RATE * 100, holdDays: HOLD_DAYS, minPayout: MIN_PAYOUT, discount: DISCOUNT_PCT } };
+  const out = { ok: true, aff: { code: a.code, name: a.name, status: a.status, applied: a.applied, approved: a.approved || null, payout: a.payout || null }, rules: { rate: RATE * 100, masterRate: MASTER_RATE * 100, masterAt: MASTER_AT, holdDays: HOLD_DAYS, minPayout: MIN_PAYOUT, discount: DISCOUNT_PCT } };
   if (a.status !== 'approved') return out;
   const [C, L, K] = await Promise.all([P.read(admin, CUS, {}), P.read(admin, COM, { list: [] }), P.read(admin, CLK, {})]);
+  await catchUp(admin, I, L);
+  out.aff.master = !!a.master; out.aff.masterAt = a.masterAt || null; out.aff.rate = rateOf(a) * 100;
   const mine = ((L && L.list) || []).filter(r => r.code === a.code).sort((x, y) => y.at.localeCompare(x.at)), now = Date.now();
   const sum = s => Math.round(mine.filter(r => statusOf(r, now) === s).reduce((t, r) => t + r.commission, 0) * 100) / 100;
   const custs = Object.keys(C || {}).filter(e => C[e].code === a.code), paying = new Set(mine.map(r => r.customer));
   out.aff.link = linkOf(a.code);
   out.stats = { clicks: (K && K[a.code] && K[a.code].n) || 0, signups: custs.length, paying: paying.size, pending: sum('pending'), payable: sum('payable'), paid: sum('paid'),
     total: Math.round(mine.reduce((t, r) => t + r.commission, 0) * 100) / 100, currency: (mine[0] && mine[0].currency) || 'EUR' };
-  out.list = mine.slice(0, 200).map(r => ({ at: r.at, customer: mask(r.customer), amount: r.amount, commission: r.commission, currency: r.currency, status: statusOf(r, now), payable: r.payable, paidOut: r.paidOut || null }));
+  out.list = mine.slice(0, 200).map(r => ({ at: r.at, customer: mask(r.customer), amount: r.amount, commission: r.commission, rate: r.rate || RATE * 100, currency: r.currency, status: statusOf(r, now), payable: r.payable, paidOut: r.paidOut || null }));
   return out;
 }
 async function setPayout(admin, email, b) {
@@ -147,11 +178,12 @@ async function setPayout(admin, email, b) {
 /* Staff: every affiliate with what is owed; markPaid pays out everything payable for one affiliate. */
 async function staffList(admin) {
   const [I, L, C, K] = await Promise.all([idx(admin), P.read(admin, COM, { list: [] }), P.read(admin, CUS, {}), P.read(admin, CLK, {})]), now = Date.now();
+  await catchUp(admin, I, L);
   const rows = Object.values(I.affs).map(a => { const mine = ((L && L.list) || []).filter(r => r.code === a.code), s = st => Math.round(mine.filter(r => statusOf(r, now) === st).reduce((t, r) => t + r.commission, 0) * 100) / 100;
     return { code: a.code, name: a.name, email: a.email, country: a.country, channel: a.channel, audience: a.audience, message: a.message, status: a.status, applied: a.applied, approved: a.approved || null, promoError: a.promoError || null,
-      payout: a.payout || null, clicks: (K && K[a.code] && K[a.code].n) || 0, signups: Object.keys(C || {}).filter(e => C[e].code === a.code).length, pending: s('pending'), payable: s('payable'), paid: s('paid') }; });
+      payout: a.payout || null, master: !!a.master, masterBy: a.masterBy || null, masterAt: a.masterAt || null, rate: rateOf(a) * 100, paying: payingOf(L, a.code), clicks: (K && K[a.code] && K[a.code].n) || 0, signups: Object.keys(C || {}).filter(e => C[e].code === a.code).length, pending: s('pending'), payable: s('payable'), paid: s('paid') }; });
   rows.sort((x, y) => (x.status === 'pending' ? 0 : 1) - (y.status === 'pending' ? 0 : 1) || String(y.applied).localeCompare(String(x.applied)));
-  return { ok: true, affiliates: rows, minPayout: MIN_PAYOUT };
+  return { ok: true, affiliates: rows, minPayout: MIN_PAYOUT, masterAt: MASTER_AT, rate: RATE * 100, masterRate: MASTER_RATE * 100 };
 }
 async function markPaid(admin, code, by) {
   code = normCode(code); const L = await P.read(admin, COM, { list: [] }) || { list: [] }, now = Date.now(), t = new Date().toISOString(); let total = 0, n = 0;
@@ -160,4 +192,4 @@ async function markPaid(admin, code, by) {
   await P.write(admin, COM, L); return { ok: true, paid: Math.round(total * 100) / 100, n };
 }
 
-module.exports = { RATE, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, retryPromo, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };
+module.exports = { RATE, MASTER_RATE, MASTER_AT, rateOf, setMaster, HOLD_DAYS, MIN_PAYOUT, DISCOUNT_PCT, normCode, linkOf, apply, approve, retryPromo, reject, click, attribute, onPayment, summary, setPayout, staffList, markPaid, statusOf, byEmail, idx };

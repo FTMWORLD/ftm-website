@@ -34,4 +34,16 @@ async function approved(a, link, r) {
   await sendMail({ to: a.email, subject: w.subject, html: Tpl.shell(w.title, body) });
 }
 
-module.exports = { received, approved };
+async function master(a, link, r) {
+  const w = await words({ subject: 'You are now an FTM Master affiliate', title: 'Welcome to Master affiliate', hi: 'Hello ' + a.name + ',',
+    l1: 'Congratulations: you are now an FTM Master affiliate.',
+    l2: 'From today you earn ' + r.rate + '% of every subscription payment of the customers you bring to FTM, the first payment and every renewal, for as long as they stay subscribed.',
+    l3: 'Your link and your code stay the same. Thank you for growing FTM with us.',
+    cta: 'Open my affiliate page' }, a.lang);
+  const body = p(esc(w.hi)) + box(esc(w.l1)) + p(esc(w.l2)) + p(esc(w.l3))
+    + '<p style="margin:22px 0 8px;"><a href="' + esc(link.replace(/\/\?ref=.*/, '/?open=aff')) + '" style="display:inline-block;background:#E5323E;color:#ffffff;text-decoration:none;font-weight:bold;padding:13px 22px;border-radius:999px;">' + esc(w.cta) + '</a></p>';
+  await sendMail({ to: a.email, subject: w.subject, html: Tpl.shell(w.title, body) });
+  await sendMail({ to: SUPPORT(), subject: 'New FTM Master affiliate: ' + a.name, html: Tpl.shell('New Master affiliate', p('<b>' + esc(a.name) + '</b> (' + esc(a.email) + ', code ' + esc(a.code) + ') is now a Master affiliate and earns ' + r.rate + '%. ' + (a.masterBy === 'auto' ? 'Reached ' + r.at + ' paying customers.' : 'Set in the staff console.'))) }).catch(() => {});
+}
+
+module.exports = { received, approved, master };
