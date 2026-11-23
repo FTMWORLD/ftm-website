@@ -36,7 +36,7 @@
       "permanent": false
     },
     {
-      "source": "/data/:path*",
+      "source": "/data/changes.json",
       "destination": "/",
       "permanent": false
     }

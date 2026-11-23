@@ -3,13 +3,15 @@
 // Run: node .github/tests/month-popup-card.js http://localhost:8765
 let pw; try{pw=require('playwright');}catch(e){pw=require('/opt/node-tools/node_modules/playwright');} const {chromium,devices}=pw; const BASE=process.argv[2]||'http://localhost:8765';
 let bad=0; const ok=(c,m)=>{console.log((c?'OK     ':'BROKEN ')+m); if(!c) bad++;};
-(async()=>{const b=await chromium.launch(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{});
+(async()=>{
+if(/^https:/.test(BASE)){ for(const u of ['/data/trades/gold/100000/balanced/2025-03.json','/data/candles/2025-03.json']){ const r=await fetch(BASE+u,{redirect:'manual'}); ok(r.status===200,'live: '+u+' is served ('+r.status+')'); } }
+const b=await chromium.launch(process.env.PW_CHROMIUM?{executablePath:process.env.PW_CHROMIUM}:{});
 for(const [nm,dev] of [['iPhone SE',devices['iPhone SE']],['iPhone 13',devices['iPhone 13']],['laptop',{viewport:{width:1440,height:900}}]]){
   const c=await b.newContext(dev),p=await c.newPage(); const errs=[]; p.on('pageerror',e=>errs.push(e.message));
   await p.route(/(binance|coinbase|gold-api|fonts\.g)/,r=>r.abort());
   await p.goto(BASE+'/performance.html',{waitUntil:'load'}); await p.waitForTimeout(800);
   const y=await p.evaluate(()=>{const e=document.querySelector('.heat [data-m="2025-03"]');scrollTo(0,e.getBoundingClientRect().top+scrollY-300);return scrollY});
-  await p.evaluate(()=>document.querySelector('.heat [data-m="2025-03"]').click()); await p.waitForTimeout(1500);
+  await p.evaluate(()=>document.querySelector('.heat [data-m="2025-03"]').click()); await p.waitForSelector('#mback .wkweek',{timeout:15000}).catch(()=>{}); await p.waitForTimeout(400);
   const r=await p.evaluate(()=>{const m=document.getElementById('mback');return {open:!m.hidden,sw:m.scrollWidth,cw:m.clientWidth,fixed:document.body.style.position,weeks:m.querySelectorAll('.wkweek').length,links:m.querySelectorAll('.wkg [data-w]').length}});
   ok(r.open,nm+': clicking a month opens the pop-up');
   ok(r.sw<=r.cw+1,nm+': the pop-up cannot be pushed sideways ('+r.sw+' <= '+r.cw+')');
