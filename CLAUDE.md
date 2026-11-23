@@ -91,6 +91,12 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Votes, not written questions (owner instruction, 23 November 2026)
+- People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
+- LinkedIn: a real poll (linkedinData type poll, 2 options of at most 30 characters, duration THREE_DAYS) as its own post 30 minutes after the 18:00 video, once a day, which shows the live % per answer.
+- Instagram, Facebook, TikTok, YouTube: the first comment is the A/B vote ("Vote with one tap 👇 🅰️ … 🅱️ … Reply 🅰️ or 🅱️"), and the closing slide/end card carries the same "A or B?" line. Real poll stickers with live % exist only in Instagram/Facebook stories and cannot be added through Metricool's API.
+- One video per post time everywhere (09:30, 13:00, 18:00): no story repost of the same video at 09:35 or 13:05.
+
 ## Images and scripts (owner instruction, 22 November 2026)
 - Every 09:30 and 13:00 video uses ChatGPT's realistic images (mixed with our own animation is fine, but always with his images). For every script, write a brief file in social/briefs/ (script + numbered image prompts: same characters, 9:16, no text/logos, calm top 20% and bottom 30%, FTM colours) and send it to the owner, who gets the images from ChatGPT. The 18:00 results need no images.
 - The 13:00 video (owner 23 Nov): storytelling of today's reality — news, statistics, a website feature (compare chart, trust engine, calendar, affiliate programme) — through different people (youth, old people, mothers, workers…), never the same format twice; built on FTM's ideology with real figures. 09:30 = eye-opening education with FOMO that welcomes people to FTM. Both always end with a call to action.
