@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Metricool_Social_Media_Management",
+      "mcp__claude-code-remote__send_later",
+      "mcp__claude-code-remote__update_trigger",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(ffmpeg:*)",
+      "Bash(curl:*)"
+    ]
+  }
+}
