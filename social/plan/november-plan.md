@@ -70,7 +70,9 @@
 - **Pillar:** emotion
 - **Voice:** am_adam
 - **Sound:** news → drive
-- **Fact** (confirmed: Nvidia press release, CNN, CBS, NPR, Reuters, 23 Nov 2026): Nvidia's board reinstated Jensen Huang as CEO, and the stock rose nearly 30% in early trading. Use "nearly 30% in one morning"; never call it a close.
+- **Facts** (confirmed: Nvidia press release (SEC), CNN, CBS, NPR, Reuters):
+  - 23 Nov: the board reinstated Jensen Huang as CEO, and the stock rose nearly 30% in early trading. Use "nearly 30% in one morning"; never call it a close.
+  - Week to 20 Nov: Nvidia −23%, and the Nasdaq fell about 10%, its worst week since March 2020 (Reuters).
 
 **Script**
 
@@ -78,7 +80,7 @@
 |---|---|---|
 | 1 | **Nearly +30% in one morning.** | "Nearly thirty percent. In one morning." |
 | 2 | News card: Nvidia brings its CEO back · 23 Nov | "Yesterday Nvidia brought its CEO back, and the stock jumped." |
-| 3 | Two weeks of headlines. **Fear. Selling.** | "Before that: two weeks of scary headlines. Many people sold in fear." |
+| 3 | Last week: Nvidia **−23%** · Nasdaq's worst week since 2020 *(Reuters)* | "The week before: Nvidia down twenty-three percent. The Nasdaq's worst week since twenty twenty. Many people sold in fear." |
 | 4 | The move came at **the worst time to be away.** | "Then the move came. Fast. If you were at work, you missed it." |
 | 5 | Fear sells. Rules don't. | "Fear makes people sell. Fixed rules don't feel fear." |
 | 6 | FTM MACHINE · fixed rules · US Tech 100 · 24/7 | "FTM MACHINE trades the US Tech 100, where Nvidia lives, with rules, not headlines." |
@@ -105,7 +107,7 @@
 - **Pillar:** time
 - **Voice:** af_heart
 - **Sound:** lofi
-- **Statistic:** the unpaid care work hours from research section C, or the fallback line below.
+- **Statistic** (ILO, confirmed): women do 76.2% of all unpaid care work in the world, more than three times as much as men.
 
 **Script**
 
@@ -113,13 +115,11 @@
 |---|---|---|
 | 1 | **POV: you're a mum. Your day has no break.** | "P-O-V: you're a mum, and your day has no break." |
 | 2 | 06:00 school run · 09:00 laundry · 12:00 cooking | "School run. Laundry. Cooking. Cleaning. Again." |
-| 3 | Women do *[statistic]* of the world's unpaid care work | "Around the world, women do *[statistic]* of all unpaid care work." |
+| 3 | Women do **76.2%** of the world's unpaid care work *(ILO)* | "Around the world, women do seventy-six percent of all unpaid care work." |
 | 4 | The market moved **three times** while the rice cooked. | "The market moved three times while the rice cooked." |
 | 5 | FTM MACHINE trades while you take care of everyone. | "FTM MACHINE trades for you, with fixed rules, while you take care of everyone else." |
 | 6 | Your money stays in **your** account. **Pause in one tap.** | "Your money stays in your own account. One tap pauses it." |
 | 7 | Tag a mum who deserves this 👇 · **Free account · link in bio** | "Tag a mum who never stops. Free account, link in bio." |
-
-**Fallback for line 3:** "No salary. No break. No time to watch charts."
 
 **Caption:** "Mums run two shifts and the second one has no salary. FTM MACHINE trades for you with fixed rules while you take care of everyone else, and your money stays in your own account. Free account: link in bio."
 **First comment:** "Tag a mum who never stops 💛👇"
@@ -173,6 +173,7 @@
 - **Pillar:** system
 - **Voice:** am_michael
 - **Sound:** bright
+- **Statistic** (confirmed): Chague, De-Losso & Giovannetti (2019), "Day Trading for a Living?" — 97% of people who day-traded Brazilian futures for more than 300 days lost money.
 
 **Script**
 
@@ -180,7 +181,7 @@
 |---|---|---|
 | 1 | **MYTH: Investing is only for rich people.** | "Myth or fact? Investing is only for rich people." |
 | 2 | MYTH ❌ | "Myth." |
-| 3 | MYTH: You must watch charts all day. ❌ | "You must watch charts all day? Myth. FTM MACHINE does that." |
+| 3 | MYTH: Trading all day makes you rich. ❌ · **97% of people who day-traded 300+ days lost money** *(Brazil study, 2019)* | "Trade all day and get rich? A study of day traders in Brazil: ninety-seven percent of those who kept going lost money." |
 | 4 | MYTH: You must give your money away. ❌ | "You must hand your money to someone? Myth. It stays in your own account." |
 | 5 | FACT: Losses happen. **We show every loss day.** ✅ | "Fact: losses happen. We show every single loss day." |
 | 6 | FACT: The live account is **free to watch.** ✅ | "Fact: you can watch the live account free, before you decide anything." |
@@ -203,7 +204,7 @@
 - **Pillar:** time
 - **Voice:** bm_lewis (grandfather) and am_puck (grandson)
 - **Sound:** cinema → lofi
-- **Fact:** US markets are closed on Thanksgiving (Thursday 26 November 2026) and close early on Friday *(to confirm, research section B)*. FTM MACHINE also trades gold, Bitcoin, the yen and the Hang Seng.
+- **Facts** (NYSE, confirmed): US stock markets are closed on Thursday 26 November 2026 and close early at 13:00 New York time on Friday 27 November. Bitcoin trades every day; FTM MACHINE also trades gold, the yen and the Hang Seng.
 
 **Script**
 
@@ -238,14 +239,14 @@
 - **Pillar:** emotion
 - **Voice:** af_bella
 - **Sound:** drive
-- **Statistic:** Black Friday or Cyber Week spending from research section C *(fill on the day)*
+- **Statistics** (percent only; confirmed forecasts): the National Retail Federation says 64% of US shoppers plan to do most of their holiday shopping over Thanksgiving weekend; Adobe expects online Black Friday spending to rise 9.2% on last year.
 
 **Script**
 
 | # | On screen | Voice |
 |---|---|---|
 | 1 | **Black Friday. 3 things nobody tells you.** | "Black Friday. Three things nobody tells you." |
-| 2 | 1 · *[statistic]* | "One: *[Black Friday spending statistic]*." |
+| 2 | 1 · **64%** of shoppers plan to buy most of their gifts **this weekend** *(NRF)* | "One: sixty-four percent of shoppers plan to buy most of their gifts this one weekend." |
 | 3 | 2 · A discount is still money **leaving.** | "Two: a fifty percent discount still means money leaving your account." |
 | 4 | 3 · Your future self has **no Black Friday.** | "Three: your future self doesn't get a sale. Only what you started today." |
 | 5 | FTM MACHINE works for your future · **fixed rules, 24/7** | "FTM MACHINE trades for your future with fixed rules, every day of the year." |
@@ -270,6 +271,7 @@
 - **Voice:** bf_isabella
 - **Sound:** cinema
 - **Wording:** careful and respectful, no promise. FTM keeps trading with its rules; it is no insurance.
+- **Statistic** (Federal Reserve, SHED 2025, confirmed): 37% of US adults could not cover a small surprise expense entirely with cash. Say "a small surprise bill", with no money amount.
 
 **Script**
 
@@ -277,7 +279,7 @@
 |---|---|---|
 | 1 | **Day 1 in hospital. Day 1 without income.** | *(silence, a heartbeat monitor sound)* |
 | 2 | Your salary needs **you** to show up. | *(silence)* |
-| 3 | Most people have only one income: **their own hands.** | "Most people have only one income: their own hands." |
+| 3 | **37%** of adults could not pay a small surprise bill in cash *(US Federal Reserve)* | "More than one in three adults couldn't pay a small surprise bill in cash. Most people have only one income: their own hands." |
 | 4 | What if something worked **even when you can't?** | "What if something kept working, even on the days you can't?" |
 | 5 | FTM MACHINE trades with fixed rules · **on your own account** | "FTM MACHINE trades with fixed rules, on your own account, every day." |
 | 6 | No promise. **Every trade shown.** | "No promises. Every trade shown. Profit days and loss days." |
@@ -311,7 +313,7 @@
 |---|---|---|
 | 1 | **−3.43%. Our worst day this month.** | "Minus three point four three percent. Our worst day this month." |
 | 2 | 6 Nov · −3.43% · 9 Nov · −3.38% | "Three days later: minus three point three eight. Again." |
-| 3 | Most people would **quit. Or double down.** | "Most people would quit. Or trade harder to win it back." |
+| 3 | Most people would **quit. Or double down.** · 80% of day traders quit within 2 years *(Barber et al., 2020)* | "Most people would quit, or trade harder to win it back. Eighty percent of day traders quit within two years." |
 | 4 | FTM MACHINE did neither. **Same rules.** | "FTM MACHINE did neither. Same rules, next day." |
 | 5 | November so far: **[mtd]** *(fill on the day)* | "November so far: *[mtd]*." |
 | 6 | **[profit] profit days · [loss] loss days** *(fill)* · every one shown | "*[n]* profit days, *[n]* loss days. Every one of them public." |
@@ -332,21 +334,24 @@
 - **Pillar:** system
 - **Voice:** am_onyx
 - **Sound:** drive
-- **Statistics:** the latest Nigeria CPI and a euro-area or US CPI line from research section A/C; a purchasing-power line from C
+- **Statistics** (official, confirmed):
+  - Nigeria inflation 14.06% in October, food 19.13% (NBS).
+  - Euro area 4.0% in October (Eurostat).
+  - US prices +39.6% in 10 years, so cash lost about 28% of its buying power (BLS CPI, Sep 2016 → Sep 2026).
 
 **Script**
 
 | # | On screen | Voice |
 |---|---|---|
 | 1 | **Your savings are shrinking. Quietly.** | "Your savings are shrinking. Quietly. Every day." |
-| 2 | Inflation in Nigeria: **[x%]** · euro area: **[y%]** *(sources)* | "Inflation: *[x]* in Nigeria. *[y]* in Europe." |
+| 2 | Inflation: Nigeria **14.06%** · food **19.13%** · euro area **4.0%** *(NBS, Eurostat)* | "Inflation: fourteen percent in Nigeria, nineteen percent on food. Four percent in Europe." |
 | 3 | Same money. **Less bread. Less fuel. Less rent.** | "Same money. Less bread. Less fuel. Less rent." |
-| 4 | Saving alone **isn't growing.** | "Saving alone isn't growing. It's slowly losing." |
+| 4 | 10 years of cash in the US: **−28% buying power** *(BLS)* | "Cash kept for ten years in America lost about twenty-eight percent of what it can buy. Saving alone isn't growing." |
 | 5 | FTM MACHINE · fixed rules · **every trade public** | "FTM MACHINE trades with fixed rules, and you can check every trade yourself." |
 | 6 | Backtest 2020–2026: **7 of 7 years profitable** | "In our backtest, 2020 to 2026: seven of seven years profitable. Past results, no promise." |
 | 7 | What costs double now? 👇 · **Free account · link in bio** | "What costs double for you now? Comment. Free account, link in bio." |
 
-**Caption:** "Inflation quietly eats savings: [x%] in Nigeria, [y%] in Europe. Saving alone isn't growing. FTM MACHINE trades with fixed rules, every trade public (backtest 2020–2026: 7 of 7 years profitable). Free account: link in bio."
+**Caption:** "Inflation quietly eats savings: 14.06% in Nigeria (food 19.13%), 4.0% in the euro area. Saving alone isn't growing. FTM MACHINE trades with fixed rules, every trade public (backtest 2020–2026: 7 of 7 years profitable). Free account: link in bio."
 **First comment:** "What costs double for you now compared to two years ago? 👇"
 
 **Images (2026-11-28-1300-01 … 06)** — one woman, 50s, Nigerian, market trader, colourful ankara dress, in every image:
@@ -428,7 +433,7 @@
 - **Pillar:** time
 - **Voice:** bm_daniel
 - **Sound:** lofi → cinema
-- **Statistic:** a retirement or pension gap figure from research section C
+- **Statistic** (Federal Reserve, SHED 2025, confirmed): only 35% of non-retired US adults think their retirement savings are on track.
 
 **Script**
 
@@ -436,7 +441,7 @@
 |---|---|---|
 | 1 | **Have you read your pension letter?** | "Have you actually read your pension letter?" |
 | 2 | The number at the bottom. **Silence.** | "That number at the bottom. Most people go quiet." |
-| 3 | *[pension or retirement statistic]* | "*[statistic]*." |
+| 3 | Only **35%** think their retirement savings are on track *(US Federal Reserve)* | "Only thirty-five percent of working adults think their retirement savings are on track." |
 | 4 | One plan **isn't enough** anymore. | "One plan isn't enough anymore." |
 | 5 | FTM MACHINE · fixed rules · **your own account** | "FTM MACHINE trades with fixed rules on your own account, and you can pause it any time." |
 | 6 | The live account: **free to watch, today.** | "Start by watching the live account. Free. Today." |
@@ -481,6 +486,16 @@
 3. A door slightly open with warm light behind it, "a new month" mood.
 
 ---
+
+## Sources for the outside figures
+- **ILO, unpaid care work (2018):** https://www.ilo.org/resource/news/ilo-calls-urgent-action-prevent-looming-global-care-crisis
+- **Chague et al., "Day Trading for a Living?" (2019):** https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3423101
+- **Barber, Lee, Liu & Odean, "Learning, Fast or Slow" (2020):** https://econpapers.repec.org/RePEc:oup:rasset:v:10:y:2020:i:1:p:61-93
+- **Federal Reserve, SHED 2025:** https://www.federalreserve.gov/publications/2026-economic-well-being-of-us-households-in-2025-executive-summary.htm
+- **NRF holiday forecast (Nov 2026)** and **Adobe holiday forecast (Sep 2026):** https://news.adobe.com/news/2026/09/adobe-us-holiday-shopping-season-to-hit-record
+- **Inflation:** NBS Nigeria (Oct 2026); Eurostat (18 Nov 2026); BLS CPI (Sep 2016 and Sep 2026)
+- **Nvidia:** SEC 8-K (23 Nov 2026), CNN, Reuters; Nasdaq's week from Reuters (20 Nov 2026)
+- **NYSE holiday calendar 2026**
 
 ## Fallbacks
 - **If a news fact changes or can't be confirmed on the day:** that scene becomes an FTM live-account fact instead.
