@@ -98,6 +98,9 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - FTM is not chasing a free market. No post, caption, slide, story, video, voice line, cover or first comment says "free" ("free account", "start free", "free to watch", "watch free"…).
 - Say instead: "Tap the link in our bio to create your account", "Create your account · link in bio", "Watch every FTM trade", "Every trade shown".
 
+## Posting without waiting (owner instruction, 24 November 2026)
+- Every video is still sent to the owner first. If he has not answered 2 hours before its posting time, it goes out as planned: schedule it then (or schedule it right away and hold/change it if he asks before then). His "hold" or changes always win.
+
 ## Votes, not written questions (owner instruction, 23 November 2026)
 - Add a C option whenever some people fit neither A nor B (owner 23 Nov: "Nvidia: sold in fear / held on" also needs "C: wasn't in the market"); answers stay at most 23 characters.
 - People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
