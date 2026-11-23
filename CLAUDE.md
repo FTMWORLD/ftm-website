@@ -99,6 +99,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Say instead: "Tap the link in our bio to create your account", "Create your account · link in bio", "Watch every FTM trade", "Every trade shown".
 
 ## Votes, not written questions (owner instruction, 23 November 2026)
+- Add a C option whenever some people fit neither A nor B (owner 23 Nov: "Nvidia: sold in fear / held on" also needs "C: wasn't in the market"); answers stay at most 23 characters.
 - People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
 - LinkedIn: a real poll (linkedinData type poll, 2 options of at most 30 characters, duration THREE_DAYS) as its own post 30 minutes after the 18:00 video, once a day, which shows the live % per answer.
 - Instagram, Facebook, TikTok, YouTube: the first comment is the A/B vote ("Vote with one tap 👇 🅰️ … 🅱️ … Reply 🅰️ or 🅱️"), and the closing slide/end card carries the same "A or B?" line. Real poll stickers with live % exist only in Instagram/Facebook stories and cannot be added through Metricool's API.

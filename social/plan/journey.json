@@ -454,7 +454,8 @@
    "vote": {
     "q": "Nvidia this month: what did you do?",
     "a": "Sold in fear",
-    "b": "Held on"
+    "b": "Held on",
+    "c": "Wasn't in the market"
    },
    "open": "Nearly thirty percent. In one morning.",
    "scenes": [
@@ -480,7 +481,7 @@
     ],
     [
      "cta",
-     "Nvidia this month. A, sold in fear. B, held on. Vote in the comments, and tap the link in our bio to watch every FTM trade."
+     "Nvidia this month. A, sold in fear. B, held on. C, you weren't in the market. Vote in the comments, and tap the link in our bio to watch every FTM trade."
     ]
    ],
    "note": "ChatGPT images 2026-11-24-1300-01..06."
