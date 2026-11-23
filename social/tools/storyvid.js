@@ -30,6 +30,7 @@ background:radial-gradient(90% 60% at 50% 42%,#1d3590 0%,#122a7a 34%,#0b1640 70%
 #big{font-size:210px;font-weight:900;letter-spacing:-.055em;line-height:1;margin-top:34px;color:${tone};text-shadow:0 0 80px ${tone}55,0 20px 60px rgba(0,0,0,.45)}
 #bl{font-size:36px;font-weight:700;color:#dfe4ff;margin-top:10px}
 #title{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1.12;margin-top:30px;color:#eef1ff;text-wrap:balance}
+#title b{display:block;white-space:nowrap}
 #chips{display:flex;margin-top:0;flex-wrap:wrap;justify-content:center;gap:0 16px}
 .c{margin-top:36px;font-size:32px;font-weight:700;padding:14px 24px;border-radius:18px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.16)}
 #cta{margin-top:54px;display:flex;flex-direction:column;align-items:center;gap:18px}
@@ -67,6 +68,8 @@ const P=[];for(let i=0;i<22;i++){const d=document.createElement('div');d.classNa
 const ease=x=>x<0?0:x>1?1:1-Math.pow(1-x,3);
 const back=x=>{x=Math.max(0,Math.min(1,x));const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
 function inn(el,t0,t,dy){if(!el)return;if(el._h==null){el._h=el.offsetHeight;el._m=parseFloat(getComputedStyle(el).marginTop)||0}const k=ease((t-t0)/.45),g=ease((t-t0)/.35);el.style.opacity=k;el.style.height=(el._h*g)+'px';el.style.marginTop=(el._m*g)+'px';el.style.transform='translateY('+((1-k)*(dy||60))+'px)'}
+(function(){const H=document.getElementById('hook');if(H&&H.querySelector('b')){const lh=parseFloat(getComputedStyle(H).lineHeight)||94;if(H.offsetHeight>lh*1.5){H.querySelectorAll('b').forEach(b=>{b.style.display='block';b.style.whiteSpace='nowrap'});let fs=92;const fit=()=>[...H.querySelectorAll('b')].every(b=>b.scrollWidth<=H.clientWidth+1);while(!fit()&&fs>64){fs-=3;H.style.fontSize=fs+'px'}if(!fit())H.querySelectorAll('b').forEach(b=>b.style.whiteSpace='normal')}}})();
+(function(){const T=document.getElementById('title');if(T){let fs=52;const fit=()=>[...T.querySelectorAll('b')].every(b=>b.scrollWidth<=T.clientWidth+1);while(!fit()&&fs>36){fs-=2;T.style.fontSize=fs+'px'}if(!fit())T.querySelectorAll('b').forEach(b=>b.style.whiteSpace='normal')}})();
 (function(){const bb=document.getElementById('big');if(bb)bb.textContent=BIG;document.querySelectorAll('#col .e').forEach(el=>{el._h=el.offsetHeight;el._m=parseFloat(getComputedStyle(el).marginTop)||0;el.style.overflow='visible'})})();
 window.R=function(t){
  document.getElementById('grid').style.transform='translateY('+(-(t*14)%80)+'px)';

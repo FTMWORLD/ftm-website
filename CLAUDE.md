@@ -114,6 +114,7 @@ FTM MACHINE answers all three: it is in the market around the clock, has no emot
 ## Centred, always a call to action (owner instruction, 23 November 2026, repeated)
 - Every post, slide, story, cover and video frame is laid out in the CENTRE of the screen: never text at the top with an empty middle and bottom. Check a frame of each before posting.
 - Every post and story ends with a clear call to action (e.g. "Start free · link in bio", "Tap our name for the link", "Follow for 6 p.m."). No quiet posts without one.
+- Lines break at the sentence, never inside one (owner 23 Nov): each sentence or figure group stays on one line ("Every trade shown." / "8 profit days, 7 loss days."), never a lone word or number at a line end. social/tools/storyvid.js puts the gold part of a title or headline on its own line and shrinks it to fit; check every frame for this before posting.
 - Old pre-made picture stories are never posted: each story slot gets that day's video story from social/tools/stories.py; if it cannot be made in time, the slot stays empty (draft) rather than posting an old picture.
 
 ## Profit days and loss days (owner instruction, 21 November 2026)
