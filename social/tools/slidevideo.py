@@ -1,6 +1,6 @@
 """Turns result slides into a 9:16 video with FTM's own vibrant finance music (no third-party music, so no copyright claims).
 python3 social/tools/slidevideo.py out.mp4 slide1.jpg slide2.jpg ...   (each slide 5 s, slow zoom, soft crossfade)
-Owner 23 Nov: the one result video carries the red "Tap our name for the link" badge (TAP=0 turns it off), centred in the top band."""
+Owner 23 Nov: the one result video carries the red "Tap the link in our bio" badge (TAP=0 turns it off), centred in the top band."""
 import sys, subprocess, wave, numpy as np, os, tempfile
 out, slides = sys.argv[1], sys.argv[2:]
 per, fade, sr = float(os.environ.get('PER', 5)), 0.6, 48000
@@ -39,10 +39,10 @@ o = wave.open(wav, 'w'); o.setnchannels(2); o.setsampwidth(2); o.setframerate(sr
 if os.environ.get('TAP', '1') != '0':
     from PIL import Image, ImageDraw, ImageFont
     S2 = 2; fnt = ImageFont.truetype('/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf' if os.path.exists('/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf') else '/usr/share/fonts/opentype/inter/InterDisplay-Medium.otf', 34 * S2)
-    txt = os.environ.get('TAPTEXT', 'Tap our name for the link'); tw = int(fnt.getlength(txt)); H = 74 * S2; W = tw + 112 * S2
+    txt = os.environ.get('TAPTEXT', 'Tap the link in our bio'); tw = int(fnt.getlength(txt)); H = 74 * S2; W = tw + 112 * S2
     im = Image.new('RGBA', (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, W - 1, H - 1], radius=H // 2, fill=(229, 50, 62, 240))
-    ax, ay = 30 * S2, 19 * S2; d.line([(ax + 34 * S2, ay + 36 * S2), (ax + 4 * S2, ay + 6 * S2)], fill='white', width=6 * S2); d.line([(ax + 4 * S2, ay + 28 * S2), (ax + 4 * S2, ay + 4 * S2), (ax + 28 * S2, ay + 4 * S2)], fill='white', width=6 * S2, joint='curve')
+    ax, ay = 26 * S2, 22 * S2; d.rounded_rectangle([ax, ay + 8 * S2, ax + 26 * S2, ay + 24 * S2], radius=8 * S2, outline='white', width=5 * S2); d.rounded_rectangle([ax + 16 * S2, ay + 8 * S2, ax + 42 * S2, ay + 24 * S2], radius=8 * S2, outline='white', width=5 * S2)  # link icon
     d.text((86 * S2, H // 2), txt, font=fnt, fill='white', anchor='lm')
     im = im.resize((W // S2, H // S2), Image.LANCZOS); tapf = os.path.join(tmp, 'tap.png'); im.save(tapf)
     v2 = os.path.join(tmp, 'vt.mp4')

@@ -52,9 +52,9 @@ BRAND = [
     {'kicker': 'Portfolio · 2020 to 2026', 'hook': 'Five markets. <b>One account.</b>', 'big': '+98,644%', 'bigTone': 'gold',
      'bigLabel': 'Growth profile · full backtest', 'title': '7 of 7 years profitable. <b>Every trade on the trust engine.</b>', 'cta': 'See every trade'},
     {'kicker': 'Your money', 'hook': 'Your money never <b>leaves your account.</b>', 'title': 'FTM MACHINE trades on your own broker account, in your name.',
-     'chips': ['Pause any time', 'Every trade shown'], 'cta': 'Tap our name for the link'},
+     'chips': ['Pause any time', 'Every trade shown'], 'cta': 'Tap the link in our bio'},
     {'kicker': 'Around the clock', 'hook': 'Markets move <b>at 3 a.m.</b>', 'title': 'FTM MACHINE doesn\'t sleep. <b>You can.</b>',
-     'chips': ['Gold', 'Bitcoin', 'US Tech 100', 'USD/JPY', 'Hang Seng 50'], 'cta': 'Tap our name for the link'},
+     'chips': ['Gold', 'Bitcoin', 'US Tech 100', 'USD/JPY', 'Hang Seng 50'], 'cta': 'Tap the link in our bio'},
     {'kicker': 'Built for', 'hook': 'Nurses, pilots, drivers, <b>parents.</b>', 'title': 'Too busy to watch the markets? <b>FTM is built for you.</b>',
      'cta': 'Create your account'},
     {'kicker': 'Your account', 'hook': 'See it all <b>before you start.</b>', 'title': 'The live account, every trade, every day. <b>In your account.</b>',
@@ -66,7 +66,7 @@ BRAND = [
     {'kicker': 'Community', 'hook': 'Meet people <b>running FTM MACHINE.</b>', 'title': 'Leaderboard, chat and every result. <b>Inside your account.</b>',
      'cta': 'Join in one tap'},
     {'kicker': 'Every evening' if EVE else 'Every night', 'hook': 'Today at <b>6 p.m.</b>' if EVE else 'Tonight at <b>11 p.m.</b>', 'title': ('Yesterday\'s real result, every single trade. ' if EVE else 'Today\'s real result, every single trade. ') + '<b>Follow so it finds you.</b>',
-     'cta': 'Follow + tap our name'},
+     'cta': 'Follow + link in bio'},
 ]
 
 
@@ -107,12 +107,12 @@ def day_set(d):
         s11 = {'kicker': 'Best day in ' + mon, 'hook': 'One day. <b>One account.</b>', 'big': pc(bd['pct']), 'bigTone': 'up',
                'bigLabel': '%s %d %s on the live account' % (WD[bdt.weekday()], bdt.day, mon[:3])}
     s11.update({'title': ('%s so far: <b>%s</b>' % (mon, pc(y['mtd']))) if y.get('mtd') is not None else 'Every trade shown.',
-           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 1})
+           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Tap the link in our bio', 'seed': dt.day * 3 + 1})
     m = y.get('mtd')
     s17 = {'kicker': 'Live account · ' + mon, 'hook': 'While you were busy,', 'big': pc(m) if m is not None else '%d trades' % f['trades'],
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',
            'title': 'Every trade shown. <b>%d profit days, %d loss days.</b>' % (f['green'], f['red']),
-           'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 2}
+           'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Tap the link in our bio', 'seed': dt.day * 3 + 2}
     o = datetime.date.fromisoformat(d).toordinal() * 3
     br = []
     for k in range(3):
@@ -121,7 +121,7 @@ def day_set(d):
     my, fa = pick(MYTHS, od)
     myth = {'kicker': 'Myth vs fact', 'hook': 'Heard this <b>before?</b>', 'myth': my, 'fact': fa, 'theme': 'night', 'cta': 'See the facts', 'seed': dt.day * 5 + 11}
     ph, pt = pick(POVS, od)
-    pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Tap our name for the link', 'seed': dt.day * 5 + 13}
+    pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Tap the link in our bio', 'seed': dt.day * 5 + 13}
     quiz = {'kicker': 'Quick question', 'hook': 'Today on FTM: <b>profit day or loss day?</b>', 'opts': ['Profit day', 'Loss day'],
             'title': 'Reply with A or B. <b>The answer: tomorrow at 6 p.m.</b>', 'theme': 'gold', 'cta': 'Follow for the answer', 'seed': dt.day * 5 + 17}
     try:
@@ -162,7 +162,7 @@ def night(d, j):
         chips.append('Open trades: %s' % pc(fl.get('pct', 0)))  # owner 23 Nov: percentages only on social media
     chips.append('Swipe the post for every trade' if j.get('trades', 0) else 'Swipe the post for the numbers')
     chips = chips[:2]
-    cfg.update({'chips': chips, 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 4})
+    cfg.update({'chips': chips, 'cta': 'Tap the link in our bio', 'seed': dt.day * 3 + 4})
     return cfg
 
 

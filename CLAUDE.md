@@ -87,13 +87,16 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Instagram collaborators (owner 22 Nov): ONLY on the 13:00 post (never 09:30 or 18:00). Instagram takes at most 3 collaborators per post through the API, so take 3 a day in rotation from social/plan/collabs.json (accounts list + next index; update it after each post). Each accepts the invite in their app. Add new collaborators to that file when the owner names them.
 - Covers (owner 22 Nov, very important): every feed video's FIRST FRAME is its cover (social/tools/coverfirst.py; render.js cover and buildvid.py apply it automatically), because TikTok (personal account) and YouTube Shorts show frame 1 and ignore the uploaded thumbnail. YouTube Shorts: send NO videoThumbnailUrl (YouTube does not take custom Shorts thumbnails through the API, which caused the "could not upload thumbnail" warning mails; the channel's phone is already verified). The cover is the Short's first frame instead. This overrides any job prompt that says to send a YouTube thumbnail.
 - No-trade posts never repeat (owner 22 Nov): render.js quiet has variants (1, 2, …); use a different one each time (social/plan/notrade.json) and fresh caption wording; add new variants with other real statistics.
-- ONE video per post time (owner 23 Nov, repeated): the 6 p.m. result is one video (Instagram post/reel, Facebook reel, TikTok, Short, LinkedIn); never a second story video next to it. That video carries the red "Tap our name for the link" badge (social/tools/slidevideo.py adds it).
+- ONE video per post time (owner 23 Nov, repeated): the 6 p.m. result is one video (Instagram post/reel, Facebook reel, TikTok, Short, LinkedIn); never a second story video next to it. That video carries the red "Tap the link in our bio" badge (social/tools/slidevideo.py adds it).
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Never "tap our name" (owner instruction, 23 November 2026)
+- It is not professional. Say "Tap the link in our bio" (or "link in bio", "the link below" where a link is in the caption, "visit our profile"). Never "tap our name" in voice, screen, badge, caption or comment.
+
 ## Never say "free" (owner instruction, 23 November 2026)
 - FTM is not chasing a free market. No post, caption, slide, story, video, voice line, cover or first comment says "free" ("free account", "start free", "free to watch", "watch free"…).
-- Say instead: "Tap our name to create your account", "Create your account · link in bio", "Watch every FTM trade", "Every trade shown".
+- Say instead: "Tap the link in our bio to create your account", "Create your account · link in bio", "Watch every FTM trade", "Every trade shown".
 
 ## Votes, not written questions (owner instruction, 23 November 2026)
 - People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
@@ -130,7 +133,7 @@ FTM MACHINE answers all three: it is in the market around the clock, has no emot
 
 ## Centred, always a call to action (owner instruction, 23 November 2026, repeated)
 - Every post, slide, story, cover and video frame is laid out in the CENTRE of the screen: never text at the top with an empty middle and bottom. Check a frame of each before posting.
-- Every post and story ends with a clear call to action (e.g. "Tap our name for the link", "Create your account · link in bio", "Follow for 6 p.m."). No quiet posts without one.
+- Every post and story ends with a clear call to action (e.g. "Tap the link in our bio", "Create your account · link in bio", "Follow for 6 p.m."). No quiet posts without one.
 - Lines break at the sentence, never inside one (owner 23 Nov): each sentence or figure group stays on one line ("Every trade shown." / "8 profit days, 7 loss days."), never a lone word or number at a line end. social/tools/storyvid.js puts the gold part of a title or headline on its own line and shrinks it to fit; check every frame for this before posting.
 - Old pre-made picture stories are never posted: each story slot gets that day's video story from social/tools/stories.py; if it cannot be made in time, the slot stays empty (draft) rather than posting an old picture.
 
