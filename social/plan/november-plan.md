@@ -18,8 +18,8 @@
   - Growth: +98,644%, 7 of 7 years profitable, 6,209 trades, deepest fall from a high −36.91%.
   - Best year: 2025, +317.94%. In 2022, a hard year for markets, Growth made +280.94%.
   - Balanced: +12,137%, deepest fall −21.92%.
-- **Live account, November** *(fill on the day; on 23 Nov)*:
-  - +10.5% so far: 9 profit days, 7 loss days and 7 days without a single trade, from 100 trades.
+- **Live account, November** *(fill on the day; after 23 Nov)*:
+  - +10.5% so far: 9 profit days, 7 loss days and 7 days without a single trade, from 101 trades.
   - Worst day −3.43% (6 Nov), then −3.38% three days later (9 Nov). Best day +10.16% (12 Nov).
 - **How it works:** it trades on the person's own broker account, in their name. It can be paused with one tap. Every trade is public. 5 markets (gold, Bitcoin, US Tech 100, USD/JPY, Hang Seng 50), 24/7. Setup takes about 10 minutes. A free account needs just an email.
 - **What's on the website** (free account):
@@ -54,7 +54,7 @@
 | 7 | When do YOU check the markets? 👇 · **Free account · link in bio** | "When do you check the markets? Tell us. Then open your free account. Link in bio." |
 
 **Caption:** "The market moves at 3 a.m. Who's watching for you? FTM MACHINE trades 5 markets 24/7 with fixed rules, and every trade is public. Free account, just your email: link in bio. Last 24 hours on FTM every day at 6 p.m."
-**First comment:** "What time do you usually check the markets? 👇"
+**Vote (first comment + end card):** "When do you check the markets?" 🅰️ Every hour · 🅱️ Only after work
 
 **Images for ChatGPT (files 2026-11-24-0930-01 … 06)** — one woman in her 30s, West African, natural short hair, small gold earrings in every image:
 1. Night bedroom at 3 a.m., she is asleep, phone face down on the side table, a soft blue city glow through the curtains.
@@ -87,7 +87,7 @@
 | 7 | Did you sell, hold or buy? 👇 · **Free account · link in bio** | "Did you sell, hold or buy? Comment. And watch every FTM trade free. Link in bio." |
 
 **Caption:** "Nvidia's CEO is back and the stock rose nearly 30% in one morning. Did you sell in fear, or were you at work when it moved? FTM MACHINE follows fixed rules, not headlines. Free account: link in bio."
-**First comment:** "Honestly: did you sell, hold or buy Nvidia this month? 👇"
+**Vote (first comment + end card):** "Nvidia this month: what did you do?" 🅰️ Sold in fear · 🅱️ Held on
 
 **Images (2026-11-24-1300-01 … 06)** — one man, late 20s, South Asian, hoodie, in every image:
 1. Late evening, he looks at his phone on a sofa, worried, the phone screen facing away.
@@ -122,7 +122,7 @@
 | 7 | Tag a mum who deserves this 👇 · **Free account · link in bio** | "Tag a mum who never stops. Free account, link in bio." |
 
 **Caption:** "Mums run two shifts and the second one has no salary. FTM MACHINE trades for you with fixed rules while you take care of everyone else, and your money stays in your own account. Free account: link in bio."
-**First comment:** "Tag a mum who never stops 💛👇"
+**Vote (first comment + end card):** "Mums: when do you get time for money?" 🅰️ Never · 🅱️ Late at night
 
 **Images (2026-11-25-0930-01 … 06)** — one mother, 30s, East African, headwrap, with two kids (boy 7, girl 4) in every image:
 1. Early morning, she is packing school bags at the door while the kids put on shoes.
@@ -155,7 +155,7 @@
 **Fallback if FTM is behind that day:** "Some days a giant wins. We still show it. That's the point." The figures stay true either way.
 
 **Caption:** "We put FTM's live account on the same chart as Nvidia, Apple and the S&P 500. Pick any rival yourself in your free account, and see every trade behind our line. Link in bio."
-**First comment:** "Which company should we race next? 👇"
+**Vote (first comment + end card):** "Who should we race next?" 🅰️ Tesla · 🅱️ Amazon
 
 **Images (2026-11-25-1300-01 … 04)** — no people needed; our own screen recording is the main visual:
 1. A dark, premium desk at night with a large blank monitor glowing navy (we add the chart), a gold desk lamp.
@@ -188,7 +188,7 @@
 | 7 | Which myth did you believe? 👇 · **Free account · link in bio** | "Which myth did you believe? Comment. Then look for yourself. Link in bio." |
 
 **Caption:** "Myth: investing is only for the rich, needs all-day charts and your money leaves your hands. Fact: FTM MACHINE trades on your own account with fixed rules, and you can watch every trade free first. Link in bio."
-**First comment:** "Which myth did you believe longest? 👇"
+**Vote (first comment + end card):** "Which myth did you believe?" 🅰️ Watch charts all day · 🅱️ You need lots of money
 
 **Images (2026-11-26-0930-01 … 06)** — three friends, early 20s, mixed (Black, white, Latina), university vibe, in every image:
 1. A campus café table, laughing, notebooks open.
@@ -219,7 +219,7 @@
 | 7 | What are YOU thankful for? 👇 · **Free account · link in bio** | "What are you thankful for this year? Comment. Free account, link in bio." |
 
 **Caption:** "'What are you thankful for, Grandpa?' 'Time.' Wall Street is closed today, but the world still moves. FTM MACHINE trades 5 markets 24/7 with fixed rules, so you keep your time. Free account: link in bio."
-**First comment:** "What are you thankful for this year? 🦃👇"
+**Vote (first comment + end card):** "Thankful for more of…" 🅰️ Time · 🅱️ Money
 
 **Images (2026-11-26-1300-01 … 06)** — a grandfather, 70s, African American, grey beard, cardigan, and his grandson, 25, in every image:
 1. A Thanksgiving table at home, warm light, the family blurred in the background, the two side by side.
@@ -254,7 +254,7 @@
 | 7 | What did you almost buy today? 👇 · **Link in bio** | "What did you almost buy today? Be honest. Free account, link in bio." |
 
 **Caption:** "Black Friday: a discount is still money leaving. Your future self gets no sale, only what you start today. Watch FTM MACHINE's live account free first. Link in bio."
-**First comment:** "What did you almost buy today? 😅👇"
+**Vote (first comment + end card):** "Black Friday: you…" 🅰️ Bought on impulse · 🅱️ Kept my money
 
 **Images (2026-11-27-0930-01 … 06)** — one young man, 24, Nigerian, stylish, in every image:
 1. A busy shopping street with sale banners (no readable words), crowds, him holding three shopping bags.
@@ -286,7 +286,7 @@
 | 7 | Start a second income stream today · **Free account · link in bio** | "Start building something that works without you. Free account, link in bio." |
 
 **Caption:** "Day 1 in hospital is day 1 without income for most people. FTM MACHINE trades with fixed rules on your own account, every day, and shows every trade, profit days and loss days. Free account: link in bio."
-**First comment:** "Do you have more than one income? 👇"
+**Vote (first comment + end card):** "How many incomes do you have?" 🅰️ Just one · 🅱️ More than one
 
 **Images (2026-11-27-1300-01 … 06)** — one man, 40s, Eastern European, in every image:
 1. A hospital bed, him resting with an IV, worried, a soft window light.
@@ -320,7 +320,7 @@
 | 7 | Would you have quit? 👇 · **Link in bio** | "Would you have quit on day six? Tell us. Free account, link in bio." |
 
 **Caption:** "Our worst day this month was −3.43%, then −3.38% three days later. FTM MACHINE didn't quit and didn't double down: same rules. November so far: [mtd]. Every loss day is public. Link in bio."
-**First comment:** "Be honest: would you have quit after the second loss day? 👇"
+**Vote (first comment + end card):** "After 2 loss days, would you…" 🅰️ Quit · 🅱️ Stay with the rules
 
 **Images (2026-11-28-0930-01 … 04)** — abstract and cinematic, mostly our own animated charts:
 1. A stormy sea at night, one lighthouse with a steady beam.
@@ -352,7 +352,7 @@
 | 7 | What costs double now? 👇 · **Free account · link in bio** | "What costs double for you now? Comment. Free account, link in bio." |
 
 **Caption:** "Inflation quietly eats savings: 14.06% in Nigeria (food 19.13%), 4.0% in the euro area. Saving alone isn't growing. FTM MACHINE trades with fixed rules, every trade public (backtest 2020–2026: 7 of 7 years profitable). Free account: link in bio."
-**First comment:** "What costs double for you now compared to two years ago? 👇"
+**Vote (first comment + end card):** "What hurts most right now?" 🅰️ Food prices · 🅱️ Rent
 
 **Images (2026-11-28-1300-01 … 06)** — one woman, 50s, Nigerian, market trader, colourful ankara dress, in every image:
 1. An open-air market stall in Lagos, morning, her arranging tomatoes.
@@ -387,7 +387,7 @@
 | 7 | Which year would you start? 👇 · **Link in bio** | "Which year would you have started? Comment. Free account, link in bio." |
 
 **Caption:** "7 years, 7 profitable years in our 2020–2026 backtest (Growth): 2020 +103.84%, 2022 +280.94% while markets fell, 2025 +317.94%. Deepest fall −36.91%, shown too. 6,209 trades on the trust engine. Link in bio."
-**First comment:** "Which year would you have started? 👇"
+**Vote (first comment + end card):** "Which year would you start?" 🅰️ 2020 · 🅱️ Today
 
 **Images (2026-11-29-0930-01 … 03)** — calm backgrounds behind our animation:
 1. An empty, dark, elegant room with a big window at dawn.
@@ -414,7 +414,7 @@
 | 7 | Apply free · **link in bio** | "The FTM affiliate programme. Apply free. Link in bio." |
 
 **Caption:** "10% of every subscription payment your friends make, 20% as a Master affiliate, paid monthly in USDT or invested in FTM. Your friends get 5% off. Apply free: link in bio."
-**First comment:** "Who would you send your link to first? 👇"
+**Vote (first comment + end card):** "Your first referral?" 🅰️ A friend · 🅱️ Family
 
 **Images (2026-11-29-1300-01 … 05)** — two friends, early 20s, one Ghanaian and one Brazilian, in every image:
 1. Both on a bed with phones, laughing, a cosy room.
@@ -448,7 +448,7 @@
 | 7 | How old will you be in 2040? 👇 · **Link in bio** | "How old will you be in twenty forty? Comment. Free account, link in bio." |
 
 **Caption:** "Have you read the number at the bottom of your pension letter? One plan isn't enough anymore. Watch FTM MACHINE's live account free, every trade shown. Link in bio."
-**First comment:** "How old will you be in 2040? 👇"
+**Vote (first comment + end card):** "In 2040 you'll be…" 🅰️ Under 50 · 🅱️ Over 50
 
 **Images (2026-11-30-0930-01 … 05)** — one man, 45, German, glasses, in every image:
 1. A kitchen table in the morning, an opened envelope and a letter in his hand (no readable text), a serious face.
@@ -478,7 +478,7 @@
 | 7 | Free account · **link in bio** · results daily at 6 p.m. | "Free account, link in bio. Last 24 hours, every day at six." |
 
 **Caption:** "November on FTM, every single day: best +10.16%, worst −3.43%, [n] days without a trade, month [final %]. December starts tomorrow. Free account: link in bio. Last 24 hours on FTM every day at 6 p.m."
-**First comment:** "What's your money goal for December? 👇"
+**Vote (first comment + end card):** "December money goal?" 🅰️ Save more · 🅱️ Grow what I have
 
 **Images (2026-11-30-1300-01 … 03)** — backgrounds for our calendar animation:
 1. A clean desk with a paper wall calendar (no readable dates), morning light, navy and gold tones.
