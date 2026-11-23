@@ -1,0 +1,16 @@
+{
+ "_rules": "Verified market news for stories and posts (owner 23 Nov 2026: relate content to the day's news). Only facts confirmed by at least two reliable sources; give the source; never state an intraday move as a close. One entry per posting date (the day it is used).",
+ "2026-11-24": {
+  "kicker": "Market news · 23 Nov",
+  "hook": "Nvidia's CEO is <b>back.</b>",
+  "title": "The stock rose <b>nearly 30% in one morning.</b>",
+  "chips": [
+   "Did you catch it?",
+   "FTM MACHINE is awake 24/7"
+  ],
+  "src": "Sources: Nvidia press release, CNN, NPR, Reuters · 23 Nov 2026",
+  "theme": "paper",
+  "sound": "news",
+  "cta": "Never miss a move · start free"
+ }
+}

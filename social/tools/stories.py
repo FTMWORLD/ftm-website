@@ -70,6 +70,30 @@ BRAND = [
 ]
 
 
+MYTHS = [  # owner 23 Nov 2026: more formats; every fact here is true and shown on the website
+    ('You must watch the charts all day.', 'FTM MACHINE watches them 24/7. <b>You watch the result.</b>'),
+    ('You have to send your money to the platform.', 'Your money stays in <b>your own broker account</b>, in your name.'),
+    ('Once it starts, you can\'t stop it.', 'One tap pauses FTM MACHINE. <b>Any time.</b>'),
+    ('It\'s only for traders.', 'It\'s built for <b>people with jobs, families and no time.</b>'),
+    ('You only see results after you pay.', 'The live account and every trade are <b>free to watch.</b>'),
+    ('One good month proves a strategy.', 'We tested 2020–2026: <b>7 of 7 years profitable.</b>'),
+    ('Automated trading never has a loss day.', 'It does. <b>We post every loss day too.</b>'),
+]
+POVS = [
+    ('POV: you\'re asleep and <b>Bitcoin moves at 3 a.m.</b>', 'FTM MACHINE was awake. <b>Every trade shown.</b>'),
+    ('POV: you lost a trade and want it <b>back right now.</b>', 'That\'s revenge trading. <b>FTM MACHINE has no feelings.</b>'),
+    ('POV: you check the app at lunch and the <b>move already happened.</b>', 'FTM MACHINE was there when it started.'),
+    ('POV: you moved your stop <b>"just this once".</b>', 'FTM MACHINE never moves its stop. <b>Fixed rules.</b>'),
+    ('POV: payday, and you don\'t know <b>where to start.</b>', 'Watch a live account first. <b>Free.</b>'),
+    ('POV: the market opens in Tokyo <b>while you sleep in Berlin.</b>', 'FTM MACHINE trades 5 markets, <b>24/7.</b>'),
+]
+SOUNDS = ['drive', 'lofi', 'news', 'cinema', 'bright']
+
+
+def pick(lst, o, k=0):
+    return lst[(o + k) % len(lst)]
+
+
 def day_set(d):
     y = latest_before(d)
     dt = datetime.date.fromisoformat(y['date']); mon = MON[dt.month - 1]; f = month_facts(y)
@@ -93,7 +117,29 @@ def day_set(d):
     br = []
     for k in range(3):
         b = dict(BRAND[(o + k) % len(BRAND)]); b['seed'] = dt.day * 5 + 3 + k; br.append(b)
-    return [('0800', br[0]), ('1030', s11), ('1300', br[1]), ('1530', s17), ('1800', br[2])]
+    od = datetime.date.fromisoformat(d).toordinal()
+    my, fa = pick(MYTHS, od)
+    myth = {'kicker': 'Myth vs fact', 'hook': 'Heard this <b>before?</b>', 'myth': my, 'fact': fa, 'theme': 'night', 'cta': 'See the facts free', 'seed': dt.day * 5 + 11}
+    ph, pt = pick(POVS, od)
+    pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Start free in one tap', 'seed': dt.day * 5 + 13}
+    quiz = {'kicker': 'Quick question', 'hook': 'Today on FTM: <b>profit day or loss day?</b>', 'opts': ['Profit day', 'Loss day'],
+            'title': 'Reply with A or B. <b>The answer: tomorrow at 6 p.m.</b>', 'theme': 'gold', 'cta': 'Follow for the answer', 'seed': dt.day * 5 + 17}
+    try:
+        news = json.load(open(os.path.join(HERE, '..', 'plan', 'news.json'))).get(d)
+    except Exception:
+        news = None
+    s17['theme'] = 'gold' if s17.get('bigTone') == 'up' else 'navy'
+    first = dict(news, seed=dt.day * 5 + 19) if news else (myth if od % 2 else pov)
+    mid = quiz if news or od % 2 == 0 else myth
+    plan = [('0800', first), ('1030', s11), ('1300', mid), ('1530', s17), ('1800', pov if (news or od % 2) else br[0])]
+    used = None
+    for i, (slot, cfg) in enumerate(plan):
+        if not cfg.get('sound'):
+            snd = SOUNDS[(od + i * 2) % len(SOUNDS)]
+            if snd == used: snd = SOUNDS[(SOUNDS.index(snd) + 1) % len(SOUNDS)]
+            cfg['sound'] = snd
+        used = cfg['sound']
+    return plan
 
 
 def night(d, j):

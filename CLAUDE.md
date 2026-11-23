@@ -107,6 +107,11 @@ Every 09:30 video takes ONE of these and tells it through a fresh, concrete scen
 3. System: even calm people fail with a bad strategy or poor execution (late entries, no stop, moving targets).
 FTM MACHINE answers all three: it is in the market around the clock, has no emotions, and follows fixed, tested rules.
 
+## Creative variety and the day's news (owner instruction, 23 November 2026)
+- Every 09:30 video, 13:00 couple video and story follows social/plan/playbook.md: a different format each time (news reaction, POV, myth vs fact, quiz, texting, countdown, honest loss day…), never the same format as the last 7 posts; a different sound style each time (finbed styles drive, lofi, news, cinema, bright); 21–40 s; one viewer named in the first 1.5 s.
+- Relate to the day: the evening job checks the day's market and money news and ties one real item to FTM's pillars (time, emotion, system). Only facts confirmed by two reliable sources, with the source; never an intraday move as a close; never an invented number. Verified items go in social/plan/news.json.
+- Learn from our numbers: every Monday pull Metricool analytics and write what worked into the playbook.
+
 ## Percentages only on social media (owner instruction, 23 November 2026)
 - Our social media posts never show money amounts ($, €): not in captions, slides, videos, stories or covers. Open trades (floating), closed trades, day/week/month results and the account are shown as percentages only, e.g. "Open trades right now: +0.52%", never "+$579.43".
 - Each closed trade's % = its result on the balance at that moment (start balance = end balance − the day's results), chained; the trades of a day chain to exactly the day's %. social/tools/render.js does this.
