@@ -77,7 +77,7 @@ body.th-paper .o,body.th-gold .o{background:#fff;color:#0b1640;border-color:#0b1
  ${(D.opts || []).length ? `<div id="opts">${D.opts.map((o, i) => `<div class="o e ${i ? 'dn' : 'up'}"><i>${'AB'[i] || ''}</i>${esc(o)}</div>`).join('')}</div>` : ''}
  ${D.src ? `<div id="src" class="e">${esc(D.src)}</div>` : ''}
  ${(D.chips || []).length ? `<div id="chips">${D.chips.map(c => `<div class="c e">${esc(c)}</div>`).join('')}</div>` : ''}
- <div id="cta" class="e"${D.cta === false ? ' style="display:none"' : ''}><div id="btn"><div id="ring"></div>${esc(D.cta || 'Start free today')}</div><div id="cs">${D.ctaSub || 'Link in our bio · <b>ftmwealthnation.com</b>'}</div></div>
+ <div id="cta" class="e"${D.cta === false ? ' style="display:none"' : ''}><div id="btn"><div id="ring"></div>${esc(D.cta || 'Tap our name for the link')}</div><div id="cs">${D.ctaSub || 'Link in our bio · <b>ftmwealthnation.com</b>'}</div></div>
 </div>
 <div id="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>
 <script>

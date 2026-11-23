@@ -42,6 +42,6 @@ const SCN = {
         ${opt('A', 'Sold in fear', 0)}${opt('B', 'Held on', 1)}
         <div style="height:40px"></div>
         <div style="display:inline-block;padding:28px 60px;border-radius:70px;background:#E5323E;font-weight:900;font-size:50px;opacity:${ease((t - 1.3) / .4)};transform:scale(${1 + .03 * sin(t * 5)})">Tap our name for the link</div>
-        <div style="margin-top:30px;font-weight:700;font-size:36px;color:#dfe4ff;opacity:${ease((t - 1.7) / .4)}">Watch every FTM trade, free</div></div>`;
+        <div style="margin-top:30px;font-weight:700;font-size:36px;color:#dfe4ff;opacity:${ease((t - 1.7) / .4)}">Watch every FTM trade</div></div>`;
   }
 };

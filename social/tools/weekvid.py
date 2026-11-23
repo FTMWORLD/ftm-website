@@ -13,7 +13,7 @@ key = 'week-' + W['to']
 scenes = [['week', 'Here is this week on FTM, day by day. Real numbers from the account.'],
           ['best', 'The best day was %s, %s. The lowest day was %s, %s. We show every single one.' % (NAMES[best[0].weekday()], said(best[1]['pct']), NAMES[low[0].weekday()], said(low[1]['pct']))],
           ['total', 'The week in total: %s, from %d closed trades.' % (said(W['pct']), W['trades'])],
-          ['cta', 'See every trade live. Start free at ftm wealth nation dot com, and follow us for every result at 11 p.m.']]
+          ['cta', 'See every trade live. Create your account at ftm wealth nation dot com, and follow us for every result at 11 p.m.']]
 J = json.load(open(os.path.join(root, 'plan', 'journey.json')))
 J['days'] = [d for d in J['days'] if d.get('date') != key] + [{'date': key, 'stage': '2 · Proof', 'format': 'Weekly recap (newsroom, real figures)', 'title': 'This week on FTM',
              'open': '%s days, Saturday to Friday. Here is every result, profit days and loss days.' % ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven'][len(week)], 'hook': 'Our week, in numbers.', 'scenes': scenes}]

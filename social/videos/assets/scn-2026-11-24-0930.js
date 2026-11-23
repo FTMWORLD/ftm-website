@@ -33,7 +33,7 @@ const SCN = {
       <div style="font-size:150px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:10px;opacity:${ease(t / .4)}">24/7</div></div>
       <div style="position:absolute;left:70px;right:70px;top:880px;text-align:center">${['Gold', 'Bitcoin', 'US Tech 100', 'USD/JPY', 'Hang Seng 50'].map((x, i) => chip(i, x)).join('')}</div>` + say(t, '5 markets. Fixed rules.', 'One machine.');
   },
-  proof(t, d) { return ph(6, t, { dz: .07 }) + say(t, 'Every trade shown.', 'Free to watch.'); },
+  proof(t, d) { return ph(6, t, { dz: .07 }) + say(t, 'Every trade shown.', 'Watch every one.'); },
   cta(t, d) {
     const opt = (k, x, i) => { const a = ease((t - .5 - i * .3) / .4); return `<div style="display:flex;align-items:center;gap:24px;width:900px;margin:0 auto 24px;padding:26px 30px;border-radius:30px;background:rgba(255,255,255,.07);border:2px solid ${k === 'A' ? 'rgba(255,255,255,.25)' : 'rgba(212,175,55,.7)'};opacity:${a};transform:translateX(${(1 - a) * (k === 'A' ? -40 : 40)}px)"><b style="flex:none;width:92px;height:92px;border-radius:24px;display:grid;place-items:center;font-size:56px;background:${k === 'A' ? '#152a7a' : '#D4AF37'};color:${k === 'A' ? '#fff' : '#0b1640'}">${k}</b><span style="font-size:54px;font-weight:800;white-space:nowrap">${x}</span></div>`; };
     return `<div style="position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 45%,#1d3590 0%,#0b1640 55%,#040822 100%)"></div>
@@ -43,6 +43,6 @@ const SCN = {
         ${opt('A', 'Every hour', 0)}${opt('B', 'Only after work', 1)}
         <div style="height:40px"></div>
         <div style="display:inline-block;padding:28px 60px;border-radius:70px;background:#E5323E;font-weight:900;font-size:50px;opacity:${ease((t - 1.3) / .4)};transform:scale(${1 + .03 * sin(t * 5)})">Tap our name for the link</div>
-        <div style="margin-top:30px;font-weight:700;font-size:36px;color:#dfe4ff;opacity:${ease((t - 1.7) / .4)}">Free account · every trade at 6 p.m.</div></div>`;
+        <div style="margin-top:30px;font-weight:700;font-size:36px;color:#dfe4ff;opacity:${ease((t - 1.7) / .4)}">Create your account · every trade at 6 p.m.</div></div>`;
   }
 };

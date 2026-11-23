@@ -9,7 +9,7 @@
 - **Length:** 25–40 seconds. Captions on screen in short chunks, centred, with lines breaking at the sentence.
 - **Real figures only, in % only.** Never money amounts, never a promise. Backtest figures always say "backtest 2020–2026". Live figures marked *(fill on the day)* are read from the live account that morning.
 - **Wording:** say "people", never "traders"; "profit days" and "loss days"; in videos "Growth", never "Growth 2×".
-- **Ending:** every video ends with a question for the comments plus the call to action, "Free account, just your email: link in bio". Every caption adds "Last 24 hours on FTM, every day at 6 p.m."
+- **Ending:** every video ends with a question for the comments plus the call to action, "Create your account, just your email: link in bio". Every caption adds "Last 24 hours on FTM, every day at 6 p.m."
 - **Voices:** our own AI voices only, a different voice and music style every post.
 - **ChatGPT images:** realistic photos, vertical 9:16 (1080×1920), the same person or people across one video, no text, logos, numbers or readable screens, and a calm top 20% and bottom 30%. FTM colours where natural: navy #0B1440, gold #D4AF37, a touch of red #E5323E. Every set below is written to paste straight into ChatGPT; the file names are given so I can match them.
 
@@ -21,8 +21,8 @@
 - **Live account, November** *(fill on the day; after 23 Nov)*:
   - +10.5% so far: 9 profit days, 7 loss days and 7 days without a single trade, from 101 trades.
   - Worst day −3.43% (6 Nov), then −3.38% three days later (9 Nov). Best day +10.16% (12 Nov).
-- **How it works:** it trades on the person's own broker account, in their name. It can be paused with one tap. Every trade is public. 5 markets (gold, Bitcoin, US Tech 100, USD/JPY, Hang Seng 50), 24/7. Setup takes about 10 minutes. A free account needs just an email.
-- **What's on the website** (free account):
+- **How it works:** it trades on the person's own broker account, in their name. It can be paused with one tap. Every trade is public. 5 markets (gold, Bitcoin, US Tech 100, USD/JPY, Hang Seng 50), 24/7. Setup takes about 10 minutes. An account needs just an email.
+- **What's on the website** (in your account):
   - The live account with every trade.
   - The month calendar.
   - The compare chart: FTM next to Nvidia, Apple, Microsoft, Tesla, the S&P 500, gold, Bitcoin and more.
@@ -50,10 +50,10 @@
 | 3 | 08:40 · Tokyo, the yen | "Eight forty. Tokyo is trading the yen while you're stuck in traffic." |
 | 4 | 15:30 · New York opens | "Three thirty. New York opens. You're in a meeting." |
 | 5 | 24 hours. 5 markets. **One machine.** | "FTM MACHINE trades five markets, twenty-four seven, with fixed rules." |
-| 6 | Every trade shown. **Free to watch.** | "And every trade is public. You can watch it all, free." |
-| 7 | When do YOU check the markets? 👇 · **Free account · link in bio** | "When do you check the markets? Tell us. Then open your free account. Link in bio." |
+| 6 | Every trade shown. **Watch every one.** | "And every trade is public. You can watch every single one." |
+| 7 | When do YOU check the markets? 👇 · **Create your account · link in bio** | "When do you check the markets? Tell us. Then create your account. Link in bio." |
 
-**Caption:** "The market moves at 3 a.m. Who's watching for you? FTM MACHINE trades 5 markets 24/7 with fixed rules, and every trade is public. Free account, just your email: link in bio. Last 24 hours on FTM every day at 6 p.m."
+**Caption:** "The market moves at 3 a.m. Who's watching for you? FTM MACHINE trades 5 markets 24/7 with fixed rules, and every trade is public. Create your account, just your email: link in bio. Last 24 hours on FTM every day at 6 p.m."
 **Vote (first comment + end card):** "When do you check the markets?" 🅰️ Every hour · 🅱️ Only after work
 
 **Images for ChatGPT (files 2026-11-24-0930-01 … 06)** — one woman in her 30s, West African, natural short hair, small gold earrings in every image:
@@ -84,9 +84,9 @@
 | 4 | The move came at **the worst time to be away.** | "Then the move came. Fast. If you were at work, you missed it." |
 | 5 | Fear sells. Rules don't. | "Fear makes people sell. Fixed rules don't feel fear." |
 | 6 | FTM MACHINE · fixed rules · US Tech 100 · 24/7 | "FTM MACHINE trades the US Tech 100, where Nvidia lives, with rules, not headlines." |
-| 7 | Did you sell, hold or buy? 👇 · **Free account · link in bio** | "Did you sell, hold or buy? Comment. And watch every FTM trade free. Link in bio." |
+| 7 | Did you sell, hold or buy? 👇 · **Create your account · link in bio** | "Did you sell, hold or buy? Comment. And watch every FTM trade. Link in bio." |
 
-**Caption:** "Nvidia's CEO is back and the stock rose nearly 30% in one morning. Did you sell in fear, or were you at work when it moved? FTM MACHINE follows fixed rules, not headlines. Free account: link in bio."
+**Caption:** "Nvidia's CEO is back and the stock rose nearly 30% in one morning. Did you sell in fear, or were you at work when it moved? FTM MACHINE follows fixed rules, not headlines. Create your account: link in bio."
 **Vote (first comment + end card):** "Nvidia this month: what did you do?" 🅰️ Sold in fear · 🅱️ Held on
 
 **Images (2026-11-24-1300-01 … 06)** — one man, late 20s, South Asian, hoodie, in every image:
@@ -119,9 +119,9 @@
 | 4 | The market moved **three times** while the rice cooked. | "The market moved three times while the rice cooked." |
 | 5 | FTM MACHINE trades while you take care of everyone. | "FTM MACHINE trades for you, with fixed rules, while you take care of everyone else." |
 | 6 | Your money stays in **your** account. **Pause in one tap.** | "Your money stays in your own account. One tap pauses it." |
-| 7 | Tag a mum who deserves this 👇 · **Free account · link in bio** | "Tag a mum who never stops. Free account, link in bio." |
+| 7 | Tag a mum who deserves this 👇 · **Create your account · link in bio** | "Tag a mum who never stops. Create your account, link in bio." |
 
-**Caption:** "Mums run two shifts and the second one has no salary. FTM MACHINE trades for you with fixed rules while you take care of everyone else, and your money stays in your own account. Free account: link in bio."
+**Caption:** "Mums run two shifts and the second one has no salary. FTM MACHINE trades for you with fixed rules while you take care of everyone else, and your money stays in your own account. Create your account: link in bio."
 **Vote (first comment + end card):** "Mums: when do you get time for money?" 🅰️ Never · 🅱️ Late at night
 
 **Images (2026-11-25-0930-01 … 06)** — one mother, 30s, East African, headwrap, with two kids (boy 7, girl 4) in every image:
@@ -149,12 +149,12 @@
 | 3 | + Apple · Microsoft · Tesla · S&P 500 · gold · Bitcoin | "Apple. Microsoft. Tesla. The S&P 500. Gold. Bitcoin." |
 | 4 | FTM **[x%]** · Nvidia **[y%]** · S&P 500 **[z%]** *(fill on the day)* | "This month so far: FTM *[x]*, Nvidia *[y]*, the S&P 500 *[z]*." |
 | 5 | Every trade behind the line is **public.** | "And behind our line, every single trade is public." |
-| 6 | Pick your rival in the chart. **Free.** | "Pick any rival yourself, inside your free account." |
-| 7 | Who should we race next? 👇 · **Link in bio** | "Who should we race next? Comment. Free account, link in bio." |
+| 6 | Pick your rival in the chart. **Your choice.** | "Pick any rival yourself, inside your account." |
+| 7 | Who should we race next? 👇 · **Link in bio** | "Who should we race next? Comment. Create your account, link in bio." |
 
 **Fallback if FTM is behind that day:** "Some days a giant wins. We still show it. That's the point." The figures stay true either way.
 
-**Caption:** "We put FTM's live account on the same chart as Nvidia, Apple and the S&P 500. Pick any rival yourself in your free account, and see every trade behind our line. Link in bio."
+**Caption:** "We put FTM's live account on the same chart as Nvidia, Apple and the S&P 500. Pick any rival yourself in your account, and see every trade behind our line. Link in bio."
 **Vote (first comment + end card):** "Who should we race next?" 🅰️ Tesla · 🅱️ Amazon
 
 **Images (2026-11-25-1300-01 … 04)** — no people needed; our own screen recording is the main visual:
@@ -184,10 +184,10 @@
 | 3 | MYTH: Trading all day makes you rich. ❌ · **97% of people who day-traded 300+ days lost money** *(Brazil study, 2019)* | "Trade all day and get rich? A study of day traders in Brazil: ninety-seven percent of those who kept going lost money." |
 | 4 | MYTH: You must give your money away. ❌ | "You must hand your money to someone? Myth. It stays in your own account." |
 | 5 | FACT: Losses happen. **We show every loss day.** ✅ | "Fact: losses happen. We show every single loss day." |
-| 6 | FACT: The live account is **free to watch.** ✅ | "Fact: you can watch the live account free, before you decide anything." |
-| 7 | Which myth did you believe? 👇 · **Free account · link in bio** | "Which myth did you believe? Comment. Then look for yourself. Link in bio." |
+| 6 | FACT: The live account is **open to watch.** ✅ | "Fact: you can watch the live account, before you decide anything." |
+| 7 | Which myth did you believe? 👇 · **Create your account · link in bio** | "Which myth did you believe? Comment. Then look for yourself. Link in bio." |
 
-**Caption:** "Myth: investing is only for the rich, needs all-day charts and your money leaves your hands. Fact: FTM MACHINE trades on your own account with fixed rules, and you can watch every trade free first. Link in bio."
+**Caption:** "Myth: investing is only for the rich, needs all-day charts and your money leaves your hands. Fact: FTM MACHINE trades on your own account with fixed rules, and you can watch every trade first. Link in bio."
 **Vote (first comment + end card):** "Which myth did you believe?" 🅰️ Watch charts all day · 🅱️ You need lots of money
 
 **Images (2026-11-26-0930-01 … 06)** — three friends, early 20s, mixed (Black, white, Latina), university vibe, in every image:
@@ -216,9 +216,9 @@
 | 4 | Today Wall Street is closed. **The world isn't.** | GRANDSON: "Today Wall Street is closed. But gold, Bitcoin and Asia still move." |
 | 5 | FTM MACHINE · 5 markets · 24/7 · fixed rules | GRANDSON: "That's why I use FTM MACHINE. It works with rules, so I keep my time." |
 | 6 | **"Then don't waste the one thing I didn't have."** | GRANDPA: "Then don't waste the one thing I didn't have." |
-| 7 | What are YOU thankful for? 👇 · **Free account · link in bio** | "What are you thankful for this year? Comment. Free account, link in bio." |
+| 7 | What are YOU thankful for? 👇 · **Create your account · link in bio** | "What are you thankful for this year? Comment. Create your account, link in bio." |
 
-**Caption:** "'What are you thankful for, Grandpa?' 'Time.' Wall Street is closed today, but the world still moves. FTM MACHINE trades 5 markets 24/7 with fixed rules, so you keep your time. Free account: link in bio."
+**Caption:** "'What are you thankful for, Grandpa?' 'Time.' Wall Street is closed today, but the world still moves. FTM MACHINE trades 5 markets 24/7 with fixed rules, so you keep your time. Create your account: link in bio."
 **Vote (first comment + end card):** "Thankful for more of…" 🅰️ Time · 🅱️ Money
 
 **Images (2026-11-26-1300-01 … 06)** — a grandfather, 70s, African American, grey beard, cardigan, and his grandson, 25, in every image:
@@ -250,10 +250,10 @@
 | 3 | 2 · A discount is still money **leaving.** | "Two: a fifty percent discount still means money leaving your account." |
 | 4 | 3 · Your future self has **no Black Friday.** | "Three: your future self doesn't get a sale. Only what you started today." |
 | 5 | FTM MACHINE works for your future · **fixed rules, 24/7** | "FTM MACHINE trades for your future with fixed rules, every day of the year." |
-| 6 | The live account: **free to watch.** | "Before you buy anything: watch the live account free." |
-| 7 | What did you almost buy today? 👇 · **Link in bio** | "What did you almost buy today? Be honest. Free account, link in bio." |
+| 6 | The live account: **open to watch.** | "Before you buy anything: watch the live account." |
+| 7 | What did you almost buy today? 👇 · **Link in bio** | "What did you almost buy today? Be honest. Create your account, link in bio." |
 
-**Caption:** "Black Friday: a discount is still money leaving. Your future self gets no sale, only what you start today. Watch FTM MACHINE's live account free first. Link in bio."
+**Caption:** "Black Friday: a discount is still money leaving. Your future self gets no sale, only what you start today. Watch FTM MACHINE's live account first. Link in bio."
 **Vote (first comment + end card):** "Black Friday: you…" 🅰️ Bought on impulse · 🅱️ Kept my money
 
 **Images (2026-11-27-0930-01 … 06)** — one young man, 24, Nigerian, stylish, in every image:
@@ -283,9 +283,9 @@
 | 4 | What if something worked **even when you can't?** | "What if something kept working, even on the days you can't?" |
 | 5 | FTM MACHINE trades with fixed rules · **on your own account** | "FTM MACHINE trades with fixed rules, on your own account, every day." |
 | 6 | No promise. **Every trade shown.** | "No promises. Every trade shown. Profit days and loss days." |
-| 7 | Start a second income stream today · **Free account · link in bio** | "Start building something that works without you. Free account, link in bio." |
+| 7 | Start a second income stream today · **Create your account · link in bio** | "Start building something that works without you. Create your account, link in bio." |
 
-**Caption:** "Day 1 in hospital is day 1 without income for most people. FTM MACHINE trades with fixed rules on your own account, every day, and shows every trade, profit days and loss days. Free account: link in bio."
+**Caption:** "Day 1 in hospital is day 1 without income for most people. FTM MACHINE trades with fixed rules on your own account, every day, and shows every trade, profit days and loss days. Create your account: link in bio."
 **Vote (first comment + end card):** "How many incomes do you have?" 🅰️ Just one · 🅱️ More than one
 
 **Images (2026-11-27-1300-01 … 06)** — one man, 40s, Eastern European, in every image:
@@ -317,7 +317,7 @@
 | 4 | FTM MACHINE did neither. **Same rules.** | "FTM MACHINE did neither. Same rules, next day." |
 | 5 | November so far: **[mtd]** *(fill on the day)* | "November so far: *[mtd]*." |
 | 6 | **[profit] profit days · [loss] loss days** *(fill)* · every one shown | "*[n]* profit days, *[n]* loss days. Every one of them public." |
-| 7 | Would you have quit? 👇 · **Link in bio** | "Would you have quit on day six? Tell us. Free account, link in bio." |
+| 7 | Would you have quit? 👇 · **Link in bio** | "Would you have quit on day six? Tell us. Create your account, link in bio." |
 
 **Caption:** "Our worst day this month was −3.43%, then −3.38% three days later. FTM MACHINE didn't quit and didn't double down: same rules. November so far: [mtd]. Every loss day is public. Link in bio."
 **Vote (first comment + end card):** "After 2 loss days, would you…" 🅰️ Quit · 🅱️ Stay with the rules
@@ -349,9 +349,9 @@
 | 4 | 10 years of cash in the US: **−28% buying power** *(BLS)* | "Cash kept for ten years in America lost about twenty-eight percent of what it can buy. Saving alone isn't growing." |
 | 5 | FTM MACHINE · fixed rules · **every trade public** | "FTM MACHINE trades with fixed rules, and you can check every trade yourself." |
 | 6 | Backtest 2020–2026: **7 of 7 years profitable** | "In our backtest, 2020 to 2026: seven of seven years profitable. Past results, no promise." |
-| 7 | What costs double now? 👇 · **Free account · link in bio** | "What costs double for you now? Comment. Free account, link in bio." |
+| 7 | What costs double now? 👇 · **Create your account · link in bio** | "What costs double for you now? Comment. Create your account, link in bio." |
 
-**Caption:** "Inflation quietly eats savings: 14.06% in Nigeria (food 19.13%), 4.0% in the euro area. Saving alone isn't growing. FTM MACHINE trades with fixed rules, every trade public (backtest 2020–2026: 7 of 7 years profitable). Free account: link in bio."
+**Caption:** "Inflation quietly eats savings: 14.06% in Nigeria (food 19.13%), 4.0% in the euro area. Saving alone isn't growing. FTM MACHINE trades with fixed rules, every trade public (backtest 2020–2026: 7 of 7 years profitable). Create your account: link in bio."
 **Vote (first comment + end card):** "What hurts most right now?" 🅰️ Food prices · 🅱️ Rent
 
 **Images (2026-11-28-1300-01 … 06)** — one woman, 50s, Nigerian, market trader, colourful ankara dress, in every image:
@@ -384,7 +384,7 @@
 | 4 | 2025 · **+317.94%** · best year | "Twenty twenty-five, the best year." |
 | 5 | Deepest fall from a high: **−36.91%.** We show that too. | "The deepest fall along the way: minus thirty-six point nine one. We show that too." |
 | 6 | Backtest 2020–2026 · Growth · 6,209 trades · **all on the trust engine** | "Six thousand two hundred and nine trades, every one on our trust engine." |
-| 7 | Which year would you start? 👇 · **Link in bio** | "Which year would you have started? Comment. Free account, link in bio." |
+| 7 | Which year would you start? 👇 · **Link in bio** | "Which year would you have started? Comment. Create your account, link in bio." |
 
 **Caption:** "7 years, 7 profitable years in our 2020–2026 backtest (Growth): 2020 +103.84%, 2022 +280.94% while markets fell, 2025 +317.94%. Deepest fall −36.91%, shown too. 6,209 trades on the trust engine. Link in bio."
 **Vote (first comment + end card):** "Which year would you start?" 🅰️ 2020 · 🅱️ Today
@@ -411,9 +411,9 @@
 | 4 | "At 10 paying customers → **20%**." | HER: "And at ten paying customers I become a Master affiliate. Twenty percent." |
 | 5 | "Paid in USDT. Or I invest it in FTM." | HER: "Paid every month in USDT. Or I put it straight into FTM." |
 | 6 | "You get 5% off with my code 😉" | HER: "And you get five percent off with my code." |
-| 7 | Apply free · **link in bio** | "The FTM affiliate programme. Apply free. Link in bio." |
+| 7 | Apply · **link in bio** | "The FTM affiliate programme. Apply now. Link in bio." |
 
-**Caption:** "10% of every subscription payment your friends make, 20% as a Master affiliate, paid monthly in USDT or invested in FTM. Your friends get 5% off. Apply free: link in bio."
+**Caption:** "10% of every subscription payment your friends make, 20% as a Master affiliate, paid monthly in USDT or invested in FTM. Your friends get 5% off. Apply: link in bio."
 **Vote (first comment + end card):** "Your first referral?" 🅰️ A friend · 🅱️ Family
 
 **Images (2026-11-29-1300-01 … 05)** — two friends, early 20s, one Ghanaian and one Brazilian, in every image:
@@ -444,10 +444,10 @@
 | 3 | Only **35%** think their retirement savings are on track *(US Federal Reserve)* | "Only thirty-five percent of working adults think their retirement savings are on track." |
 | 4 | One plan **isn't enough** anymore. | "One plan isn't enough anymore." |
 | 5 | FTM MACHINE · fixed rules · **your own account** | "FTM MACHINE trades with fixed rules on your own account, and you can pause it any time." |
-| 6 | The live account: **free to watch, today.** | "Start by watching the live account. Free. Today." |
-| 7 | How old will you be in 2040? 👇 · **Link in bio** | "How old will you be in twenty forty? Comment. Free account, link in bio." |
+| 6 | The live account: **open to watch, today.** | "Start by watching the live account. Today." |
+| 7 | How old will you be in 2040? 👇 · **Link in bio** | "How old will you be in twenty forty? Comment. Create your account, link in bio." |
 
-**Caption:** "Have you read the number at the bottom of your pension letter? One plan isn't enough anymore. Watch FTM MACHINE's live account free, every trade shown. Link in bio."
+**Caption:** "Have you read the number at the bottom of your pension letter? One plan isn't enough anymore. Watch FTM MACHINE's live account, every trade shown. Link in bio."
 **Vote (first comment + end card):** "In 2040 you'll be…" 🅰️ Under 50 · 🅱️ Over 50
 
 **Images (2026-11-30-0930-01 … 05)** — one man, 45, German, glasses, in every image:
@@ -475,9 +475,9 @@
 | 4 | **[n] days without a trade** | "And *[n]* days with no trade at all. Rules said wait." |
 | 5 | November: **[final %]** *(fill on the day)* | "November: *[final]*." |
 | 6 | December starts **tomorrow.** | "December starts tomorrow. Will you just watch again?" |
-| 7 | Free account · **link in bio** · results daily at 6 p.m. | "Free account, link in bio. Last 24 hours, every day at six." |
+| 7 | Create your account · **link in bio** · results daily at 6 p.m. | "Create your account, link in bio. Last 24 hours, every day at six." |
 
-**Caption:** "November on FTM, every single day: best +10.16%, worst −3.43%, [n] days without a trade, month [final %]. December starts tomorrow. Free account: link in bio. Last 24 hours on FTM every day at 6 p.m."
+**Caption:** "November on FTM, every single day: best +10.16%, worst −3.43%, [n] days without a trade, month [final %]. December starts tomorrow. Create your account: link in bio. Last 24 hours on FTM every day at 6 p.m."
 **Vote (first comment + end card):** "December money goal?" 🅰️ Save more · 🅱️ Grow what I have
 
 **Images (2026-11-30-1300-01 … 03)** — backgrounds for our calendar animation:

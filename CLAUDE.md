@@ -91,6 +91,10 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Never say "free" (owner instruction, 23 November 2026)
+- FTM is not chasing a free market. No post, caption, slide, story, video, voice line, cover or first comment says "free" ("free account", "start free", "free to watch", "watch free"…).
+- Say instead: "Tap our name to create your account", "Create your account · link in bio", "Watch every FTM trade", "Every trade shown".
+
 ## Votes, not written questions (owner instruction, 23 November 2026)
 - People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
 - LinkedIn: a real poll (linkedinData type poll, 2 options of at most 30 characters, duration THREE_DAYS) as its own post 30 minutes after the 18:00 video, once a day, which shows the live % per answer.
@@ -126,7 +130,7 @@ FTM MACHINE answers all three: it is in the market around the clock, has no emot
 
 ## Centred, always a call to action (owner instruction, 23 November 2026, repeated)
 - Every post, slide, story, cover and video frame is laid out in the CENTRE of the screen: never text at the top with an empty middle and bottom. Check a frame of each before posting.
-- Every post and story ends with a clear call to action (e.g. "Start free · link in bio", "Tap our name for the link", "Follow for 6 p.m."). No quiet posts without one.
+- Every post and story ends with a clear call to action (e.g. "Tap our name for the link", "Create your account · link in bio", "Follow for 6 p.m."). No quiet posts without one.
 - Lines break at the sentence, never inside one (owner 23 Nov): each sentence or figure group stays on one line ("Every trade shown." / "8 profit days, 7 loss days."), never a lone word or number at a line end. social/tools/storyvid.js puts the gold part of a title or headline on its own line and shrinks it to fit; check every frame for this before posting.
 - Old pre-made picture stories are never posted: each story slot gets that day's video story from social/tools/stories.py; if it cannot be made in time, the slot stays empty (draft) rather than posting an old picture.
 

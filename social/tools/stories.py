@@ -50,23 +50,23 @@ def month_facts(j):
 
 BRAND = [
     {'kicker': 'Portfolio · 2020 to 2026', 'hook': 'Five markets. <b>One account.</b>', 'big': '+98,644%', 'bigTone': 'gold',
-     'bigLabel': 'Growth profile · full backtest', 'title': '7 of 7 years profitable. <b>Every trade on the trust engine.</b>', 'cta': 'See every trade free'},
+     'bigLabel': 'Growth profile · full backtest', 'title': '7 of 7 years profitable. <b>Every trade on the trust engine.</b>', 'cta': 'See every trade'},
     {'kicker': 'Your money', 'hook': 'Your money never <b>leaves your account.</b>', 'title': 'FTM MACHINE trades on your own broker account, in your name.',
-     'chips': ['Pause any time', 'Every trade shown'], 'cta': 'Start free in one tap'},
+     'chips': ['Pause any time', 'Every trade shown'], 'cta': 'Tap our name for the link'},
     {'kicker': 'Around the clock', 'hook': 'Markets move <b>at 3 a.m.</b>', 'title': 'FTM MACHINE doesn\'t sleep. <b>You can.</b>',
-     'chips': ['Gold', 'Bitcoin', 'US Tech 100', 'USD/JPY', 'Hang Seng 50'], 'cta': 'Start free in one tap'},
+     'chips': ['Gold', 'Bitcoin', 'US Tech 100', 'USD/JPY', 'Hang Seng 50'], 'cta': 'Tap our name for the link'},
     {'kicker': 'Built for', 'hook': 'Nurses, pilots, drivers, <b>parents.</b>', 'title': 'Too busy to watch the markets? <b>FTM is built for you.</b>',
-     'cta': 'Create your free account'},
-    {'kicker': 'Free account', 'hook': 'See it all <b>before you pay.</b>', 'title': 'The live account, every trade, every day. <b>Free.</b>',
-     'chips': ['No card needed', 'One tap'], 'cta': 'Open your free account'},
+     'cta': 'Create your account'},
+    {'kicker': 'Your account', 'hook': 'See it all <b>before you start.</b>', 'title': 'The live account, every trade, every day. <b>In your account.</b>',
+     'chips': ['No card needed', 'One tap'], 'cta': 'Open your account'},
     {'kicker': 'Transparency', 'hook': 'Every trade. <b>Every day. Public.</b>', 'title': 'Profit days and loss days, posted at %s. <b>Nothing hidden.</b>' % ('6 p.m.' if EVE else '11 p.m.'),
-     'cta': 'See it free'},
+     'cta': 'See it in your account'},
     {'kicker': 'How it works', 'hook': '3 steps. <b>About 10 minutes.</b>', 'title': 'You stay in control. <b>Pause any time.</b>',
-     'chips': ['1 · Free account', '2 · Connect your broker', '3 · FTM MACHINE trades'], 'cta': 'Start step 1 free'},
-    {'kicker': 'Community', 'hook': 'Meet people <b>running FTM MACHINE.</b>', 'title': 'Leaderboard, chat and every result. <b>Inside your free account.</b>',
-     'cta': 'Join free in one tap'},
+     'chips': ['1 · Create your account', '2 · Connect your broker', '3 · FTM MACHINE trades'], 'cta': 'Start with step 1'},
+    {'kicker': 'Community', 'hook': 'Meet people <b>running FTM MACHINE.</b>', 'title': 'Leaderboard, chat and every result. <b>Inside your account.</b>',
+     'cta': 'Join in one tap'},
     {'kicker': 'Every evening' if EVE else 'Every night', 'hook': 'Today at <b>6 p.m.</b>' if EVE else 'Tonight at <b>11 p.m.</b>', 'title': ('Yesterday\'s real result, every single trade. ' if EVE else 'Today\'s real result, every single trade. ') + '<b>Follow so it finds you.</b>',
-     'cta': 'Follow + start free'},
+     'cta': 'Follow + tap our name'},
 ]
 
 
@@ -75,7 +75,7 @@ MYTHS = [  # owner 23 Nov 2026: more formats; every fact here is true and shown 
     ('You have to send your money to the platform.', 'Your money stays in <b>your own broker account</b>, in your name.'),
     ('Once it starts, you can\'t stop it.', 'One tap pauses FTM MACHINE. <b>Any time.</b>'),
     ('It\'s only for traders.', 'It\'s built for <b>people with jobs, families and no time.</b>'),
-    ('You only see results after you pay.', 'The live account and every trade are <b>free to watch.</b>'),
+    ('You only see results after you pay.', 'The live account and every trade are <b>open to watch.</b>'),
     ('One good month proves a strategy.', 'We tested 2020–2026: <b>7 of 7 years profitable.</b>'),
     ('Automated trading never has a loss day.', 'It does. <b>We post every loss day too.</b>'),
 ]
@@ -84,7 +84,7 @@ POVS = [
     ('POV: you lost a trade and want it <b>back right now.</b>', 'That\'s revenge trading. <b>FTM MACHINE has no feelings.</b>'),
     ('POV: you check the app at lunch and the <b>move already happened.</b>', 'FTM MACHINE was there when it started.'),
     ('POV: you moved your stop <b>"just this once".</b>', 'FTM MACHINE never moves its stop. <b>Fixed rules.</b>'),
-    ('POV: payday, and you don\'t know <b>where to start.</b>', 'Watch a live account first. <b>Free.</b>'),
+    ('POV: payday, and you don\'t know <b>where to start.</b>', 'Watch a live account first. <b>Every trade shown.</b>'),
     ('POV: the market opens in Tokyo <b>while you sleep in Berlin.</b>', 'FTM MACHINE trades 5 markets, <b>24/7.</b>'),
 ]
 SOUNDS = ['drive', 'lofi', 'news', 'cinema', 'bright']
@@ -107,21 +107,21 @@ def day_set(d):
         s11 = {'kicker': 'Best day in ' + mon, 'hook': 'One day. <b>One account.</b>', 'big': pc(bd['pct']), 'bigTone': 'up',
                'bigLabel': '%s %d %s on the live account' % (WD[bdt.weekday()], bdt.day, mon[:3])}
     s11.update({'title': ('%s so far: <b>%s</b>' % (mon, pc(y['mtd']))) if y.get('mtd') is not None else 'Every trade shown.',
-           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 1})
+           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 1})
     m = y.get('mtd')
     s17 = {'kicker': 'Live account · ' + mon, 'hook': 'While you were busy,', 'big': pc(m) if m is not None else '%d trades' % f['trades'],
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',
            'title': 'Every trade shown. <b>%d profit days, %d loss days.</b>' % (f['green'], f['red']),
-           'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 2}
+           'chips': ['%d trades' % f['trades'], '5 markets', '24/7'], 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 2}
     o = datetime.date.fromisoformat(d).toordinal() * 3
     br = []
     for k in range(3):
         b = dict(BRAND[(o + k) % len(BRAND)]); b['seed'] = dt.day * 5 + 3 + k; br.append(b)
     od = datetime.date.fromisoformat(d).toordinal()
     my, fa = pick(MYTHS, od)
-    myth = {'kicker': 'Myth vs fact', 'hook': 'Heard this <b>before?</b>', 'myth': my, 'fact': fa, 'theme': 'night', 'cta': 'See the facts free', 'seed': dt.day * 5 + 11}
+    myth = {'kicker': 'Myth vs fact', 'hook': 'Heard this <b>before?</b>', 'myth': my, 'fact': fa, 'theme': 'night', 'cta': 'See the facts', 'seed': dt.day * 5 + 11}
     ph, pt = pick(POVS, od)
-    pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Start free in one tap', 'seed': dt.day * 5 + 13}
+    pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Tap our name for the link', 'seed': dt.day * 5 + 13}
     quiz = {'kicker': 'Quick question', 'hook': 'Today on FTM: <b>profit day or loss day?</b>', 'opts': ['Profit day', 'Loss day'],
             'title': 'Reply with A or B. <b>The answer: tomorrow at 6 p.m.</b>', 'theme': 'gold', 'cta': 'Follow for the answer', 'seed': dt.day * 5 + 17}
     try:
@@ -162,7 +162,7 @@ def night(d, j):
         chips.append('Open trades: %s' % pc(fl.get('pct', 0)))  # owner 23 Nov: percentages only on social media
     chips.append('Swipe the post for every trade' if j.get('trades', 0) else 'Swipe the post for the numbers')
     chips = chips[:2]
-    cfg.update({'chips': chips, 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 4})
+    cfg.update({'chips': chips, 'cta': 'Tap our name for the link', 'seed': dt.day * 3 + 4})
     return cfg
 
 
