@@ -45,12 +45,11 @@ const LINE = `<svg class="line" viewBox="0 0 100 60" preserveAspectRatio="none">
 const FOOT = `<div class="foot"><i>Invest today, secure tomorrow.</i><u>ftmwealthnation.com</u></div>`;
 
 /* owner 20 Nov: the 23:00 post also shows the open trades' floating P/L (money and % of the balance) at posting time */
-function floatBox() {
+function floatBox() {  /* owner 23 Nov: social posts show percentages only, never money */
   const F = D.floating; if (!F) return '';
-  const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '', col = F.pl > 0 ? '#5fe39b' : F.pl < 0 ? '#ff6b74' : '#ffffff';
-  const money = (F.pl > 0 ? '+' : F.pl < 0 ? '−' : '') + sym + Math.abs(F.pl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const col = F.pct > 0 ? '#5fe39b' : F.pct < 0 ? '#ff6b74' : '#ffffff';
   if (!F.n) return `<div class="st"><b style="font-size:40px">No open trades</b><span>Floating now</span></div>`;
-  return `<div class="st"><b style="color:${col};font-size:40px;white-space:nowrap">${money}${F.pct != null ? ` <span style="font-size:28px;color:${col};letter-spacing:0;text-transform:none">(${pc(F.pct)})</span>` : ''}</b><span>Floating · ${F.n} open trade${F.n === 1 ? '' : 's'}</span></div>`;
+  return `<div class="st"><b style="color:${col};font-size:44px;white-space:nowrap">${pc(F.pct || 0)}</b><span>Floating · ${F.n} open trade${F.n === 1 ? '' : 's'}</span></div>`;
 }
 function day(w, h) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
@@ -72,16 +71,19 @@ function trades(w, h, part, parts) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
   const tm = ms => new Date(ms).toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
   const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '';
-  const mny = v => (v > 0 ? '+' : v < 0 ? '−' : '') + sym + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  // owner 23 Nov: percentages only. Each trade's result on the balance at that moment (start balance = end balance - the day's results)
+  const ALL = (D.rows || []).slice().sort((a, b) => a.c - b.c); let bal = D.balance != null ? D.balance - ALL.reduce((t, r) => t + r.pl, 0) : null; const PCT = new Map();
+  ALL.forEach(r => { PCT.set(r, bal ? r.pl / bal * 100 : null); if (bal != null) bal += r.pl; });
+  const mny = r => { const v = PCT.get(r); return v == null ? '' : pc(v); };
   const rh = Math.min(92, Math.floor((part === parts - 1 && D.balance != null ? 600 : 820) / Math.max(L.length, 1)));
   const rows = L.map(r => `<div style="display:grid;grid-template-columns:122px 1fr 100px 118px 210px;align-items:center;height:${rh}px;border-bottom:1.5px solid rgba(212,175,55,.18);font-size:${Math.min(36, rh * .42)}px">
     <span style="color:#aeb7dc;font-weight:600">${tm(r.c)}</span><span style="font-weight:700;white-space:nowrap">${esc(mk(r.s))}</span><span style="color:#dfe4ff;font-weight:600;white-space:nowrap">${r.v != null ? (+r.v).toFixed(2) : ''}</span>
     <span><b style="font-size:.72em;padding:6px 14px;border-radius:99px;background:${/buy/i.test(r.d) ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${/buy/i.test(r.d) ? 'BUY' : 'SELL'}</b></span>
-    <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(r.pl)}</span></div>`).join('');
+    <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(ALL.find(x => x === r) || r)}</span></div>`).join('');
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick" style="margin-top:40px">Today's trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
+    <div class="kick" style="margin-top:40px">${D.when === 'yesterday' ? 'Yesterday' : 'Today'}'s trades · ${part + 1} of ${parts}</div><div class="date">${wd}, ${d} ${MONTHS[m - 1]} ${y} · Berlin time</div>
     <div style="margin-top:30px;display:grid;grid-template-columns:122px 1fr 100px 118px 210px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Time</span><span>Market</span><span>Lots</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
-    ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+    ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Day result</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
 /* Losing days only: the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
@@ -137,7 +139,7 @@ function weekDays(w, h) {
     <div class="kick" style="margin-top:40px">The week, day by day</div><div class="date">${weekRange()} · Berlin time</div>
     <div style="margin-top:30px;border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;font-size:34px;font-weight:800"><span style="color:#D4AF37;letter-spacing:.06em;font-size:26px;text-transform:uppercase">Week</span><span style="color:${D.pct >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.pct)}</span></div>
-    ${D.balance != null ? `<div style="margin-top:28px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">Account balance</span><span style="font-size:52px;font-weight:800">${sym}${(+D.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></div>
+    ${D.balance != null ? `<div style="margin-top:28px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.mtd != null ? 'Month so far' : 'Week'}</span><span style="font-size:52px;font-weight:800">${pc(D.mtd != null ? D.mtd : D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
 /* Cover image for a reel / short / video (owner 20 Nov: every video post gets its own designed cover). 1080x1920; the words

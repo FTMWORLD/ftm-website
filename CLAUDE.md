@@ -107,8 +107,9 @@ Every 09:30 video takes ONE of these and tells it through a fresh, concrete scen
 3. System: even calm people fail with a bad strategy or poor execution (late entries, no stop, moving targets).
 FTM MACHINE answers all three: it is in the market around the clock, has no emotions, and follows fixed, tested rules.
 
-## Percentages in captions (owner instruction, 23 November 2026)
-- Captions never show money amounts. Open trades (floating) and every result are written as a percentage only, e.g. "Open trades right now: +0.52%", never "+$579.43".
+## Percentages only on social media (owner instruction, 23 November 2026)
+- Our social media posts never show money amounts ($, €): not in captions, slides, videos, stories or covers. Open trades (floating), closed trades, day/week/month results and the account are shown as percentages only, e.g. "Open trades right now: +0.52%", never "+$579.43".
+- Each closed trade's % = its result on the balance at that moment (start balance = end balance − the day's results), chained; the trades of a day chain to exactly the day's %. social/tools/render.js does this.
 
 ## Profit days and loss days (owner instruction, 21 November 2026)
 - Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.

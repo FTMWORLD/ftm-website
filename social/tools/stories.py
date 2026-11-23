@@ -113,7 +113,7 @@ def night(d, j):
                'title': ('%s so far: <b>%s</b>' % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}
     chips = cfg.pop('chips0', [])
     if fl.get('n'):
-        chips.append('Open trades: %s%s (%s)' % ('+' if fl.get('pl', 0) >= 0 else '−', '${:,.0f}'.format(abs(fl.get('pl', 0))), pc(fl.get('pct', 0))))
+        chips.append('Open trades: %s' % pc(fl.get('pct', 0)))  # owner 23 Nov: percentages only on social media
     chips.append('Swipe the post for every trade' if j.get('trades', 0) else 'Swipe the post for the numbers')
     chips = chips[:2]
     cfg.update({'chips': chips, 'cta': 'Start free in one tap', 'seed': dt.day * 3 + 4})
