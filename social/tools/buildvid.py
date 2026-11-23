@@ -15,6 +15,8 @@ shutil.copy(os.path.join(A, 'rig.js'), D)
 shutil.copy(os.path.join(root, 'videos', '2026-11-20b', 'frames.js'), D)
 fr = open(os.path.join(D, 'frames.js')).read()
 fr = fr.replace("const r=await p.evaluate(([S,D])=>setup(S,D),[S,D]);", "const AMP=JSON.parse(fs.readFileSync('vo/amp.json'));const r=await p.evaluate(([S,D,A])=>setup(S,D,A),[S,D,AMP]);")
+# every photo must be loaded before a frame is captured (23 Nov: the first frame = the cover was dark while the photo was still loading)
+fr = fr.replace("x=>render(x)", "async x=>{render(x);await Promise.all([...document.images].map(i=>i.complete&&i.naturalWidth?0:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})))}")
 open(os.path.join(D, 'frames.js'), 'w').write(fr)
 mix = open(os.path.join(root, 'videos', '2026-11-20b', 'mix.py')).read()
 CH = ['[[220,261.63,329.63],[174.61,220,261.63],[196,261.63,329.63],[196,246.94,293.66]]',

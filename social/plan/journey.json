@@ -153,37 +153,6 @@
    "brief": "social/briefs/2026-11-23-0930.md"
   },
   {
-   "date": "2026-11-24",
-   "stage": "Pillar · Emotion",
-   "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
-   "title": "Revenge trading",
-   "open": "One loss. Then you try to win it back. Then it gets worse.",
-   "hook": "One loss. Then you try to win it back. Then it gets worse.",
-   "scenes": [
-    [
-     "loss",
-     "It starts with one small loss. Nothing serious."
-    ],
-    [
-     "revenge",
-     "But it hurts. So you jump straight back in, bigger, to win it back."
-    ],
-    [
-     "spiral",
-     "Another loss. Then another. One bad hour turns into a bad month."
-    ],
-    [
-     "machine",
-     "FTM MACHINE has no ego. After a loss it waits for the next setup, with the same size, every time."
-    ],
-    [
-     "cta",
-     "No emotions, just rules. Start free at ftm wealth nation dot com."
-    ]
-   ],
-   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
-  },
-  {
    "date": "2026-11-25",
    "stage": "Pillar · Time",
    "format": "Pillar Time: short story with characters (rig), one clear scenario",
@@ -455,6 +424,97 @@
    ],
    "note": "Live account 1-21 Nov 2026: 94 closed trades, mtd +10.45%, 8 profit days, 7 loss days (dayresult 2026-11-21).",
    "voice": "own recording (owner and his wife), social/videos/assets/2026-11-22-couple/vo/"
+  },
+  {
+   "date": "2026-11-24",
+   "slot": "09:30",
+   "stage": "Education · Time",
+   "format": "Day in the life of the machine (clock stamps)",
+   "audience": "people with a full life and no screen time",
+   "sound": "news",
+   "voice": "bf_emma",
+   "title": "The market never sleeps. You do.",
+   "vote": {
+    "q": "When do you check the markets?",
+    "a": "Every hour",
+    "b": "Only after work"
+   },
+   "open": "Three twelve a.m. You're asleep. The market isn't.",
+   "scenes": [
+    [
+     "btc",
+     "Bitcoin moves while the world sleeps. Nobody is watching."
+    ],
+    [
+     "tokyo",
+     "Eight forty. Tokyo is trading the yen, while you're stuck in traffic."
+    ],
+    [
+     "ny",
+     "Three thirty. New York opens. You're in a meeting."
+    ],
+    [
+     "gold",
+     "Seven p.m. Dinner with friends. Gold is still moving."
+    ],
+    [
+     "machine",
+     "FTM MACHINE trades five markets, twenty-four seven, with fixed rules."
+    ],
+    [
+     "proof",
+     "And every trade is public. You can watch it all, free."
+    ],
+    [
+     "cta",
+     "When do you check the markets? A, every hour. B, only after work. Vote in the comments, then tap our name for your free account."
+    ]
+   ],
+   "note": "ChatGPT images 2026-11-24-0930-01..06."
+  },
+  {
+   "date": "2026-11-24-1300",
+   "slot": "13:00",
+   "stage": "Today's reality · Emotion",
+   "format": "News reaction (headline cards)",
+   "audience": "people who buy stocks themselves",
+   "sound": "drive",
+   "voice": "am_adam",
+   "title": "Nvidia's boss is back. Who caught the move?",
+   "news": "Nvidia reinstated Jensen Huang as CEO on 23 Nov 2026; stock nearly +30% in morning trading (CNN, CNBC, Yahoo Finance). Week to 20 Nov: Nvidia -23%, Nasdaq worst week since March 2020 (Reuters).",
+   "vote": {
+    "q": "Nvidia this month: what did you do?",
+    "a": "Sold in fear",
+    "b": "Held on"
+   },
+   "open": "Nearly thirty percent. In one morning.",
+   "scenes": [
+    [
+     "back",
+     "Yesterday, Nvidia brought its CEO back, and the stock jumped."
+    ],
+    [
+     "fear",
+     "The week before, Nvidia fell twenty-three percent. The Nasdaq had its worst week since twenty twenty. Many people sold in fear."
+    ],
+    [
+     "work",
+     "Then the move came. Fast. If you were at work, you missed it."
+    ],
+    [
+     "rules",
+     "Fear makes people sell. Fixed rules don't feel fear."
+    ],
+    [
+     "machine",
+     "FTM MACHINE trades the US Tech 100, where Nvidia lives, with rules, not headlines."
+    ],
+    [
+     "cta",
+     "Nvidia this month. A, sold in fear. B, held on. Vote in the comments, and tap our name to watch every FTM trade, free."
+    ]
+   ],
+   "note": "ChatGPT images 2026-11-24-1300-01..06."
   }
  ]
 }
