@@ -153,37 +153,6 @@
    "brief": "social/briefs/2026-11-23-0930.md"
   },
   {
-   "date": "2026-11-25",
-   "stage": "Pillar · Time",
-   "format": "Pillar Time: short story with characters (rig), one clear scenario",
-   "title": "While you were cooking",
-   "open": "Gold moved two percent while you were making dinner.",
-   "hook": "Gold moved two percent while you were making dinner.",
-   "scenes": [
-    [
-     "kitchen",
-     "Six p.m. You are cooking for the family. Phone in the other room."
-    ],
-    [
-     "move",
-     "Meanwhile gold makes its biggest move of the day."
-    ],
-    [
-     "miss",
-     "By the time you look, the chance is gone."
-    ],
-    [
-     "machine",
-     "FTM MACHINE was there. It watches five markets around the clock, so you don't have to."
-    ],
-    [
-     "cta",
-     "Cook in peace. Start free at ftm wealth nation dot com."
-    ]
-   ],
-   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
-  },
-  {
    "date": "2026-11-26",
    "stage": "Pillar · System",
    "format": "Pillar System: short story with characters (rig), one clear scenario",
@@ -515,6 +484,49 @@
     ]
    ],
    "note": "ChatGPT images 2026-11-24-1300-01..06."
+  },
+  {
+   "date": "2026-11-25",
+   "slot": "09:30",
+   "stage": "Education · Time",
+   "format": "POV",
+   "audience": "mothers and parents at home",
+   "sound": "lofi",
+   "voice": "af_heart",
+   "title": "Mum's second shift",
+   "vote": {
+    "q": "Mums: when do you get time for money?",
+    "a": "Never",
+    "b": "Late at night"
+   },
+   "open": "P O V: you're a mum, and your day has no break.",
+   "scenes": [
+    [
+     "shift",
+     "School run. Laundry. Cooking. Cleaning. Again."
+    ],
+    [
+     "stat",
+     "Around the world, women do seventy-six percent of all unpaid care work. More than three times as much as men."
+    ],
+    [
+     "rice",
+     "And all day long, the markets kept moving."
+    ],
+    [
+     "machine",
+     "FTM MACHINE trades for you, with fixed rules, while you take care of everyone else."
+    ],
+    [
+     "yours",
+     "Your money stays in your own account. One tap pauses it."
+    ],
+    [
+     "cta",
+     "Mums, when do you get time for money? A, never. B, late at night. Vote in the comments, then tap the link in our bio to create your account."
+    ]
+   ],
+   "note": "ILO: women do 76.2% of unpaid care work. ChatGPT images 2026-11-25-0930-01..06."
   }
  ]
 }
