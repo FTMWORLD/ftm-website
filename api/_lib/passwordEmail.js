@@ -17,8 +17,8 @@ async function link(admin, type, email, redirectTo) {
 }
 
 // A "create your password" link; creates the account when it does not exist yet.
-async function makeLink(admin, email, free) {
-  const redirectTo = SITE() + '/?setpw=1' + (free ? '&free=1' : '') + '&e=' + encodeURIComponent(email);
+async function makeLink(admin, email, free, extra) {
+  const redirectTo = SITE() + '/?setpw=1' + (free ? '&free=1' : '') + '&e=' + encodeURIComponent(email) + (extra || '');
   let r = await link(admin, 'invite', email, redirectTo), kind = 'invite';
   if (r.error && /already|registered|exists/i.test(r.error.message || '')) { r = await link(admin, 'recovery', email, redirectTo); kind = 'recovery'; }
   if (r.error) throw new Error(r.error.message);

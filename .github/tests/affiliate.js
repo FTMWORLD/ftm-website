@@ -6,7 +6,10 @@ const BASE = process.argv[2] || 'http://localhost:8765';
 (async () => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'k'; process.env.SUPABASE_URL = 'https://x.supabase.co'; delete process.env.STRIPE_SECRET_KEY; delete process.env.STRIPE_API_KEY; delete process.env.ANTHROPIC_API_KEY;
   const files = {}, mails = [];
-  const fake = { createClient: () => ({ auth: { getUser: async t => ({ data: { user: t === 'tokA' ? { id: 'a', email: 'aff@x.com' } : t === 'tokC' ? { id: 'c', email: 'cust@x.com' } : null } }) },
+  const users = [{ id: 'old', email: 'has@pw.com', user_metadata: { password_set: true } }], links = [];
+  const fake = { createClient: () => ({ auth: { getUser: async t => ({ data: { user: t === 'tokA' ? { id: 'a', email: 'aff@x.com' } : t === 'tokC' ? { id: 'c', email: 'cust@x.com' } : null } }),
+      admin: { listUsers: async () => ({ data: { users } }), updateUserById: async (id, o) => { const u = users.find(x => x.id === id); if (u) u.user_metadata = o.user_metadata; return {}; },
+        generateLink: async o => { links.push(o); let u = users.find(x => x.email === o.email); if (!u) { u = { id: 'u' + users.length, email: o.email, user_metadata: {} }; users.push(u); } return { data: { user: u, properties: { action_link: 'https://auth/link?to=' + encodeURIComponent(o.options.redirectTo) } } }; } } },
     storage: { from: () => ({ download: async p => files[p] ? { data: { text: async () => files[p] } } : { error: { message: 'nf' } }, upload: async (p, b) => { files[p] = b.toString(); return { error: null }; } }) } }) };
   const orig = Module._load; Module._load = function (r, ...a) { if (r === '@supabase/supabase-js') return fake; if (r === 'stripe') return function () { return { webhooks: { constructEvent: () => ({}) } }; }; if (/_lib\/mail$/.test(r) || r === './mail') return { sendMail: async o => { mails.push(o); return 'test'; } }; return orig.call(this, r, ...a); };
   const A = require(path.join(__dirname, '../../api/_lib/affiliate.js')), H = require(path.join(__dirname, '../../api/v1/affiliate.js'));
@@ -15,6 +18,10 @@ const BASE = process.argv[2] || 'http://localhost:8765';
   let r = await call({ action: 'apply', name: 'Ada Lovelace', email: 'aff@x.com', country: 'Germany', channel: 'Instagram', audience: '1k-10k', agree: true });
   ok(r[0] === 200 && r[1].status === 'pending' && r[1].code === 'ADA', 'apply: pending, code from the first name (' + JSON.stringify(r[1]) + ')');
   ok(mails.some(m => m.to === 'aff@x.com' && /received your FTM affiliate application/.test(m.subject)) && mails.some(m => /New FTM affiliate application/.test(m.subject)), 'apply: the applicant and FTM support get an email');
+  ok(r[1].account === 'created' && users.some(u => u.email === 'aff@x.com' && u.user_metadata.full_name === 'Ada Lovelace'), 'apply: a free FTM account is created with their name (' + r[1].account + ')');
+  { const m = mails.find(m => m.to === 'aff@x.com'); ok(/Create my password/.test(m.html) && /being|reviews every application/.test(m.html) && /setpw%3D1.*open%3Daff/.test(m.html), 'apply: one email says it is being reviewed and carries the create-password button that opens the Affiliate page'); }
+  r = await call({ action: 'apply', name: 'Has Pw', email: 'has@pw.com', agree: true });
+  ok(r[1].account === 'existing' && /Open my affiliate page/.test(mails.filter(m => m.to === 'has@pw.com').pop().html), 'apply with an existing FTM login: no new account, the email says log in to the Affiliate page');
   r = await call({ action: 'apply', name: 'Ada', email: 'aff@x.com', agree: true }); ok(r[1].already && r[1].status === 'pending', 'apply twice: no second application');
   r = await call({ action: 'apply', name: 'Bob', email: 'bob@x.com', agree: false }); ok(r[0] === 400 && r[1].error === 'AGREE', 'apply: the rules must be accepted');
   // before approval the code does nothing

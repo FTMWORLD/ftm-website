@@ -12,11 +12,17 @@ async function words(W, lang) {
 const p = t => '<p style="font-size:15px;line-height:1.6;color:#1a2246;margin:0 0 14px;">' + t + '</p>';
 const box = t => '<p style="font-size:16px;line-height:1.5;color:#0b1640;margin:0 0 12px;padding:14px 16px;border:1px solid #D4AF37;border-radius:10px;background:#fbf7e8;"><b>' + t + '</b></p>';
 
-async function received(a) {
+const BTN = (href, t) => '<p style="margin:22px 0 8px;"><a href="' + esc(href) + '" style="display:inline-block;background:#E5323E;color:#ffffff;text-decoration:none;font-weight:bold;padding:13px 22px;border-radius:999px;">' + esc(t) + '</a></p>';
+async function received(a, acct) {
+  acct = acct || {};
   const w = await words({ subject: 'We received your FTM affiliate application', title: 'Thank you for applying', hi: 'Hello ' + a.name + ',',
     l1: 'We received your application to become an FTM affiliate. Our team reviews every application, usually within two working days.',
-    l2: 'When you are approved, you get your own link and code by email, and your affiliate page opens in your FTM client area.' }, a.lang);
-  await sendMail({ to: a.email, subject: w.subject, html: Tpl.shell(w.title, p(esc(w.hi)) + p(esc(w.l1)) + p(esc(w.l2))) });
+    l2: 'When you are approved, you get your own link and code by email, and your affiliate page opens in your FTM client area.',
+    acc: 'Your free FTM account is ready. Create your password to log in: you can follow the FTM master account and see your application on your Affiliate page.',
+    cta: 'Create my password', ex: 'Log in to FTM with your account to follow your application on your Affiliate page.', cta2: 'Open my affiliate page' }, a.lang);
+  const site = (process.env.SITE_URL || 'https://www.ftmwealthnation.com').replace(/\/$/, '');
+  const more = acct.link ? box(esc(w.acc)) + BTN(acct.link, w.cta) : acct.existing ? p(esc(w.ex)) + BTN(site + '/?open=aff', w.cta2) : '';
+  await sendMail({ to: a.email, subject: w.subject, html: Tpl.shell(w.title, p(esc(w.hi)) + p(esc(w.l1)) + more + p(esc(w.l2))) });
   await sendMail({ to: SUPPORT(), subject: 'New FTM affiliate application: ' + a.name, html: Tpl.shell('New affiliate application',
     p('<b>' + esc(a.name) + '</b> (' + esc(a.email) + '), ' + esc(a.country || '') + '<br>Where they will share FTM: ' + esc(a.channel || '') + '<br>Audience: ' + esc(a.audience || '') + '<br>' + esc(a.message || '')) + p('Approve or reject it in the staff console, tab Affiliates.')) }).catch(() => {});
 }
