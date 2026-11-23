@@ -156,7 +156,7 @@ def night(d, j):
         Y = j.get('when') == 'yesterday'; L24 = j.get('when') == 'last24'
         cfg = {'kicker': 'Last 24 hours on FTM' if L24 else ('Yesterday on FTM · %d %s' if Y else 'Today on FTM · %d %s') % (dt.day, mon[:3]), 'hook': 'The last 24 hours:' if L24 else ('Yesterday\'s result:' if Y else 'Today\'s result:'), 'big': pc(j['pct']),
                'bigTone': 'up' if j['pct'] >= 0 else 'down', 'bigLabel': '%d trades · every one shown' % j['trades'],
-               'title': ('%s so far: <b>%s</b>' % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}
+               'title': (('Small wins add up. <b>%s so far: %s</b>' if 0 <= j['pct'] < 0.5 else '%s so far: <b>%s</b>') % (mon, pc(j['mtd']))) if j.get('mtd') is not None else ''}  # owner 23 Nov: the words fit the day
     chips = cfg.pop('chips0', [])
     if fl.get('n'):
         chips.append('Open trades: %s' % pc(fl.get('pct', 0)))  # owner 23 Nov: percentages only on social media
