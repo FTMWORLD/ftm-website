@@ -171,8 +171,9 @@ function cover(w, h) {
 function card(w, h) {
   return `<div class="grid"></div>${D.line === false ? '' : LINE}<div class="wrap"><div class="logo">${MARK}FTM</div>
     ${D.kicker ? `<div class="kick">${esc(D.kicker)}</div>` : ''}<h1>${D.title}</h1>
-    <div class="body">${(D.body || []).map(p => `<p>${p}</p>`).join('')}</div></div>${FOOT}`;
-}
+    <div class="body">${(D.body || []).map(p => `<p>${p}</p>`).join('')}</div>
+    ${D.cta === false ? '' : `<div style="margin-top:${h > 1500 ? 64 : 44}px"><span style="display:inline-block;padding:${h > 1500 ? '28px 54px' : '22px 44px'};border-radius:999px;background:#E5323E;color:#fff;font-weight:800;font-size:${h > 1500 ? 46 : 38}px;box-shadow:0 18px 50px rgba(229,50,62,.35)">${esc(D.cta || 'Start free · link in bio')}</span>${h > 1500 ? `<div style="margin-top:22px;font-size:30px;color:#c9d0ee;font-weight:600">Tap our name above for the link</div>` : ''}</div>`}</div>${FOOT}`;
+}  /* owner 23 Nov: every post and story is centred and always ends with a call to action */
 /* No-trade day (owner 21 Nov 2026): the 11 p.m. post becomes a short note ("not every day needs a trade") and two slides of real
    statistics: the live account this month (D = the dayresult JSON) and the trust engine's Portfolio backtest. D.night = series number. */
 function quietStats() {

@@ -111,6 +111,11 @@ FTM MACHINE answers all three: it is in the market around the clock, has no emot
 - Our social media posts never show money amounts ($, €): not in captions, slides, videos, stories or covers. Open trades (floating), closed trades, day/week/month results and the account are shown as percentages only, e.g. "Open trades right now: +0.52%", never "+$579.43".
 - Each closed trade's % = its result on the balance at that moment (start balance = end balance − the day's results), chained; the trades of a day chain to exactly the day's %. social/tools/render.js does this.
 
+## Centred, always a call to action (owner instruction, 23 November 2026, repeated)
+- Every post, slide, story, cover and video frame is laid out in the CENTRE of the screen: never text at the top with an empty middle and bottom. Check a frame of each before posting.
+- Every post and story ends with a clear call to action (e.g. "Start free · link in bio", "Tap our name for the link", "Follow for 6 p.m."). No quiet posts without one.
+- Old pre-made picture stories are never posted: each story slot gets that day's video story from social/tools/stories.py; if it cannot be made in time, the slot stays empty (draft) rather than posting an old picture.
+
 ## Profit days and loss days (owner instruction, 21 November 2026)
 - Say "profit days" and "loss days" (and "loss weeks"), never "good days / bad days" or "green days / red days", in every post, caption, story, video, slide and ad from now on.
 
