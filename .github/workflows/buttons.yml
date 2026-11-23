@@ -33,6 +33,7 @@ jobs:
           node .github/tests/photo-edit.js http://localhost:8765
           node .github/tests/view-speed.js http://localhost:8765
           node .github/tests/layout.js http://localhost:8765
+          node .github/tests/month-popup-card.js http://localhost:8765
           node .github/tests/community-api.js
           node .github/tests/leaderboard-community.js
           node .github/tests/staff-area.js http://localhost:8765

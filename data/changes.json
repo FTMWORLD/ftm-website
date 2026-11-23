@@ -274,5 +274,13 @@
  {
   "date": "2026-11-23",
   "text": "New \"Is it really FTM?\" check (footer > Fraud prevention, and Customer support in the client area): FTM's official website, email addresses and social media accounts in one place, with two simple safety rules, so you can spot fake FTM pages and messages."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "Trust engine: the month window now fits every phone screen and stays still, and lists every trade week by week (tap a week to jump to its trades)."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "Homepage: a new FTM MACHINE card with the real Portfolio growth curve for Growth 2× and Balanced, smoothly rolling figures, and the % and date when you touch the chart."
  }
 ]

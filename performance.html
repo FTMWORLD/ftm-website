@@ -248,6 +248,19 @@ tr.pick:focus-visible{outline:2px solid var(--gold);outline-offset:-2px}
 .dtr .side.b{background:color-mix(in srgb,#3b82f6 18%,transparent);color:#3b82f6}.dtr .side.s{background:color-mix(in srgb,#f59e0b 20%,transparent);color:#c27400}
 .dtr .r{text-align:right}
 .dsum{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;margin-bottom:12px;color:var(--muted)}.dsum b{color:var(--ink)}
+.mback{overscroll-behavior:contain;overflow-x:hidden}.mbox{min-width:0;max-width:100%}.mbox .panel{min-width:0}
+.wkweek{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 4px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,#D4AF37 13%,transparent);border:1px solid color-mix(in srgb,#D4AF37 40%,transparent);font-weight:800;color:var(--ink);font-size:14.5px;scroll-margin-top:84px}
+.wkweek small{display:block;font-weight:600;color:var(--muted);font-size:12px;margin-top:2px}.wkweek .r{text-align:right;white-space:nowrap}
+.wkg [data-w]{cursor:pointer}.wkg .wl[data-w]{text-decoration:underline dotted;text-underline-offset:3px}
+@media (max-width:600px){.mback{padding:0;backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(5,10,36,.97)}
+.mbox{border-radius:0;border:0;min-height:100%;width:100%;padding:0 12px 28px;gap:14px;box-shadow:none}
+.mtop{padding-top:16px}.mbox{padding-bottom:96px}.mnav{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:95;display:flex;gap:8px;padding:6px;border-radius:99px;background:rgba(11,20,64,.94);border:1px solid rgba(212,175,55,.45);box-shadow:0 12px 34px rgba(0,0,0,.45)}.wkweek{scroll-margin-top:14px}.mclose{position:fixed;top:calc(12px + env(safe-area-inset-top));right:12px;z-index:96;box-shadow:0 8px 24px rgba(0,0,0,.45)}.mtop h3{padding-right:52px}
+.mtable{font-size:12px}.mtable th,.mtable td{padding:6px 4px}
+.wkg{grid-template-columns:38px repeat(5,minmax(0,1fr)) 58px;gap:4px;min-width:0}
+.wkg .c{font-size:11px;padding:6px 1px;min-height:40px;overflow:hidden}.wkg .c small,.wkg .wt small{font-size:9px}
+.wkg .wl{font-size:10px}.wkg .wt{font-size:11px;padding:6px 3px}.wkweek{font-size:13.5px}}
+@media (max-width:600px){.mbox .szw{flex:1 1 100%;max-width:100%}.mbox .sz-pills{flex-wrap:wrap;max-width:100%}}
+@media (max-width:360px){.mtable{font-size:11px}.mtable th,.mtable td{padding:5px 2px}.mbox{padding-inline:8px}}
 @media (max-width:600px){.dtr{grid-template-columns:44px 46px 1fr auto;grid-template-areas:"t s m p" "x x x x";row-gap:2px;font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--line)}.dtr>span:nth-child(1){grid-area:t}.dtr>span:nth-child(2){grid-area:s}.dtr>span:nth-child(3){grid-area:x;color:var(--muted);font-size:11.5px}.dtr>span:nth-child(4){grid-area:m;text-align:right}.dtr>span:nth-child(5){grid-area:p;min-width:52px}.dhead{flex-wrap:wrap}.dday .dtr:last-child{border-bottom:0}}
 .cchart{min-width:720px}
 .cchart svg{display:block}
@@ -997,7 +1010,7 @@ html,body{max-width:100%;overflow-x:hidden}@supports (overflow:clip){html,body{o
   </div>
   <div class="panel" id="m-trades" hidden><div class="mh4"><h4>Trades this month</h4><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div><div id="m-trades-body"></div></div>
   <div class="panel" id="m-wk" hidden><div class="mh4"><h4>Week by week</h4><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div><div class="scroll"><div id="m-wk-body"></div></div><p class="mnote">Each box is one trading day, by the day trades closed: green for a profit, red for a loss, grey for no closed trades. Darker means a bigger move.</p></div>
-  <div class="panel" id="m-days" hidden><div class="mh4"><h4>Day by day</h4><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div><div id="m-days-body"></div></div>
+  <div class="panel" id="m-days" hidden><div class="mh4"><h4>Every trade, week by week</h4><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div><div id="m-days-body"></div></div>
   <div class="panel" id="m-candles"><div class="mh4"><h4 id="m-candles-h">Gold price this month, with every trade</h4><span class="cc-sum" id="m-cc-sum" hidden></span><span class="szw mz"><span class="sz-pills" role="group" aria-label="Account size"><button type="button" data-z="1000000">$1M</button><button type="button" data-z="100000">$100k</button><button type="button" data-z="10000">$10k</button><button type="button" data-z="1000">$1k</button><button type="button" data-z="500">$500</button></span><span class="sz-yrs">2020 to 2026</span></span></div><div class="scroll"><div id="m-candles-chart" class="cchart"></div></div><div class="mnote" id="m-candles-note"></div></div>
 </div></div>
 
@@ -1222,10 +1235,11 @@ function renderWeeks(key,rows){
       cells+=`<div class="c" style="background:color-mix(in srgb, ${c} ${Math.round(a*100)}%, transparent);color:${a>.55?'#fff':'var(--ink)'}" title="${dd} ${MON[m]}: ${v.n} trade${v.n>1?'s':''}, ${money(v.usd)}">${dd}<small>${pct(v.p,2)}</small></div>`}
 
     for(let dd=monday+5;dd<=monday+6;dd++){const v=day[dd];if(v&&dd>=1&&dd<=last){any=true;wu+=v.usd;wp+=v.p}}
-    h+=`<div class="wl">Week ${w}</div>${cells}<div class="wt ${any?(wp>=0?'up':'down'):''}">${any?pct(wp,2):'–'}<small>${any?money(wu):'no trades'}</small></div>`;
+    h+=`<div class="wl"${any?` data-w="${w}" role="button" tabindex="0"`:''}>Week ${w}</div>${cells}<div class="wt ${any?(wp>=0?'up':'down'):''}"${any?` data-w="${w}"`:''}>${any?pct(wp,2):'–'}<small>${any?money(wu):'no trades'}</small></div>`;
     d=monday+7;w++}
-  body.innerHTML=h+'</div>';box.hidden=false;
+  body.innerHTML=h+'</div><p class="mnote" style="margin-top:8px">Tap a week to see every trade of that week.</p>';box.hidden=false;
 }
+document.addEventListener('click',e=>{const w=e.target.closest&&e.target.closest('.wkg [data-w]');if(!w)return;const t=$('mw-'+w.dataset.w);if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
 let keepDays=false;
 function ccSum(key,rows){const el=$('m-cc-sum');if(!rows||!rows.length){el.hidden=true;return}
   const net=rows.reduce((a,t)=>a+t[6],0),st=monthStats(P[cur],key).start,pc=net/st*100,cls=net>=0?'up':'down';
@@ -1238,10 +1252,15 @@ function renderDays(key){
     const days={};rows.slice().sort((a,b)=>a[1]-b[1]).forEach(t=>{const d=fmtD(t[1]);(days[d]=days[d]||[]).push(t)});
     const tot=rows.reduce((a,t)=>a+t[6],0),win=rows.filter(t=>t[6]>0).length;
     let h=`<div class="dsum"><span><b>${rows.length}</b> trades</span><span><b>${win}</b> won</span><span><b>${Object.keys(days).length}</b> trading days</span><span>Net <b class="${tot>=0?'up':'down'}">${money(tot)}</b></span></div>`;
-    Object.entries(days).forEach(([d,ts])=>{const sum=ts.reduce((a,t)=>a+t[6],0),sp=ts.reduce((a,t)=>a+t[7],0);
+    const Y=+key.slice(0,4),M=+key.slice(5)-1,LAST=new Date(Date.UTC(Y,M+1,0)).getUTCDate(),WD1=(new Date(Date.UTC(Y,M,1)).getUTCDay()+6)%7;
+    const wOf=u=>{const d=new Date(u*1000);if(d.getUTCMonth()!==M)return d<new Date(Date.UTC(Y,M,1))?1:Math.floor((LAST-1+WD1)/7)+1;return Math.floor((d.getUTCDate()-1+WD1)/7)+1};
+    const WK={};rows.forEach(t=>{const w=wOf(t[1]);(WK[w]=WK[w]||{n:0,usd:0,p:0});WK[w].n++;WK[w].usd+=t[6];WK[w].p+=t[7]});let lastW=0;
+    Object.entries(days).forEach(([d,ts])=>{const sum=ts.reduce((a,t)=>a+t[6],0),sp=ts.reduce((a,t)=>a+t[7],0),w=wOf(ts[0][1]);
+      if(w!==lastW){lastW=w;const a=Math.max(1,7*(w-1)+1-WD1),b=Math.min(LAST,7*(w-1)+7-WD1),W=WK[w];
+        h+=`<div class="wkweek" id="mw-${w}"><span>Week ${w}<small>${a}${a!==b?'–'+b:''} ${MON[M]} · ${W.n} trade${W.n>1?'s':''}</small></span><span class="r ${W.usd>=0?'up':'down'}">${money(W.usd)}<small>${pct(W.p,2)}</small></span></div>`}
       h+=`<div class="dday"><div class="dhead"><span>${d}</span><span class="${sum>=0?'up':'down'}">${money(sum)} · ${pct(sp,2)}</span></div>`+
         ts.map(t=>`<div class="dtr"><span>${hm(t[1])}</span><span class="side ${t[2]==='B'?'b':'s'}">${t[2]==='B'?'Buy':'Sell'}</span><span>${t[8]?'<b>'+(t[8]==='USDJPY'?'USD/JPY':t[8])+'</b> · ':''}${px(t[3])} → ${px(t[4])} · ${(+t[5]).toFixed(2)} lots</span><span class="r ${t[6]>=0?'up':'down'}">${money(t[6])}</span><span class="r ${t[7]>=0?'up':'down'}">${pct(t[7],2)}</span></div>`).join('')+'</div>'});
-    h+='<p class="mnote">Grouped by the day each trade closed. Time is the closing time, server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
+    h+='<p class="mnote">Grouped by week and by the day each trade closed. Time is the closing time, server time. Results after commission and swap; % is of the balance when the trade opened. Daily % adds up the trades of that day.</p>';
     body.innerHTML=h};
   if(TRADES[ck]!==undefined){show(TRADES[ck]);return}
   if(!keepDays){box.hidden=true;$('m-wk').hidden=true;$('m-cc-sum').hidden=true}fetch(path).then(r=>r.ok?r.json():null).then(d=>{TRADES[ck]=d;show(d)}).catch(()=>{TRADES[ck]=null;show(null)});
@@ -1300,9 +1319,11 @@ function openMonth(key){
   $('m-candles').hidden=mkt!=='gold';if(mkt==='gold')renderCandles(key);renderDays(key);
   $('mback').dataset.mk=mkt;document.querySelectorAll('.mz button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.z===SIZE?'true':'false'));
   $('m-prev').disabled=st.idx===0;$('m-next').disabled=st.idx===st.n-1;
-  const back=$('mback');if(back.hidden){back.hidden=false;document.body.style.overflow='hidden';$('m-close').focus()}
+  const back=$('mback');if(back.hidden){back.hidden=false;lockPage();$('m-close').focus()}
 }
-function closeMonth(){$('mback').hidden=true;document.body.style.overflow='';const c=document.querySelector(`.mblock[data-mk="${mkt}"] .heat [data-m="${mKey}"]`);if(c)c.focus();mKey=null}
+let PAGE_Y=0;function lockPage(){PAGE_Y=scrollY;const b=document.body.style;b.position='fixed';b.top=-PAGE_Y+'px';b.left='0';b.right='0';b.width='100%';b.overflow='hidden'}
+function unlockPage(){const b=document.body.style;b.position=b.top=b.left=b.right=b.width=b.overflow='';scrollTo(0,PAGE_Y)}
+function closeMonth(){$('mback').hidden=true;unlockPage();const c=document.querySelector(`.mblock[data-mk="${mkt}"] .heat [data-m="${mKey}"]`);if(c)c.focus({preventScroll:true});mKey=null}
 document.addEventListener('click',e=>{const c=e.target.closest('.heat [data-m]');if(c){tip.hidden=true;ctx(blockOf(c));SUF='';openMonth(c.dataset.m)}});
 document.addEventListener('keydown',e=>{const c=e.target.closest&&e.target.closest('.heat [data-m]');if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();ctx(blockOf(c));SUF='';openMonth(c.dataset.m)}});
 $('m-close').onclick=closeMonth;
@@ -1313,7 +1334,7 @@ $('m-prev').onclick=()=>{const m=P[cur].monthly,i=m.findIndex(x=>x[0]===mKey);if
 bk.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;atEnd=end()},{passive:true});
 bk.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
 if(e.target.closest&&e.target.closest('svg,.mtable,input'))if(Math.abs(dx)>Math.abs(dy))return;
-let go=null;if(Math.abs(dx)>60&&Math.abs(dx)>1.5*Math.abs(dy))go=dx<0?'m-next':'m-prev';else if(atEnd&&end()&&dy<-70)go='m-next';
+let go=null;if(Math.abs(dx)>90&&Math.abs(dx)>2.5*Math.abs(dy))go=dx<0?'m-next':'m-prev';
 if(go&&!$(go).disabled){$(go).click();bk.scrollTop=0}},{passive:true})})();
 $('m-next').onclick=()=>{const m=P[cur].monthly,i=m.findIndex(x=>x[0]===mKey);if(i<m.length-1)openMonth(m[i+1][0])};
 
