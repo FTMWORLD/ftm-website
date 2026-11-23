@@ -229,12 +229,26 @@ function quiet(w, h, part) {
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:100%">${chip('quiet weekdays', Q.weekdays)}${chip('longest quiet run', Q.streak + ' days')}${chip('years profitable', Q.years)}</div>
     <div class="body" style="margin:0">Quiet days are part of the plan. Every trade of the backtest is on the trust engine: ftmwealthnation.com</div>`);
 }
+/* owner 23 Nov: the last slide of every result post: every trade above was taken automatically by FTM MACHINE, then join us */
+function endSlide(w, h) {
+  const n = (D.rows || []).length, mk2 = [...new Set((D.rows || []).map(r => mk(r.s)))].join(' · ');
+  return `<div class="grid"></div><div class="wrap" style="align-items:center;text-align:center;padding-top:40px;padding-bottom:40px">
+    <div class="logo">${MARK}FTM</div>
+    <div class="kick" style="margin-top:46px">FTM MACHINE · fully automatic</div>
+    <div style="font-size:66px;font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-top:26px">${n ? 'All ' + n + ' trades you just saw' : 'Every trade we post'}<br><span style="color:#E3B62F;white-space:nowrap">were taken by FTM MACHINE.</span></div>
+    <div style="font-size:34px;color:#c9d0ee;margin-top:30px;line-height:1.45;font-weight:500">No screen time. No emotions. Fixed, tested rules.<br>While people worked, slept and lived their day.</div>
+    ${mk2 ? `<div style="margin-top:34px;padding:14px 26px;border-radius:999px;border:1.5px solid rgba(212,175,55,.55);background:rgba(11,22,64,.55);font-size:27px;font-weight:700;color:#e8ecff">${esc(mk2)}</div>` : ''}
+    <div style="margin-top:50px;display:inline-flex;align-items:center;gap:16px;background:#E5323E;color:#fff;font-weight:800;font-size:40px;padding:26px 52px;border-radius:999px;box-shadow:0 18px 40px rgba(229,50,62,.4)">Create your free account</div>
+    <div style="margin-top:26px;font-size:30px;color:#dfe4ff;font-weight:600">Link in bio · <span style="color:#E3B62F">ftmwealthnation.com</span></div>
+  </div>${FOOT}`;
+}
 (async () => {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
   const name = nameArg || (kind === 'day' || kind === 'quiet' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
   const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : kind === 'quiet' ? [['quiet1', 1080, 1350, () => quiet(1080, 1350, 1)], ['quiet2', 1080, 1350, () => quiet(1080, 1350, 2)], ['quiet3', 1080, 1350, () => quiet(1080, 1350, 3)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
   if (kind === 'day' && D.pct < 0.5 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
+  if (kind === 'day') jobs.push(['end', 1080, 1350, () => endSlide(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
     const p = await b.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
     await p.setContent(`<html><head><style>${css(w, h)}</style></head><body>${fn()}</body></html>`);
