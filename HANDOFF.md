@@ -121,6 +121,9 @@ this section wins.
 - `/api/v1/status?history=1` (public, cached 60 s) returns six components (web, login, engine, email, pay, ask), the last hourly result and 90 days of counts; it never runs the checks. The hourly watchdog (`?alert=1`) records each run in the community bucket `status/history.json`. Page: footer link `.js-status` / `#status`, Customer support menu, `FTM.openStatus()`. Test: `.github/tests/service-status.js`.
 - GitHub Actions: all workflows pinned to `ubuntu-24.04` (ubuntu-latest became 26.04 on 16 Nov; Playwright 1.56 cannot install a browser there).
 
+### "Is it really FTM?" / Fraud prevention (23 November 2026, daily review)
+- `#ofModal` (`FTM.openOfficial()`, links `.js-official` / `#official`): official website, email addresses (…@ftmwealthnation.com and ftmwebnation@gmail.com), the five social accounts (cloned from `footer .socials`, so change links only there), two safety rules, "Chat with FTM support". Footer > Legal > Fraud prevention and client area > Customer support > Fraud prevention open it. If a new official channel (email, social account) is added, add it here and to the Ask here fact in `api/v1/chat.js`. Test: `.github/tests/official-channels.js`.
+
 ### Calendar day pop-up (17 November 2026, owner request)
 - `#dayTradesModal` (.dtm): navy band with the FTM logo, the account (or FTM master account) and close; Balance (viewed account's engine balance) and Risk profile tiles; phone rows show market + P/L, then direction, size, open → close.
 - `F.openTradeModal(t, back)`: the optional `back` runs when the trade details close; the calendar passes one so it returns to the day. Escape on the trade details stops there (stopImmediatePropagation). Test: `.github/tests/calendar-day.js`.

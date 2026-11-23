@@ -28,7 +28,7 @@ ok(r.act==='FTM MACHINE ACTIVATED' && !r.red, n+': trading customer sees green F
 ok(!r.home, n+': subscribed customer does not see Subscription plans');
 ok(r.subHidden, n+': Ask here, Chat and Email support are folded under Customer support');
 await p.click('#acctA .um-sup'); await p.waitForTimeout(200);
-r=await p.evaluate(()=>[...document.querySelectorAll('#acctA .um-sub .um-i')].filter(x=>x.offsetParent).map(x=>x.textContent).join('|')); ok(r==='Ask here|Chat with FTM support|Email support|Service status', n+': Customer support opens its four choices, Service status included ('+r+')');
+r=await p.evaluate(()=>[...document.querySelectorAll('#acctA .um-sub .um-i')].filter(x=>x.offsetParent).map(x=>x.textContent).join('|')); ok(r==='Ask here|Chat with FTM support|Email support|Service status|Fraud prevention', n+': Customer support opens its five choices, Service status and Fraud prevention included ('+r+')');
 await p.evaluate(()=>{ FTM.data.accounts.forEach(a=>a.active=false); FTM.planFree=true; }); await p.waitForTimeout(1800);
 r=await p.evaluate(()=>({red:!!document.querySelector('#acctA .um-act'), home:!!document.querySelector('#acctA a.um-home:not([hidden])')}));
 ok(r.red && r.home, n+': a customer without FTM MACHINE sees red Activate FTM MACHINE and Subscription plans');

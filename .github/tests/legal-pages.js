@@ -18,6 +18,6 @@ for(const [n,opt] of [['laptop',{viewport:{width:1366,height:900}}],['phone',dev
  await c.close(); }
 const p=await b.newPage(); await p.goto(BASE+'/'); const L=await p.evaluate(()=>[...document.querySelectorAll('a[href*="terms.html#s"]')].map(a=>[a.textContent.trim(),a.getAttribute('href').split('#')[1]]));
 await p.goto(BASE+'/terms.html'); const T=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll('section[id]')].map(s=>[s.id,s.querySelector('h2').textContent])));
-const want={'Regulatory information':/Regulatory Status/,'Privacy policy':/Data Protection/,'Secure & responsible trading':/Prohibited/,'Fraud prevention':/Prohibited/,'Risk Disclosure':/Risk/,'Secure and Responsible Trading':/Prohibited/};
+const want={'Regulatory information':/Regulatory Status/,'Privacy policy':/Data Protection/,'Secure & responsible trading':/Prohibited/,'Risk Disclosure':/Risk/,'Secure and Responsible Trading':/Prohibited/};
 L.forEach(([t,id])=>{ const w=want[t]; if(w) ok(w.test(T[id]||''), 'homepage link "'+t+'" opens Terms '+(T[id]||id)); });
 await b.close(); console.log(fails?'FAILED: '+fails:'LEGAL PAGES OK'); process.exit(fails?1:0); })();

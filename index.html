@@ -2613,6 +2613,15 @@ h3.has-tip{cursor:help}
 .ss-bars{display:flex;gap:1px;height:28px}.ss-bars i{flex:1;min-width:0;border-radius:2px;background:#22c55e}.ss-bars i.nd{background:#e3e6f0}.ss-bars i.mid{background:#D4AF37}.ss-bars i.bad{background:#E5323E}.ss-bars i:hover{filter:brightness(1.15)}
 .ss-axis{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:8px}
 .ss-inc{margin-top:18px;border-top:1px solid var(--line,rgba(127,127,127,.25));padding-top:12px}.ss-inc h4{margin:0 0 8px;font-size:14px}.ss-inc p{margin:0;font-size:13px;color:var(--muted)}.ss-inc ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}.ss-inc li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;font-size:13px;min-width:0}.ss-inc li span{color:var(--muted);white-space:nowrap}.ss-inc li b{font-weight:600;min-width:0;overflow-wrap:anywhere}.ss-inc li em{font-style:normal;white-space:nowrap;color:var(--muted)}
+.of-hero{position:relative;overflow:hidden;display:flex;gap:14px;align-items:center;margin:-26px -24px 18px;padding:24px 64px 22px 24px;border-radius:22px 22px 0 0;background:linear-gradient(135deg,#0B1440 0%,#152a7a 100%);color:#fff}.of-hero:after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,transparent,rgba(227,182,47,.18),transparent);animation:ofSweep 6s ease-in-out infinite}
+.of-hero svg{flex:none;width:44px;height:44px}.of-hero h3{margin:0 0 4px;color:#fff;font-size:21px}.of-hero p{margin:0;color:rgba(255,255,255,.78);font-size:13.5px;line-height:1.45}.of-modal .ss-x{z-index:2;background:rgba(255,255,255,.12);color:#fff}
+.of-list{display:grid;gap:10px}.of-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center;padding:12px 14px;border:1px solid #E6E9F2;border-radius:14px}.of-row>i{width:40px;height:40px;border-radius:12px;background:#0B1440;color:#E3B62F;display:grid;place-items:center}.of-row>i svg{width:20px;height:20px}
+.of-row small{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}.of-row b{display:block;color:#0b1440;font-size:15px;overflow-wrap:anywhere}.of-row b+b{margin-top:2px}.of-row span{display:block;color:var(--muted);font-size:12.5px;margin-top:2px}
+.of-soc{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.of-soc a{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#F3F5FA;color:#0b1440;font-size:12.5px;font-weight:600;text-decoration:none;min-width:0;overflow-wrap:anywhere}.of-soc a:hover{background:#E9EDF7}.of-soc svg{flex:none;width:14px;height:14px}
+.of-safe{margin-top:18px;border-top:1px solid var(--line,rgba(127,127,127,.25));padding-top:14px}.of-safe h4{margin:0 0 10px;font-size:15px;color:#0b1440}.of-safe ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}.of-safe li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:10px;font-size:13.5px;line-height:1.45;color:#26304f}.of-safe li:before{content:"";width:20px;height:20px;border-radius:50%;background:#FBF3DA url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8931F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5 9-10'/%3E%3C/svg%3E") center/12px no-repeat}
+.of-help{margin-top:16px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:14px;border-radius:14px;background:#F7F8FC}.of-help p{flex:1 1 220px;margin:0;font-size:13.5px;color:#0b1440}.of-help .btn{flex:none}
+@keyframes ofSweep{0%,60%{left:-40%}100%{left:120%}}@media (prefers-reduced-motion:reduce){.of-hero:after{animation:none;display:none}}
+@media (max-width:600px){.of-hero{margin:-22px -16px 16px;padding:22px 60px 18px 16px}.of-hero svg{width:36px;height:36px}.of-hero h3{font-size:19px}.of-help .btn{width:100%}}
 @media (max-width:600px){.ss-modal{align-items:flex-end;padding:0}.ss-card{border-radius:22px 22px 0 0;padding:22px 16px 18px;max-height:88vh}.ss-bars{height:24px;gap:0}.ss-bars i{border-radius:0;margin-right:1px}}
 .fd-post.ftm{border-color:#ecd68b;background:linear-gradient(180deg,#fffcf2,#fff 60%)}
 .fd-h{display:flex;align-items:center;gap:10px}.fd-h .avatar{width:42px;height:42px;font-size:15px;cursor:pointer;flex:none}.fd-h .who{flex:1;min-width:0;line-height:1.25}.fd-h .who b{cursor:pointer;color:#0b1440;font-size:15px}.fd-h .who small{display:block;color:#8a90a6;font-size:12.5px;font-weight:600;margin-top:2px}
@@ -4963,7 +4972,7 @@ body.op-lock{overflow:hidden}
       </div>
       <div>
         <h4>Partner</h4><ul><li><a href="#affiliate">FTM affiliate programme</a></li><li><a href="#partner">Deriv affiliate via FTM</a></li><li><a href="#partner">Introducing broker</a></li><li><a href="#partner">Partner login</a></li></ul>
-        <h4>Legal</h4><ul><li><a href="/terms.html#s19">Regulatory information</a></li><li><a href="/terms.html">Terms &amp; conditions</a></li><li><a href="/terms.html#s18">Privacy policy</a></li><li><a href="/terms.html#s16">Secure &amp; responsible trading</a></li><li><a href="/terms.html#s16">Fraud prevention</a></li></ul>
+        <h4>Legal</h4><ul><li><a href="/terms.html#s19">Regulatory information</a></li><li><a href="/terms.html">Terms &amp; conditions</a></li><li><a href="/terms.html#s18">Privacy policy</a></li><li><a href="/terms.html#s16">Secure &amp; responsible trading</a></li><li><a href="#official" class="js-official">Fraud prevention</a></li></ul>
       </div>
     </div>
     <div class="legal">
@@ -11420,7 +11429,7 @@ tick();setInterval(tick,5000);})();
   var menus=[]; document.querySelectorAll('.um-ai').forEach(function(ai){ var m=ai.parentNode; if(menus.indexOf(m)===-1) menus.push(m); });
   menus.forEach(function(m){ var ai=m.querySelector('.um-ai'), live=m.querySelector('.um-live'), mail=m.querySelector('a[href^="mailto:"].um-i'); if(!ai||m.querySelector('.um-sup')) return;
     var sup=document.createElement('button'); sup.type='button'; sup.className='um-i um-sup'; sup.setAttribute('aria-expanded','false'); sup.innerHTML='<span>'+tr('Customer support')+'</span><i class="um-chev"></i>';
-    var box=document.createElement('div'); box.className='um-sub'; box.hidden=true; m.insertBefore(sup,ai); m.insertBefore(box,ai); [ai,live,mail].forEach(function(x){ if(x) box.appendChild(x); }); var st=document.createElement('button'); st.type='button'; st.className='um-i js-status'; st.textContent=tr('Service status'); box.appendChild(st);
+    var box=document.createElement('div'); box.className='um-sub'; box.hidden=true; m.insertBefore(sup,ai); m.insertBefore(box,ai); [ai,live,mail].forEach(function(x){ if(x) box.appendChild(x); }); var st=document.createElement('button'); st.type='button'; st.className='um-i js-status'; st.textContent=tr('Service status'); box.appendChild(st); var of=document.createElement('button'); of.type='button'; of.className='um-i js-official'; of.textContent=tr('Fraud prevention'); box.appendChild(of);
     sup.addEventListener('click',function(e){ e.stopPropagation(); box.hidden=!box.hidden; sup.setAttribute('aria-expanded',box.hidden?'false':'true'); }); });
   function sync(){ var F=window.FTM; if(!F||!F.data) return; var A=F.data.accounts||[], on=A.some(function(a){ return a.active&&!a.isMaster&&!a.isPreview; }), paid=!F.planFree&&!!F.planStatus&&!/CANCEL|EXPIRED|UNPAID/i.test(F.planStatus||'');
     document.querySelectorAll('.um-act,.um-actd').forEach(function(b){ if(on){ if(!b.classList.contains('um-actd')){ b.classList.remove('um-act'); b.classList.add('um-actd'); b.textContent=tr('FTM MACHINE ACTIVATED'); } } else if(b.classList.contains('um-actd')){ b.classList.remove('um-actd'); b.classList.add('um-act'); b.textContent=tr('Activate FTM MACHINE'); } });
@@ -11733,6 +11742,37 @@ tick();setInterval(tick,5000);})();
   document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.js-status,a[href="#status"]'); if(!t) return; e.preventDefault(); document.querySelectorAll('.um-btn[aria-expanded="true"]').forEach(function(x){ x.click(); }); open(); });
   if(location.hash==='#status') setTimeout(open,600);
   window.FTM=window.FTM||{}; window.FTM.openStatus=open;
+})();
+</script>
+<script>
+(function(){
+  var tr=function(x){ var I=window.FTM_I18N||window.I18NE; return (I&&I.t)?I.t(x):x; }, esc=function(x){ return String(x==null?'':x).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }, box=null;
+  var ICO={web:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
+    soc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg>'};
+  var SOC=[['Instagram','@ftm_wealth_nation',/instagram\.com/],['TikTok','@ftm_wealth_nation',/tiktok\.com/],['YouTube','',/youtube\.com/],['X','@ftmwealthnation',/x\.com/],['Facebook','',/facebook\.com/]];
+  function close(){ if(box){ box.hidden=true; document.body.classList.remove('ss-lock'); } }
+  function socials(){ var links=[].slice.call(document.querySelectorAll('footer .socials a[href]'));
+    return SOC.map(function(x){ var a=links.filter(function(l){ return x[2].test(l.href); })[0]; if(!a) return ''; var svg=a.querySelector('svg');
+      return '<a href="'+esc(a.href)+'" target="_blank" rel="noopener">'+(svg?svg.outerHTML:'')+'<bdi>'+esc(x[0]+(x[1]?' '+x[1]:''))+'</bdi></a>'; }).join(''); }
+  function open(){
+    if(!box){ box=document.createElement('div'); box.id='ofModal'; box.className='ss-modal of-modal'; box.setAttribute('role','dialog'); box.setAttribute('aria-modal','true'); box.setAttribute('aria-labelledby','ofTitle');
+      box.innerHTML='<div class="ss-card"><button type="button" class="ss-x" aria-label="'+esc(tr('Close'))+'">&times;</button><div class="ss-body"></div></div>'; document.body.appendChild(box);
+      box.addEventListener('click',function(e){ if(e.target===box||e.target.closest('.ss-x')||e.target.closest('.um-live')) close(); }); document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&box&&!box.hidden) close(); }); }
+    var b=box.querySelector('.ss-body');
+    b.innerHTML='<div class="of-hero"><svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 4 7 10v12c0 10.5 7.2 19.3 17 22 9.8-2.7 17-11.5 17-22V10L24 4z" fill="#D4AF37"/><path d="m16 24 6 6 11-12" stroke="#0B1440" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h3 id="ofTitle">'+esc(tr('Is it really FTM?'))+'</h3><p>'+esc(tr('Before you click, pay or reply, check that a message, page or account uses one of these official FTM channels.'))+'</p></div></div>'+
+      '<div class="of-list">'+
+        '<div class="of-row"><i>'+ICO.web+'</i><div><small>'+esc(tr('Website'))+'</small><b><bdi>www.ftmwealthnation.com</bdi></b><span>'+esc(tr('Log in only on this website.'))+'</span></div></div>'+
+        '<div class="of-row"><i>'+ICO.mail+'</i><div><small>'+esc(tr('Email'))+'</small><b><bdi dir="ltr">…@ftmwealthnation.com</bdi></b><b><bdi>ftmwebnation@gmail.com</bdi></b></div></div>'+
+        '<div class="of-row"><i>'+ICO.soc+'</i><div><small>'+esc(tr('Social media'))+'</small><div class="of-soc">'+socials()+'</div></div></div>'+
+      '</div>'+
+      '<div class="of-safe"><h4>'+esc(tr('Stay safe'))+'</h4><ul><li>'+esc(tr('Never share your passwords or login codes with anyone, even someone who says they work for FTM.'))+'</li><li>'+esc(tr('With Auto Trading your money stays in your own broker account. FTM only places trades and never has withdrawal access.'))+'</li></ul></div>'+
+      '<div class="of-help"><p>'+esc(tr('Not sure, or seen a fake FTM page or account? Tell us before you act.'))+'</p><button type="button" class="btn btn-red btn-sm um-live">'+esc(tr('Chat with FTM support'))+'</button></div>';
+    box.hidden=false; document.body.classList.add('ss-lock'); var x=box.querySelector('.ss-x'); if(x) try{ x.focus({preventScroll:true}); }catch(e){}
+  }
+  document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.closest('.js-official,a[href="#official"]'); if(!t) return; e.preventDefault(); document.querySelectorAll('.um-btn[aria-expanded="true"]').forEach(function(x){ x.click(); }); open(); });
+  if(location.hash==='#official') setTimeout(open,600);
+  window.FTM=window.FTM||{}; window.FTM.openOfficial=open;
 })();
 </script>
 <script>

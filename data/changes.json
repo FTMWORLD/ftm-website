@@ -270,5 +270,9 @@
  {
   "date": "2026-11-23",
   "text": "If you signed up but have not activated your free account yet, we now remind you after 3 hours, 3 days and 7 days, in your language."
+ },
+ {
+  "date": "2026-11-23",
+  "text": "New \"Is it really FTM?\" check (footer > Fraud prevention, and Customer support in the client area): FTM's official website, email addresses and social media accounts in one place, with two simple safety rules, so you can spot fake FTM pages and messages."
  }
 ]

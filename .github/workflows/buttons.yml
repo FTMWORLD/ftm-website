@@ -53,6 +53,7 @@ jobs:
           node .github/tests/start-link.js http://localhost:8765
           node .github/tests/signup-nudge.js http://localhost:8765
           node .github/tests/service-status.js http://localhost:8765
+          node .github/tests/official-channels.js http://localhost:8765
           node .github/tests/affiliate.js http://localhost:8765
           node .github/tests/no-phone-links.js
           node .github/tests/broker-pick.js http://localhost:8765
