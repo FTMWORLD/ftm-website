@@ -82,7 +82,7 @@ function trades(w, h, part, parts) {
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
   const rh = Math.min(118, Math.floor((part === parts - 1 && D.balance != null ? 600 : 820) / Math.max(L.length, 1)));
   const rows = L.map(g => `<div style="display:grid;grid-template-columns:1fr 190px 240px;align-items:center;height:${rh}px;border-bottom:1.5px solid rgba(212,175,55,.18)">
-    <span style="white-space:nowrap"><b style="display:block;font-size:${Math.min(40, rh * .36)}px;font-weight:800">${esc(g.m)}</b><span style="font-size:${Math.min(25, rh * .24)}px;color:#aeb7dc;font-weight:600">${g.n} ${g.n === 1 ? 'trade' : 'trades'}</span></span>
+    <span style="white-space:nowrap;font-size:${Math.min(40, rh * .36)}px;font-weight:800">${esc(g.m)}</span>
     <span><b style="font-size:${Math.min(28, rh * .27)}px;padding:8px 18px;border-radius:99px;background:${g.dir === 'BUY' ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${g.dir}</b></span>
     <span style="text-align:right;font-weight:800;font-size:${Math.min(42, rh * .38)}px;color:${g.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${g.pct == null ? '' : pc(g.pct)}</span></div>`).join('');
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
