@@ -28,4 +28,10 @@ out = {'ok': True, 'date': T.isoformat(), 'when': 'last24', 'range': '%s 18:00 â
        'trades': len(R), 'wins': sum(1 for r in R if r['pl'] > 0), 'losses': sum(1 for r in R if r['pl'] < 0), 'markets': sorted({r['s'] for r in R}),
        'mtd': t.get('mtd', y.get('mtd')), 'balance': bal, 'rows': R, 'cur': t.get('cur') or y.get('cur'), 'floating': (lambda F: F if F and (F.get('pct') or 0) > 0 else None)(t.get('floating') or y.get('floating')),  # owner 23 Nov: open trades only when in profit
        'cal': t.get('cal') or y.get('cal')}
+# 24 Nov daily review (Citadel lesson: explain the unusual day): flag a day far outside the month's normal range
+cal = [c for c in (out.get('cal') or []) if c.get('n') and c.get('date') != T.isoformat()]
+if R and len(cal) >= 5:
+    avg = sum(abs(c['pct']) for c in cal) / len(cal); avn = sum(c['n'] for c in cal) / len(cal)
+    if abs(out['pct']) >= max(2.0, 2 * avg): out['unusual'] = {'kind': 'win' if out['pct'] > 0 else 'loss', 'x': round(abs(out['pct']) / avg, 1) if avg else None}
+    elif len(R) >= max(10, 2 * avn): out['unusual'] = {'kind': 'busy', 'x': round(len(R) / avn, 1) if avn else None}
 print(json.dumps(out))

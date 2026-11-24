@@ -59,6 +59,7 @@ function day(w, h) {
   const body = D.trades
     ? `<div class="big" style="font-size:${h > 1500 ? 230 : 200}px;color:${col}">${pc(D.pct)}</div>
        <div class="sub">${D.when === 'last24' ? 'Result of the trades closed in the last 24 hours' : 'Result of ' + (D.when === 'yesterday' ? 'the day\'s' : 'today\'s') + ' closed trades'}</div>
+       ${D.unusual ? `<div style="margin-top:22px;padding:18px 24px;border-radius:20px;border:1.5px solid rgba(212,175,55,.6);background:rgba(11,22,64,.55);font-size:28px;line-height:1.35;color:#e8ecff"><b style="color:#E3B62F">${D.unusual.kind === 'busy' ? 'A busy day' : D.unusual.kind === 'win' ? 'A bigger profit day than usual' : 'A bigger loss day than usual'}${D.unusual.x ? ' (about ' + D.unusual.x + '× the normal size)' : ''}.</b><br>Same fixed rules as every day. Every trade is on the next slide.</div>` : ''}
        <div class="stats"><div class="st"><b>${D.trades}</b><span>Trades</span></div><div class="st"><b>${D.wins}</b><span>Won</span></div><div class="st"><b>${D.losses}</b><span>Lost</span></div></div>
        ${D.mtd == null && !D.floating ? '' : `<div class="stats" style="grid-template-columns:${D.mtd != null && D.floating ? '1fr 1fr' : '1fr'};margin-top:18px">${D.mtd == null ? '' : `<div class="st"><b style="color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</b><span>${MONTHS[m - 1]} so far</span></div>`}${floatBox()}</div>`}
        ${markets.length ? `<div class="mk">Markets: ${esc(markets.join(' · '))}</div>` : ''}`
