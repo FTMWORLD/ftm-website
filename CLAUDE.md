@@ -100,6 +100,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Each platform its own way (owner instruction, 24 November 2026; overrides job prompts that send one shared caption)
 - Same video and figures, but presented the way each platform rewards it: follow social/plan/platforms.md. Instagram, Facebook and TikTok are now SEPARATE Metricool posts (one create call each), never one combined post with one caption; YouTube, LinkedIn and Telegram as before but with their own text.
 - Instagram and Facebook get the moving version without the cover frame (`<video>-nc.mp4`, kept by coverfirst.py; at 6 p.m. build `day-T-short-nc.mp4` with slidevideo.py without the cover slide) and the cover as videoThumbnailUrl. TikTok and YouTube keep the cover as frame 1.
+- No repeated slide (owner 24 Nov): in an Instagram carousel the item after the video never repeats what the video opens with. At 6 p.m. the video (`day-T-short-nc.mp4`) opens with the result slide, so the carousel is [video, trades1, (trades2), (context), (month), end], without day-T-post.jpg; the same for the Saturday weekly (never put the slide the video opens with right after it).
 - Instagram: at most 5 hashtags, a "send this to…" line. TikTok: a search-word caption and the vote in the caption. Facebook: short and conversational, 0–2 hashtags. YouTube: title of 40 characters or less. LinkedIn: no link in the post.
 - Goal (owner 24 Nov): at least 10 new accounts a day. Judge every change by sign-ups (staff console sources ig/fb/tt/yt/li/tg), not by likes.
 

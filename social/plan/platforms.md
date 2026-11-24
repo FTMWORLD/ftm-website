@@ -26,6 +26,8 @@ Buffer (Facebook); vidIQ (YouTube Shorts); Metricool, SocialPilot (LinkedIn), al
   #FTM plus 2–4 specific ones (#AutomatedTrading #GoldTrading #PassiveIncomeIdeas #TradingPsychology).
 - First comment: the vote. 13:00 only: 3 collaborators (collabs.json). mediaAltText: one plain sentence with keywords.
 
+- Carousel (6 p.m., Saturday): the video first, then only slides the video does not open with; never the cover or first slide twice in a row (owner 24 Nov).
+
 ## TikTok
 - Video: with the cover as frame 1 (TikTok shows frame 1).
 - Title (tiktokData.title): the hook, under 60 characters.
