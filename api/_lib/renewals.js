@@ -42,7 +42,7 @@ async function emailFor(kind, b, lang, gain) {
     + '<p style="margin:0 0 20px;color:#3d4566;line-height:1.6;">' + esc(await t('Renew with the same email address and everything continues where it stopped: your accounts, history and settings stay as they are.')) + '</p>'
     + '<a href="' + SITE + '/#pricing" style="display:inline-block;background:#E5323E;color:#ffffff;font-weight:bold;text-decoration:none;padding:13px 26px;border-radius:99px;">' + esc(await t('Renew now')) + '</a>'
     + '<p style="margin:20px 0 0;font-size:12.5px;color:#6b7394;">' + esc(await t('You get this reminder once a week until your plan is renewed.')) + '</p>';
-  return { subject: 'FTM · ' + title, html: Tpl.shell(title, body, { head: true }) };
+  return { subject: title, html: Tpl.shell(title, body, { head: true }) };
 }
 
 /* One run. o.now, o.statusOf(user), o.gainOf(user), o.send({to,subject,html}), o.users, o.deadline for tests and the cron. */
