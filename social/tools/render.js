@@ -91,7 +91,7 @@ function trades(w, h, part, parts) {
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.when === 'last24' ? 'Last 24 hours' : 'Day result'}</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
-/* owner 24 Nov: on a loss day, one slide of context: loss days are part of the plan, seen before in the backtest, and the years still ended in profit. Short, catchy, real figures only. */
+/* owner 24 Nov: on a loss day, one slide of context (third box = the Portfolio Growth average yearly profit, +176%, as on the trust engine and index.html "54–176%" = Conservative to Growth): loss days are part of the plan, seen before in the backtest, and the years still ended in profit. Short, catchy, real figures only. */
 function lossContext(w, h) {
   const dir = __dirname + '/../../data/trades/all/100000/g2', T = [];
   for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) T.push(...JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8')));
@@ -104,8 +104,8 @@ function lossContext(w, h) {
     <div class="kick" style="margin-top:40px">Today in context</div>
     <div style="font-size:70px;font-weight:900;letter-spacing:-.035em;line-height:1.12;margin-top:28px;white-space:nowrap">Loss days are part of the plan.<br><span style="color:#E3B62F">Profit years: ${yUp} of ${ys.length}.</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%;margin-top:44px">
-      ${tile(lossPct + '%', 'of backtest days<br>were loss days')}${tile(worse.toLocaleString('en-US'), 'backtest days<br>worse than today')}${D.mtd != null ? tile(pc(D.mtd), (MONTHS[+D.date.slice(5, 7) - 1]) + ' so far<br>live account', D.mtd >= 0 ? '#5fe39b' : '#ff8a92') : tile(yUp + '/' + ys.length, 'years<br>in profit')}</div>
-    <div style="font-size:38px;font-weight:700;margin-top:56px;color:#dfe4ff">We show every loss day. <span style="color:#E3B62F">The rules stay the same.</span></div>
+      ${tile(lossPct + '%', 'of backtest days<br>were loss days')}${tile(worse.toLocaleString('en-US'), 'backtest days<br>worse than today')}${tile('+176%', 'average yearly<br>profit', '#5fe39b')}</div>
+    <div style="font-size:38px;font-weight:700;margin-top:56px;color:#dfe4ff;white-space:nowrap">The real profit is in the long term, <span style="color:#E3B62F">not in one day.</span></div>
     <div style="font-size:24px;color:#8e98c4;margin-top:34px">Backtest ${Object.keys(day).sort()[0].slice(0, 4)}–${Object.keys(day).sort().pop().slice(0, 4)} · Portfolio, Growth · every trade on the trust engine</div>
   </div>${FOOT}`;
 }
