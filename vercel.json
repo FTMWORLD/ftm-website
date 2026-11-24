@@ -61,11 +61,15 @@
     },
     {
       "path": "/api/v1/news-cron",
-      "schedule": "0 21 * * *"
+      "schedule": "5 16 * * *"
     },
     {
       "path": "/api/v1/news-cron",
-      "schedule": "0 22 * * *"
+      "schedule": "5 17 * * *"
+    },
+    {
+      "path": "/api/v1/news-cron",
+      "schedule": "5 18 * * *"
     },
     {
       "path": "/api/v1/renew-cron",

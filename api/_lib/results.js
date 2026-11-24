@@ -1,7 +1,7 @@
 /* FTM news: the FTM master account's results, posted automatically (daily job /api/v1/news-cron, see vercel.json).
-   Every day at 23:00 (FTM time, Europe/Berlin) the day's closed trades and result, exactly as the client-area Calendar shows
-   them; on Fridays also the week (Saturday to Friday, a summary: result, trades, winning trades, markets); on the last day of
-   the month at 23:00 also that month (the email is the member's monthly statement: balances, deposits, withdrawals, return,
+   Every day at 18:00 (FTM time, Europe/Berlin; owner 24 Nov 2026) the closed trades and result of the last 24 hours (18:00 the day
+   before to 18:00), like the 6 p.m. social posts; on Fridays also the week (Saturday to Friday, a summary: result, trades, winning trades, markets); on the last day of
+   the month at 18:00 also that month (the email is the member's monthly statement: balances, deposits, withdrawals, return,
    highest and lowest balance, a day-by-day balance chart, markets, and a button that opens the PDF statement). Figures from the FTM engine through
    ftm-calc.js (the dashboards' own calculation). Each post appears in Community (For you, Following and FTM news).
    Posts carry a `card` the feed draws in the FTM design, in each member's language and local time; `x` is a short text
@@ -31,6 +31,9 @@ function midnight(y, m, d, tz) {
   for (let i = 0; i < 3; i++) { const p = parts(t, tz), shown = Date.UTC(p.y, p.m - 1, p.d, p.h, p.min); t -= shown - Date.UTC(y, m - 1, d); }
   return t;
 }
+// owner 24 Nov 2026: a result day runs from 18:00 the day before to 18:00 (Berlin), like the 6 p.m. posts
+const CUT = 6 * 3600e3;
+function edge(y, m, d) { return midnight(y, m, d, TZ) - CUT; }
 function ymd(y, m, d) { return y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0'); }
 function addDays(y, m, d, n) { const t = new Date(Date.UTC(y, m - 1, d + n)); return [t.getUTCFullYear(), t.getUTCMonth() + 1, t.getUTCDate()]; }
 function money(v, cur) { const s = Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); const sym = { USD: '$', EUR: '€', GBP: '£' }[cur] || ''; return (v > 0 ? '+' : v < 0 ? '-' : '') + (sym ? sym + s : s + ' ' + (cur || '')); }
@@ -47,7 +50,7 @@ async function master(admin) {
 }
 
 function dayCard(h, cur, y, m, d) {
-  const a = midnight(y, m, d, TZ), [y2, m2, d2] = addDays(y, m, d, 1), z = midnight(y2, m2, d2, TZ), sg = h.M.seg(a, z);
+  const a = edge(y, m, d), [y2, m2, d2] = addDays(y, m, d, 1), z = edge(y2, m2, d2), sg = h.M.seg(a, z);
   const T = h.closed.filter(t => t.closeTime >= a && t.closeTime < z && t.pl != null).sort((p, q) => p.closeTime - q.closeTime);
   const card = { k: 'day', date: ymd(y, m, d), cur, net: +sg.pl.toFixed(2), pct: +sg.pct.toFixed(4), n: T.length,
     rows: T.slice(0, 60).map(t => ({ o: t.openTime || null, c: t.closeTime, s: t.symbol, d: t.dir, v: t.lots, pl: +(+t.pl).toFixed(2) })) };
@@ -56,10 +59,10 @@ function dayCard(h, cur, y, m, d) {
   return card;
 }
 function periodCard(k, h, cur, from, to, label) {
-  const a = midnight(from[0], from[1], from[2], TZ), z = midnight(to[0], to[1], to[2], TZ), sg = h.M.seg(a, z);
+  const a = edge(from[0], from[1], from[2]), z = edge(to[0], to[1], to[2]), sg = h.M.seg(a, z);
   const T = h.closed.filter(t => t.closeTime >= a && t.closeTime < z && t.pl != null), wins = T.filter(t => t.pl > 0).length;
   const days = []; let cur3 = from.slice();
-  for (let i = 0; i < 32; i++) { const s = midnight(cur3[0], cur3[1], cur3[2], TZ); if (s >= z) break; const nx = addDays(cur3[0], cur3[1], cur3[2], 1), e = midnight(nx[0], nx[1], nx[2], TZ);
+  for (let i = 0; i < 32; i++) { const s = edge(cur3[0], cur3[1], cur3[2]); if (s >= z) break; const nx = addDays(cur3[0], cur3[1], cur3[2], 1), e = edge(nx[0], nx[1], nx[2]);
     const n = T.filter(t => t.closeTime >= s && t.closeTime < e).length; if (n) { const g = h.M.seg(s, e); days.push({ date: ymd(cur3[0], cur3[1], cur3[2]), n, pl: +g.pl.toFixed(2), pct: +g.pct.toFixed(4) }); } cur3 = nx; }
   const best = days.length ? days.reduce((p, q) => q.pct > p.pct ? q : p) : null, worst = days.length ? days.reduce((p, q) => q.pct < p.pct ? q : p) : null;
   const byM = {}; T.forEach(t => { const q = t.symbol || '—'; const x = byM[q] || (byM[q] = { s: q, n: 0, w: 0, pl: 0 }); x.n++; if (t.pl > 0) x.w++; x.pl += +t.pl; });
@@ -74,7 +77,7 @@ function periodCard(k, h, cur, from, to, label) {
    return (seg), highest and lowest balance with dates and the end-of-day balance of every day, all from the engine history
    through ftm-calc.js (the same numbers as the statement PDF in the client area). */
 function statementFor(h, y, m) {
-  const a = midnight(y, m, 1, TZ), nm = m === 12 ? [y + 1, 1, 1] : [y, m + 1, 1], z = midnight(nm[0], nm[1], nm[2], TZ), M = h.M;
+  const a = edge(y, m, 1), nm = m === 12 ? [y + 1, 1, 1] : [y, m + 1, 1], z = edge(nm[0], nm[1], nm[2]), M = h.M;
   const open = M.balAt(a), close = M.balAt(z), sg = M.seg(a, z);
   let dep = 0, wd = 0; ((h.es && h.es.flows) || []).forEach(f => { if (f.t >= a && f.t < z) { if (f.amt > 0) dep += f.amt; else wd -= f.amt; } });
   const adj = close - open - dep + wd - sg.pl;
@@ -82,7 +85,7 @@ function statementFor(h, y, m) {
   if (fresh) while (inM.length && Math.abs(inM[0][1]) < 0.005) inM.shift();
   const pts = fresh ? inM : [[a, open]].concat(inM);
   const hi = pts.reduce((q, p) => p[1] > q[1] ? p : q, pts[0]), lo = pts.reduce((q, p) => p[1] < q[1] ? p : q, pts[0]);
-  const daysB = []; let dd = [y, m, 1]; for (let i = 0; i < 31; i++) { const s0 = midnight(dd[0], dd[1], dd[2], TZ); if (s0 >= z) break; const nx = addDays(dd[0], dd[1], dd[2], 1); const de = Math.min(midnight(nx[0], nx[1], nx[2], TZ), Date.now()); daysB.push({ date: ymd(dd[0], dd[1], dd[2]), v: (fresh && de <= pts[0][0]) ? null : +M.balAt(de).toFixed(2) }); dd = nx; }
+  const daysB = []; let dd = [y, m, 1]; for (let i = 0; i < 31; i++) { const s0 = edge(dd[0], dd[1], dd[2]); if (s0 >= z) break; const nx = addDays(dd[0], dd[1], dd[2], 1); const de = Math.min(edge(nx[0], nx[1], nx[2]), Date.now()); daysB.push({ date: ymd(dd[0], dd[1], dd[2]), v: (fresh && de <= pts[0][0]) ? null : +M.balAt(de).toFixed(2) }); dd = nx; }
   return { open: +open.toFixed(2), close: +close.toFixed(2), dep: +dep.toFixed(2), wd: +wd.toFixed(2), pl: +sg.pl.toFixed(2), pct: +sg.pct.toFixed(4), adj: Math.abs(adj) >= 0.005 ? +adj.toFixed(2) : 0,
     hi: { v: +hi[1].toFixed(2), t: hi[0] }, lo: { v: +lo[1].toFixed(2), t: lo[0] }, days: daysB, from: ymd(y, m, 1), to: ymd(...addDays(nm[0], nm[1], nm[2], -1)) };
 }
@@ -114,7 +117,7 @@ function mailAccounts(A, isOwner) {
 /* One run. Posts what is due at this local time; o.force posts today's day result now (staff/test). */
 async function run(admin, o) {
   o = o || {}; const now = o.now || Date.now(), lp = parts(now, TZ), log = [];
-  if (!o.force && !(lp.h >= 23 || lp.h < 3)) return { log: ['not 23:00 in ' + TZ + ' (' + lp.h + ':' + String(lp.min).padStart(2, '0') + ')'] };
+  if (!o.force && !(lp.h >= 18 || lp.h < 3)) return { log: ['not 18:00 in ' + TZ + ' (' + lp.h + ':' + String(lp.min).padStart(2, '0') + ')'] };
   const ref = parts(now - 3 * 3600e3, TZ), y = ref.y, m = ref.m, d = ref.d, wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   const done = await P.read(admin, 'results/posted.json', { keys: [] }), want = [];
   want.push({ key: 'day-' + ymd(y, m, d) });
@@ -157,7 +160,10 @@ async function emailFor(card, lang, acct, who) {
   let head, sub = '', table = '';
   if (card.k === 'day') {
     head = D(card.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    { const [yy, mm2, dd2] = String(card.date).split('-').map(Number), f = ms => { try { return new Date(ms).toLocaleString(loc, { timeZone: TZ, weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }); } catch (x) { return new Date(ms).toISOString().slice(0, 16); } };
+      card.range = f(edge(yy, mm2, dd2)) + ' – ' + f(edge(...addDays(yy, mm2, dd2, 1))) + (tzName ? ' (' + tzName + ')' : ''); }
     sub = card.n ? (card.n === 1 ? await t('One trade closed this day.') : (await t('{} trades closed this day.')).replace('{}', card.n)) : await t('No trades closed this day.');
+    sub = card.range + ' · ' + sub;
     if (card.rows && card.rows.length) {
       // owner 24 Nov: members do not need entry times or sizes; one line per market and direction with the combined result
       const G = {}; card.rows.forEach(r => { const dir = /buy/i.test(String(r.d || '')) ? 'Buy' : 'Sell', k = (r.s || '') + '|' + dir; const g = G[k] || (G[k] = { s: r.s || '', dir, pl: 0, first: r.c || 0 }); g.pl += +r.pl || 0; });

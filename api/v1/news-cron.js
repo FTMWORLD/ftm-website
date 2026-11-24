@@ -1,5 +1,5 @@
-/* GET /api/v1/news-cron — run by Vercel cron at 21:00 and 22:00 UTC (see vercel.json); the one that falls on 23:00 in
-   Europe/Berlin (summer or winter time) posts the FTM master account's results on FTM news and emails every member the same result for their own accounts (see api/_lib/results.js). Calls itself again until every email is out.
+/* GET /api/v1/news-cron — run by Vercel cron at 16:05 and 17:05 UTC (see vercel.json); the one that falls on 18:05 in
+   Europe/Berlin (summer or winter time) posts the FTM master account's results (18:05 UTC is a catch-up: nothing is ever posted or emailed twice) on FTM news and emails every member the same result for their own accounts (see api/_lib/results.js). Calls itself again until every email is out.
    ?sample=1 emails the owners a sample weekly summary and monthly statement (?sample=day: today's daily result) of their own accounts (max once per 10 min).
    If CRON_SECRET is set in Vercel, only the cron can call it. */
 const { createClient } = require('@supabase/supabase-js');

@@ -180,7 +180,7 @@ const REMIND_WORDS = {
     b2: "Yesterday's real result, every day at 6 p.m.", b3: 'The FTM community and leaderboard: meet other people running FTM MACHINE.',
     b4: 'When you are ready: FTM MACHINE trades on your own account, with fixed rules and no emotions.', fig: 'This month so far on our live account: {}',
     fig2: 'Our trust engine: 7 of 7 years profitable (2020 to 2026), every trade published.', free: 'It is free. No card needed.', btn: 'Activate my free account',
-    tip: 'Tip: so you never miss an FTM email, add support@ftmwealthnation.com to your contacts or move this email to your main inbox.',
+    tip: 'Tip: so you never miss an FTM email, add ftm@ftmwealthnation.com to your contacts or move this email to your main inbox.',
     ignore: 'If you did not sign up for FTM, you can ignore this email.' }
 };
 function remindWords(step) { return Object.assign({}, REMIND_WORDS.all, REMIND_WORDS[step] || REMIND_WORDS.r1); }

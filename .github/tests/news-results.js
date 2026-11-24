@@ -1,4 +1,4 @@
-// FTM news results: every day at 23:00 Berlin the FTM master account's day (like the Calendar pop-up), Fridays also the week,
+// FTM news results: every day at 18:00 Berlin the FTM master account's last 24 hours (18:00 to 18:00) (like the Calendar pop-up), Fridays also the week,
 // emailed to each member for THEIR OWN accounts only (never the master's),
 // the 1st also last month; figures through ftm-calc.js; never twice; shown in Community For you, Following and FTM news,
 // drawn as a card on laptop and phone. Run: node .github/tests/news-results.js (site on :8765)
@@ -19,11 +19,11 @@ const BASE=process.argv[2]||'http://localhost:8765';
   // master: deposit 100,000 on 1 Nov; trades (UTC close times). Berlin = UTC+1 in November.
   const U=(m,d,h,mi)=>new Date(Date.UTC(2026,m,d,h,mi||0)).toISOString();
   const deals=[
-    [U(10,16,22,30),1000,'BTCUSD','BUY'],   // 23:30 Berlin 16 Nov -> belongs to Monday 16
+    [U(10,16,16,30),1000,'BTCUSD','BUY'],   // 17:30 Berlin 16 Nov (before 18:00) -> belongs to Monday 16
     [U(10,17,1,16),533.03,'HK50','SELL'],    // 02:16 Berlin 17 Nov
     [U(10,17,1,16),1586.38,'HK50','SELL'],
     [U(10,17,11,54),-492.12,'BTCUSD','SELL'],
-    [U(10,17,23,10),250,'XAUUSD','BUY'],     // 00:10 Berlin 18 Nov -> Wednesday
+    [U(10,17,17,10),250,'XAUUSD','BUY'],     // 18:10 Berlin 17 Nov (after 18:00) -> Wednesday 18
     [U(10,20,9,0),-300,'XAUUSD','SELL'],     // Friday 20
     [U(10,14,10,0),400,'US500','BUY']        // Saturday 14 -> in the week Sat 14 - Fri 20
   ].sort((a,b)=>a[0].localeCompare(b[0]));
@@ -50,14 +50,14 @@ const BASE=process.argv[2]||'http://localhost:8765';
   const Mail=require(path.join(__dirname,'../../api/_lib/mail.js')); Mail.sendMail=async m=>{ mails.push(m); return 'test'; };
   const R=require(path.join(__dirname,'../../api/_lib/results.js')), Calc=require(path.join(__dirname,'../../ftm-calc.js')), admin=fake.createClient();
   const posts=()=>JSON.parse(files['posts.json']||'{"posts":[]}').posts;
-  let r=await R.run(admin,{now:Date.UTC(2026,10,17,21,0)}); ok(!posts().length&&/not 23:00/.test(r.log[0]),'22:00 Berlin: nothing yet');
-  r=await R.run(admin,{now:Date.UTC(2026,10,17,22,0)}); let P=posts(), c=(P[0]||{}).card||{};
-  ok(P.length===1&&P[0].ftm&&c.k==='day'&&c.date==='2026-11-17','23:00 Berlin Tuesday: the day\'s result is posted on FTM news '+JSON.stringify(r.log));
-  ok(c.n===3&&c.rows.map(x=>x.pl).join()==='533.03,1586.38,-492.12','the day is the Berlin day: a trade at 23:30 Berlin the night before and one after midnight are not in it ('+c.rows.map(x=>x.pl).join()+')');
+  let r=await R.run(admin,{now:Date.UTC(2026,10,17,16,0)}); ok(!posts().length&&/not 18:00/.test(r.log[0]),'17:00 Berlin: nothing yet');
+  r=await R.run(admin,{now:Date.UTC(2026,10,17,17,5)}); let P=posts(), c=(P[0]||{}).card||{};
+  ok(P.length===1&&P[0].ftm&&c.k==='day'&&c.date==='2026-11-17','18:05 Berlin Tuesday: the last 24 hours are posted on FTM news '+JSON.stringify(r.log));
+  ok(c.n===3&&c.rows.map(x=>x.pl).join()==='533.03,1586.38,-492.12','the day runs 18:00 to 18:00 Berlin: a trade at 17:30 the day before and one at 18:10 are not in it ('+c.rows.map(x=>x.pl).join()+')');
   const netExp=+(533.03+1586.38-492.12).toFixed(2); ok(c.net===netExp,'net P&L = the day\'s closed trades '+c.net);
   { const before=100000+1000+400; let f=1, b=before; [533.03,1586.38,-492.12].forEach(v=>{ f*=1+v/b; b+=v; }); ok(Math.abs(c.pct-(f-1)*100)<0.0001,'day % is time-weighted like the Calendar ('+c.pct.toFixed(4)+'%)'); }
   ok(/Tuesday, 17 November 2026: 3 trades closed, net \+\$1,627\.29/.test(P[0].x),'a short text for share links: '+P[0].x);
-  r=await R.run(admin,{now:Date.UTC(2026,10,17,22,40)}); ok(posts().length===1,'never posted twice');
+  r=await R.run(admin,{now:Date.UTC(2026,10,17,17,40)}); ok(posts().length===1,'never posted twice');
   { const fr=JSON.parse(fs.readFileSync(path.join(__dirname,'../../i18n/fr.json'),'utf8'));
     let mm=await R.mail(admin,{deadline:Date.now()+30000}), calls=1; while(mm.more&&calls<6){ mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); calls++; }
     const mem=()=>mails.filter(m=>!/^Copy of /.test(m.subject)), to=x=>mem().filter(m=>m.to===x), one=x=>to(x)[0]||{}, copies=mails.filter(m=>/^Copy of /.test(m.subject));
@@ -90,7 +90,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   ok(wk.n===7&&wk.days.length===5&&wk.days[0].date==='2026-11-14'&&wk.days.find(x=>x.date==='2026-11-18').n===1,'the week lists every day with trades ('+wk.days.map(x=>x.date.slice(8)+':'+x.n).join(' ')+')');
   r=await R.run(admin,{now:Date.UTC(2026,10,29,22,0)}); ok(!posts().some(x=>x.res==='month-2026-11'),'29 November: no month yet');
   r=await R.run(admin,{now:Date.UTC(2026,10,30,22,0)}); P=posts(); const mo=(P.find(x=>x.res==='month-2026-11')||{}).card||{};
-  ok(mo.k==='month'&&mo.n===7&&mo.from==='2026-11-01'&&mo.to==='2026-11-30'&&mo.best&&mo.worst&&mo.win!=null,'30 November 23:00 (last day of the month): the month is posted '+JSON.stringify({n:mo.n,win:mo.win,best:mo.best&&mo.best.date,worst:mo.worst&&mo.worst.date}));
+  ok(mo.k==='month'&&mo.n===7&&mo.from==='2026-11-01'&&mo.to==='2026-11-30'&&mo.best&&mo.worst&&mo.win!=null,'30 November 18:00 (last day of the month): the month is posted '+JSON.stringify({n:mo.n,win:mo.win,best:mo.best&&mo.best.date,worst:mo.worst&&mo.worst.date}));
   { const n0=mails.length; let mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true}); for(let k=0;k<5&&mm.more;k++) mm=await R.mail(admin,{deadline:Date.now()+30000,chain:true});
     const ms=mails.slice(n0).filter(m=>/Monthly statement|Relevé mensuel/.test(m.subject)), b=ms.find(m=>m.to==='ben@x.com')||{}, h=b.html||'';
     ok(ms.some(m=>m.to==='free@x.com'&&/FTM master account/.test(m.html)),'a free member also gets the FTM master account\'s monthly statement');
@@ -101,7 +101,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
   { const n0=mails.length; let sm=await R.samples(admin); const S2=mails.slice(n0);
     ok(S2.length===4&&S2.every(m=>m.to==='ftmwebnation@gmail.com'&&/^SAMPLE · /.test(m.subject))&&S2.filter(m=>/Weekly result/.test(m.subject)).length===2&&S2.filter(m=>/Monthly statement|Monthly result/.test(m.subject)).length===2,'samples: the owner gets the weekly summary and the monthly statement of the master and his own account, nobody else ('+S2.map(m=>m.subject.slice(9,40)).join(' | ')+')');
     sm=await R.samples(admin); ok(mails.length===n0+4&&/less than 10 minutes/.test(sm.log.join()),'samples are sent at most once per 10 minutes'); }
-  r=await R.run(admin,{now:Date.UTC(2027,6,2,21,0)}); ok(posts().some(x=>x.res==='day-2027-07-02')&&posts().some(x=>x.res==='week-2027-07-02'),'summer time: posted at 21:00 UTC = 23:00 Berlin');
+  r=await R.run(admin,{now:Date.UTC(2027,6,2,16,5)}); ok(posts().some(x=>x.res==='day-2027-07-02')&&posts().some(x=>x.res==='week-2027-07-02'),'summer time: posted at 16:05 UTC = 18:05 Berlin');
   // Community: the result posts show in For you, Following and FTM news, with the card
   const CH=require(path.join(__dirname,'../../api/v1/community.js'));
   const call=(tok,body)=>new Promise(res=>{ const r={s:0,setHeader(){},status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,null]);}}; CH({method:'POST',headers:{authorization:'Bearer '+tok},body},r); });
@@ -111,7 +111,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
     const g=await new Promise(res=>{ const r={s:0,setHeader(){},status(c){this.s=c;return this;},json(j){res([this.s,j]);},end(){res([this.s,null]);}}; CH({method:'GET',headers:{},query:{dayresult:'2026-11-17'}},r); });
     const cal=(g[1]&&g[1].cal)||[], d17=cal.find(x=>x.date==='2026-11-17')||{}, d16=cal.find(x=>x.date==='2026-11-16')||{};
     ok(g[0]===200&&cal.length===17&&cal[0].date==='2026-11-01','dayresult: the month so far, one entry per day ('+cal.length+')');
-    ok(d17.n===3&&Math.abs(d17.pct-g[1].pct)<0.006&&d16.n===1&&cal.filter(x=>x.n).length===3,'dayresult: each day\'s trades and time-weighted % match the day card ('+JSON.stringify(d17)+')'); }
+    ok(d17.n===4&&d16.n===1&&cal.filter(x=>x.n).length===3,'dayresult: the month calendar keeps calendar days (midnight to midnight, like the client-area Calendar); the 18:00 result is the day card ('+JSON.stringify(d17)+')'); }
   { // a day not posted yet (tomorrow, so it never clashes with the days posted above): hidden from the public (the social job waits for the 23:00 post), shown to the owner with &preview=1
     const today=new Date(Date.now()+864e5+3600e3).toISOString().slice(0,10), GQ=q=>new Promise(res=>{ const r={s:0,h:{},setHeader(k,v){this.h[k]=v;},status(c){this.s=c;return this;},json(j){res([this.s,j,this.h]);},end(){res([this.s,null,this.h]);}}; CH({method:'GET',headers:{},query:q},r); });
     const a=await GQ({dayresult:today}), b2=await GQ({dayresult:today,preview:'1'});
