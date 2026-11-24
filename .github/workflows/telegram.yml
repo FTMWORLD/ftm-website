@@ -1,0 +1,99 @@
+name: Telegram post
+
+# Posts one FTM video (with caption) and an optional tap-to-vote poll to the FTM Telegram channel.
+# The bot token lives only in the repository secret TELEGRAM_BOT_TOKEN.
+on:
+  workflow_dispatch:
+    inputs:
+      video:
+        description: Video URL (mp4)
+        required: false
+      caption:
+        description: Caption (max 1024 characters)
+        required: false
+      poll_question:
+        description: Poll question (optional)
+        required: false
+      poll_options:
+        description: Poll answers separated by |
+        required: false
+      post_at:
+        description: Post at this time (ISO, e.g. 2026-11-25T09:30:00+01:00); empty = now
+        required: false
+      check:
+        description: Only check that the bot can reach the channel
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - name: Post to Telegram
+        env:
+          TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: '@FTMstrategy'
+          VIDEO: ${{ inputs.video }}
+          CAPTION: ${{ inputs.caption }}
+          POLL_Q: ${{ inputs.poll_question }}
+          POLL_O: ${{ inputs.poll_options }}
+          POST_AT: ${{ inputs.post_at }}
+          CHECK: ${{ inputs.check }}
+        run: |
+          python3 - <<'EOF'
+          import os, sys, json, time, datetime, subprocess, urllib.request, urllib.parse
+          tok = os.environ.get('TOKEN', '')
+          if not tok:
+              sys.exit('The secret TELEGRAM_BOT_TOKEN is not set.')
+          api = 'https://api.telegram.org/bot' + tok + '/'
+          chat = os.environ['CHAT']
+
+          def call(method, data):
+              req = urllib.request.Request(api + method, data=urllib.parse.urlencode(data).encode())
+              try:
+                  r = json.load(urllib.request.urlopen(req, timeout=60))
+              except urllib.error.HTTPError as e:
+                  r = json.load(e)
+              if not r.get('ok'):
+                  sys.exit(method + ' failed: ' + str(r.get('description')))
+              return r['result']
+
+          if os.environ.get('CHECK') == 'true':
+              me = call('getMe', {})
+              ch = call('getChat', {'chat_id': chat})
+              adm = call('getChatMember', {'chat_id': chat, 'user_id': me['id']})
+              print('Bot @%s reaches "%s" as %s; can post: %s' % (me['username'], ch.get('title'), adm['status'], adm.get('can_post_messages')))
+              sys.exit(0)
+
+          at = os.environ.get('POST_AT', '').strip()
+          if at:
+              wait = datetime.datetime.fromisoformat(at).timestamp() - time.time()
+              if wait > 5 * 3600:
+                  sys.exit('post_at is more than 5 hours away')
+              if wait > 0:
+                  print('Waiting %d s until %s' % (wait, at)); time.sleep(wait)
+
+          video, cap = os.environ.get('VIDEO', '').strip(), os.environ.get('CAPTION', '')[:1024]
+          if video:
+              subprocess.run(['curl', '-sSfL', '--retry', '3', '-o', 'v.mp4', video], check=True)
+              out = subprocess.run(['curl', '-sS', '--retry', '2', api + 'sendVideo',
+                                    '--form-string', 'chat_id=' + chat, '--form-string', 'caption=' + cap,
+                                    '--form-string', 'supports_streaming=true', '-F', 'video=@v.mp4;type=video/mp4'],
+                                   capture_output=True, text=True)
+              r = json.loads(out.stdout or '{}')
+              if not r.get('ok'):
+                  sys.exit('sendVideo failed: ' + str(r.get('description')))
+              print('Video posted, message', r['result']['message_id'])
+          elif cap:
+              print('Text posted, message', call('sendMessage', {'chat_id': chat, 'text': cap})['message_id'])
+
+          q, opts = os.environ.get('POLL_Q', '').strip(), [o.strip() for o in os.environ.get('POLL_O', '').split('|') if o.strip()]
+          if q and len(opts) >= 2:
+              time.sleep(2)
+              p = call('sendPoll', {'chat_id': chat, 'question': q[:300], 'options': json.dumps([{'text': o[:100]} for o in opts[:10]]), 'is_anonymous': 'true'})
+              print('Poll posted, message', p['message_id'])
+          EOF

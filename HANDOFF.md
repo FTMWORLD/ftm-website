@@ -392,6 +392,7 @@ Sections in page order, with the line where each begins:
 | TikTok | `https://www.tiktok.com/@ftm_wealth_nation` |
 | YouTube *(new channel, 21 Nov 2026; same channel Metricool posts to)* | `https://www.youtube.com/channel/UCZGQ7Mx-qpDOF-JF6St1qOQ` |
 | X *(added)* | `https://x.com/ftmwealthnation` |
+| Telegram *(added 24 Nov 2026; posts via .github/workflows/telegram.yml, token in GitHub secret TELEGRAM_BOT_TOKEN)* | `https://t.me/FTMstrategy` |
 
 **Still pointing nowhere:** Log in destination (opens the preview overlay), Explore FTM MT5,
 View verified track record, Contact us, Meet the team, Terms and Conditions, Risk Disclosure,

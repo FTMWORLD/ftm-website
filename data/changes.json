@@ -326,5 +326,9 @@
  {
   "date": "2026-11-24",
   "text": "The Facebook button at the bottom of the homepage now opens FTM's current Facebook page."
+ },
+ {
+  "date": "2026-11-24",
+  "text": "A Telegram button now sits with the other social buttons at the bottom of the homepage."
  }
 ]

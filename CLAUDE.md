@@ -96,6 +96,11 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Telegram (owner instruction, 24 November 2026)
+- Every feed video (09:30, 13:00, 18:00, Saturday weekly) also goes to the Telegram channel https://t.me/FTMstrategy at the same time, through the GitHub workflow `.github/workflows/telegram.yml` (workflow_dispatch: video URL, caption, poll question + answers separated by |, post_at up to 5 h ahead). Metricool has no Telegram.
+- Caption = the Instagram caption with "Create your account: https://www.ftmwealthnation.com/?start=tg" instead of "link in our bio". The A/B(/C) vote goes out as a real Telegram poll (live %), not as a comment.
+- The bot token lives only in the GitHub secret TELEGRAM_BOT_TOKEN; never in chat, code or files.
+
 ## Never "tap our name" (owner instruction, 23 November 2026)
 - It is not professional. Say "Tap the link in our bio" (or "link in bio", "the link below" where a link is in the caption, "visit our profile"). Never "tap our name" in voice, screen, badge, caption or comment.
 
