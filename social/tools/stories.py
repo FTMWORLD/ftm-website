@@ -107,7 +107,7 @@ def day_set(d):
         s11 = {'kicker': 'Best day in ' + mon, 'hook': 'One day. <b>One account.</b>', 'big': pc(bd['pct']), 'bigTone': 'up',
                'bigLabel': '%s %d %s on the live account' % (WD[bdt.weekday()], bdt.day, mon[:3])}
     s11.update({'title': ('%s so far: <b>%s</b>' % (mon, pc(y['mtd']))) if y.get('mtd') is not None else 'Every trade shown.',
-           'chips': ['6 p.m. today: yesterday\'s result' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Tap the link in our bio', 'seed': dt.day * 3 + 1})
+           'chips': ['6 p.m. today: the last 24 hours' if EVE else 'Tonight 11 p.m.: today\'s result'], 'cta': 'Tap the link in our bio', 'seed': dt.day * 3 + 1})
     m = y.get('mtd')
     s17 = {'kicker': 'Live account · ' + mon, 'hook': 'While you were busy,', 'big': pc(m) if m is not None else '%d trades' % f['trades'],
            'bigTone': 'up' if (m or 0) >= 0 else 'down', 'bigLabel': mon + ' so far on FTM',
@@ -123,7 +123,7 @@ def day_set(d):
     ph, pt = pick(POVS, od)
     pov = {'kicker': 'POV', 'hook': ph, 'title': pt, 'theme': 'navy', 'cta': 'Tap the link in our bio', 'seed': dt.day * 5 + 13}
     quiz = {'kicker': 'Quick question', 'hook': 'Today on FTM: <b>profit day or loss day?</b>', 'opts': ['Profit day', 'Loss day'],
-            'title': 'Reply with A or B. <b>The answer: tomorrow at 6 p.m.</b>', 'theme': 'gold', 'cta': 'Follow for the answer', 'seed': dt.day * 5 + 17}
+            'title': 'Reply with A or B. <b>The answer: today at 6 p.m.</b>', 'theme': 'gold', 'cta': 'Follow for the answer', 'seed': dt.day * 5 + 17}
     try:
         news = json.load(open(os.path.join(HERE, '..', 'plan', 'news.json'))).get(d)
     except Exception:
