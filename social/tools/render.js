@@ -103,23 +103,29 @@ function lossContext(w, h) {
   const dv = Object.keys(day).sort().map(k => (day[k] - 1) * 100), share = o => Math.round(Object.values(o).filter(f => f > 1).length / Object.values(o).length * 100);
   let run = 0, streak = 0; dv.forEach(v => { run = v < 0 ? run + 1 : 0; streak = Math.max(streak, run); });
   const ys = Object.keys(yr), yUp = ys.filter(y => yr[y] > 1).length, worse = dv.filter(v => v <= D.pct).length;
+  const up = dv.filter(v => v > 0), dn = dv.filter(v => v < 0), avg = a => a.reduce((x, y) => x + y, 0) / a.length;
   const POOL = [
-    [Math.round(dv.filter(v => v < 0).length / dv.length * 100) + '%', 'of backtest days<br>were loss days'],
+    [Math.round(dn.length / dv.length * 100) + '%', 'of backtest days<br>were loss days'],
     [share(mo) + '%', 'of backtest months<br>ended in profit', '#5fe39b'],
     [share(wk) + '%', 'of backtest weeks<br>ended in profit', '#5fe39b'],
     [streak + ' days', 'longest loss run,<br>still a profit year'],
-    ['+176%', 'average yearly<br>profit', '#5fe39b']]; // the profit years are already in every headline, so no tile repeats them
+    ['+176%', 'average yearly<br>profit', '#5fe39b'],
+    [worse.toLocaleString('en-US'), 'backtest days<br>worse than today'],
+    [T.length.toLocaleString('en-US'), 'backtest trades,<br>every one public'],
+    [(avg(up) / -avg(dn)).toFixed(1) + '×', 'average profit day<br>vs average loss day', '#5fe39b'],
+    ['+' + avg(up).toFixed(2) + '%', 'average<br>profit day', '#5fe39b']];
   const HEAD = [['Loss days are part of the plan.', 'Profit years: ' + yUp + ' of ' + ys.length + '.'], ['One day never tells the story.', 'Every year ended in profit.'], ['Seen before. Every time.', 'The years still ended in profit.']];
   const LINE = [['The real profit is in the long term, ', 'not in one day.'], ['Judge FTM by the years, ', 'not by one day.'], ['A step back today. ', 'The long term counts.']];
   const n = Math.floor(Date.parse(D.date + 'T12:00:00Z') / 864e5); let hd = HEAD[n % HEAD.length], ln = LINE[n % LINE.length];
   // owner 24 Nov: 24 Nov uses the design agreed that day; every later loss day mixes the statistics (nothing fixed)
-  let pick = [POOL[n % POOL.length], [worse.toLocaleString('en-US'), 'backtest days<br>worse than today'], POOL[(n + 2) % POOL.length]];
-  if (D.date === '2026-11-24') { pick = [POOL[0], pick[1], POOL[4]]; hd = HEAD[0]; ln = LINE[0]; }
-  const tile = (big, txt, c) => `<div style="padding:34px 22px;border-radius:24px;background:rgba(11,22,64,.6);border:1.5px solid rgba(212,175,55,.45);text-align:center"><div style="font-size:${String(big).length > 6 ? 62 : 76}px;font-weight:900;letter-spacing:-.03em;color:${c || '#fff'};white-space:nowrap">${big}</div><div style="font-size:27px;color:#c9d0ee;font-weight:600;margin-top:8px;line-height:1.3;white-space:nowrap">${txt}</div></div>`;
+  // owner 24 Nov: all three tiles change every loss day (offsets 0, 4, 7 of 9 never repeat a tile within a day)
+  let pick = [0, 4, 7].map(o => POOL[(n + o) % POOL.length]);
+  if (D.date === '2026-11-24') { pick = [POOL[0], POOL[5], POOL[4]]; hd = HEAD[0]; ln = LINE[0]; }
+  const tile = (big, txt, c) => `<div style="padding:34px 22px;border-radius:24px;background:rgba(11,22,64,.6);border:1.5px solid rgba(212,175,55,.45);text-align:center"><div style="font-size:${String(big).length > 5 ? 62 : 76}px;font-weight:900;letter-spacing:-.03em;color:${c || '#fff'};white-space:nowrap">${big}</div><div style="font-size:27px;color:#c9d0ee;font-weight:600;margin-top:8px;line-height:1.3;white-space:nowrap">${txt}</div></div>`;
   return `<div class="grid"></div><div class="wrap" style="align-items:center;text-align:center"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:40px">Today in context</div>
     <div style="font-size:70px;font-weight:900;letter-spacing:-.035em;line-height:1.12;margin-top:28px;white-space:nowrap">${hd[0]}<br><span style="color:#E3B62F">${hd[1]}</span></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%;margin-top:44px">${pick.map(x => tile(x[0], x[1], x[2])).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:100%;margin-top:44px">${pick.map(x => tile(x[0], x[1], x[2])).join('')}</div>
     <div style="font-size:38px;font-weight:700;margin-top:56px;color:#dfe4ff;white-space:nowrap">${ln[0]}<span style="color:#E3B62F">${ln[1]}</span></div>
     <div style="font-size:24px;color:#8e98c4;margin-top:34px">Backtest ${Object.keys(day).sort()[0].slice(0, 4)}–${Object.keys(day).sort().pop().slice(0, 4)} · Portfolio, Growth · every trade on the trust engine</div>
   </div>${FOOT}`;
