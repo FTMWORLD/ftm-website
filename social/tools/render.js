@@ -68,23 +68,26 @@ function day(w, h) {
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
     <div class="kick">${D.when === 'last24' ? 'Last 24 hours on FTM' : (D.when === 'yesterday' ? 'Yesterday' : 'Today') + ' on FTM · daily result'}</div><div class="date">${D.when === 'last24' && D.range ? esc(D.range) : wd + ', ' + d + ' ' + MONTHS[m - 1] + ' ' + y}</div>${body}</div>${FOOT}`;
 }
+/* owner 24 Nov: no time and no lot size. One line per market and direction (e.g. US Tech 100 · BUY · 4 trades) with the combined result:
+   each trade's % on the balance at that moment, chained within the group, so the groups chain to exactly the window's %. */
+function tradeGroups() {
+  const ALL = (D.rows || []).slice().sort((a, b) => a.c - b.c); let bal = D.balance != null ? D.balance - ALL.reduce((t, r) => t + r.pl, 0) : null;
+  const G = new Map();
+  ALL.forEach(r => { const p = bal ? r.pl / bal * 100 : null; if (bal != null) bal += r.pl; const dir = /buy/i.test(r.d) ? 'BUY' : 'SELL', k = mk(r.s) + '|' + dir;
+    if (!G.has(k)) G.set(k, { m: mk(r.s), dir, n: 0, f: 1, pl: 0, ok: true }); const g = G.get(k); g.n++; g.pl += r.pl; if (p == null) g.ok = false; else g.f *= 1 + p / 100; });
+  return [...G.values()].map(g => Object.assign(g, { pct: g.ok ? (g.f - 1) * 100 : null }));
+}
 function trades(w, h, part, parts) {
-  const R = (D.rows || []).slice().sort((a, b) => a.c - b.c), per = Math.ceil(R.length / parts), L = R.slice(part * per, (part + 1) * per);
+  const GR = tradeGroups(), per = Math.ceil(GR.length / parts), L = GR.slice(part * per, (part + 1) * per);
   const [y, m, d] = D.date.split('-').map(Number), wd = DAYS[new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
-  const tm = ms => new Date(ms).toLocaleTimeString('en-GB', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
-  const sym = { USD: '$', EUR: '€', GBP: '£' }[D.cur] || '';
-  // owner 23 Nov: percentages only. Each trade's result on the balance at that moment (start balance = end balance - the day's results)
-  const ALL = (D.rows || []).slice().sort((a, b) => a.c - b.c); let bal = D.balance != null ? D.balance - ALL.reduce((t, r) => t + r.pl, 0) : null; const PCT = new Map();
-  ALL.forEach(r => { PCT.set(r, bal ? r.pl / bal * 100 : null); if (bal != null) bal += r.pl; });
-  const mny = r => { const v = PCT.get(r); return v == null ? '' : pc(v); };
-  const rh = Math.min(92, Math.floor((part === parts - 1 && D.balance != null ? 600 : 820) / Math.max(L.length, 1)));
-  const rows = L.map(r => `<div style="display:grid;grid-template-columns:122px 1fr 100px 118px 210px;align-items:center;height:${rh}px;border-bottom:1.5px solid rgba(212,175,55,.18);font-size:${Math.min(36, rh * .42)}px">
-    <span style="color:#aeb7dc;font-weight:600">${tm(r.c)}</span><span style="font-weight:700;white-space:nowrap">${esc(mk(r.s))}</span><span style="color:#dfe4ff;font-weight:600;white-space:nowrap">${r.v != null ? (+r.v).toFixed(2) : ''}</span>
-    <span><b style="font-size:.72em;padding:6px 14px;border-radius:99px;background:${/buy/i.test(r.d) ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${/buy/i.test(r.d) ? 'BUY' : 'SELL'}</b></span>
-    <span style="text-align:right;font-weight:800;color:${r.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${mny(ALL.find(x => x === r) || r)}</span></div>`).join('');
+  const rh = Math.min(118, Math.floor((part === parts - 1 && D.balance != null ? 600 : 820) / Math.max(L.length, 1)));
+  const rows = L.map(g => `<div style="display:grid;grid-template-columns:1fr 190px 240px;align-items:center;height:${rh}px;border-bottom:1.5px solid rgba(212,175,55,.18)">
+    <span style="white-space:nowrap"><b style="display:block;font-size:${Math.min(40, rh * .36)}px;font-weight:800">${esc(g.m)}</b><span style="font-size:${Math.min(25, rh * .24)}px;color:#aeb7dc;font-weight:600">${g.n} ${g.n === 1 ? 'trade' : 'trades'}</span></span>
+    <span><b style="font-size:${Math.min(28, rh * .27)}px;padding:8px 18px;border-radius:99px;background:${g.dir === 'BUY' ? 'rgba(47,191,113,.18);color:#5fe39b' : 'rgba(229,50,62,.2);color:#ff8a92'}">${g.dir}</b></span>
+    <span style="text-align:right;font-weight:800;font-size:${Math.min(42, rh * .38)}px;color:${g.pl >= 0 ? '#E3B62F' : '#ff6b74'}">${g.pct == null ? '' : pc(g.pct)}</span></div>`).join('');
   return `<div class="grid"></div><div class="wrap"><div class="logo">${MARK}FTM</div>
-    <div class="kick" style="margin-top:40px">${D.when === 'last24' ? 'Last 24 hours · trades' : (D.when === 'yesterday' ? 'Yesterday' : 'Today') + '\'s trades'} · ${part + 1} of ${parts}</div><div class="date">${D.when === 'last24' && D.range ? esc(D.range) : wd + ', ' + d + ' ' + MONTHS[m - 1] + ' ' + y} · Berlin time</div>
-    <div style="margin-top:30px;display:grid;grid-template-columns:122px 1fr 100px 118px 210px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Time</span><span>Market</span><span>Lots</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
+    <div class="kick" style="margin-top:40px">${D.when === 'last24' ? 'Last 24 hours · trades' : (D.when === 'yesterday' ? 'Yesterday' : 'Today') + '\'s trades'}${parts > 1 ? ' · ' + (part + 1) + ' of ' + parts : ''}</div><div class="date">${D.when === 'last24' && D.range ? esc(D.range) : wd + ', ' + d + ' ' + MONTHS[m - 1] + ' ' + y} · Berlin time</div>
+    <div style="margin-top:30px;display:grid;grid-template-columns:1fr 190px 240px;font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:#aeb7dc;font-weight:700;padding-bottom:12px"><span>Market</span><span>Order</span><span style="text-align:right">Result</span></div><div style="border-top:1.5px solid rgba(212,175,55,.35)">${rows}</div>
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.when === 'last24' ? 'Last 24 hours' : 'Day result'}</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
@@ -253,7 +256,7 @@ function endSlide(w, h) {
   const b = await chromium.launch(); fs.mkdirSync(outDir, { recursive: true });
   const name = nameArg || (kind === 'day' || kind === 'quiet' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
   const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : kind === 'quiet' ? [['quiet1', 1080, 1350, () => quiet(1080, 1350, 1)], ['quiet2', 1080, 1350, () => quiet(1080, 1350, 2)], ['quiet3', 1080, 1350, () => quiet(1080, 1350, 3)]] : [];
-  if (kind === 'day' && (D.rows || []).length) { const parts = D.rows.length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
+  if (kind === 'day' && (D.rows || []).length) { const parts = tradeGroups().length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
   if (kind === 'day' && D.pct < 0.5 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   if (kind === 'day') jobs.push(['end', 1080, 1350, () => endSlide(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
