@@ -40,6 +40,7 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   smtpFail=false; sentSmtp.length=0; brevoCalls=0; process.env.RESEND_API_KEY='re_test'; const resendCalls=[]; let resendOk=true;
   global.fetch=async(u,o)=>{ if(String(u).includes('api.resend.com')){ resendCalls.push(JSON.parse(o.body)); return resendOk?{ok:true,status:200,text:async()=>'{"id":"1"}'}:{ok:false,status:403,text:async()=>'{"message":"blocked"}'}; } brevoCalls++; return {ok:true,status:201,text:async()=>'{}'}; };
   const r4=await E.sendPasswordEmail(admin,'r@x.com',{free:true}); const rc=resendCalls[0]||{};
+  ok(typeof rc.text==='string' && rc.text.length>20 && !/<[a-z]/i.test(rc.text), 'every email also carries a plain-text copy (keeps account emails out of Promotions) ('+String(rc.text).slice(0,60).replace(/\n/g,' ')+')');
   ok(r4.via==='resend' && rc.from==='FTM <ftm@ftmwealthnation.com>' && rc.to[0]==='r@x.com' && rc.reply_to==='support@ftmwealthnation.com' && !sentSmtp.length, 'with Resend set up, emails go through Resend from support@ftmwealthnation.com ('+r4.via+')');
   resendOk=false; const r5=await E.sendPasswordEmail(admin,'r2@x.com',{free:true}); ok(r5.via==='google' && sentSmtp.length===1 && brevoCalls===0, 'if Resend refuses, the Gmail backup sends it automatically ('+r5.via+')');
   global.fetch=async()=>({ok:false,status:401,json:async()=>({name:'restricted_api_key',message:'This API key is restricted to only send emails'})});

@@ -18,23 +18,32 @@ function getTransport() {
   });
   return transporter;
 }
+// Plain-text copy of every email (owner 24 Nov: result email landed in Promotions). An HTML-only email looks like a
+// newsletter to Gmail; a matching text part is what personal and account emails carry.
+function textOf(html) {
+  return String(html || '').replace(/<(head|style|script)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (m, u, t) => { const x = t.replace(/<[^>]+>/g, '').trim(); return x && x !== u ? x + ' (' + u + ')' : u; })
+    .replace(/<\/(td|th)>/gi, '  ').replace(/<(br|\/p|\/tr|\/h\d|\/div|\/li)[^>]*>/gi, '\n').replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/[ \t]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+}
 async function viaResend(o, to, fromName, replyTo) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { authorization: 'Bearer ' + process.env.RESEND_API_KEY, 'content-type': 'application/json' },
-    body: JSON.stringify({ from: fromName + ' <' + (process.env.MAIL_FROM || 'ftm@ftmwealthnation.com') + '>', to, reply_to: replyTo, subject: o.subject, html: o.html }),
+    body: JSON.stringify({ from: fromName + ' <' + (process.env.MAIL_FROM || 'ftm@ftmwealthnation.com') + '>', to, reply_to: replyTo, subject: o.subject, html: o.html, text: o.text || textOf(o.html) }),
     signal: AbortSignal.timeout(8000)
   });
   if (!r.ok) throw new Error('Resend ' + r.status + ' ' + (await r.text()).slice(0, 200));
 }
 async function viaSmtp(o, to, fromName, replyTo) {
-  await getTransport().sendMail({ from: { name: fromName, address: from() }, to, replyTo, subject: o.subject, html: o.html });
+  await getTransport().sendMail({ from: { name: fromName, address: from() }, to, replyTo, subject: o.subject, html: o.html, text: o.text || textOf(o.html) });
 }
 async function viaBrevo(o, to, fromName, replyTo) {
   const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': process.env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ sender: { email: 'ftm@ftmwealthnation.com', name: fromName }, replyTo: { email: replyTo }, to: to.map(email => ({ email })), subject: o.subject, htmlContent: o.html }),
+    body: JSON.stringify({ sender: { email: 'ftm@ftmwealthnation.com', name: fromName }, replyTo: { email: replyTo }, to: to.map(email => ({ email })), subject: o.subject, htmlContent: o.html, textContent: o.text || textOf(o.html) }),
     signal: AbortSignal.timeout(8000)
   });
   if (!r.ok) throw new Error('Brevo ' + r.status + ' ' + (await r.text()).slice(0, 200));
@@ -66,4 +75,4 @@ async function verify() {
   if (smtpOn()) { await getTransport().verify(); out.push('mailbox ' + from() + ' ok'); }
   return out.length ? out.join(' · ') : null;
 }
-module.exports = { sendMail, verify, smtpOn, resendOn, _reset: () => { transporter = null; } };
+module.exports = { textOf, sendMail, verify, smtpOn, resendOn, _reset: () => { transporter = null; } };
