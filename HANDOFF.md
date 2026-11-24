@@ -393,7 +393,7 @@ Sections in page order, with the line where each begins:
 | YouTube *(new channel, 21 Nov 2026; same channel Metricool posts to)* | `https://www.youtube.com/channel/UCZGQ7Mx-qpDOF-JF6St1qOQ` |
 | X *(added)* | `https://x.com/ftmwealthnation` |
 | LinkedIn *(added 24 Nov 2026; the profile Metricool posts to)* | `https://www.linkedin.com/in/ftm-wealth-nation-14a6b5451` |
-| Email sending *(24 Nov 2026)* | Resend, domain ftmwealthnation.com verified through Cloudflare; key in Vercel `RESEND_API_KEY` (Production). /api/v1/status shows "Resend domain verified" when live; Gmail mailbox stays as backup. Sender: FTM <ftm@ftmwealthnation.com> (owner 24 Nov: no "no-reply", no "support"); replies go to support@. |
+| Email sending *(24 Nov 2026)* | Resend, domain ftmwealthnation.com verified through Cloudflare; key in Vercel `RESEND_API_KEY` (Production). /api/v1/status shows "Resend domain verified" when live; Gmail mailbox stays as backup. Sender: FTM <ftm-nation@ftmwealthnation.com> (owner 24 Nov: no "no-reply", no "support"); replies go to support@. |
 | Telegram *(added 24 Nov 2026; posts via .github/workflows/telegram.yml, token in GitHub secret TELEGRAM_BOT_TOKEN)* | `https://t.me/FTMstrategy` |
 
 **Still pointing nowhere:** Log in destination (opens the preview overlay), Explore FTM MT5,
