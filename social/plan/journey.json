@@ -153,41 +153,6 @@
    "brief": "social/briefs/2026-11-23-0930.md"
   },
   {
-   "date": "2026-11-26",
-   "stage": "Pillar · System",
-   "format": "Pillar System: short story with characters (rig), one clear scenario",
-   "title": "Two people, one market",
-   "open": "Same market. Same day. One wins, one loses. Why?",
-   "hook": "Same market. Same day. One wins, one loses. Why?",
-   "scenes": [
-    [
-     "split",
-     "Meet Sam and Lena. Same market, same day."
-    ],
-    [
-     "sam",
-     "Sam trades on a feeling. No plan, no stop, a different size every time."
-    ],
-    [
-     "lena",
-     "Lena follows fixed rules. Same entry checks, same risk, every single trade."
-    ],
-    [
-     "result",
-     "Over a year, the rules win. Not because of luck, because of discipline."
-    ],
-    [
-     "machine",
-     "FTM MACHINE is Lena on autopilot: tested rules, followed every time."
-    ],
-    [
-     "cta",
-     "Trade like Lena. Start free at ftm wealth nation dot com."
-    ]
-   ],
-   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
-  },
-  {
    "date": "2026-11-27",
    "stage": "Pillar · Emotion",
    "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
@@ -528,6 +493,50 @@
     ]
    ],
    "note": "ILO: women do 76.2% of unpaid care work. ChatGPT images 2026-11-25-0930-01..06."
+  },
+  {
+   "date": "2026-11-26",
+   "slot": "09:30",
+   "stage": "Education · System",
+   "format": "Myth vs fact, statistic hook",
+   "audience": "students and young people",
+   "sound": "bright",
+   "voice": "am_michael",
+   "title": "Myth or fact?",
+   "vote": {
+    "q": "Which myth did you believe?",
+    "a": "Only for the rich",
+    "b": "Charts all day",
+    "c": "Give my money away"
+   },
+   "open": "Ninety-seven percent of people who day-traded for more than three hundred days lost money.",
+   "scenes": [
+    [
+     "quiz",
+     "Students, myth or fact? Investing is only for rich people."
+    ],
+    [
+     "rich",
+     "Myth. It is about rules, not riches."
+    ],
+    [
+     "charts",
+     "Myth: you must watch charts all day. FTM MACHINE does it for you, twenty-four seven, with fixed rules."
+    ],
+    [
+     "yours",
+     "Myth: you must hand your money over. It stays in your own account, in your name."
+    ],
+    [
+     "fact",
+     "Fact: loss days happen. We show every single one, and every trade."
+    ],
+    [
+     "cta",
+     "Which myth did you believe? A, only for the rich. B, charts all day. C, give my money away. Vote in the comments, then tap the link in our bio."
+    ]
+   ],
+   "note": "Chague, De-Losso & Giovannetti (2019), Day Trading for a Living?: 97% of people who day-traded Brazilian futures for more than 300 days lost money. ChatGPT images 2026-11-26-0930-01..06."
   }
  ],
  "2026-11-24-1800": {
