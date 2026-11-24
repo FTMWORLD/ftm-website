@@ -96,6 +96,12 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Each platform its own way (owner instruction, 24 November 2026; overrides job prompts that send one shared caption)
+- Same video and figures, but presented the way each platform rewards it: follow social/plan/platforms.md. Instagram, Facebook and TikTok are now SEPARATE Metricool posts (one create call each), never one combined post with one caption; YouTube, LinkedIn and Telegram as before but with their own text.
+- Instagram and Facebook get the moving version without the cover frame (`<video>-nc.mp4`, kept by coverfirst.py; at 6 p.m. build `day-T-short-nc.mp4` with slidevideo.py without the cover slide) and the cover as videoThumbnailUrl. TikTok and YouTube keep the cover as frame 1.
+- Instagram: at most 5 hashtags, a "send this to…" line. TikTok: a search-word caption and the vote in the caption. Facebook: short and conversational, 0–2 hashtags. YouTube: title of 40 characters or less. LinkedIn: no link in the post.
+- Goal (owner 24 Nov): at least 10 new accounts a day. Judge every change by sign-ups (staff console sources ig/fb/tt/yt/li/tg), not by likes.
+
 ## Telegram (owner instruction, 24 November 2026)
 - Every feed video (09:30, 13:00, 18:00, Saturday weekly) also goes to the Telegram channel https://t.me/FTMstrategy at the same time, through the GitHub workflow `.github/workflows/telegram.yml` (workflow_dispatch: video URL, caption, poll question + answers separated by |, post_at up to 5 h ahead). Metricool has no Telegram.
 - Caption = the Instagram caption with "Create your account: https://www.ftmwealthnation.com/?start=tg" instead of "link in our bio". The A/B(/C) vote goes out as a real Telegram poll (live %), not as a comment.
