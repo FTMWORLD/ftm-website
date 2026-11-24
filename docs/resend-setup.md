@@ -27,12 +27,12 @@ Why: right now our emails are not signed for ftmwealthnation.com (no SPF, and th
 ## 5. Put the key into the website (Vercel)
 1. **vercel.com** → the FTM project → **Settings** → **Environment Variables**.
 2. Add (or update) `RESEND_API_KEY` = the key you copied.
-3. Add `MAIL_FROM` = `ftm-nation@ftmwealthnation.com`.
+3. Add `MAIL_FROM` = `ftm@ftmwealthnation.com`.
 4. Save, then **Deployments** → the latest one → **⋯** → **Redeploy**.
 
 ## 6. Same key for the login codes (Supabase)
 1. **supabase.com** → the FTM project → **Authentication** → **Emails** → **SMTP Settings**.
-2. Host `smtp.resend.com`, Port `465`, Username `resend`, Password = the same key, Sender email `ftm-nation@ftmwealthnation.com`, Sender name `FTM`. **Save**.
+2. Host `smtp.resend.com`, Port `465`, Username `resend`, Password = the same key, Sender email `ftm@ftmwealthnation.com`, Sender name `FTM`. **Save**.
 
 ## 7. Tell me "done"
 I will then check the DNS records, send test emails to Gmail and Outlook, and confirm they arrive in the main inbox with "signed by ftmwealthnation.com".

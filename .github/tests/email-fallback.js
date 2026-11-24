@@ -27,12 +27,12 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   // Google Workspace (SMTP) is used as soon as SMTP_USER and SMTP_PASS are set; Brevo is then not called at all
   const sentSmtp=[]; let smtpFail=false; const orig2=Module._load;
   Module._load=function(req,...a){ if(req==='nodemailer') return {createTransport:(cfg)=>({ cfg, sendMail:async(m)=>{ if(smtpFail) throw new Error('535 auth failed'); sentSmtp.push(Object.assign({cfg},m)); return {messageId:'x'}; }, verify:async()=>true })}; return orig2.call(this,req,...a); };
-  process.env.SMTP_USER='support@ftmwealthnation.com'; process.env.SMTP_PASS='abcd efgh ijkl mnop'; process.env.SMTP_FROM='ftm-nation@ftmwealthnation.com';
+  process.env.SMTP_USER='support@ftmwealthnation.com'; process.env.SMTP_PASS='abcd efgh ijkl mnop'; process.env.SMTP_FROM='ftm@ftmwealthnation.com';
   const M=require(path.join(__dirname,'../../api/_lib/mail.js')); M._reset(); let brevoCalls=0; global.fetch=async()=>{ brevoCalls++; return {ok:true,status:201,text:async()=>'{}'}; };
   calls.length=0; const r3=await E.sendPasswordEmail(admin,'new@x.com',{free:true});
   const m=sentSmtp[0]||{};
   ok(r3.via==='google', 'with Google set up, the password email is sent through Google ('+r3.via+')');
-  ok(m.to&&m.to[0]==='new@x.com' && m.from&&m.from.address==='ftm-nation@ftmwealthnation.com' && m.replyTo==='support@ftmwealthnation.com' && brevoCalls===0, 'sent from support@ftmwealthnation.com, replies go to support@, Brevo not used');
+  ok(m.to&&m.to[0]==='new@x.com' && m.from&&m.from.address==='ftm@ftmwealthnation.com' && m.replyTo==='support@ftmwealthnation.com' && brevoCalls===0, 'sent from support@ftmwealthnation.com, replies go to support@, Brevo not used');
   ok(m.cfg&&m.cfg.host==='smtp.gmail.com'&&m.cfg.port===587&&m.cfg.auth.pass==='abcdefghijklmnop', 'Google SMTP settings: smtp.gmail.com:587, app password spaces removed');
   smtpFail=true; calls.length=0; global.fetch=async()=>({ok:false,status:403,text:async()=>'suspended'}); await E.sendLoginEmail(admin,'l2@x.com',{}); ok(calls.some(c=>c[0]==='otp'), 'if every provider refuses, the login email still goes out through Supabase');
   ok(await M.verify()!==null, 'the hourly watchdog can check the Google login');
@@ -41,7 +41,7 @@ const path=require('path'), Module=require('module'); let fails=0; const ok=(c,m
   global.fetch=async(u,o)=>{ if(String(u).includes('api.resend.com')){ resendCalls.push(JSON.parse(o.body)); return resendOk?{ok:true,status:200,text:async()=>'{"id":"1"}'}:{ok:false,status:403,text:async()=>'{"message":"blocked"}'}; } brevoCalls++; return {ok:true,status:201,text:async()=>'{}'}; };
   const r4=await E.sendPasswordEmail(admin,'r@x.com',{free:true}); const rc=resendCalls[0]||{};
   ok(typeof rc.text==='string' && rc.text.length>20 && !/<[a-z]/i.test(rc.text), 'every email also carries a plain-text copy (keeps account emails out of Promotions) ('+String(rc.text).slice(0,60).replace(/\n/g,' ')+')');
-  ok(r4.via==='resend' && rc.from==='FTM <ftm-nation@ftmwealthnation.com>' && rc.to[0]==='r@x.com' && rc.reply_to==='support@ftmwealthnation.com' && !sentSmtp.length, 'with Resend set up, emails go through Resend from support@ftmwealthnation.com ('+r4.via+')');
+  ok(r4.via==='resend' && rc.from==='FTM <ftm@ftmwealthnation.com>' && rc.to[0]==='r@x.com' && rc.reply_to==='support@ftmwealthnation.com' && !sentSmtp.length, 'with Resend set up, emails go through Resend from support@ftmwealthnation.com ('+r4.via+')');
   resendOk=false; const r5=await E.sendPasswordEmail(admin,'r2@x.com',{free:true}); ok(r5.via==='google' && sentSmtp.length===1 && brevoCalls===0, 'if Resend refuses, the Gmail backup sends it automatically ('+r5.via+')');
   global.fetch=async()=>({ok:false,status:401,json:async()=>({name:'restricted_api_key',message:'This API key is restricted to only send emails'})});
   let vr; try { vr=await M.verify(); } catch(e) { vr='threw: '+e.message; }
