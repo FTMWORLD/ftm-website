@@ -91,6 +91,24 @@ function trades(w, h, part, parts) {
     ${part === parts - 1 && D.balance != null ? `<div style="margin-top:34px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:24px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${D.when === 'last24' ? 'Last 24 hours' : 'Day result'}</span><span style="font-size:52px;font-weight:800;letter-spacing:-.02em">${pc(D.pct)}</span></div>
     <div style="margin-top:18px;font-size:30px;color:#dfe4ff;font-weight:600">The same trades are taken in members' accounts of any size.</div>` : ''}</div>${FOOT}`;
 }
+/* owner 24 Nov: on a loss day, one slide of context: loss days are part of the plan, seen before in the backtest, and the years still ended in profit. Short, catchy, real figures only. */
+function lossContext(w, h) {
+  const dir = __dirname + '/../../data/trades/all/100000/g2', T = [];
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort()) T.push(...JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8')));
+  T.sort((a, b) => a[1] - b[1]); const day = {}, yr = {};
+  T.forEach(t => { const k = new Date(t[1] * 1000).toISOString().slice(0, 10); day[k] = (day[k] || 1) * (1 + t[7] / 100); yr[k.slice(0, 4)] = (yr[k.slice(0, 4)] || 1) * (1 + t[7] / 100); });
+  const dv = Object.values(day).map(f => (f - 1) * 100), lossPct = Math.round(dv.filter(v => v < 0).length / dv.length * 100), worse = dv.filter(v => v <= D.pct).length;
+  const ys = Object.keys(yr), yUp = ys.filter(y => yr[y] > 1).length;
+  const tile = (big, txt, c) => `<div style="padding:34px 22px;border-radius:24px;background:rgba(11,22,64,.6);border:1.5px solid rgba(212,175,55,.45);text-align:center"><div style="font-size:76px;font-weight:900;letter-spacing:-.03em;color:${c || '#fff'}">${big}</div><div style="font-size:27px;color:#c9d0ee;font-weight:600;margin-top:8px;line-height:1.3;white-space:nowrap">${txt}</div></div>`;
+  return `<div class="grid"></div><div class="wrap" style="align-items:center;text-align:center"><div class="logo">${MARK}FTM</div>
+    <div class="kick" style="margin-top:40px">Today in context</div>
+    <div style="font-size:70px;font-weight:900;letter-spacing:-.035em;line-height:1.12;margin-top:28px;white-space:nowrap">Loss days are part of the plan.<br><span style="color:#E3B62F">Profit years: ${yUp} of ${ys.length}.</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%;margin-top:44px">
+      ${tile(lossPct + '%', 'of backtest days<br>were loss days')}${tile(worse.toLocaleString('en-US'), 'backtest days<br>worse than today')}${D.mtd != null ? tile(pc(D.mtd), (MONTHS[+D.date.slice(5, 7) - 1]) + ' so far<br>live account', D.mtd >= 0 ? '#5fe39b' : '#ff8a92') : tile(yUp + '/' + ys.length, 'years<br>in profit')}</div>
+    <div style="font-size:38px;font-weight:700;margin-top:56px;color:#dfe4ff">We show every loss day. <span style="color:#E3B62F">The rules stay the same.</span></div>
+    <div style="font-size:24px;color:#8e98c4;margin-top:34px">Backtest ${Object.keys(day).sort()[0].slice(0, 4)}–${Object.keys(day).sort().pop().slice(0, 4)} · Portfolio, Growth · every trade on the trust engine</div>
+  </div>${FOOT}`;
+}
 /* Loss days and small days (owner 23 Nov: small wins add up): the whole month so far, day by day (green/red), so one red day is seen in context. Every day shown. */
 function month(w, h) {
   const [y, m, d] = D.date.split('-').map(Number), C = D.cal || [], first = (new Date(Date.UTC(y, m - 1, 1)).getUTCDay() + 6) % 7;
@@ -104,7 +122,7 @@ function month(w, h) {
   let cells = ''; for (let i = 0; i < slots.length; i += 7) { const L = slots.slice(i, i + 7); cells += L.map(x => x ? cell(x) : '<div></div>').join('') + wk(L); }
   return `<div class="grid"></div><div class="wrap" style="padding-top:40px;padding-bottom:30px"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:30px">Every day shown · ${MONTHS[m - 1]} ${y}</div>
-    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">${D.pct >= 0 ? 'Small profit days add up.' : (D.variant || 1) === 2 ? 'Quiet days, profit days, loss days.' : 'Loss days are part of trading.'}<br><span style="color:#E3B62F;white-space:nowrap">${D.pct >= 0 ? 'One day at a time.' : 'We show you every one.'}</span></div>
+    <div style="font-size:54px;font-weight:800;letter-spacing:-.03em;line-height:1.08;margin-top:14px">${D.pct >= 0 ? 'Small profit days add up.' : (D.mtd > 0 ? 'One day down.' : (D.variant || 1) === 2 ? 'Quiet days, profit days, loss days.' : 'Loss days are part of trading.')}<br><span style="color:#E3B62F;white-space:nowrap">${D.pct >= 0 ? 'One day at a time.' : (D.mtd > 0 ? 'The month is up.' : 'We show you every one.')}</span></div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:28px;font-size:17px;color:#aeb7dc;font-weight:700;letter-spacing:.06em;text-align:center">${['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN', 'WEEK'].map((x, i) => `<span style="${i === 7 ? 'color:#D4AF37' : ''}">${x}</span>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-top:10px">${cells}</div>
     ${D.mtd == null ? '' : `<div style="margin-top:26px;border:1.5px solid rgba(212,175,55,.5);border-radius:24px;padding:22px 28px;background:rgba(11,22,64,.55);display:flex;justify-content:space-between;align-items:center"><span style="font-size:26px;letter-spacing:.1em;text-transform:uppercase;color:#D4AF37;font-weight:700">${MONTHS[m - 1]} so far</span><span style="font-size:60px;font-weight:800;letter-spacing:-.02em;color:${D.mtd >= 0 ? '#E3B62F' : '#ff6b74'}">${pc(D.mtd)}</span></div>`}
@@ -257,6 +275,7 @@ function endSlide(w, h) {
   const name = nameArg || (kind === 'day' || kind === 'quiet' ? 'day-' + D.date : kind === 'week' ? 'week-' + D.to : 'card');
   const jobs = kind === 'day' ? [['post', 1080, 1350, () => day(1080, 1350)], ['story', 1080, 1920, () => day(1080, 1920)]] : kind === 'card' ? [['post', 1080, 1350, () => card(1080, 1350)], ['story', 1080, 1920, () => card(1080, 1920)]] : kind === 'cover' ? [['cover', 1080, 1920, () => cover(1080, 1920)], ['thumb', 1280, 720, () => cover(1280, 720)]] : kind === 'week' ? [['post', 1080, 1350, () => week(1080, 1350)], ['days', 1080, 1350, () => weekDays(1080, 1350)], ['story', 1080, 1920, () => week(1080, 1920)]] : kind === 'quiet' ? [['quiet1', 1080, 1350, () => quiet(1080, 1350, 1)], ['quiet2', 1080, 1350, () => quiet(1080, 1350, 2)], ['quiet3', 1080, 1350, () => quiet(1080, 1350, 3)]] : [];
   if (kind === 'day' && (D.rows || []).length) { const parts = tradeGroups().length > 10 ? 2 : 1; for (let i = 0; i < parts; i++) jobs.push(['trades' + (i + 1), 1080, 1350, () => trades(1080, 1350, i, parts)]); }
+  if (kind === 'day' && D.pct < 0 && (D.rows || []).length) jobs.push(['context', 1080, 1350, () => lossContext(1080, 1350)]);
   if (kind === 'day' && D.pct < 0.5 && (D.cal || []).length) jobs.push(['month', 1080, 1350, () => month(1080, 1350)]);
   if (kind === 'day') jobs.push(['end', 1080, 1350, () => endSlide(1080, 1350)]);
   for (const [tag, w, h, fn] of jobs) {
