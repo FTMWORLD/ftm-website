@@ -314,5 +314,13 @@
  {
   "date": "2026-11-23",
   "text": "Investment withdrawals: a missing or wrong USDT address or amount is marked in red, and a request above what is available says \"Insufficient funds\" before anything is sent."
+ },
+ {
+  "date": "2026-11-24",
+  "text": "Daily result emails now show one line per market and direction (Buy or Sell) with its combined result, and a short note on loss days."
+ },
+ {
+  "date": "2026-11-24",
+  "text": "No-trade emails for smaller accounts now explain that an account below the recommended size takes part in about 60% of trades."
  }
 ]

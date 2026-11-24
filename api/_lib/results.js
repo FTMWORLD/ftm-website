@@ -158,17 +158,19 @@ async function emailFor(card, lang, acct, who) {
   if (card.k === 'day') {
     head = D(card.date, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     sub = card.n ? (card.n === 1 ? await t('One trade closed this day.') : (await t('{} trades closed this day.')).replace('{}', card.n)) : await t('No trades closed this day.');
-    if (card.rows && card.rows.length > 6) {
-      const G = {}; card.rows.forEach(r => { const k = r.s || ''; const g = G[k] || (G[k] = { s: k, n: 0, pl: 0, d: {} }); g.n++; g.pl += +r.pl || 0; const dd = String(r.d || '').trim(); if (dd) g.d[dd] = (g.d[dd] || 0) + 1; });
-      table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Market')) + TH(await t('Trades')) + TH('P/L') + '</tr>'
-        + Object.values(G).sort((x, y) => y.n - x.n).map(g => '<tr>' + TD(g.s, '', true) + TD(g.n) + TD(M(g.pl), col(g.pl), true) + '</tr>').join('') + '</table>';
-    } else if (card.rows && card.rows.length) table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Opened')) + TH((await t('Closed')) + (tzName ? ' (' + tzName + ')' : '')) + TH(await t('Market')) + TH(await t('Direction')) + TH(await t('Size')) + TH('P/L') + '</tr>'
-      + card.rows.map(r => '<tr>' + TD(hm(r.o)) + TD(hm(r.c)) + TD(r.s || '') + TD(r.d || '') + TD(r.v != null ? (+r.v).toFixed(2) : '') + TD(M(r.pl), col(r.pl), true) + '</tr>').join('') + '</table>';
+    if (card.rows && card.rows.length) {
+      // owner 24 Nov: members do not need entry times or sizes; one line per market and direction with the combined result
+      const G = {}; card.rows.forEach(r => { const dir = /buy/i.test(String(r.d || '')) ? 'Buy' : 'Sell', k = (r.s || '') + '|' + dir; const g = G[k] || (G[k] = { s: r.s || '', dir, pl: 0, first: r.c || 0 }); g.pl += +r.pl || 0; });
+      table = '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:6px 0 0;"><tr>' + TH(await t('Market')) + TH(await t('Direction')) + TH('P/L') + '</tr>';
+      for (const g of Object.values(G).sort((x, y) => x.first - y.first)) table += '<tr>' + TD(g.s, '', true) + TD(await t(g.dir), g.dir === 'Buy' ? '#1f8a5b' : '#b4232c', true) + TD(M(g.pl), col(g.pl), true) + '</tr>';
+      table += '</table>';
+      if (card.net < 0) table += '<table width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0 0;background:#f7f8fb;border-left:4px solid #D4AF37;border-radius:10px;"><tr><td style="padding:12px 16px;font-size:14px;line-height:1.5;color:#46507a;">' + e(await t('Loss days are part of the plan. The real profit is in the long term, not in one day.')) + '</td></tr></table>';
+    }
     if (card.why && !card.n) {
       const W = card.why, bal = W.bal != null ? M(W.bal).replace(/^\+/, '') : '', lines = [];
       if (W.open > 0) lines.push(W.open === 1 ? await t('One trade is still open on your account. It is counted on the day it closes.') : (await t('{} trades are still open on your account. They are counted on the day they close.')).replace('{}', W.open));
       else if (!W.mn) lines.push(await t('FTM MACHINE found no trade that met its rules today, on any account. Days without a trade are normal: not trading is also a decision.'));
-      else if (W.bal != null && W.bal < 2000) { lines.push((await t('The FTM master account traded today. FTM MACHINE sizes every trade to your balance, and on an account of {} some trades come out smaller than your broker\'s smallest size (0.01 lot). FTM MACHINE then skips the trade rather than take more risk than your profile allows.')).replace('{}', bal)); lines.push(await t('Accounts of 2,000 or more take part in more trades.')); }
+      else if (W.bal != null && W.bal < 2000) { lines.push((await t('The FTM master account traded today. FTM MACHINE sizes every trade to your balance, and on an account of {} some trades come out smaller than your broker\'s smallest size (0.01 lot). FTM MACHINE then skips the trade rather than take more risk than your profile allows.')).replace('{}', bal)); lines.push(await t('Your account is below the recommended size, so it trades about 60% of the time.')); lines.push(await t('Accounts of 2,000 or more take part in more trades.')); }
       else lines.push(await t('The FTM master account traded today, but no trade opened on your account. If this happens again tomorrow, reply to this email or ask us in Ask here and we will check your connection.'));
       table += '<table width="100%" cellpadding="0" cellspacing="0" style="margin:10px 0 0;background:#f7f8fb;border-left:4px solid #D4AF37;border-radius:10px;"><tr><td style="padding:14px 16px;"><p style="margin:0 0 6px;font-size:13px;font-weight:bold;color:#0b1640;">' + e(await t('Why no trade today?')) + '</p>'
         + lines.map(x => '<p style="margin:0 0 6px;font-size:14px;line-height:1.5;color:#46507a;">' + e(x) + '</p>').join('') + '</td></tr></table>';
