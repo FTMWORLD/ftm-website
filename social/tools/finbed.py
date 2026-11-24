@@ -4,7 +4,7 @@ news (ticking newsroom, tense), cinema (no drums, rising swell), bright (upbeat 
 import numpy as np
 
 
-STYLES = ('drive', 'lofi', 'news', 'cinema', 'bright')
+STYLES = ('drive', 'lofi', 'news', 'cinema', 'bright', 'afro', 'house')  # owner 24 Nov: better, warmer sounds (afro = amapiano log-drum groove, house = uplifting four-on-the-floor)
 
 
 def finance_bed(tot, cuts=(), sr=48000, bpm=122, seed=5, style='drive'):
@@ -79,7 +79,7 @@ def finance_bed(tot, cuts=(), sr=48000, bpm=122, seed=5, style='drive'):
 
 def _styled(tot, cuts, sr, bpm, seed, style):
     n = int(tot * sr); L = np.zeros(n); R = np.zeros(n); rng = np.random.default_rng(seed)
-    bpm = {'lofi': 78, 'news': 100, 'cinema': 70, 'bright': 112}.get(style, bpm) + (seed % 5) - 2
+    bpm = {'lofi': 78, 'news': 100, 'cinema': 70, 'bright': 112, 'afro': 112, 'house': 122}.get(style, bpm) + (seed % 5) - 2
     beat = 60 / bpm; bar = 4 * beat
 
     def add(a, sig, g=1.0, pan=0.0):
@@ -97,6 +97,12 @@ def _styled(tot, cuts, sr, bpm, seed, style):
     elif style == 'bright':
         CH = [[261.63, 329.63, 392.0], [196.0, 246.94, 293.66], [220.0, 261.63, 329.63], [174.61, 220.0, 261.63]]
         BASS = [65.41, 49.0, 55.0, 43.65]
+    elif style == 'afro':  # warm major-7 piano (Fmaj7 - Em7 - Dm7 - Cmaj7)
+        CH = [[174.61, 220.0, 261.63, 329.63], [164.81, 196.0, 246.94, 293.66], [146.83, 174.61, 220.0, 261.63], [130.81, 164.81, 196.0, 246.94]]
+        BASS = [43.65, 41.2, 36.71, 32.7]
+    elif style == 'house':  # uplifting minor-to-major (Am - F - C - G) in a higher voicing
+        CH = [[220.0, 261.63, 329.63, 440.0], [174.61, 220.0, 261.63, 349.23], [196.0, 261.63, 329.63, 392.0], [196.0, 246.94, 293.66, 392.0]]
+        BASS = [55.0, 43.65, 65.41, 49.0]
     else:
         CH = [[130.81, 155.56, 196.0], [103.83, 130.81, 155.56], [116.54, 146.83, 174.61], [98.0, 123.47, 146.83]]
         BASS = [65.41, 51.91, 58.27, 49.0]
@@ -122,6 +128,34 @@ def _styled(tot, cuts, sr, bpm, seed, style):
             for j in (0, 1.5, 2, 3.5):
                 tt, e = env(.4, .003, 6); add(s0 + j * beat, np.sin(2 * np.pi * bs * tt) * e, .45)
             tt, e = env(.3, .001, 10); add(s0, np.sin(2 * np.pi * (50 + 90 * np.exp(-tt * 30)) * tt) * e, .5)
+        elif style == 'afro':
+            s16 = beat / 4
+            for j, f in enumerate(c):  # syncopated piano stabs on 1, the and of 2, and 4
+                for pos in (0, 6, 12):
+                    tt, e = env(.55, .004, 5.5); add(s0 + pos * s16 + j * .006, ep(f, tt) * e * .06, 1, -.35 + .23 * j)
+            for pos in (0, 3, 6, 10, 11, 14):  # log drum: pitched, gliding, warm
+                f0 = bs * (2 if pos in (10, 11) else 1) * 2
+                tt, e = env(.42, .002, 9); ph = 2 * np.pi * np.cumsum(f0 * (1 + .45 * np.exp(-tt * 45))) / sr
+                add(s0 + pos * s16, np.tanh(2.2 * np.sin(ph)) * e, .32)
+            for pos in (0, 8):
+                tt, e = env(.3, .001, 13); add(s0 + pos * s16, np.sin(2 * np.pi * (46 + 70 * np.exp(-tt * 28)) * tt) * e, .55)
+            for j in range(16):  # shaker: 16ths with a swung accent
+                tt, e = env(.06, .002, 55); nz = np.diff(rng.standard_normal(len(tt) + 1))
+                add(s0 + j * s16 + (.012 if j % 2 else 0), nz * e, .045 if j % 4 == 2 else .022, .35)
+            for pos in (4, 12):  # rim on 2 and 4
+                tt, e = env(.08, .0005, 60); add(s0 + pos * s16, np.sin(2 * np.pi * 1700 * tt) * e, .06, -.2)
+        elif style == 'house':
+            for half in range(8):  # off-beat chord stabs, classic house
+                if half % 2 == 0: continue
+                for j, f in enumerate(c):
+                    tt, e = env(.3, .004, 8); add(s0 + half * beat / 2 + j * .004, lp(ep(f, tt), 3) * e * .055, 1, -.3 + .2 * j)
+            tt, e = env(bar + .3, .3, .25)
+            for j, f in enumerate(c[:3]): add(s0, np.sin(2 * np.pi * f * 2 * tt) * e * .025, 1, -.4 + .4 * j)  # airy pad
+            for j in range(4):
+                tt, e = env(.3, .001, 10); add(s0 + j * beat, np.sin(2 * np.pi * (48 + 110 * np.exp(-tt * 30)) * tt) * e, .62)
+                tt, e = env(.22, .004, 9); add(s0 + j * beat + beat / 2, np.sin(2 * np.pi * bs * tt) * e, .42)  # off-beat bass
+                tt, e = env(.12, .001, 26); nz = np.diff(rng.standard_normal(len(tt) + 1)); add(s0 + j * beat + beat / 2, nz * e, .05, .3)  # open hat
+                if j % 2: tt, e = env(.16, .001, 24); nz = rng.standard_normal(len(tt)); add(s0 + j * beat, (nz - lp(nz, 3)) * e, .17, -.1)
         elif style == 'cinema':
             tt = np.arange(int((bar + .5) * sr)) / sr; sw = np.minimum(1, tt / bar) ** 1.5 * np.exp(-np.maximum(0, tt - bar) * 4); sw[-int(.06 * sr):] *= np.linspace(1, 0, int(.06 * sr))
             for j, f in enumerate(c + [c[0] * 2]): add(s0, lp(np.sin(2 * np.pi * f * tt) + .4 * np.sin(2 * np.pi * f * 2.001 * tt), 5) * sw * .06, 1, -.4 + .25 * j)
