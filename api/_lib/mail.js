@@ -57,9 +57,12 @@ async function sendMail(o) {
 async function verify() {
   const out = [];
   if (resendOn()) { const r = await fetch('https://api.resend.com/domains', { headers: { authorization: 'Bearer ' + process.env.RESEND_API_KEY }, signal: AbortSignal.timeout(8000) });
-    if (r.status === 401 || r.status === 403) throw new Error('Resend refused the API key (' + r.status + ')');
-    const j = await r.json().catch(() => ({})); const d = (j.data || []).find(x => /ftmwealthnation\.com$/.test(x.name || ''));
-    out.push('Resend ' + (d ? 'domain ' + d.status : 'key ok')); }
+    const j = await r.json().catch(() => ({}));
+    // a key with 'Sending access' may only send: Resend answers 401 restricted_api_key here, which means the key works
+    if ((r.status === 401 || r.status === 403) && j && j.name === 'restricted_api_key') { out.push('Resend key ok (sending access)'); }
+    else if (r.status === 401 || r.status === 403) throw new Error('Resend refused the API key (' + r.status + ')');
+    else { const d = (j.data || []).find(x => /ftmwealthnation\.com$/.test(x.name || ''));
+    out.push('Resend ' + (d ? 'domain ' + d.status : 'key ok')); } }
   if (smtpOn()) { await getTransport().verify(); out.push('mailbox ' + from() + ' ok'); }
   return out.length ? out.join(' · ') : null;
 }
