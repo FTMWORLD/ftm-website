@@ -210,7 +210,14 @@ async function emailFor(card, lang, acct, who) {
     + '<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#0b1640" style="' + Tpl.NAVY + 'border-radius:14px;margin:16px 0 6px;"><tr><td style="padding:16px 18px;color:#E3B62F;font-size:12px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;">' + Tpl.keep(e(await t('Net P&L'))) + '</td>'
     + '<td align="right" style="padding:16px 18px;"><p style="margin:0;font-size:26px;font-weight:bold;color:' + netCol(card.net) + ';font-family:Arial,Helvetica,sans-serif;">' + Tpl.keep(e(M(card.net))) + '</p><p style="margin:2px 0 0;font-size:14px;font-weight:bold;color:' + netCol(card.pct) + ';">' + Tpl.keep(e(PC(card.pct))) + '</p></td></tr></table>'
     + '<table cellpadding="0" cellspacing="0" style="margin:20px 0 22px;"><tr><td bgcolor="#E5323E" style="border-radius:999px;"><a href="https://www.ftmwealthnation.com/?open=' + (card.st && acct ? 'statement&from=' + card.st.from + '&to=' + card.st.to : (acct ? 'calendar' : 'community')) + '" style="display:inline-block;padding:14px 28px;color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;border-radius:999px;">' + e(await t(card.st && acct ? 'Download your statement (PDF)' : (acct ? 'Calendar' : 'FTM news'))) + ' &rarr;</a></td></tr></table></div>';
-  return { subject: (await t(kind)) + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body, { head: true }) };
+  // owner 24 Nov: subject = "Last 24 hours: …" for the day; the preview line under it says something new (the window, trades, markets), never the subject again
+  const subjKind = card.k === 'day' ? await t('Last 24 hours') : await t(kind);
+  let pre;
+  if (card.k === 'day') { const G2 = {}; (card.rows || []).forEach(r => { const dir = /buy/i.test(String(r.d || '')) ? 'Buy' : 'Sell', k = (r.s || '') + '|' + dir; (G2[k] = G2[k] || { s: r.s || '', dir, pl: 0 }).pl += +r.pl || 0; });
+    const top = []; for (const g of Object.values(G2).sort((x, y) => Math.abs(y.pl) - Math.abs(x.pl)).slice(0, 3)) top.push(g.s + ' ' + (await t(g.dir)) + ' ' + M(g.pl));
+    pre = [sub].concat(top).join(' · '); }
+  else pre = card.n + ' ' + (await t('Trades')) + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')';
+  return { subject: subjKind + ': ' + head + (acct && acct.number ? ' · ' + acct.number : '') + ' · ' + M(card.net) + ' (' + PC(card.pct) + ')', html: Tpl.shell(await t(kind), body, { head: true, pre }) };
 }
 /* Emails every confirmed login the result of THEIR OWN accounts for each period posted in the last 3 days that they
    have not had yet: the same calculation as the post, on their own history read from the engine as them. Never the master

@@ -887,6 +887,7 @@
 "Language": "语言",
 "Largest drawdowns": "最大回撤",
 "Largest fall from a balance high in the backtest since 2020.": "自 2020 年起的回测中，从余额高点起算的最大跌幅。",
+"Last 24 hours": "过去 24 小时",
 "Last 90 days": "最近 90 天",
 "Last active {}": "上次使用 {}",
 "Last check:": "最近检查：",

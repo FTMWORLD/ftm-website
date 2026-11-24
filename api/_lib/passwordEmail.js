@@ -37,7 +37,9 @@ const HEAD = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewp
 /* shell(title, body, {head:true}) puts the title in the navy header, gold, on the left and the FTM logo on the right (owner 24 Nov; statements and result emails). */
 function shell(title, body, o) {
   o = o || {}; const cs = o.head ? ' colspan="2"' : '';
-  return HEAD + '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#ffffff;">'
+  // o.pre: the hidden preview line inboxes show under the subject (owner 24 Nov: new information there, not the subject again)
+  const pre = o.pre ? '<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#ffffff;opacity:0;">' + esc(o.pre) + '&#8199;&#847;'.repeat(90) + '</div>' : '';
+  return HEAD + pre + '<table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,Helvetica,sans-serif;background:#ffffff;">'
     + '<tr>' + (o.head ? '<td align="left" bgcolor="#0b1640" style="' + NAVY + 'padding:22px 24px;color:#E3B62F;font-size:19px;font-weight:bold;text-align:left;">' + keep(esc(title)) + '</td>' : '')
     + '<td align="right" bgcolor="#0b1640" style="' + NAVY + 'padding:22px 24px;"><table cellpadding="0" cellspacing="0" align="right"><tr><td style="padding-right:10px;"><img src="https://www.ftmwealthnation.com/email-logo.png" width="34" height="34" alt="" style="display:block;border-radius:8px;"></td><td style="color:#ffffff;font-size:22px;font-weight:bold;letter-spacing:.02em;">' + keep('FTM') + '</td></tr></table></td></tr>'
     + '<tr><td' + cs + ' style="height:4px;background:#D4AF37;background-image:linear-gradient(90deg,#D4AF37,#f3d77a,#D4AF37);font-size:0;line-height:0;">&nbsp;</td></tr>'
