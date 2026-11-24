@@ -28,10 +28,11 @@ const J=require(path.join(__dirname,'../../api/_lib/journeyMail.js')), admin=fak
   await J.run(admin,{now:NOW+7*D+3600e3}); ok(/client area, explained/.test((to('payer@x.com')[2]||{}).subject||'')&&/client area, explained/.test((to('connected@x.com')[0]||{}).subject||''),'day 7: paying members get Your client area');
   await J.run(admin,{now:NOW+30*D}); await J.run(admin,{now:NOW+31*D}); ok(to('new@x.com').length<=4&&to('old@x.com').length===1,'never more than the series, nothing repeated ('+to('new@x.com').map(m=>m.subject).join(' | ')+')');
   const d=J.due({sent:{},skip:{}},false,false,NOW,NOW-20*D); ok(d.step==='F9'&&d.skip.join()==='F0,F2,F5','overdue steps skipped, last step kept');
-  { const PE=require(path.join(__dirname,'../../api/_lib/passwordEmail.js')), rem=[]; PE.sendPasswordEmail=async(a,e,op)=>{ rem.push(e+(op&&op.reminder?':r':'')); return {}; };
+  { const PE=require(path.join(__dirname,'../../api/_lib/passwordEmail.js')), rem=[]; PE.sendReminderEmail=async(a,e,op)=>{ rem.push(e+':'+(op&&op.step)); return {}; };
     users.push({id:'u9',email:'late@x.com',created_at:iso(NOW-5*3600e3)});
-    await J.run(admin,{now:NOW}); await J.run(admin,{now:NOW+3600e3}); ok(rem.join()==='late@x.com:r','unconfirmed sign-up: one reminder after 3 hours (owner 21 Nov) '+rem.join());
+    await J.run(admin,{now:NOW}); await J.run(admin,{now:NOW+3600e3}); ok(rem.join()==='late@x.com:r1','unconfirmed sign-up: one reminder after 3 hours (owner 21 Nov) '+rem.join());
     ok(!rem.some(e=>/unconfirmed@x.com/.test(e)),'nobody is reminded within 3 hours of signing up');
-    await J.run(admin,{now:NOW+3*D+3600e3}); await J.run(admin,{now:NOW+5*D}); await J.run(admin,{now:NOW+9*D}); ok(rem.filter(e=>/late@/.test(e)).length===2,'and one more after 3 days, then never again'); }
+    await J.run(admin,{now:NOW+3*D+3600e3}); await J.run(admin,{now:NOW+5*D}); await J.run(admin,{now:NOW+7*D+3600e3}); await J.run(admin,{now:NOW+9*D});
+    ok(rem.filter(e=>/late@/.test(e)).join()==='late@x.com:r1,late@x.com:r2,late@x.com:r3','then after 3 days and 7 days, then never again (owner 23 Nov) '+rem.join()); }
   console.log(fails?fails+' BROKEN':'all OK'); process.exit(fails?1:0);
 })();
