@@ -179,3 +179,4 @@ FTM MACHINE answers all three: it is in the market around the clock, has no emot
 - Subscriptions are not refundable. FTM makes no satisfaction guarantee or "promise" of any kind. This is final and is not to be argued or discussed, on the site, in Ask here, or in proposals.
 
 ## Reminders for the owner
+- The owner's open to-do list lives in social/plan/owner-todo.md. Show it (✅ done, ⬜ open) at the end of every round of work with the owner, and tick an item only when he says it is done (owner 24 Nov: "I always want to see them").
