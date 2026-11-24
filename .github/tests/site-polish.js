@@ -26,7 +26,7 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   await p.close();
   const q=await b.newPage({viewport:{width:390,height:844}}); await q.goto(BASE+'/'); await q.waitForTimeout(800);
   ok(await q.evaluate(()=>[...document.querySelectorAll('.how-steps li')].filter(li=>getComputedStyle(li).display!=='none').length===4),'phone: the 4 steps are shown');
-  ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('liveLine').getAttribute('points'); }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
+  ok(await q.evaluate(()=>{ const c=document.querySelector('#lcx'), t=document.querySelector('.busy-txt'); return !!c&&!!c.closest('.busy-band')&&c.offsetHeight>200&&c.getBoundingClientRect().top>t.getBoundingClientRect().bottom-1&&document.getElementById('lcxChart').offsetHeight>100; }),'phone: the FTM MACHINE chart sits under "Made for busy people"');
   ok(await q.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'phone: no sideways scroll with the moved chart');
   ok(await q.evaluate(()=>{ const m=document.getElementById('mobileMenu'), k=[...m.children]; const st=m.querySelector('.mm-start'), fr=m.querySelector('.mm-free'), last=m.querySelector('.mm-sec:last-of-type'); return !m.querySelector('.js-login')&&st&&fr&&k.indexOf(st)>k.indexOf(last)&&k.indexOf(fr)===k.indexOf(st)+1; }),'phone menu: no Log in button; Get started and Create a free account sit at the bottom');
   await q.evaluate(()=>document.querySelector('.cta').scrollIntoView({behavior:'instant',block:'center'})); await q.waitForTimeout(1500);
@@ -44,9 +44,9 @@ ok(!/counted to 8 October'\]/.test(perf),'"Profitable years" date follows the ma
   await q.evaluate(()=>document.querySelector('.tp-card').scrollIntoView({behavior:'instant',block:'center'})); await q.waitForTimeout(400);
   ok(await q.evaluate(()=>{ const c=document.querySelector('.tp-card'), cr=c.getBoundingClientRect(), y=k=>c.querySelector('.px-'+k).getBoundingClientRect().top; const tp=y('tp'), en=y('en'), sl=y('sl'), now=y('now');
     return tp<now&&now<en&&en<sl&&(en-tp)>1.8*(sl-en)&&[...c.querySelectorAll('.kv,.px,.lb')].every(e=>{ const r=e.getBoundingClientRect(); return r.bottom<=cr.bottom&&r.right<=cr.right&&r.left>=cr.left; }); }),'laptop: trade card shows take profit, price, entry and stop loss, with take profit twice as far as stop loss, all inside the card');
-  ok(await q.evaluate(()=>{ const c=document.querySelector('.live-card'); return !!c.closest('.auto-art-col')&&c.offsetHeight>300&&document.querySelector('.busy-chart').hidden; }),'laptop: the FTM MACHINE chart stays in Auto Trading');
+  ok(await q.evaluate(()=>{ const c=document.querySelector('#lcx'); return !!c.closest('.auto-art-col')&&c.offsetHeight>300&&document.querySelector('.busy-chart').hidden; }),'laptop: the FTM MACHINE chart stays in Auto Trading');
   await q.setViewportSize({width:360,height:740}); await q.waitForTimeout(300);
-  ok(await q.evaluate(()=>!!document.querySelector('.live-card').closest('.busy-chart')&&document.documentElement.scrollWidth<=innerWidth),'small phone: chart under "Made for busy people", no sideways scroll');
+  ok(await q.evaluate(()=>!!document.querySelector('#lcx').closest('.busy-chart')&&document.documentElement.scrollWidth<=innerWidth),'small phone: chart under "Made for busy people", no sideways scroll');
   await q.close();
   const d=await b.newPage({viewport:{width:390,height:844}}); await d.route('**/api/v1/**',r=>r.fulfill({status:404,contentType:'application/json',body:'{"ok":false}'})); await d.goto(BASE+'/'); await d.waitForTimeout(800);
   await d.evaluate(()=>{const F=window.FTM;F.auth=Object.assign(F.auth||{},{ready:()=>true,getAccessToken:()=>Promise.resolve('tok')});F.session={email:'t@x.com',products:['auto'],name:'T'};}); await d.evaluate(()=>FTM.openArea('auto')).catch(()=>{}); await d.waitForTimeout(1000);
