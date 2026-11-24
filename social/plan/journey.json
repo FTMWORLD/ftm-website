@@ -529,5 +529,17 @@
    ],
    "note": "ILO: women do 76.2% of unpaid care work. ChatGPT images 2026-11-25-0930-01..06."
   }
- ]
+ ],
+ "2026-11-24-1800": {
+  "title": "Last 24 hours: -1.23% (loss day)",
+  "audience": "everyone following the daily results",
+  "format": "6 p.m. results (loss day: context slide with rotating backtest figures, month slide)",
+  "sound": "slidevideo",
+  "vote": {
+   "q": "After a loss day, you…",
+   "a": "Step back and wait",
+   "b": "Trade to win it back"
+  },
+  "platforms": "first day with separate captions per platform; Instagram/Facebook get the version without the cover slide"
+ }
 }

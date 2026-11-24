@@ -92,14 +92,14 @@
  },
  {
   "file": "day-2026-11-20-short.mp4",
-  "title": "Daily result 20 Nov: \u22120.99%",
+  "title": "Daily result 20 Nov: −0.99%",
   "date": "2026-11-20",
   "kind": "Daily result",
   "at": 1
  },
  {
   "file": "v2/vid-week-2026-11-20.mp4",
-  "title": "Weekly result 14\u201320 Nov: +5.35%",
+  "title": "Weekly result 14–20 Nov: +5.35%",
   "date": "2026-11-21",
   "kind": "Weekly result",
   "at": 6
@@ -131,5 +131,12 @@
   "date": "2026-11-23",
   "kind": "Couple video",
   "at": 13
+ },
+ {
+  "file": "../posts/day-2026-11-24-short.mp4",
+  "title": "Last 24 hours: -1.23% (24 Nov, 6 p.m.)",
+  "date": "2026-11-24",
+  "kind": "6 p.m. result",
+  "at": 18
  }
 ]
