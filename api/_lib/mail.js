@@ -1,12 +1,12 @@
 /* One place that sends every FTM email. Providers are tried in this order; if one refuses, the next one sends:
-   1. Resend (RESEND_API_KEY), from MAIL_FROM or no-reply@ftmwealthnation.com
+   1. Resend (RESEND_API_KEY), from MAIL_FROM or support@ftmwealthnation.com
    2. SMTP mailbox (SMTP_USER + SMTP_PASS; Gmail / Google Workspace by default, SMTP_HOST/SMTP_PORT for others),
       from SMTP_FROM, or the mailbox itself
    3. Brevo (BREVO_API_KEY), legacy
    sendMail({ to, subject, html, fromName, replyTo }) resolves to the provider used, or throws with every reason. */
 let transporter = null;
 function smtpOn() { return !!(process.env.SMTP_USER && process.env.SMTP_PASS); }
-function from() { return process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@ftmwealthnation.com'; }
+function from() { return process.env.SMTP_FROM || process.env.SMTP_USER || 'support@ftmwealthnation.com'; }
 function resendOn() { return !!process.env.RESEND_API_KEY; }
 function getTransport() {
   if (transporter) return transporter;
@@ -22,7 +22,7 @@ async function viaResend(o, to, fromName, replyTo) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { authorization: 'Bearer ' + process.env.RESEND_API_KEY, 'content-type': 'application/json' },
-    body: JSON.stringify({ from: fromName + ' <' + (process.env.MAIL_FROM || 'no-reply@ftmwealthnation.com') + '>', to, reply_to: replyTo, subject: o.subject, html: o.html }),
+    body: JSON.stringify({ from: fromName + ' <' + (process.env.MAIL_FROM || 'support@ftmwealthnation.com') + '>', to, reply_to: replyTo, subject: o.subject, html: o.html }),
     signal: AbortSignal.timeout(8000)
   });
   if (!r.ok) throw new Error('Resend ' + r.status + ' ' + (await r.text()).slice(0, 200));
@@ -34,7 +34,7 @@ async function viaBrevo(o, to, fromName, replyTo) {
   const r = await fetch('https://api.brevo.com/v3/smtp/email', {
     method: 'POST',
     headers: { 'api-key': process.env.BREVO_API_KEY, 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ sender: { email: 'no-reply@ftmwealthnation.com', name: fromName }, replyTo: { email: replyTo }, to: to.map(email => ({ email })), subject: o.subject, htmlContent: o.html }),
+    body: JSON.stringify({ sender: { email: 'support@ftmwealthnation.com', name: fromName }, replyTo: { email: replyTo }, to: to.map(email => ({ email })), subject: o.subject, htmlContent: o.html }),
     signal: AbortSignal.timeout(8000)
   });
   if (!r.ok) throw new Error('Brevo ' + r.status + ' ' + (await r.text()).slice(0, 200));
