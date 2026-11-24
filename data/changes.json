@@ -322,5 +322,9 @@
  {
   "date": "2026-11-24",
   "text": "No-trade emails for smaller accounts now explain that an account below the recommended size takes part in about 60% of trades."
+ },
+ {
+  "date": "2026-11-24",
+  "text": "The Facebook button at the bottom of the homepage now opens FTM's current Facebook page."
  }
 ]

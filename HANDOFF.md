@@ -388,10 +388,10 @@ Sections in page order, with the line where each begins:
 | Lifetime plan | `https://buy.stripe.com/dRmbJ0dqj4xee7M5Vy7wA0h` |
 | Investment deposit | `https://buy.stripe.com/5kA7uka0Y4t27zWbIN` |
 | Instagram | `https://www.instagram.com/ftm_wealth_nation` |
-| Facebook *(updated)* | `https://www.facebook.com/profile.php?id=61595064296217` |
+| Facebook *(24 Nov 2026: the page Metricool posts to, page id 1317460198120687; old link was profile.php?id=61595064296217)* | `https://www.facebook.com/1317460198120687` |
 | TikTok | `https://www.tiktok.com/@ftm_wealth_nation` |
 | YouTube *(new channel, 21 Nov 2026; same channel Metricool posts to)* | `https://www.youtube.com/channel/UCZGQ7Mx-qpDOF-JF6St1qOQ` |
-| X *(added)* | `https://x.com/ftmwealthnation?s=11` |
+| X *(added)* | `https://x.com/ftmwealthnation` |
 
 **Still pointing nowhere:** Log in destination (opens the preview overlay), Explore FTM MT5,
 View verified track record, Contact us, Meet the team, Terms and Conditions, Risk Disclosure,
