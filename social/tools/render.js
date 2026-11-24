@@ -105,15 +105,14 @@ function lossContext(w, h) {
   const ys = Object.keys(yr), yUp = ys.filter(y => yr[y] > 1).length, worse = dv.filter(v => v <= D.pct).length;
   const POOL = [
     [Math.round(dv.filter(v => v < 0).length / dv.length * 100) + '%', 'of backtest days<br>were loss days'],
-    ['+176%', 'average yearly<br>profit', '#5fe39b'],
     [share(mo) + '%', 'of backtest months<br>ended in profit', '#5fe39b'],
     [share(wk) + '%', 'of backtest weeks<br>ended in profit', '#5fe39b'],
-    [streak + ' days', 'longest loss run,<br>still a profit year'],
-    [yUp + ' of ' + ys.length, 'years ended<br>in profit', '#5fe39b']];
+    [streak + ' days', 'longest loss run,<br>still a profit year']]; // the profit years are already in every headline, so no tile repeats them
   const HEAD = [['Loss days are part of the plan.', 'Profit years: ' + yUp + ' of ' + ys.length + '.'], ['One day never tells the story.', 'Every year ended in profit.'], ['Seen before. Every time.', 'The years still ended in profit.']];
   const LINE = [['The real profit is in the long term, ', 'not in one day.'], ['Judge FTM by the years, ', 'not by one day.'], ['A step back today. ', 'The long term counts.']];
   const n = Math.floor(Date.parse(D.date + 'T12:00:00Z') / 864e5), hd = HEAD[n % HEAD.length], ln = LINE[n % LINE.length];
-  const pick = [POOL[n % POOL.length], [worse.toLocaleString('en-US'), 'backtest days<br>worse than today'], POOL[(n + 3) % POOL.length]];
+  // owner 24 Nov (repeated): the third tile is ALWAYS the average yearly profit; only the first tile rotates
+  const pick = [POOL[n % POOL.length], [worse.toLocaleString('en-US'), 'backtest days<br>worse than today'], ['+176%', 'average yearly<br>profit', '#5fe39b']];
   const tile = (big, txt, c) => `<div style="padding:34px 22px;border-radius:24px;background:rgba(11,22,64,.6);border:1.5px solid rgba(212,175,55,.45);text-align:center"><div style="font-size:${String(big).length > 6 ? 62 : 76}px;font-weight:900;letter-spacing:-.03em;color:${c || '#fff'};white-space:nowrap">${big}</div><div style="font-size:27px;color:#c9d0ee;font-weight:600;margin-top:8px;line-height:1.3;white-space:nowrap">${txt}</div></div>`;
   return `<div class="grid"></div><div class="wrap" style="align-items:center;text-align:center"><div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:40px">Today in context</div>
