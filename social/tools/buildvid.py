@@ -71,6 +71,26 @@ for sid, vo in lines:
             ph = _tk.phonemize(txt, 'en-us')
             print('PRONUNCIATION CHECK:', sid, '|', w, '|', ph)
             if w.lower() in ('lives', 'close') and TRAPS[w.lower()] in ph.replace('ˈ', '').replace('ˌ', ''): _bad.append((sid, w, txt))
+    # owner 25 Nov 2026: ElevenLabs voices, always mixed (social/plan/voices.json). A line "Ify: ..." is spoken by that cast member;
+    # NARRATOR=<cast name> for lines without a name; HER:/HIM: map to CAST_HER / CAST_HIM. VOICE_ENGINE=kokoro keeps the old voices.
+    if os.environ.get('VOICE_ENGINE', 'eleven') == 'eleven':
+        CAST = {c['name'].lower(): c['id'] for c in json.load(open(os.path.join(root, 'plan', 'voices.json')))['cast']}
+        who, said = None, txt
+        mm = re.match(r'^([A-Za-z][A-Za-z ]{1,18}):\s*(.+)$', txt)
+        if mm and (mm.group(1).lower() in CAST or mm.group(1) in ('HER', 'HIM')):
+            who, said = mm.group(1), mm.group(2)
+        if who == 'HER': who = os.environ.get('CAST_HER', 'Ify')
+        if who == 'HIM': who = os.environ.get('CAST_HIM', 'Ranbir')
+        vid = CAST.get((who or os.environ.get('NARRATOR', 'Jon')).lower()) or CAST['jon']
+        mp3 = os.path.join(D, 'vo', sid + '.mp3')
+        body = json.dumps({'text': said, 'model_id': 'eleven_multilingual_v2', 'voice_settings': {'stability': 0.42, 'similarity_boost': 0.8, 'style': 0.3, 'use_speaker_boost': True}})
+        code = subprocess.run(['curl', '-s', '-m', '90', '-X', 'POST', 'https://api.elevenlabs.io/v1/text-to-speech/%s?output_format=mp3_44100_128' % vid, '-H', 'content-type: application/json', '-d', body, '-o', mp3, '-w', '%{http_code}'], capture_output=True, text=True).stdout
+        if code != '200': raise SystemExit('ElevenLabs voice failed for %s (HTTP %s): %s' % (sid, code, open(mp3, errors='ignore').read()[:200]))
+        wav = os.path.join(D, 'vo', sid + '.wav')
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', mp3, '-ac', '1', '-ar', '24000', wav], check=True)
+        a, sr = sf.read(wav); durs.append(round(len(a) / sr, 2))
+        hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
+        m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
     voice = os.environ.get('NARRATOR', 'af_heart')  # NARRATOR=bm_george etc. for one narrator; couple videos: "HIM:" male, "HER:" female
     if txt.startswith('HIM:'): voice, txt = 'am_michael', txt[4:].strip()
     elif txt.startswith('HER:'): txt = txt[4:].strip()

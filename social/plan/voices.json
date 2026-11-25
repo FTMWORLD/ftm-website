@@ -1,0 +1,22 @@
+{
+ "note": "Owner 25 Nov 2026: every video uses ElevenLabs voices (api.elevenlabs.io, key in the environment's network secrets), always mixed: several characters per video with different accents (Nigerian, Indian, Asian, other African, American, British...), never the same cast twice in a row. Model eleven_multilingual_v2. Library voices are used by voice_id directly.",
+ "cast": [
+  {"id":"zwbf3iHXH6YGoTCPStfx","name":"Dayo","gender":"male","age":"young","accent":"Nigerian"},
+  {"id":"b8XX4QShLFkd3yZQlz8T","name":"Ify","gender":"female","age":"young","accent":"Nigerian"},
+  {"id":"QqgW7xZ3mjIAgZVFMwJz","name":"Ngozi","gender":"female","age":"middle","accent":"Nigerian"},
+  {"id":"77aEIu0qStu8Jwv1EdhX","name":"Ayinde","gender":"male","age":"young","accent":"British Nigerian"},
+  {"id":"2iAXJEMO2o0PqUHzvZwQ","name":"Ranbir","gender":"male","age":"middle","accent":"Indian"},
+  {"id":"2zRM7PkgwBPiau2jvVXc","name":"Monika","gender":"female","age":"young","accent":"Indian"},
+  {"id":"h1i3CVVBUuF6s46cxUGG","name":"Andy Lin","gender":"male","age":"young","accent":"Chinese"},
+  {"id":"7QwDAfHpHjPD14XYTSiq","name":"Lee","gender":"female","age":"middle","accent":"Malaysian Chinese"},
+  {"id":"u6a6bRv82Zfi9NzoIqvt","name":"Lia","gender":"female","age":"middle","accent":"Japanese"},
+  {"id":"Z7waMujh537KStREwfTf","name":"Ran","gender":"male","age":"young","accent":"Filipino"},
+  {"id":"CPIbwf9ux0uflGaU9jf1","name":"Wanjiku","gender":"female","age":"middle","accent":"Kenyan"},
+  {"id":"Yru1AaCztNSYkMNCbM1k","name":"Mwika","gender":"male","age":"middle","accent":"African"},
+  {"id":"IgGJCWnIbnBRMGhMU9Z6","name":"Charlotte","gender":"female","age":"middle","accent":"South African"},
+  {"id":"MFZUKuGQUsGJPQjTS4wC","name":"Jon","gender":"male","age":"middle","accent":"American"},
+  {"id":"yj30vwTGJxSHezdAGsv9","name":"Jessa","gender":"female","age":"young","accent":"American"},
+  {"id":"EXAVITQu4vr4xnSDxMaL","name":"Sarah","gender":"female","age":"middle","accent":"American"},
+  {"id":"JBFqnCBsd6RMkjVDRZzb","name":"George","gender":"male","age":"mature","accent":"British"}
+ ]
+}
