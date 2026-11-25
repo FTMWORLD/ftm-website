@@ -594,5 +594,16 @@
    "b": "Trade to win it back"
   },
   "platforms": "first day with separate captions per platform; Instagram/Facebook get the version without the cover slide"
+ },
+ "2026-11-25-1800": {
+  "title": "Last 24 hours: +2.61% (busy profit day)",
+  "audience": "everyone following the daily results",
+  "format": "6 p.m. results (end slide without trade count)",
+  "sound": "slidevideo",
+  "vote": {
+   "q": "What builds wealth?",
+   "a": "One lucky big day",
+   "b": "Steady wins, every day"
+  }
  }
 }
