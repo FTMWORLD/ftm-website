@@ -1199,6 +1199,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .gs-card{background:#fff;color:var(--text);border-radius:26px;padding:32px 28px;display:grid;gap:12px;align-content:start;transition:transform .18s,box-shadow .18s;box-shadow:0 20px 60px rgba(0,0,0,.28)}
   .gs-card:hover,.gs-card:focus-visible{transform:translateY(-6px);box-shadow:0 30px 80px rgba(0,0,0,.4);outline:none}
   .gs-card:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+  .gs-card.gs-main{outline:3px solid var(--gold);outline-offset:3px}
   .gs-ic{width:54px;height:54px;border-radius:16px;background:var(--ink);color:var(--gold-light);display:grid;place-items:center}
   .gs-ic svg{width:27px;height:27px}
   .gs-card b{font-size:26px;color:var(--ink);letter-spacing:-.02em;margin-top:6px}
@@ -4881,7 +4882,7 @@ body.op-lock{overflow:hidden}
     <h2 id="gsTitle">How would you like to join?</h2>
     <p class="gs-lead">Choose the service that fits you, or join all three. Each one takes you straight to the section that explains it.</p>
     <div class="gs-grid">
-      <a class="gs-card" href="#auto" data-go="auto">
+      <a class="gs-card gs-main" href="#auto" data-go="auto">
         <span class="gs-reel r1" aria-hidden="true"><svg viewBox="0 0 120 50" preserveAspectRatio="none"><path class="gr-a" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3 L120 50 L0 50 Z"/><path class="gr-l" d="M0 46 C15 44 22 40 34 41 S52 30 64 31 S84 18 96 16 S112 6 120 3"/></svg><span class="gr-s" style="animation-delay:0.0s"><b>+98,644%</b><small>Portfolio, 2020 to 2026</small></span><span class="gr-s" style="animation-delay:2.5s"><b>$98.7M</b><small>from $100k, Portfolio</small></span><span class="gr-s" style="animation-delay:5.0s"><b>5 markets</b><small>on one account</small></span><span class="gr-s" style="animation-delay:7.5s"><b>24/7</b><small>trades while you sleep</small></span><i class="gr-live">FTM</i></span>
         <span class="gs-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18 10 11l4 4 6-8"/><circle cx="20" cy="7" r="1.6" fill="currentColor"/></svg></span>
         <b>Auto Trading</b>
