@@ -581,6 +581,46 @@
     ]
    ],
    "note": "Compare chart data /api/v1/bench and dayresult mtd, closes to 24 Nov: FTM +12.36%, NVDA -24.07%, S&P 500 -5.00%. ChatGPT images 2026-11-25-1300-01..04."
+  },
+  {
+   "date": "2026-11-26b",
+   "slot": "09:30",
+   "stage": "Education · students",
+   "format": "Two-student story (POV dialogue) with Runway moving shots",
+   "audience": "students who work and study",
+   "sound": "lofi",
+   "voice": "ElevenLabs mixed: Dayo (Nigerian), Monika as Priya (Indian), Jon (American)",
+   "title": "Two students, one system",
+   "vote": {
+    "q": "Student life right now?",
+    "a": "Studying and working",
+    "b": "Tried trading, lost",
+    "c": "Ready for a system"
+   },
+   "open": "Jon: Almost half of UK students have thought about quitting because of money.",
+   "scenes": [
+    [
+     "shift",
+     "Dayo: Lectures till four. Shifts till midnight. And still, nothing left at the end of the month."
+    ],
+    [
+     "lost",
+     "Dayo: I tried trading once. I lost in two days. Never again."
+    ],
+    [
+     "friend",
+     "Monika: Same here. That's why I stopped trading myself. FTM MACHINE trades for me, around the clock, with fixed rules."
+    ],
+    [
+     "risk",
+     "Monika: Loss days happen, and you see every single one. I chose Conservative. Normal dips stay around ten to twenty percent."
+    ],
+    [
+     "cta",
+     "Jon: Study. Work. Rest. Let FTM MACHINE watch the market. Tap the link in our bio to create your account."
+    ]
+   ],
+   "note": "Hook: Save the Student, National Student Money Survey 2026 (UK, 1,419 students): 46% considered dropping out over money; also reported by studentloancalculator.uk. Conservative normal drawdown range 10-20% (FTM risk profiles). Runway gen4_image + gen4_turbo shots in social/videos/assets/2026-11-26-0930s."
   }
  ],
  "2026-11-24-1800": {

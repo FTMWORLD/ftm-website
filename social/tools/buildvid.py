@@ -88,7 +88,7 @@ for sid, vo in lines:
         if code != '200': raise SystemExit('ElevenLabs voice failed for %s (HTTP %s): %s' % (sid, code, open(mp3, errors='ignore').read()[:200]))
         wav = os.path.join(D, 'vo', sid + '.wav')
         # owner 25 Nov: every voice equally loud (one quiet voice in the sample): each line is loudness-normalised the same way
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', mp3, '-af', 'loudnorm=I=-16:TP=-1.5:LRA=7', '-ac', '1', '-ar', '24000', wav], check=True)
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', mp3, '-af', 'silenceremove=start_periods=1:start_threshold=-38dB:start_silence=0.05,areverse,silenceremove=start_periods=1:start_threshold=-38dB:start_silence=0.08,areverse,loudnorm=I=-16:TP=-1.5:LRA=7', '-ac', '1', '-ar', '24000', wav], check=True)
         a, sr = sf.read(wav); durs.append(round(len(a) / sr, 2))
         hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
