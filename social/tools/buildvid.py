@@ -75,6 +75,8 @@ for sid, vo in lines:
     # NARRATOR=<cast name> for lines without a name; HER:/HIM: map to CAST_HER / CAST_HIM. VOICE_ENGINE=kokoro keeps the old voices.
     if os.environ.get('VOICE_ENGINE', 'eleven') == 'eleven':
         CAST = {c['name'].lower(): c['id'] for c in json.load(open(os.path.join(root, 'plan', 'voices.json')))['cast']}
+        # owner 25 Nov: ElevenLabs reads "FTM Machine" smoothly; the spaced Kokoro spelling (F T M) left a gap
+        txt = vo.replace('FTM MACHINE', 'FTM Machine').replace('ftm wealth nation dot com', 'FTM wealth nation dot com')
         who, said = None, txt
         mm = re.match(r'^([A-Za-z][A-Za-z ]{1,18}):\s*(.+)$', txt)
         if mm and (mm.group(1).lower() in CAST or mm.group(1) in ('HER', 'HIM')):

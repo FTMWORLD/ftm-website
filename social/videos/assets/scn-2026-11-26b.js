@@ -14,7 +14,7 @@ const SCN = {
   hook(t, d) {
     const n = Math.round(46 * Math.min(1, .5 + .5 * ease(t / 1.1)));
     return CLIP('a', t, d) + `<div style="position:absolute;left:0;right:0;top:1040px;text-align:center">
-      <div style="display:inline-block;padding:12px 30px;border-radius:40px;background:rgba(5,10,34,.6);border:2px solid rgba(212,175,55,.7);color:#E3B62F;font-weight:900;font-size:28px;letter-spacing:.14em">UK STUDENT MONEY SURVEY · 2026</div>
+      <div style="display:inline-block;padding:12px 30px;border-radius:40px;background:rgba(5,10,34,.6);border:2px solid rgba(212,175,55,.7);color:#E3B62F;font-weight:900;font-size:28px;letter-spacing:.14em">STUDENT MONEY SURVEY · 2026</div>
       <div style="font-size:230px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:14px;color:#ff8a92;font-variant-numeric:tabular-nums;text-shadow:0 10px 50px rgba(0,0,0,.6)">${n}%</div>
       <div style="font-size:56px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;text-shadow:0 6px 30px rgba(0,0,0,.85)">of students thought about quitting</div>
       <div style="font-size:56px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;color:#E3B62F;margin-top:6px;opacity:${ease((t - .9) / .4)};text-shadow:0 6px 30px rgba(0,0,0,.85)">because of money.</div></div>`;
@@ -25,8 +25,8 @@ const SCN = {
   risk(t, d) {
     const a = ease((t - .2) / .4), row = (i, l, v) => { const b = ease((t - .5 - i * .35) / .4); return `<div style="display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 26px;border-radius:20px;background:rgba(5,10,34,.72);border:1.5px solid rgba(212,175,55,.45);margin:12px 0;opacity:${b};transform:translateY(${(1 - b) * 18}px)"><span style="font-size:36px;font-weight:700;color:#c9d0ee">${l}</span><b style="font-size:40px;font-weight:900;color:#E3B62F;white-space:nowrap">${v}</b></div>`; };
     return CLIP('d', t + 5, d + 5, { z0: 1.08, dz: .02 }) + `<div style="position:absolute;left:90px;right:90px;top:1040px">
-      <div style="text-align:center;margin-bottom:22px;opacity:${a}"><span style="display:inline-block;padding:14px 32px;border-radius:40px;background:#fff;color:#0b1640;font-size:38px;font-weight:900">“And when it loses?”</span></div>
-      ${row(0, 'Loss days', 'Every one shown')}${row(1, 'Her risk profile', 'Conservative')}${row(2, 'Normal dips', '10–20%')}</div>` + say(t, 'You choose the risk.', 'You see every trade.', 1500);
+      <div style="text-align:center;margin-bottom:22px;opacity:${a}"><span style="display:inline-block;padding:14px 32px;border-radius:40px;background:#fff;color:#0b1640;font-size:38px;font-weight:900">“And the risk?”</span></div>
+      ${row(0, 'Yearly profit target<br><small style="font-size:22px;color:#9aa6d6">tested since 2020</small>', '54–176%')}${row(1, 'Her risk profile', 'Balanced')}${row(2, 'Biggest dip', 'about 30%')}</div>` + say(t, 'You choose the risk.', 'You see every trade.', 1500);
   },
   cta(t, d) {
     const opt = (k, x, i) => { const a = ease((t - .9 - i * .3) / .4); return `<div style="display:flex;align-items:center;gap:22px;width:880px;margin:0 auto 18px;padding:20px 28px;border-radius:28px;background:rgba(5,10,34,.7);border:2px solid ${k === 'B' ? 'rgba(212,175,55,.75)' : 'rgba(255,255,255,.28)'};opacity:${a};transform:translateX(${(1 - a) * (k === 'B' ? 40 : -40)}px)"><b style="flex:none;width:80px;height:80px;border-radius:22px;display:grid;place-items:center;font-size:48px;background:${k === 'A' ? '#152a7a' : k === 'B' ? '#D4AF37' : '#E5323E'};color:${k === 'B' ? '#0b1640' : '#fff'}">${k}</b><span style="font-size:46px;font-weight:800;white-space:nowrap">${x}</span></div>`; };

@@ -597,7 +597,7 @@
     "b": "Tried trading, lost",
     "c": "Ready for a system"
    },
-   "open": "Jon: Almost half of UK students have thought about quitting because of money.",
+   "open": "Jon: Almost half of students have thought about quitting because of money.",
    "scenes": [
     [
      "shift",
@@ -613,14 +613,14 @@
     ],
     [
      "risk",
-     "Monika: Loss days happen, and you see every single one. I chose Conservative. Normal dips stay around ten to twenty percent."
+     "Monika: Our yearly profit target is fifty-four to one hundred seventy-six percent. I chose Balanced. The biggest dip is around thirty percent."
     ],
     [
      "cta",
      "Jon: Study. Work. Rest. Let FTM MACHINE watch the market. Tap the link in our bio to create your account."
     ]
    ],
-   "note": "Hook: Save the Student, National Student Money Survey 2026 (UK, 1,419 students): 46% considered dropping out over money; also reported by studentloancalculator.uk. Conservative normal drawdown range 10-20% (FTM risk profiles). Runway gen4_image + gen4_turbo shots in social/videos/assets/2026-11-26-0930s."
+   "note": "Hook: Save the Student, National Student Money Survey 2026 (UK, 1,419 students): 46% considered dropping out over money; also reported by studentloancalculator.uk. Conservative normal drawdown range 10-20% (FTM risk profiles). Runway gen4_image + gen4_turbo shots in social/videos/assets/2026-11-26-0930s. Risk scene (owner 25 Nov): backtest 54-176% a year since 2020 (site figure, Conservative to Growth); Balanced profile, maximum dip about 30% on the newest FTM MACHINE version (owner's figure)."
   }
  ],
  "2026-11-24-1800": {
