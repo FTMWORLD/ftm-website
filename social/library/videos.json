@@ -140,13 +140,6 @@
   "at": 18
  },
  {
-  "file": "v2/vid-2026-11-26.mp4",
-  "title": "Myth or fact? (26 Nov, 9:30)",
-  "date": "2026-11-26",
-  "kind": "Morning video",
-  "at": 9
- },
- {
   "file": "v2/vid-2026-11-25-1300.mp4",
   "title": "FTM vs Nvidia, same chart (25 Nov, 1 p.m.)",
   "date": "2026-11-25",
@@ -159,5 +152,19 @@
   "date": "2026-11-25",
   "kind": "6 p.m. result",
   "at": 18
+ },
+ {
+  "file": "v2/vid-2026-11-26b.mp4",
+  "title": "Two students, one system (26 Nov, 9:30)",
+  "date": "2026-11-26",
+  "kind": "Morning video",
+  "at": 9
+ },
+ {
+  "file": "v2/vid-2026-11-26.mp4",
+  "title": "Myth or fact? (kept for a later day)",
+  "date": "2026-11-25",
+  "kind": "Ready to post",
+  "at": 9
  }
 ]
