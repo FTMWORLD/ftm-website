@@ -9,14 +9,15 @@ Tick an item only when the owner says it is done.
 - [x] Facebook button on the homepage checked — 24 Nov
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
-## Open (most important first)
-1. [ ] Ad test: Meta Ads Manager + payment card, then say "ads ready" (EUR 10 a day for 7 days)
-2. [ ] Privacy page: company address, registration number, privacy contact email
-4. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com; get the TrustBox code (Trustpilot Business → Integrations → TrustBox) so real reviews show on the site
-4b. [ ] Decide: replace the invented sample quotes under "What our customers say" with real Trustpilot reviews
-5. [ ] Every day: answer comments and messages a few minutes after each post
+## Open (most important first; order agreed with the owner 25 Nov)
+0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
+1. [ ] Decide: say "replace them" for the invented sample quotes under "What our customers say" (real Trustpilot reviews instead)
+2. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com; send the TrustBox code (Trustpilot Business → Integrations → TrustBox)
+3. [ ] Every day: answer comments and messages a few minutes after each post
+4. [ ] Ad test: Meta Ads Manager + payment card, then say "ads ready" (EUR 10 a day for 7 days)
+5. [ ] Instagram collaborators accept the 13:00 invites; send new names
 6. [ ] Every day: forward the 6 p.m. video to WhatsApp status/groups (link ftmwealthnation.com/?start=wa)
-7. [ ] OpenAI API key, so Claude makes the ChatGPT images itself
-8. [ ] X: Metricool add-on (EUR 10/month) or own connection (EUR 1–3/month)
-9. [ ] Instagram collaborators accept the 13:00 invites; send new names
-10. [ ] Lawyer review of the Terms and Privacy pages before scaling ads
+7. [ ] Privacy page: company address, registration number, privacy contact email
+8. [ ] Lawyer review of the Terms and Privacy pages before scaling ads
+9. [ ] OpenAI API key, so Claude makes the ChatGPT images itself
+10. [ ] X: Metricool add-on (EUR 10/month) or own connection (EUR 1–3/month)
