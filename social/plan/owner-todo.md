@@ -11,8 +11,8 @@ Tick an item only when the owner says it is done.
 
 ## Open (most important first; order agreed with the owner 25 Nov)
 0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
-1. [ ] Decide: say "replace them" for the invented sample quotes under "What our customers say" (real Trustpilot reviews instead)
-2. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com; send the TrustBox code (Trustpilot Business → Integrations → TrustBox)
+1. [ ] Say "remove them" for the invented sample quotes under "What our customers say" (free Trustpilot plan cannot show live reviews; keep the "Rate us on Trustpilot" button)
+2. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com (no TrustBox code needed: review-display widgets are paid; decide on a paid plan at about 20 reviews)
 3. [ ] Every day: answer comments and messages a few minutes after each post
 4. [ ] Ad test: Meta Ads Manager + payment card, then say "ads ready" (EUR 10 a day for 7 days)
 5. [ ] Instagram collaborators accept the 13:00 invites; send new names
