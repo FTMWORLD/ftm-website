@@ -354,5 +354,9 @@
  {
   "date": "2026-11-25",
   "text": "On phones, Auto Trading on the \"How would you like to join?\" page now has the same gold frame as on laptops."
+ },
+ {
+  "date": "2026-11-25",
+  "text": "Result emails for accounts below 2,000 now show the FTM master account's % next to yours when it did better in the same period."
  }
 ]

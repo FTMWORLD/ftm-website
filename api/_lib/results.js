@@ -102,6 +102,13 @@ function cardFor(key, h, cur) {
    account's balance (trades are sized to it, and small accounts hit the broker's 0.01-lot minimum) and its open trades. */
 function whyNone(mn, acct) { return { mn: +mn || 0, bal: acct && acct.balance != null && isFinite(+acct.balance) ? +acct.balance : null, open: (acct && +acct.openPositions) || 0 }; }
 /* The member's name as they gave it (full name, else first and last name); empty when unknown. */
+/* owner 25 Nov: an own account below the recommended size (2,000) gets the master account's % for the same period, only when
+   the master account did better (mp = the master card's time-weighted % for the same window, from the posted master card). */
+function vsMaster(card, acct, mp) {
+  const bal = acct && acct.balance != null && isFinite(+acct.balance) ? +acct.balance : null;
+  if (bal == null || bal >= 2000 || mp == null || !isFinite(+mp) || +mp <= 0 || +mp - (+card.pct || 0) < 0.01) return null;
+  return { mp: +mp, bal };
+}
 function nameOf(u) { const m = (u && u.user_metadata) || {}; return String(m.full_name || m.name || [m.first_name, m.last_name].filter(Boolean).join(' ') || '').replace(/\s+/g, ' ').trim().slice(0, 60); }
 /* A member's own accounts: never the FTM master account or the master preview free accounts see. */
 function ownAccounts(A) { return (A || []).filter(a => a && a.accountId && !a.isMaster && !a.isPreview); }
@@ -203,6 +210,14 @@ async function emailFor(card, lang, acct, who) {
     head = D(card.from, { month: 'long', year: 'numeric' });
     table = await summaryTiles() + await marketTable();
   }
+  // owner 25 Nov: accounts below the recommended size see the FTM master account's % for the same period when it did better
+  if (card.vs && acct) {
+    const tl = (l, v) => '<td width="50%" valign="top" style="padding:12px 14px;background:#ffffff;border-radius:10px;"><p style="margin:0;font-size:22px;font-weight:bold;color:' + col(v) + ';">' + Tpl.keep(e(PC(v))) + '</p><p style="margin:4px 0 0;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#6b7194;font-weight:bold;">' + e(l) + '</p></td>';
+    table += '<table width="100%" cellpadding="0" cellspacing="0" style="margin:12px 0 0;background:#f7f8fb;border-left:4px solid #D4AF37;border-radius:10px;"><tr><td style="padding:14px 16px;"><p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#0b1640;">' + e(await t('Next to the FTM master account')) + '</p>'
+      + '<table width="100%" cellpadding="0" cellspacing="6"><tr>' + tl(await t('FTM master account'), card.vs.mp) + tl(await t('Your account'), card.pct) + '</tr></table>'
+      + (card.why ? '' : '<p style="margin:8px 0 6px;font-size:14px;line-height:1.5;color:#46507a;">' + e(await t('Your account is below the recommended size, so it trades about 60% of the time.')) + '</p>')
+      + '<p style="margin:' + (card.why ? '8px' : '0') + ' 0 0;font-size:14px;line-height:1.5;color:#46507a;">' + e(await t('With 2,000 or more, your account follows the FTM master account more closely.')) + '</p></td></tr></table>';
+  }
   const netCol = v => v > 0 ? '#6ee7a8' : v < 0 ? '#ff8a92' : '#ffffff';
   const body = '<div' + (['ar', 'he', 'fa', 'ur'].indexOf(lang) !== -1 ? ' dir="rtl"' : '') + '>'
     + '<p style="margin:0 0 4px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#B8902A;font-weight:bold;">' + e(acct ? (who || await t('Your account')) + (acct.number ? ' · ' + acct.number : '') : await t('FTM master account')) + '</p>'
@@ -237,7 +252,7 @@ async function mail(admin, o) {
     const st = await P.read(admin, 'results/own-' + key + '.json', null); if (st && st.finished) continue;
     const post = posts.find(x => x.res === key); if (!post || !post.card || Date.now() - Date.parse(post.t) > 3 * 864e5 || Date.parse(post.t) < OWN_SINCE) continue;
     const S = Object.assign({ done: [], sent: 0, failed: 0, none: 0 }, st || {}); S.tries = S.tries || {};
-    due.push({ key, S, have: new Set(S.done), mn: post.card && post.card.n });
+    due.push({ key, S, have: new Set(S.done), mn: post.card && post.card.n, mp: post.card && post.card.pct });
   }
   if (!due.length) return { more, log };
   const lock = await P.read(admin, 'results/mail-lock.json', null);
@@ -265,6 +280,7 @@ async function mail(admin, o) {
             if (/^month-/.test(w.key)) { const q = w.key.split('-'); card.st = statementFor(h, +q[1], +q[2]); }
             const moved = card.st && (card.st.dep || card.st.wd || card.st.close || card.st.open);
             if (card.k === 'day' && !card.n && !mst) card.why = whyNone(w.mn, acct);
+            if (!mst) card.vs = vsMaster(card, acct, w.mp);
             if (mst || card.n || acct.active || moved) list.push({ w, m: await emailFor(card, lang, mst ? null : acct, nameOf(u)) }); }
         }
         return list;
@@ -295,11 +311,12 @@ async function mail(admin, o) {
 /* Samples for the owners: the weekly summary (last completed week) and the monthly statement (this month so far) of the
    owner login's own accounts (the master and its copying account), emailed only to the owner mailboxes, at most once per
    10 minutes. Called by /api/v1/news-cron?sample=1. */
-async function samples(admin, which) {
+async function samples(admin, which, so) {
+  so = so || {};
   const lock = await P.read(admin, 'results/sample-lock.json', null);
   if (lock && Date.now() - Date.parse(lock.at) < 10 * 60e3) return { log: ['samples were sent less than 10 minutes ago'] };
   await P.write(admin, 'results/sample-lock.json', { at: new Date().toISOString() });
-  const owners = StaffLib.owners(), log = [], Letter = require('./letter');
+  const owners = StaffLib.owners(), log = [], Letter = require('./letter'), mpc = {};
   const users = []; for (let page = 1; page <= 50; page++) { const r = await admin.auth.admin.listUsers({ page, perPage: 1000 }); if (r.error) throw new Error(r.error.message); users.push(...(r.data.users || [])); if ((r.data.users || []).length < 1000) break; }
   const now = Date.now(), lp = parts(now, TZ); let fri = [lp.y, lp.m, lp.d]; for (let i = 0; i < 7 && new Date(Date.UTC(fri[0], fri[1] - 1, fri[2])).getUTCDay() !== 5; i++) fri = addDays(fri[0], fri[1], fri[2], -1);
   const wk = 'week-' + ymd(fri[0], fri[1], fri[2]), mo = 'month-' + lp.y + '-' + String(lp.m).padStart(2, '0');
@@ -309,6 +326,8 @@ async function samples(admin, which) {
       const h = await H.load(u, acct), cur = acct.currency || 'USD', mst = acct.isMaster || acct.isPreview;
       for (const key of (which === 'day' ? ['day-' + ymd(lp.y, lp.m, lp.d)] : [wk, mo])) {
         const card = cardFor(key, h, cur); if (/^month-/.test(key)) card.st = statementFor(h, lp.y, lp.m);
+        if (mst) mpc[key] = card.pct; else if (card.k === 'day' && !card.n) card.why = whyNone(mpc[key] ? 1 : 0, acct);
+        if (!mst) card.vs = vsMaster(card, acct, mpc[key]) || (so.vs && mpc[key] != null && mpc[key] > card.pct ? { mp: mpc[key], bal: +acct.balance || 0 } : null);
         const m = await emailFor(card, lang, mst ? null : acct, nameOf(u));
         await Mail.sendMail({ to: u.email, subject: 'SAMPLE · ' + m.subject, html: m.html }); log.push('sample ' + key + ' ' + (mst ? 'master' : acct.number || acct.accountId) + ' -> ' + u.email);
       }
@@ -317,4 +336,4 @@ async function samples(admin, which) {
   return { log };
 }
 
-module.exports = { master, run, mail, samples, emailFor, whyNone, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
+module.exports = { master, run, mail, samples, emailFor, whyNone, vsMaster, cardFor, statementFor, ownAccounts, mailAccounts, parts, midnight, dayCard, periodCard, TZ };
