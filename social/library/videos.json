@@ -145,5 +145,12 @@
   "date": "2026-11-26",
   "kind": "Morning video",
   "at": 9
+ },
+ {
+  "file": "v2/vid-2026-11-25-1300.mp4",
+  "title": "FTM vs Nvidia, same chart (25 Nov, 1 p.m.)",
+  "date": "2026-11-25",
+  "kind": "1 p.m. video",
+  "at": 6
  }
 ]
