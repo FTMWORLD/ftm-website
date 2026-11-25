@@ -282,7 +282,7 @@ function endSlide(w, h) {
   return `<div class="grid"></div><div class="wrap" style="align-items:center;text-align:center;padding-top:40px;padding-bottom:40px">
     <div class="logo">${MARK}FTM</div>
     <div class="kick" style="margin-top:46px">FTM MACHINE · fully automatic</div>
-    <div style="font-size:66px;font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-top:26px">${n ? 'All ' + n + ' trades you just saw' : 'Every trade we post'}<br><span style="color:#E3B62F;white-space:nowrap">were taken by FTM MACHINE.</span></div>
+    <div style="font-size:66px;font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-top:26px">${n ? 'All trades you just saw' : 'Every trade we post'}<br><span style="color:#E3B62F;white-space:nowrap">were taken by FTM MACHINE.</span></div>
     <div style="font-size:34px;color:#c9d0ee;margin-top:30px;line-height:1.45;font-weight:500">No screen time. No emotions. Fixed, tested rules.<br>While people worked, slept and lived their day.</div>
     ${mk2 ? `<div style="margin-top:34px;padding:14px 26px;border-radius:999px;border:1.5px solid rgba(212,175,55,.55);background:rgba(11,22,64,.55);font-size:27px;font-weight:700;color:#e8ecff">${esc(mk2)}</div>` : ''}
     ${D.vote && D.vote.a && D.vote.b ? `<div style="margin-top:38px;width:100%;max-width:860px"><div style="font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#D4AF37;font-weight:800">${esc(D.vote.q || 'Your vote')} · tap in the comments</div>
