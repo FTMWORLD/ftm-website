@@ -155,33 +155,46 @@
   {
    "date": "2026-11-27",
    "stage": "Pillar · Emotion",
-   "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
-   "title": "Fear closes too early",
-   "open": "You were right. You still took the small profit. Sound familiar?",
+   "format": "Things nobody tells you (countdown) with Runway moving shots",
+   "title": "Black Friday: the sale nobody tells you about",
+   "open": "Jessa: Black Friday. Three things nobody tells you.",
    "hook": "You were right. You still took the small profit. Sound familiar?",
    "scenes": [
     [
-     "entry",
-     "You buy. The trade goes your way."
+     "one",
+     "Jessa: One. Sixty-four percent of shoppers plan to buy most of their gifts this one weekend."
     ],
     [
-     "fear",
-     "Then it dips a little, and fear takes over. You close it early."
+     "two",
+     "Jessa: Two. A fifty percent discount still means money leaving your account."
     ],
     [
-     "regret",
-     "An hour later it runs to the target without you."
+     "three",
+     "Ayinde: Three. My future self doesn't get a sale. Only what I start today."
     ],
     [
      "machine",
-     "FTM MACHINE doesn't feel fear. It holds to its exit rule, win or lose."
+     "Ayinde: So this year, FTM MACHINE works for my future. Fixed rules, every day of the year."
+    ],
+    [
+     "watch",
+     "Charlotte: Before you buy anything, watch the live account. Every trade is shown."
     ],
     [
      "cta",
-     "Let the rules decide. Start free at ftm wealth nation dot com."
+     "Charlotte: Black Friday. Did you buy on impulse, or keep your money? Tap the link in our bio to create your account."
     ]
    ],
-   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
+   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only. Stats: NRF, 64% of US shoppers plan most holiday shopping over Thanksgiving weekend (brief, verified 23 Nov). ChatGPT images + Runway moving shots 1,2,4,6.",
+   "slot": "09:30",
+   "audience": "young workers who spend on sales",
+   "sound": "drive",
+   "voice": "ElevenLabs mixed: Jessa (American), Ayinde (British Nigerian), Charlotte (South African)",
+   "vote": {
+    "q": "Black Friday: you…",
+    "a": "Bought on impulse",
+    "b": "Kept my money"
+   }
   },
   {
    "date": "2026-11-28",

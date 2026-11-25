@@ -2,6 +2,7 @@
 Tick an item only when the owner says it is done.
 
 ## Done
+- [x] Permission mode set to Auto (owner, 25 Nov)
 - [x] Runway developer key saved and working — 25 Nov
 - [x] ElevenLabs key saved and working — 25 Nov
 - [x] Emails from our own address (Resend) — 24 Nov
