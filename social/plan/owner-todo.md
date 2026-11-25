@@ -10,6 +10,8 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
+00. [ ] Runway: dev.runwayml.com → log in with the same Runway account → API Keys → Create new key → say "ready" (key goes only into the secure form, never in chat); about $10 of developer credits (separate from the website subscription)
+01. [ ] ElevenLabs (human-sounding voices): create the account at elevenlabs.io (a paid starter plan), then Profile → API keys → create a key → say "ready" (secure form only)
 0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
 1. [ ] Say "remove them" for the invented sample quotes under "What our customers say" (free Trustpilot plan cannot show live reviews; keep the "Rate us on Trustpilot" button)
 2. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com (no TrustBox code needed: review-display widgets are paid; decide on a paid plan at about 20 reviews)
