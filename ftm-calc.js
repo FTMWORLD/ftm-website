@@ -232,6 +232,12 @@
       avgDurMs: n?durMs/n:0, curve:curve, byDay:byDay, dayOrder:order,
       streakDays:streakDays, streakTrades:streakTrades, bestDays:bestDays, bestTrades:bestTrades, plEvents:sEv,
       yearPL:yearPL, yearPct:yearPct, open:openT, seg:seg, balAt:balAtT, gap:gap,
+      groups:function(a,b,keyOf){ var g={}, lo=a==null?-Infinity:a, hi=b==null?Infinity:b, pk={}, add=function(k,d,bb){ if(!k) return null; var x=g[k]||(g[k]={pl:0,fac:1,n:0,w:0}); x.pl+=d; if(bb>0) x.fac*=1+d/bb; return x; };
+        if(useDeals){ closed.forEach(function(t){ if(t.positionRef!=null) pk[String(t.positionRef)]=keyOf(t); });
+          for(var gi=1; gi<curve.length; gi++){ var gp=curve[gi], gq=curve[gi-1]; if(gp.flow||!(gp.t>=lo&&gp.t<hi)) continue; add(gp.pos!=null?pk[String(gp.pos)]:null, gp.v-gq.v, gq.v); }
+          covered.forEach(function(t){ var ct=+new Date(t.closeTime), x; if(ct>=lo&&ct<hi&&(x=g[keyOf(t)])){ x.n++; if(t.pl>0.004) x.w++; } }); }
+        else covered.forEach(function(t){ var ct=+new Date(t.closeTime); if(!(ct>=lo&&ct<hi)) return; var x=add(keyOf(t), t.pl, balAtT(ct)); if(x){ x.n++; if(t.pl>0.004) x.w++; } });
+        Object.keys(g).forEach(function(k){ g[k].pct=z9((g[k].fac-1)*100); g[k].pl=z9(g[k].pl); }); return g; },
       split:function(isFtm){ var f={pl:0,fac:1,n:0,w:0}, o={pl:0,fac:1,n:0,w:0};
         for(var si=1; si<curve.length; si++){ var cp=curve[si], cq=curve[si-1]; if(cp.flow) continue; var d=cp.v-cq.v, side=(cp.pos && isFtm(String(cp.pos)))?f:o; side.pl+=d; if(cq.v>0) side.fac*=(1+d/cq.v); }
         covered.forEach(function(t){ var side=(t.positionRef && isFtm(String(t.positionRef)))?f:o; side.n++; if(t.pl>0.004) side.w++; });

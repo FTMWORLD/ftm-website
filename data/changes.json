@@ -346,5 +346,9 @@
  {
   "date": "2026-11-24",
   "text": "A \"Rate us on Trustpilot\" button now sits under \"What our customers say\" on the homepage."
+ },
+ {
+  "date": "2026-11-25",
+  "text": "Tap any period in Performance (this week, this month, the year…) to see which markets drove the result, best to worst, losses included."
  }
 ]

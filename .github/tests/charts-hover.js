@@ -33,6 +33,10 @@ const checks=[['metrics','#rgWin circle[data-tip]','win/loss donut',/\d+ (winnin
   ['calendar','#calGauge path[data-tip]','winning days gauge',/days: \d+/i],['calendar','#ratioWin','win/loss day ratio',/avg/i],['sessions','#sessBars .row[data-tip]','session bars',/trade/i],['perf','.px-bars [data-tip]','performance bars',/:/],['perf','#pxHeat [data-tip]','monthly heatmap',/%/]];
 for(const [v,sel,name,re] of checks){ await p.evaluate(v=>FTM.showView(v),v); await p.waitForTimeout(700); if(phone) await p.touchscreen.tap(5,5); else await p.mouse.move(1,1); await p.waitForTimeout(200);
   const has=await act(sel); const t=has?await tipText():''; ok(has && re.test(t), n+': '+name+' explains itself ('+(t||'no tooltip')+')'); }
+await p.evaluate(()=>FTM.showView('perf')); await p.waitForTimeout(700);
+const opened=await p.evaluate(()=>{ const b=[...document.querySelectorAll('#fsGrid button.fs-c')].find(x=>/all time/i.test(x.textContent)); if(!b) return false; b.click(); const sh=document.getElementById('fsPop'); return !!(sh&&!sh.hidden); });
+const mk=opened&&await act('#fsPop .fsp-mr[data-tip]'); const mt=mk?await tipText():''; ok(mk && /%.*trades?/i.test(mt), n+': period pop-up market bars explain themselves ('+(mt||'no tooltip')+')');
+await p.evaluate(()=>{ const sh=document.getElementById('fsPop'); if(sh&&!sh.hidden) sh.click(); });
 ok(!errs.length, n+': no script errors '+(errs[0]||''));
 await c.close();}
 await b.close(); console.log(fails?'FAILED: '+fails:'CHARTS HOVER OK'); process.exit(fails?1:0);})();
