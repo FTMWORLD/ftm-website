@@ -10,7 +10,7 @@ const CYCLES = ['month', 'year', 'week', 'day', 'once'];
 const STATUS = ['active', 'planned', 'paused', 'ended'];
 const CURS = ['EUR', 'USD', 'GBP', 'NGN'];
 
-const SEED_V = 2;
+const SEED_V = 3;
 // Ranges: amount = what FTM pays now (or the lowest), max = what it costs when FTM grows (about 1,000 members).
 // Sources: the FTM budget PDF (FTM FINANCE session, Nov 2026), the owner (Contabo about 33 now), official price pages (25 Nov 2026).
 const SEED = [
@@ -23,8 +23,9 @@ const SEED = [
   { name: 'Claude (Anthropic)', what: 'Claude, who builds and runs the website, videos and posting', group: 'important', kind: 'sub', amount: 100, max: 200, cur: 'USD', cycle: 'month', status: 'active', note: 'Max plan 100 (5x) or 200 (the biggest plan); the budget PDF counts 200.' },
   { name: 'ChatGPT', what: 'Realistic pictures for the 9:30 and 1 p.m. videos', group: 'important', kind: 'sub', amount: 23, max: 100, cur: 'EUR', cycle: 'month', status: 'active', note: 'Plus about 23; the Pro tier is 100 if we need more pictures.' },
   { name: 'Metricool', what: 'Posts every video to Instagram, Facebook, TikTok, YouTube and LinkedIn', group: 'important', kind: 'sub', amount: 20, max: 54, cur: 'EUR', cycle: 'month', status: 'active', note: 'Starter 20 (one brand). Advanced 54 if we add brands. X add-on 10 extra.' },
-  { name: 'Runway', what: 'Turns our pictures into moving video for ads and posts', group: 'important', kind: 'sub', amount: 15, max: 35, cur: 'USD', cycle: 'month', status: 'active', note: 'Standard 15, Pro 35. Using it through Claude needs separate developer credits (from about 10).' },
-  { name: 'ElevenLabs', what: 'Human-sounding voices for every video', group: 'important', kind: 'sub', amount: 22, max: 99, cur: 'USD', cycle: 'month', status: 'active', note: 'Creator: 11 the first month, then 22. Pro 99 if we make many more videos.' },
+  { name: 'Runway', what: 'Turns our pictures into moving video for ads and posts', group: 'important', kind: 'sub', amount: 15, max: 35, cur: 'USD', cycle: 'month', status: 'active', note: 'Standard plan (625 credits a month). Pro 35 if we need more. Claude uses the separate developer credits (own line).' },
+  { name: 'ElevenLabs', what: 'Human-sounding voices for every video', group: 'important', kind: 'sub', amount: 22, max: 99, cur: 'USD', cycle: 'month', status: 'active', note: 'Creator plan since 25 Nov 2026: 11 the first month, then 22. Pro 99 if we make many more videos.', renews: '2026-12-25' },
+  { name: 'Runway developer credits', what: 'Credits Claude uses to make pictures and moving video with Runway', group: 'important', kind: 'sub', amount: 10, max: 50, cur: 'USD', cycle: 'month', status: 'active', note: 'Prepaid, separate from the Runway website plan. 10 bought on 25 Nov 2026 (1,000 credits, about 15 to 20 short moving shots); top up when it runs low. Auto-billing is off.' },
   { name: 'FTM Media production', what: 'Videos, pictures and other media work', group: 'important', kind: 'other', amount: 100, max: 200, cur: 'EUR', cycle: 'month', status: 'planned', note: 'From the FTM budget PDF.' },
   { name: 'Prop firm account, company registration and legal', what: 'Prop firm account, company papers and lawyer', group: 'important', kind: 'other', amount: 500, max: 1000, cur: 'EUR', cycle: 'month', status: 'planned', note: 'From the FTM budget PDF ("Other").' },
   { name: 'Media manager', what: 'FTM Media: the person who runs our media', group: 'important', kind: 'salary', amount: 150, max: 150, cur: 'EUR', cycle: 'month', status: 'planned', note: 'From the FTM budget PDF. Set to Active when the first salary is paid.' },
@@ -34,6 +35,7 @@ const SEED = [
   { name: 'X (Twitter) posting', what: 'Posting on X through Metricool', group: 'optional', kind: 'sub', amount: 10, max: 10, cur: 'EUR', cycle: 'month', status: 'planned', note: 'Metricool X add-on 10 a month (needs Starter).' }
 ];
 
+const ADD_ALWAYS = ['Runway developer credits', 'ElevenLabs', 'Runway'];
 function id() { return Math.random().toString(36).slice(2, 10); }
 function clean(x) {
   const s = (v, n) => String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
@@ -58,7 +60,11 @@ function monthly(x, high) {
 }
 async function get(admin) {
   const f = await P.read(admin, FILE, null);
-  if (f && Array.isArray(f.items) && (f.by || f.seed === SEED_V)) return f;
+  if (f && Array.isArray(f.items) && (f.by || f.seed === SEED_V)) {
+    const have = new Set(f.items.map(x => String(x.name).toLowerCase())), add = SEED.filter(x => ADD_ALWAYS.indexOf(x.name) !== -1 && !have.has(x.name.toLowerCase()));
+    if (add.length) f.items = f.items.concat(add.map(clean));
+    return f;
+  }
   return { items: SEED.map(clean), updated: null, by: null, seed: SEED_V };
 }
 async function save(admin, items, by) {
