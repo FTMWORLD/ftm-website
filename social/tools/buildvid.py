@@ -87,7 +87,8 @@ for sid, vo in lines:
         code = subprocess.run(['curl', '-s', '-m', '90', '-X', 'POST', 'https://api.elevenlabs.io/v1/text-to-speech/%s?output_format=mp3_44100_128' % vid, '-H', 'content-type: application/json', '-d', body, '-o', mp3, '-w', '%{http_code}'], capture_output=True, text=True).stdout
         if code != '200': raise SystemExit('ElevenLabs voice failed for %s (HTTP %s): %s' % (sid, code, open(mp3, errors='ignore').read()[:200]))
         wav = os.path.join(D, 'vo', sid + '.wav')
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', mp3, '-ac', '1', '-ar', '24000', wav], check=True)
+        # owner 25 Nov: every voice equally loud (one quiet voice in the sample): each line is loudness-normalised the same way
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', mp3, '-af', 'loudnorm=I=-16:TP=-1.5:LRA=7', '-ac', '1', '-ar', '24000', wav], check=True)
         a, sr = sf.read(wav); durs.append(round(len(a) / sr, 2))
         hop = sr // 25; env = [float(np.sqrt(np.mean(a[i:i + hop] ** 2))) for i in range(0, len(a), hop)]
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
