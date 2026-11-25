@@ -165,6 +165,10 @@ module.exports = async function handler(req, res) {
     const op = String(body.op || ''), by = me.email;
     if (role === 'support' && (op === 'broadcast' || op.indexOf('letter_') === 0)) return res.status(403).json({ ok: false, error: 'NOT_FOR_SUPPORT' });
     if (op.indexOf('team') === 0 && role !== 'owner') return res.status(403).json({ ok: false, error: 'OWNERS_ONLY' });
+    // FTM finance (owner 25 Nov 2026): what FTM pays for; owners only
+    if (op.indexOf('fin_') === 0 && role !== 'owner') return res.status(403).json({ ok: false, error: 'OWNERS_ONLY' });
+    if (op === 'fin_get') return res.status(200).json(Object.assign({ ok: true }, await require('../_lib/finance').get(admin)));
+    if (op === 'fin_save') { const r = await require('../_lib/finance').save(admin, body.items, by); return res.status(r.ok ? 200 : 400).json(r); }
 
     // FTM affiliate programme (owner 21 Nov 2026): applications, approval (link + code + Stripe 5% code), money owed, monthly payout
     if (op === 'pulse') {

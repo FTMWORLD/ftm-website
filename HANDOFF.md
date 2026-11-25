@@ -794,3 +794,8 @@ api/v1/passkey.js (@simplewebauthn/server). Passkeys are stored in the Supabase 
   - Needs in Stripe: STRIPE_SECRET_KEY with write access (creates coupon ftm-affiliate-5 and one promotion code per affiliate on approval; staff see "Stripe 5% code not created" otherwise), and "Allow promotion codes" switched on for the Annual, 5 Years and Lifetime payment links (not the Investment link).
   - Done by the owner 21 Nov 2026: the site key is the restricted key "STRIPE_SECRET_KEY" (rk_live). It now has Coupons + Promotion Codes = Write, Subscriptions = Read, Checkout Sessions = Read. "Allow promotion codes" is on for Annual, 5 Years and Lifetime. If a new Stripe call is added, add its permission to that restricted key.
   - Test: .github/tests/affiliate.js.
+
+
+## Staff console redesign and FTM Finance (25 Nov 2026)
+- Console: navy header, grouped left menu on laptop (Overview, People, Communication, Company, System), scrolling chips on phones; long cards fold into drop-downs (foldCards/fold in index.html); affiliates are compact rows with search and 25 at a time.
+- Finance (owners only): api/_lib/finance.js, staff ops fin_get / fin_save, file staff/finance.json. Sections Subscriptions, Advertising, Salaries, Other; priority Mandatory / Important / Optional; amount, currency, cycle, renewal date, status. Unknown amounts stay empty until the owner adds them (never guessed). Totals per month/year in EUR via /api/v1/fx.
