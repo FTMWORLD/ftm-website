@@ -537,6 +537,50 @@
     ]
    ],
    "note": "Chague, De-Losso & Giovannetti (2019), Day Trading for a Living?: 97% of people who day-traded Brazilian futures for more than 300 days lost money. ChatGPT images 2026-11-26-0930-01..06."
+  },
+  {
+   "date": "2026-11-25-1300",
+   "slot": "13:00",
+   "stage": "Today's reality · website feature",
+   "format": "Race chart (compare chart)",
+   "audience": "sceptics who want proof",
+   "sound": "cinema",
+   "voice": "bm_george",
+   "title": "FTM vs Nvidia, same chart",
+   "vote": {
+    "q": "Who should we race next?",
+    "a": "Tesla",
+    "b": "Amazon",
+    "c": "Bitcoin"
+   },
+   "open": "FTM versus Nvidia. Same chart. Same days.",
+   "scenes": [
+    [
+     "built",
+     "We built a chart that puts FTM's real account next to the biggest names."
+    ],
+    [
+     "names",
+     "Apple. Microsoft. Tesla. The S and P five hundred. Gold. Bitcoin. Pick any giant, and race FTM against it."
+    ],
+    [
+     "figures",
+     "This November, FTM is up twelve point four percent. Nvidia is down twenty-four. The S and P five hundred, down five."
+    ],
+    [
+     "pub",
+     "And behind our line, every single trade is public."
+    ],
+    [
+     "pick",
+     "Pick any rival yourself, inside your account."
+    ],
+    [
+     "cta",
+     "Who should we race next? A, Tesla. B, Amazon. C, Bitcoin. Vote in the comments, then tap the link in our bio."
+    ]
+   ],
+   "note": "Compare chart data /api/v1/bench and dayresult mtd, closes to 24 Nov: FTM +12.36%, NVDA -24.07%, S&P 500 -5.00%. ChatGPT images 2026-11-25-1300-01..04."
   }
  ],
  "2026-11-24-1800": {

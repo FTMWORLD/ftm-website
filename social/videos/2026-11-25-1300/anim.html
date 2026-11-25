@@ -1,0 +1,103 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#05091f}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
+#stage{position:absolute;inset:0;overflow:hidden}
+.ph{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;will-change:transform}
+.shade{position:absolute;inset:0}
+.brand{position:absolute;left:0;right:0;top:240px;display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:42px;letter-spacing:-.04em;z-index:5;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.mark{width:56px;height:56px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#cap{position:absolute;left:70px;right:70px;top:1330px;text-align:center;background:rgba(5,10,34,.72);backdrop-filter:blur(14px);border:1.5px solid rgba(212,175,55,.4);border-radius:36px;padding:28px 34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-size:52px;line-height:1.22;font-weight:800;letter-spacing:-.02em}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:7}
+.glass{position:absolute;background:rgba(11,22,64,.62);backdrop-filter:blur(18px);border:1.5px solid rgba(255,255,255,.18);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+</style></head><body>
+<div id="stage"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div>
+<div id="cap"><div class="w" id="subw"></div></div>
+<script src="rig.js"></script><script>
+const W=1080,H=1920,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)},back=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const IMG=(src,t,o)=>{o=o||{};const z=(o.z0||1)+(o.dz||0.08)*cl(t/(o.d||6)),x=(o.x||0)+(o.dx||0)*cl(t/(o.d||6)),y=(o.y||0)+(o.dy||0)*cl(t/(o.d||6));return `<img class="ph" src="${src}" style="transform:translate(${x}px,${y}px) scale(${z});filter:${o.f||'none'}">`};
+const SHADE=(a,b)=>`<div class="shade" style="background:linear-gradient(180deg,rgba(5,9,31,${a}) 0%,rgba(5,9,31,${a*0.35}) 30%,rgba(5,9,31,${a*0.4}) 55%,rgba(5,9,31,${b}) 100%)"></div>`;
+const LOGO=(s)=>`<svg viewBox="0 0 120 120" width="${s}" height="${s}"><rect width="120" height="120" rx="35" fill="#1F3A93"/><path d="M30 85 L55 57 L72 73 L96 41" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* 25 Nov 13:00 "FTM vs Nvidia, same chart" (race chart, sceptics). ChatGPT photos 2026-11-25-1300-01..04, narrator bm_george, sound cinema.
+   Figures: November so far to the 24 Nov close, from the site's compare chart data (/api/v1/bench) and the live account (dayresult mtd):
+   FTM +12.36%, Nvidia -24.07%, S&P 500 -5.00%, Apple +2.74%. */
+window.NOCAP = 1;
+const LP = n => '../assets/2026-11-25-1300/2026-11-25-1300-0' + n + '.jpg';
+const ph = (n, t, o) => IMG(LP(n), t, Object.assign({ z0: 1.03, dz: .06, d: 7 }, o || {})) + SHADE(.42, .9);
+const R = { ftm: [0, 0, -0.12, 2.15, -1.36, -5.15, -4.24, -4.54, 5.15, 4.85, 5.7, 8.4, 9.7, 11.56, 10.46, 8.92, 12.36],
+  nvda: [-1.26, 1.0, -2.2, -11.26, -8.8, -12.69, -17.47, -15.1, -18.79, -20.42, -23.7, -24.03, -26.23, -28.66, -38.66, -19.35, -24.07],
+  spx: [-0.51, -0.15, 1.43, -2.99, -2.68, -0.4, -0.78, 0.52, 0.16, -0.24, -2.16, -3.16, -3.38, -5.33, -8.83, -4.52, -5.0] };
+const say = (t, l1, l2, top, c2) => {
+  const a = ease((t - .15) / .4), b = ease((t - .55) / .4);
+  return `<div style="position:absolute;left:50px;right:50px;top:${top || 1330}px;text-align:center">
+    <div style="font-size:72px;font-weight:900;letter-spacing:-.03em;line-height:1.08;white-space:nowrap;opacity:${a};transform:translateY(${(1 - a) * 24}px);text-shadow:0 8px 34px rgba(0,0,0,.75)">${l1}</div>
+    ${l2 ? `<div style="font-size:72px;font-weight:900;letter-spacing:-.03em;line-height:1.08;white-space:nowrap;color:${c2 || '#E3B62F'};margin-top:10px;opacity:${b};transform:translateY(${(1 - b) * 24}px);text-shadow:0 8px 34px rgba(0,0,0,.75)">${l2}</div>` : ''}</div>`;
+};
+// the race: three real lines drawing themselves, end labels in %
+const race = (t, top, show, dur) => {
+  const W = 880, H = 520, lo = -42, hi = 16, n = R.ftm.length, k = Math.min(1, t / (dur || 2.6)), m = Math.max(2, Math.ceil(k * n));
+  const X = i => 30 + i * (W - 270) / (n - 1), Y = v => 20 + (hi - v) / (hi - lo) * (H - 40);
+  const line = (a, c, w) => `<polyline fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" points="${a.slice(0, m).map((v, i) => X(i) + ',' + Y(v)).join(' ')}"/>`;
+  const tag = (a, c, label) => { const v = a[m - 1]; return `<g transform="translate(${X(m - 1) + 16},${Y(v)})"><text y="10" fill="${c}" font-size="26" font-weight="900">${label} ${v > 0 ? '+' : ''}${v.toFixed(1)}%</text></g>`; };
+  const s = show || ['ftm', 'nvda', 'spx'];
+  return `<div style="position:absolute;left:50%;top:${top || 560}px;width:${W + 40}px;margin-left:-${(W + 40) / 2}px;padding:20px;border-radius:30px;background:rgba(5,10,34,.72);border:1.5px solid rgba(212,175,55,.45);box-shadow:0 30px 80px rgba(0,0,0,.5);opacity:${ease(t / .3)}">
+    <div style="font-size:26px;font-weight:800;letter-spacing:.14em;color:#E3B62F;text-align:left;padding:4px 10px 8px">NOVEMBER SO FAR · SAME DAYS</div>
+    <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="font-family:Inter,sans-serif">
+      <line x1="30" x2="${W - 240}" y1="${Y(0)}" y2="${Y(0)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="6 8"/>
+      ${s.includes('spx') ? line(R.spx, '#8fa3ff', 5) + tag(R.spx, '#8fa3ff', 'S&P') : ''}
+      ${s.includes('nvda') ? line(R.nvda, '#ff6b74', 6) + tag(R.nvda, '#ff6b74', 'NVDA') : ''}
+      ${s.includes('ftm') ? line(R.ftm, '#E3B62F', 9) + tag(R.ftm, '#E3B62F', 'FTM') : ''}
+    </svg></div>`;
+};
+const SCN = {
+  hook(t, d) {
+    const a = ease(t / .3);
+    return ph(1, t, { dz: .05 }) + race(t + 2.6, 380, ['ftm', 'nvda']) + `<div style="position:absolute;left:0;right:0;top:1060px;text-align:center;opacity:${a}">
+      <div style="font-size:118px;font-weight:900;letter-spacing:-.05em;line-height:1;white-space:nowrap;text-shadow:0 10px 50px rgba(0,0,0,.6)"><span style="color:#E3B62F">+12.4%</span> <span style="font-size:56px;color:#c9d0ee">vs</span> <span style="color:#ff6b74">−24.1%</span></div>
+      <div style="font-size:60px;font-weight:900;letter-spacing:-.02em;margin-top:18px;white-space:nowrap;text-shadow:0 6px 30px rgba(0,0,0,.8)">FTM vs Nvidia. Same days.</div></div>`;
+  },
+  built(t, d) { return ph(4, t, { dx: -20 }) + race(t, 470) + say(t, 'One chart.', 'FTM next to the giants.', 1260); },
+  names(t, d) {
+    const chip = (i, x) => { const a = ease((t - .2 - i * .28) / .3); return `<span style="display:inline-block;margin:10px;padding:18px 30px;border-radius:40px;background:rgba(11,22,64,.78);border:1.5px solid rgba(212,175,55,.6);font-size:42px;font-weight:800;opacity:${a};transform:translateY(${(1 - a) * 20}px)">${x}</span>`; };
+    return ph(2, t, { dz: .08 }) + `<div style="position:absolute;left:60px;right:60px;top:760px;text-align:center">${['Apple', 'Microsoft', 'Tesla', 'S&amp;P 500', 'Gold', 'Bitcoin'].map((x, i) => chip(i, x)).join('')}</div>` + say(t, 'Pick a giant.', 'Race it against FTM.', 1260);
+  },
+  figures(t, d) {
+    const bar = (i, name, v, c) => { const a = ease((t - .3 - i * .5) / .45), w = Math.abs(v) / 25 * 250 * a;
+      return `<div style="display:flex;align-items:center;gap:16px;margin:22px 0"><div style="width:210px;text-align:right;font-size:42px;font-weight:800">${name}</div><div style="position:relative;width:520px;height:60px"><div style="position:absolute;left:260px;top:0;bottom:0;width:3px;background:rgba(255,255,255,.35)"></div><div style="position:absolute;top:6px;height:48px;border-radius:12px;background:${c};${v >= 0 ? 'left:261px' : 'right:261px'};width:${w}px"></div></div><div style="width:200px;text-align:left;font-size:44px;font-weight:900;color:${c};opacity:${a};white-space:nowrap;font-variant-numeric:tabular-nums">${v > 0 ? '+' : ''}${v.toFixed(2)}%</div></div>`; };
+    return ph(1, t, { dz: .04 }) + `<div style="position:absolute;left:50%;top:520px;margin-left:-500px;width:1000px;padding:30px 20px;border-radius:30px;background:rgba(5,10,34,.75);border:1.5px solid rgba(212,175,55,.45)">
+      <div style="font-size:28px;font-weight:800;letter-spacing:.14em;color:#E3B62F;text-align:center">NOVEMBER SO FAR · TO 24 NOV</div>
+      ${bar(0, 'FTM', 12.36, '#E3B62F')}${bar(1, 'Nvidia', -24.07, '#ff6b74')}${bar(2, 'S&amp;P 500', -5.0, '#8fa3ff')}</div>` + say(t, 'Same days.', 'Real figures.', 1260);
+  },
+  pub(t, d) { return ph(3, t, { dz: .07 }) + say(t, 'Behind our line:', 'every trade is public.', 1260); },
+  pick(t, d) { return ph(4, t, { dx: 20 }) + say(t, 'Pick any rival', 'in your account.', 1260); },
+  cta(t, d) {
+    const opt = (k, x, i) => { const a = ease((t - .5 - i * .3) / .4); return `<div style="display:flex;align-items:center;gap:24px;width:900px;margin:0 auto 22px;padding:24px 30px;border-radius:30px;background:rgba(255,255,255,.07);border:2px solid ${k === 'B' ? 'rgba(212,175,55,.7)' : 'rgba(255,255,255,.25)'};opacity:${a};transform:translateX(${(1 - a) * (k === 'B' ? 40 : -40)}px)"><b style="flex:none;width:88px;height:88px;border-radius:24px;display:grid;place-items:center;font-size:54px;background:${k === 'A' ? '#152a7a' : k === 'B' ? '#D4AF37' : '#E5323E'};color:${k === 'B' ? '#0b1640' : '#fff'}">${k}</b><span style="font-size:52px;font-weight:800;white-space:nowrap">${x}</span></div>`; };
+    return `<div style="position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 45%,#1d3590 0%,#0b1640 55%,#040822 100%)"></div>
+      <div style="position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center">
+        <div style="font-size:34px;font-weight:800;letter-spacing:.16em;color:#E3B62F;opacity:${ease(t / .4)}">VOTE IN THE COMMENTS</div>
+        <div style="font-size:84px;font-weight:900;letter-spacing:-.03em;line-height:1.08;margin:20px 0 44px;opacity:${ease(t / .4)};white-space:nowrap">Who should we<br>race next?</div>
+        ${opt('A', 'Tesla', 0)}${opt('B', 'Amazon', 1)}${opt('C', 'Bitcoin', 2)}
+        <div style="height:36px"></div>
+        <div style="display:inline-block;padding:28px 60px;border-radius:70px;background:#E5323E;font-weight:900;font-size:50px;opacity:${ease((t - 1.4) / .4)};transform:scale(${1 + .03 * sin(t * 5)})">Tap the link in our bio</div>
+        <div style="margin-top:30px;font-weight:700;font-size:36px;color:#dfe4ff;opacity:${ease((t - 1.8) / .4)}">Create your account · every trade at 6 p.m.</div></div>`;
+  }
+};
+
+let S=[],T=[],TOTAL=0;
+window.setup=function(scenes,durs,amp){if(amp)window.AMP=amp;S=scenes;let a=0.3;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.6});TOTAL=a+0.9;window.TOTAL=TOTAL;return {TOTAL,T}};
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.3)i=k;
+ const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i];
+ const st=document.getElementById('stage');st.innerHTML=SCN[s.id](Math.max(0,lt+0.3),dur,talkAt(s.id,Math.max(0,lt)));
+ const fade=Math.min(ease((lt+0.3)/0.3),1-ease((lt-(dur-0.35))/0.3));st.style.opacity=.1+.9*fade;
+ const hide=/^hook/.test(s.id)||window.NOCAP;
+ const words=s.vo.replace(/^(HER|HIM):\s*/,'').replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|myth|fact|week|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=hide?0:fade;
+};
+</script></body></html>
