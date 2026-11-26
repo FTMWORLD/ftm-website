@@ -15,6 +15,7 @@ Tick an item only when the owner says it is done.
 ## Open (most important first; order agreed with the owner 25 Nov)
 00. [ ] When a Metricool "Allow" appears in the Claude session, tap it: mostly at about 21:40 (tomorrow's posts, one sitting) and about 18:05 (the 6 p.m. result)
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
+01b. [ ] Runway developer credits: 719 left, about 3 days of moving videos (2 videos a day use about 200 credits, about USD 2). Top up (e.g. USD 20 = 2,000 credits) or switch on auto top-up
 02. [ ] FTM staff → Finance: add the amounts and renewal dates you know (Contabo, Vercel, Supabase, domain, Claude, Metricool, Runway, ChatGPT) and the payment you made 2 days ago
 0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
 1. [ ] Say "remove them" for the invented sample quotes under "What our customers say" (free Trustpilot plan cannot show live reviews; keep the "Rate us on Trustpilot" button)
