@@ -121,6 +121,9 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 ## Posting without waiting (owner instruction, 24 November 2026)
 - Every video is still sent to the owner first. If he has not answered 2 hours before its posting time, it goes out as planned: schedule it then (or schedule it right away and hold/change it if he asks before then). His "hold" or changes always win.
 
+## Evening batch (owner 26 Nov 2026)
+- Metricool posting can need the owner's Allow tap, and he is busy in the day. So every post for tomorrow that does not depend on the 6 p.m. data (09:30 video, 13:00 video, 5 stories, their Telegram send_laters) is built and scheduled in ONE sitting by the evening batch job at 21:37 Berlin. The morning, midnight and 11:31 jobs only fill what is missing. The 6 p.m. result is the only daytime posting.
+
 ## Votes, not written questions (owner instruction, 23 November 2026)
 - Add a C option whenever some people fit neither A nor B (owner 23 Nov: "Nvidia: sold in fear / held on" also needs "C: wasn't in the market"); answers stay at most 23 characters.
 - People don't write comments; they tap. Every post asks ONE A-or-B question that fits the day (e.g. "A: one big win, then big losses · B: small wins that add up"), never an open written question.
