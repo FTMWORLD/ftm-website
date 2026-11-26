@@ -12,5 +12,18 @@
   "theme": "paper",
   "sound": "news",
   "cta": "Never miss a move · link in bio"
+ },
+ "2026-11-26": {
+  "kicker": "Market news · 26 Nov",
+  "hook": "Wall Street is <b>closed today.</b>",
+  "title": "Thanksgiving: <b>no US stock trading.</b>",
+  "chips": [
+   "Friday: early close, 1 p.m. New York",
+   "Every trade shown at 6 p.m."
+  ],
+  "src": "Sources: Fidelity, The Motley Fool (US market holiday calendars) · 26 Nov 2026",
+  "theme": "night",
+  "sound": "news",
+  "cta": "See how it works · link in bio"
  }
 }
