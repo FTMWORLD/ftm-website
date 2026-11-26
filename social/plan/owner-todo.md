@@ -13,6 +13,7 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
+00. [ ] Metricool posting waits for your Allow tap in the Claude session (since 26 Nov morning): tap Allow when it appears, or posts and stories do not go out
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
 02. [ ] FTM staff → Finance: add the amounts and renewal dates you know (Contabo, Vercel, Supabase, domain, Claude, Metricool, Runway, ChatGPT) and the payment you made 2 days ago
 0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
