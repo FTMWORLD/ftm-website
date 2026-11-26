@@ -634,6 +634,49 @@
     ]
    ],
    "note": "Hook: Save the Student, National Student Money Survey 2026 (UK, 1,419 students): 46% considered dropping out over money; also reported by studentloancalculator.uk. Conservative normal drawdown range 10-20% (FTM risk profiles). Runway gen4_image + gen4_turbo shots in social/videos/assets/2026-11-26-0930s. Risk scene (owner 25 Nov): backtest 54-176% a year since 2020 (site figure, Conservative to Growth); Balanced profile, maximum dip about 30% on the newest FTM MACHINE version (owner's figure)."
+  },
+  {
+   "date": "2026-11-26-1300",
+   "slot": "13:00",
+   "stage": "Today's reality · Thanksgiving news",
+   "format": "Family story: grandfather and grandson",
+   "audience": "families and retired people",
+   "sound": "cinema",
+   "voice": "ElevenLabs mixed: Mwika (African), Ayinde (British Nigerian), Wanjiku (Kenyan)",
+   "title": "Thankful for time",
+   "vote": {
+    "q": "Thankful for more…",
+    "a": "Time",
+    "b": "Money"
+   },
+   "open": "Ayinde: What are you thankful for, Grandpa?",
+   "scenes": [
+    [
+     "time",
+     "Mwika: Time. I spent forty years trading my time for money."
+    ],
+    [
+     "work",
+     "Mwika: Every market move happened while I was at work."
+    ],
+    [
+     "shut",
+     "Ayinde: Today Wall Street is shut for Thanksgiving. But gold, Bitcoin and Asia still move."
+    ],
+    [
+     "machine",
+     "Ayinde: That's why I use FTM MACHINE. Five markets, fixed rules, and I keep my time."
+    ],
+    [
+     "waste",
+     "Mwika: Then don't waste the one thing I didn't have."
+    ],
+    [
+     "cta",
+     "Wanjiku: Thankful for more time, or more money? Vote in the comments, then tap the link in our bio to create your account."
+    ]
+   ],
+   "note": "Owner 23 Nov: 13:00 = today's reality through people. News: US stock markets closed 26 Nov for Thanksgiving (Fidelity, The Motley Fool holiday calendars). ChatGPT images 2026-11-26-1300-01..06."
   }
  ],
  "2026-11-24-1800": {
