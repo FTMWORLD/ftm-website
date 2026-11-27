@@ -124,6 +124,7 @@ const BASE = process.argv[2] || 'http://localhost:8765';
     await p.goto(BASE + '/?ref=ada'); await p.waitForTimeout(800);
     const ref = await p.evaluate(() => ({ s: localStorage.getItem('ftm_ref'), url: location.search }));
     ok(/"c":"ADA"/.test(ref.s || '') && ref.url === '' && posted.some(d => d.action === 'click' && d.code === 'ADA'), '[' + label + '] ?ref= is remembered, counted once and removed from the address');
+    await p.evaluate(() => { if (!document.querySelector('a[href^="https://buy.stripe.com/fZubJ00Dx6Fm8Nsfw87wA0j"]')) { const t = document.querySelector('.js-plans,.js-activate,a.btn[href="#pricing"]'); if (t) t.click(); } }); await p.waitForTimeout(300);
     const href = await p.evaluate(() => { const a = document.querySelector('a[href^="https://buy.stripe.com/fZubJ00Dx6Fm8Nsfw87wA0j"]'); a.addEventListener('click', e => e.preventDefault()); a.click(); return a.getAttribute('href'); });
     ok(/prefilled_promo_code=ADA/.test(href), '[' + label + '] the plan checkout carries the code (5% off, credited to the affiliate): ' + href);
     // public application
