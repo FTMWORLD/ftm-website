@@ -5,6 +5,7 @@ are interpolated (Runway shots move with a slow, steady camera push).
 python3 social/tools/lidchart.py in.mp4 out.mp4 "x,y x,y x,y x,y" "x,y x,y x,y x,y" [seed] [silver]
   corners: top-left, top-right, bottom-right, bottom-left (pixels of the video frame)
   silver: 1 = first paint the area silver (when the clip shows a black screen there)
+  LID_FILL=own: fill the lid with its own dark colour (removes a chart or grid baked into the clip)
   LID_ART=logo: the FTM logo (blue square with the gold chart line, the word FTM below) in the middle of the lid instead of a chart
   (owner 27 Nov 2026: "put the FTM logo behind the laptops"); LID_ASPECT = real width/height of the lid (default 1.45)."""
 import sys, os, subprocess, random, numpy as np
@@ -79,6 +80,10 @@ def main():
             ys = [p[1] for p in q]; y0, y1 = min(ys), max(ys)
             g = np.linspace(0, 1, h)[:, None] * np.ones((1, w)); g = np.clip((np.arange(h)[:, None] - y0) / max(1, y1 - y0), 0, 1) * np.ones((1, w))
             top, bot = np.array([150, 153, 160]), np.array([112, 115, 122])
+            if os.environ.get('LID_FILL') == 'own':
+                if i == 0:
+                    px = np.asarray(f)[np.asarray(m) > 200]; lum = px.mean(1); own = np.median(px[lum < np.percentile(lum, 40)], 0)
+                top, bot = own * 1.12, own * 0.9
             arr = (top[None, None, :] * (1 - g[..., None]) + bot[None, None, :] * g[..., None]).astype('uint8')
             lid = Image.fromarray(arr, 'RGB'); f.paste(lid, (0, 0), m)
         if art == 'logo':

@@ -1543,12 +1543,12 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .lcx-run{flex:none;display:inline-flex;align-items:center;gap:7px;padding:6px 11px;border-radius:99px;font-size:12.5px;font-weight:700;color:#6fe0a8;background:rgba(47,166,107,.14);border:1px solid rgba(111,224,168,.28)}
   .lcx-run i{width:7px;height:7px;border-radius:50%;background:#3fd18a;box-shadow:0 0 0 0 rgba(63,209,138,.6);animation:lcxRun 1.8s ease-out infinite}
   @keyframes lcxRun{0%{box-shadow:0 0 0 0 rgba(63,209,138,.55)}100%{box-shadow:0 0 0 9px rgba(63,209,138,0)}}
-  .lcx-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+  .lcx-seg{position:relative;display:grid;grid-template-columns:1fr 1fr 1fr;padding:4px;border-radius:99px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
   .lcx-seg button{position:relative;z-index:1;font:inherit;font-size:14px;font-weight:700;padding:9px 6px;border:0;background:none;color:rgba(255,255,255,.72);border-radius:99px;cursor:pointer;transition:color .35s}
   .lcx-seg button[aria-selected="true"]{color:#0b1440}
   .lcx-seg button:focus-visible{outline:2px solid #E3B62F;outline-offset:2px}
-  .lcx-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:99px;overflow:hidden;background:linear-gradient(180deg,#F1CF62,#D4AF37);box-shadow:0 6px 16px rgba(212,175,55,.35);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
-  .lcx[data-p="1"] .lcx-thumb{transform:translateX(100%)}
+  .lcx-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:99px;overflow:hidden;background:linear-gradient(180deg,#F1CF62,#D4AF37);box-shadow:0 6px 16px rgba(212,175,55,.35);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+  .lcx[data-p="1"] .lcx-thumb{transform:translateX(100%)}.lcx[data-p="2"] .lcx-thumb{transform:translateX(200%)}
   .lcx-thumb em{position:absolute;left:14px;right:14px;bottom:3px;height:2px;border-radius:2px;background:rgba(11,20,64,.35);transform-origin:left;transform:scaleX(0)}
   .lcx.cycling .lcx-thumb em{animation:lcxProg 6s linear forwards}
   @keyframes lcxProg{to{transform:scaleX(1)}}
@@ -1592,7 +1592,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .mx-media{position:absolute;top:0;right:0;bottom:0;left:38%;background:#0b1640 url(/machine-wide.jpg) center/cover no-repeat}
   .mx-vid{width:100%;height:100%;object-fit:cover;object-position:var(--mxp,10% 50%);display:block}
   .mx-media{background-position:var(--mxp,10% 50%)!important}
-  .mx::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 36%,rgba(11,20,64,.35) 41%,rgba(11,20,64,0) 46%)}
+  .mx::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 34%,rgba(11,20,64,.82) 39%,rgba(11,20,64,.55) 44%,rgba(11,20,64,.28) 50%,rgba(11,20,64,.1) 56%,rgba(11,20,64,0) 62%)}
+  .mx-media{-webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.25) 7%,rgba(0,0,0,.6) 15%,rgba(0,0,0,.88) 24%,#000 32%);mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.25) 7%,rgba(0,0,0,.6) 15%,rgba(0,0,0,.88) 24%,#000 32%)}
   .mx-txt{position:relative;z-index:2;width:100%;padding-block:72px}
   .mx-txt .section-title{text-align:left;max-width:520px;margin:0 0 12px}
   .mx-sub{color:#c9d0ee;max-width:460px;margin:0 0 26px;font-size:18px}
@@ -1603,7 +1604,7 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .mx-note{font-size:12px;color:#8f99c4;margin:0 0 26px}
   .mx-go{font-size:18px;padding:16px 34px}
   .mx .sale-banner{text-align:left;margin:20px 0 0}
-  @media (max-width:820px){.mx{display:block;min-height:0}.mx-media{position:relative;top:auto;right:auto;bottom:auto;left:auto;aspect-ratio:16/9}.mx::before{display:none}.mx-media::after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(180deg,rgba(11,20,64,0),var(--ink))}.mx-txt{padding-block:28px 56px}.mx-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mx-facts b{font-size:24px}.mx-facts span{font-size:12px}}
+  @media (max-width:820px){.mx{display:block;min-height:0}.mx-media{position:relative;top:auto;right:auto;bottom:auto;left:auto;aspect-ratio:16/9}.mx::before{display:none}.mx-media{-webkit-mask-image:none;mask-image:none}.mx-media::after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(180deg,rgba(11,20,64,0),var(--ink))}.mx-txt{padding-block:28px 56px}.mx-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mx-facts b{font-size:24px}.mx-facts span{font-size:12px}}
   html.pp-open{overflow:hidden}
   .mx-alerts{position:absolute;right:32px;bottom:40px;width:250px;display:flex;flex-direction:column;gap:10px;z-index:3;pointer-events:none}
   .mx-al{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 30px rgba(5,9,31,.28);animation:mxIn .5s cubic-bezier(.2,.8,.2,1) both;transition:opacity .5s,transform .5s}
@@ -3609,7 +3610,7 @@ body.op-lock{overflow:hidden}
       <div class="auto-art-col">
         <div class="feature-art dark"><div class="lcx" id="lcx">
           <div class="lcx-top"><span class="lcx-brand"><i class="lcx-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 16.5l4.2-4.6 3.3 2.7L19 7.5"/></svg></i><span><b>FTM MACHINE</b><small>Portfolio · Five markets on one account</small></span></span><span class="lcx-run"><i></i>Running</span></div>
-          <div class="lcx-seg" role="tablist"><i class="lcx-thumb" aria-hidden="true"><em></em></i><button type="button" role="tab" aria-selected="true" data-p="0">Growth 2×</button><button type="button" role="tab" aria-selected="false" data-p="1">Balanced</button></div>
+          <div class="lcx-seg" role="tablist"><i class="lcx-thumb" aria-hidden="true"><em></em></i><button type="button" role="tab" aria-selected="true" data-p="0">Growth 2×</button><button type="button" role="tab" aria-selected="false" data-p="1">Balanced</button><button type="button" role="tab" aria-selected="false" data-p="2">Conservative</button></div>
           <div class="lcx-hero"><b class="lcx-num" id="lcRet" data-no-i18n>+98,644%</b><span class="lcx-since">Since January 2020</span></div>
           <div class="lcx-chart" id="lcxChart"><svg viewBox="0 0 320 150" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="lcxA" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E3B62F" stop-opacity=".38"/><stop offset="1" stop-color="#E3B62F" stop-opacity="0"/></linearGradient><linearGradient id="lcxL" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#B8922A"/><stop offset="1" stop-color="#F6D77A"/></linearGradient><clipPath id="lcxC"><rect id="lcxClip" x="0" y="-10" width="0" height="170"/></clipPath></defs><g class="lcx-grid"><line x1="0" y1="37" x2="320" y2="37"/><line x1="0" y1="75" x2="320" y2="75"/><line x1="0" y1="113" x2="320" y2="113"/></g><path id="lcxGhost" class="lcx-ghost"/><g clip-path="url(#lcxC)"><path id="lcxArea" fill="url(#lcxA)"/><path id="lcxLine" class="lcx-line"/></g><line id="lcxX" class="lcx-x" x1="0" x2="0" y1="0" y2="150"/></svg><i class="lcx-dot" id="lcxDot" aria-hidden="true"></i><i class="lcx-dot lcx-hov" id="lcxHov" aria-hidden="true"></i><div class="lcx-tip" id="lcxTip" data-no-i18n hidden></div><div class="lcx-years" id="lcxYears" data-no-i18n aria-hidden="true"></div></div>
           <div class="lcx-stats"><div><span>Max drawdown</span><b class="dn" id="lcDD" data-no-i18n>-36.91%</b></div><div><span>Trades</span><b id="lcTr" data-no-i18n>6,209</b></div><div><span>Best year</span><b class="up" id="lcBY" data-no-i18n>+317.94%</b></div></div>
@@ -9645,11 +9646,11 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
 
   (function(){
     var box=document.getElementById('lcx'); if(!box)return;
-    const LD=[201912,202001,202002,202003,202003,202004,202005,202005,202006,202007,202007,202008,202009,202009,202010,202011,202011,202012,202101,202102,202102,202103,202104,202104,202105,202106,202106,202107,202108,202108,202109,202110,202111,202111,202112,202201,202201,202202,202203,202203,202204,202205,202205,202206,202207,202208,202208,202209,202210,202210,202211,202212,202212,202301,202302,202302,202303,202304,202305,202305,202306,202307,202307,202308,202309,202309,202310,202311,202311,202312,202401,202401,202402,202403,202404,202404,202405,202406,202406,202407,202408,202408,202409,202410,202410,202411,202412,202412,202501,202502,202503,202503,202504,202505,202505,202506,202507,202507,202508,202509,202509,202510,202511,202512,202512,202601,202602,202602,202603,202604,202604,202605,202606,202606,202607,202608,202608,202609,202610],LG=[997,954,1022,888,1137,1143,1335,1489,1395,1353,1302,1762,1576,1909,1620,1755,2027,2250,2028,1690,2561,2729,2606,2319,2460,2844,3337,3345,3520,3721,3432,4454,4293,4435,3343,3463,3125,3445,4068,5537,5352,7327,7148,9136,7466,9740,8743,9272,7308,7663,9283,10847,12141,12853,14195,11898,14521,17478,20754,27331,25476,24413,22896,23816,24476,24491,35052,24510,26957,34999,32798,26695,31440,40940,43783,46660,53961,52929,52827,53632,52835,58249,65651,56970,58735,69786,65523,81104,97286,101237,124179,138582,172441,154012,124373,148682,164197,170572,173973,183290,156333,165793,208751,253131,292349,328112,504889,437151,383885,423293,498531,561485,657568,660529,734738,744209,986678,801367,987444],LB=[999,985,1041,956,1081,1090,1127,1266,1222,1260,1223,1423,1323,1437,1314,1491,1680,1831,1736,1672,2080,2151,2059,1956,2030,2199,2380,2393,2407,2534,2435,3027,2928,2972,2614,2627,2457,2565,2792,3319,3284,4060,4026,4690,4209,4828,4488,4660,4234,4335,4758,5259,5572,5709,6359,5858,6448,7397,7957,9189,9456,9669,9352,9475,9568,9613,11761,9855,10483,12959,12902,11670,12984,15438,16218,16425,17775,17653,18296,18433,18467,18947,20029,18544,19066,21801,20576,22789,25812,25633,28768,31329,35434,33876,30862,34330,37030,39584,39829,40814,39790,41985,48218,53834,54483,58285,74083,69210,66662,69586,78619,83294,94135,93680,98227,98202,118634,107553,122371];
-    var PR=[{v:LG,ret:'+98,644%',dd:'-36.91%',tr:'6,209',by:'+317.94%'},{v:LB,ret:'+12,137%',dd:'-21.92%',tr:'6,828',by:'+159.25%'}];
+    const LD=[202001,202001,202002,202003,202003,202004,202005,202005,202006,202007,202007,202008,202009,202010,202010,202011,202012,202012,202101,202102,202102,202103,202104,202104,202105,202106,202107,202107,202108,202109,202109,202110,202111,202111,202112,202201,202201,202202,202203,202203,202204,202205,202206,202206,202207,202208,202208,202209,202210,202210,202211,202212,202212,202301,202302,202303,202303,202304,202305,202305,202306,202307,202307,202308,202309,202309,202310,202311,202311,202312,202401,202402,202402,202403,202404,202404,202405,202406,202406,202407,202408,202408,202409,202410,202410,202411,202412,202501,202501,202502,202503,202503,202504,202505,202505,202506,202507,202507,202508,202509,202510,202510,202511,202512,202512,202601,202602,202602,202603,202604,202604,202605,202606,202607,202607,202608,202609,202609,202610],LG=[988,978,1029,893,1137,1139,1325,1469,1407,1429,1314,1762,1485,1906,1619,1755,2062,2294,2018,1637,2320,2785,2298,2515,2571,3107,3448,3361,3379,3743,3564,4304,4342,4402,3321,3430,3145,3466,4166,5560,5312,7155,7191,9136,7434,8646,9237,9533,7417,7608,9328,9851,11783,11775,13725,11778,14471,17022,20451,26426,25170,24428,22077,23689,24406,24164,33667,24065,24837,35355,35136,25941,32031,40294,40001,45354,54523,55573,54118,52112,51635,59599,65162,60057,55405,70305,65438,80460,99665,100767,125738,125754,172533,153463,123775,139968,161386,164701,174298,182097,151946,168837,203678,248924,294074,373429,504364,430009,367928,419265,462906,525851,662669,657863,735523,741511,988419,834555,987444],LB=[994,997,1048,961,1081,1088,1198,1257,1230,1300,1234,1423,1284,1431,1313,1491,1688,1853,1731,1646,1979,2175,1934,2033,2075,2298,2419,2405,2350,2541,2488,2976,2954,2963,2614,2615,2472,2580,2825,3326,3253,4012,4050,4690,4200,4527,4627,4735,4281,4319,4745,5011,5486,5459,6252,5828,6436,7239,7863,9002,9419,9666,9194,9407,9554,9571,11487,9766,10048,13216,13341,11365,13105,15314,15412,16251,17811,18134,18611,18004,18254,19214,19953,19200,18526,21130,20623,22618,26142,26095,28732,29529,35450,33599,30321,33186,36468,37880,39988,40681,38849,42368,47256,52523,54652,62318,73367,68183,65345,69351,75340,80580,94712,93490,97959,97838,118739,110945,122371],LC=[997,1001,1003,958,1016,1021,1082,1114,1089,1114,1096,1174,1082,1141,1093,1182,1260,1333,1289,1259,1362,1429,1350,1384,1400,1500,1539,1544,1527,1588,1572,1719,1726,1726,1631,1635,1578,1610,1685,1832,1811,2071,2102,2285,2164,2248,2279,2334,2222,2257,2332,2396,2490,2480,2681,2620,2770,3126,3292,3515,3600,3557,3518,3589,3539,3594,3911,3620,3726,4588,4698,4370,4682,5113,5140,5307,5652,5733,5830,5692,5741,5913,6005,5876,5708,6082,5966,6298,7011,7017,7345,7313,8018,7862,7522,7857,8284,8613,8924,9194,9034,9512,10022,10604,10437,11258,12187,11690,11851,12841,13906,14530,16166,16054,16397,16253,18614,17939,18718];
+    var PR=[{v:LG,ret:'+98,644%',dd:'-36.91%',tr:'6,209',by:'+317.94%'},{v:LB,ret:'+12,137%',dd:'-21.92%',tr:'6,828',by:'+159.25%'},{v:LC,ret:'+1,772%',dd:'-13.15%',tr:'7,381',by:'+87.34%'}];
     var W=320,H=150,T=12,Bm=10,n=LD.length,RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
-    var lg=function(a){return a.map(function(x){return Math.log(x);});}, L0=lg(LG), L1=lg(LB);
-    var lo=Math.min.apply(null,L0.concat(L1)), hi=Math.max.apply(null,L0.concat(L1));
+    var lg=function(a){return a.map(function(x){return Math.log(x);});}, L0=lg(LG), L1=lg(LB), L2=lg(LC), LS=[L0,L1,L2];
+    var lo=Math.min.apply(null,L0.concat(L1,L2)), hi=Math.max.apply(null,L0.concat(L1,L2));
     var X=function(i){return i/(n-1)*W;}, Y=function(l){return T+(1-(l-lo)/(hi-lo))*(H-T-Bm);};
     var $=function(i){return document.getElementById(i);}, line=$('lcxLine'), area=$('lcxArea'), ghost=$('lcxGhost'), clip=$('lcxClip'), dot=$('lcxDot'), hov=$('lcxHov'), tip=$('lcxTip'), cx=$('lcxX'), ch=$('lcxChart');
     var cur=L0.slice(), p=0, shown=false, timer=null, user=false, raf=0;
@@ -9666,7 +9667,7 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
     function zero(el,str){ digits(el,str.replace(/\d/g,'0')); }
     function nums(){ var q=PR[p]; digits($('lcRet'),q.ret); digits($('lcDD'),q.dd); digits($('lcTr'),q.tr); digits($('lcBY'),q.by); }
     function draw(fromLeft){
-      var to=p?L1:L0, from=cur.slice(), t0=performance.now(), dur=RM?1:1100;
+      var to=LS[p], from=cur.slice(), t0=performance.now(), dur=RM?1:1100;
       ghost.setAttribute('d',path(p?L0:L1));
       cancelAnimationFrame(raf);
       (function step(now){ var k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3);
@@ -9680,7 +9681,7 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
       nums(); draw(false);
       box.classList.remove('cycling'); void box.offsetWidth; if(auto&&!user&&!RM) box.classList.add('cycling');
     }
-    function loop(){ clearInterval(timer); if(user||RM) return; box.classList.add('cycling'); timer=setInterval(function(){ set(1-p,true); },6000); }
+    function loop(){ clearInterval(timer); if(user||RM) return; box.classList.add('cycling'); timer=setInterval(function(){ set((p+1)%3,true); },6000); }
     box.querySelectorAll('.lcx-seg button').forEach(function(b){ b.addEventListener('click',function(){ user=true; clearInterval(timer); set(+b.dataset.p,false); }); });
     var yrs=$('lcxYears'), yh='';
     for(var i=0;i<n;i++){ var y=Math.floor(LD[i]/100); if(LD[i]%100===1||(i===0)){ if(i===0&&LD[0]%100!==1) continue; yh+='<span style="left:'+(i/(n-1)*100).toFixed(2)+'%">'+y+'</span>'; } }
@@ -9690,7 +9691,7 @@ window.ftmLinkify=function(h){ return String(h).replace(/(^|[\s(>])((?:https?:\/
     function fmt(){ lang=document.documentElement.lang||'en'; try{ fmtD=new Intl.DateTimeFormat(lang,{month:'short',year:'numeric'}); }catch(e){ fmtD=new Intl.DateTimeFormat('en',{month:'short',year:'numeric'}); } }
     fmt();
     function show(ev){
-      var r=ch.getBoundingClientRect(), x=Math.max(0,Math.min(r.width,ev.clientX-r.left)), i=Math.round(x/r.width*(n-1)), v=(p?LB:LG)[i], pc=(v/1000-1)*100;
+      var r=ch.getBoundingClientRect(), x=Math.max(0,Math.min(r.width,ev.clientX-r.left)), i=Math.round(x/r.width*(n-1)), v=PR[p].v[i], pc=(v/1000-1)*100;
       if((document.documentElement.lang||'en')!==lang) fmt();
       var d=new Date(Math.floor(LD[i]/100),LD[i]%100-1,15), s=(pc>=0?'+':'')+pc.toLocaleString(lang,{maximumFractionDigits:Math.abs(pc)<100?1:0})+'%';
       tip.innerHTML=s+'<small>'+fmtD.format(d)+'</small>'; tip.hidden=false;
