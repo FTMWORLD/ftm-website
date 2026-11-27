@@ -35,6 +35,7 @@ module.exports.config = { api: { bodyParser: false } };
      check against the Stripe Dashboard if a real payment ever grants
      the wrong plan. */
 const PAYMENT_LINK_PRODUCT = {
+  'plink_1UgOXiAZWClTb7yxCIcdqj3P': 'auto', // Monthly, 99€ + 1 month free (2 months) — added 2026-11-27
   'plink_1USfs7AZWClTb7yxxDVMAKmY': 'auto', // Lifetime sale, 4,999€ — added 2026-10-20
   'plink_1USfiuAZWClTb7yxfgCmBpC4': 'auto', // 5 Years sale, 1,999€ — added 2026-10-20
   'plink_1USfSYAZWClTb7yxYnZ9wlM1': 'auto', // Annual sale, 499€ — added 2026-10-20
@@ -334,6 +335,7 @@ async function addToCustomerList(email) {
    Investment payments do not unlock trade copies and are not sent.
    --------------------------------------------------------------------- */
 const PLAN_MONTHS = {
+  'plink_1UgOXiAZWClTb7yxCIcdqj3P': 2,
   'plink_1USfSYAZWClTb7yxYnZ9wlM1': 13, 'plink_1UG5XeAZWClTb7yx1a8w5228': 13,
   'plink_1USfiuAZWClTb7yxfgCmBpC4': 64, 'plink_1UG6CUAZWClTb7yxRTis1wzS': 64,
   'plink_1USfs7AZWClTb7yxxDVMAKmY': null, 'plink_1UHLQXAZWClTb7yxBn9gU95g': null
