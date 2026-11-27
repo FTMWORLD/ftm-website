@@ -1590,8 +1590,8 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
 
   .mx{position:relative;overflow:hidden;padding:0!important;min-height:min(52vw,640px);display:flex;align-items:center}
   .mx-media{position:absolute;top:0;right:0;bottom:0;left:38%;background:#0b1640 url(/machine-wide.jpg) center/cover no-repeat}
-  .mx-vid{width:100%;height:100%;object-fit:cover;object-position:10% 50%;display:block}
-  .mx-media{background-position:10% 50%!important}
+  .mx-vid{width:100%;height:100%;object-fit:cover;object-position:var(--mxp,10% 50%);display:block}
+  .mx-media{background-position:var(--mxp,10% 50%)!important}
   .mx::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 36%,rgba(11,20,64,.35) 41%,rgba(11,20,64,0) 46%)}
   .mx-txt{position:relative;z-index:2;width:100%;padding-block:72px}
   .mx-txt .section-title{text-align:left;max-width:520px;margin:0 0 12px}
@@ -3674,7 +3674,7 @@ body.op-lock{overflow:hidden}
 
 
 <section class="pricing mx" id="pricing">
-  <div class="mx-media" aria-hidden="true"><video class="mx-vid" muted autoplay playsinline preload="metadata" poster="/machine-wide.jpg" src="/machine-wide.mp4"></video><div class="mx-alerts" data-no-i18n></div></div>
+  <div class="mx-media" aria-hidden="true" style="--mxp:100% 50%"><video class="mx-vid" muted autoplay playsinline preload="metadata" poster="/machine-wide.jpg" src="/machine-wide.mp4"></video><div class="mx-alerts" data-no-i18n></div></div>
   <div class="container mx-txt">
     <p class="eyebrow" style="color:var(--gold);margin-bottom:12px">FTM Auto Trading subscription</p>
     <h2 class="section-title">FTM MACHINE trades for you</h2>
@@ -3727,11 +3727,12 @@ body.op-lock{overflow:hidden}
     var t=e.target.closest&&e.target.closest('.js-activate,.js-plans,.js-free-plans,a.btn[href="#pricing"],#faqPlans,#authToPricing'); if(!t) return;
     e.preventDefault(); e.stopPropagation(); open();
   },true);
-  var v=document.querySelector('.mx-vid'), CLIPS=['machine-wide','machine-6','machine-2','machine-3','machine-4','machine-5'], ci=0, seen=false;
+  var v=document.querySelector('.mx-vid'), CLIPS=['machine-wide','machine-6','machine-2','machine-3','machine-4','machine-5'], POS={'machine-wide':'100% 50%','machine-4':'100% 50%'}, ci=0, seen=false;
+  function frame(n){ v.parentNode.style.setProperty('--mxp',POS[n]||'10% 50%'); }
   function play(){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
   if(v){
-    v.addEventListener('ended',function(){ ci=(ci+1)%CLIPS.length; var n=CLIPS[ci]; v.poster='/'+n+'.jpg'; v.parentNode.style.backgroundImage='url(/'+n+'.jpg)'; v.src='/'+n+'.mp4'; if(seen) play(); });
-    v.addEventListener('error',function(){ if(ci){ ci=0; v.src='/'+CLIPS[0]+'.mp4'; if(seen) play(); } });
+    v.addEventListener('ended',function(){ ci=(ci+1)%CLIPS.length; var n=CLIPS[ci]; v.poster='/'+n+'.jpg'; v.parentNode.style.backgroundImage='url(/'+n+'.jpg)'; frame(n); v.src='/'+n+'.mp4'; if(seen) play(); });
+    v.addEventListener('error',function(){ if(ci){ ci=0; frame(CLIPS[0]); v.src='/'+CLIPS[0]+'.mp4'; if(seen) play(); } });
     if('IntersectionObserver' in window){ new IntersectionObserver(function(es){ es.forEach(function(en){ seen=en.isIntersecting; if(seen) play(); else v.pause(); }); },{rootMargin:'200px'}).observe(v); } else { seen=true; play(); }
   }
   window.FTM=window.FTM||{}; FTM.openPlans=open;
