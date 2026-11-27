@@ -85,7 +85,8 @@ for sid, vo in lines:
         if who == 'HIM': who = os.environ.get('CAST_HIM', 'Ranbir')
         vid = CAST.get((who or os.environ.get('NARRATOR', 'Jon')).lower()) or CAST['jon']
         mp3 = os.path.join(D, 'vo', sid + '.mp3')
-        body = json.dumps({'text': said, 'model_id': 'eleven_multilingual_v2', 'voice_settings': {'stability': 0.42, 'similarity_boost': 0.8, 'style': 0.3, 'use_speaker_boost': True}})
+        # owner 27 Nov: voices were slow and flat ("how do you make sales with this tempo?"): faster (speed 1.15), more expressive (style 0.6)
+        body = json.dumps({'text': said, 'model_id': 'eleven_multilingual_v2', 'voice_settings': {'stability': 0.32, 'similarity_boost': 0.8, 'style': 0.6, 'use_speaker_boost': True, 'speed': float(os.environ.get('VOICE_SPEED', '1.15'))}})
         code = subprocess.run(['curl', '-s', '-m', '90', '-X', 'POST', 'https://api.elevenlabs.io/v1/text-to-speech/%s?output_format=mp3_44100_128' % vid, '-H', 'content-type: application/json', '-d', body, '-o', mp3, '-w', '%{http_code}'], capture_output=True, text=True).stdout
         if code != '200': raise SystemExit('ElevenLabs voice failed for %s (HTTP %s): %s' % (sid, code, open(mp3, errors='ignore').read()[:200]))
         wav = os.path.join(D, 'vo', sid + '.wav')
