@@ -1,0 +1,27 @@
+[
+ {
+  "id": "hook",
+  "vo": "Dayo: Stuck in Lagos traffic again?",
+  "see": ""
+ },
+ {
+  "id": "missed",
+  "vo": "Ify: The market moved. You missed it.",
+  "see": ""
+ },
+ {
+  "id": "machine",
+  "vo": "Dayo: Now FTM Machine trades for me. Fixed rules. No emotions.",
+  "see": ""
+ },
+ {
+  "id": "own",
+  "vo": "Ify: On your own account. In your name. Pause any time.",
+  "see": ""
+ },
+ {
+  "id": "cta",
+  "vo": "Dayo: Watch the live account first. Tap Learn more.",
+  "see": ""
+ }
+]

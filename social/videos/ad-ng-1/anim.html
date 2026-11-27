@@ -1,0 +1,65 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#05091f}
+body{font-family:'Inter Display','Inter',sans-serif;-webkit-font-smoothing:antialiased;color:#fff;position:relative}
+#stage{position:absolute;inset:0;overflow:hidden}
+.ph{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;will-change:transform}
+.shade{position:absolute;inset:0}
+.brand{position:absolute;left:0;right:0;top:240px;display:flex;justify-content:center;align-items:center;gap:14px;font-weight:800;font-size:42px;letter-spacing:-.04em;z-index:5;text-shadow:0 4px 20px rgba(0,0,0,.5)}
+.mark{width:56px;height:56px;border-radius:16px;background:#1F3A93;display:grid;place-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#cap{position:absolute;left:70px;right:70px;top:1330px;text-align:center;background:rgba(5,10,34,.72);backdrop-filter:blur(14px);border:1.5px solid rgba(212,175,55,.4);border-radius:36px;padding:28px 34px;z-index:6;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#cap .w{font-size:52px;line-height:1.22;font-weight:800;letter-spacing:-.02em}
+#bar{position:absolute;left:0;top:0;height:6px;background:#D4AF37;z-index:7}
+.glass{position:absolute;background:rgba(11,22,64,.62);backdrop-filter:blur(18px);border:1.5px solid rgba(255,255,255,.18);border-radius:40px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+</style></head><body>
+<div id="stage"></div>
+<div class="brand"><span class="mark"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#D4AF37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 10 11l4 4 6-8"/></svg></span>FTM</div>
+<div id="bar"></div>
+<div id="cap"><div class="w" id="subw"></div></div>
+<script src="rig.js"></script><script>
+const W=1080,H=1920,sin=Math.sin,cos=Math.cos,PI=Math.PI;
+const cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x)),ease=x=>{x=cl(x);return 1-Math.pow(1-x,3)},back=x=>{x=cl(x);const c=1.7;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const IMG=(src,t,o)=>{o=o||{};const z=(o.z0||1)+(o.dz||0.08)*cl(t/(o.d||6)),x=(o.x||0)+(o.dx||0)*cl(t/(o.d||6)),y=(o.y||0)+(o.dy||0)*cl(t/(o.d||6));return `<img class="ph" src="${src}" style="transform:translate(${x}px,${y}px) scale(${z});filter:${o.f||'none'}">`};
+const SHADE=(a,b)=>`<div class="shade" style="background:linear-gradient(180deg,rgba(5,9,31,${a}) 0%,rgba(5,9,31,${a*0.35}) 30%,rgba(5,9,31,${a*0.4}) 55%,rgba(5,9,31,${b}) 100%)"></div>`;
+const LOGO=(s)=>`<svg viewBox="0 0 120 120" width="${s}" height="${s}"><rect width="120" height="120" rx="35" fill="#1F3A93"/><path d="M30 85 L55 57 L72 73 L96 41" stroke="#D4AF37" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+window.NOCAP = 1;
+const RW = '../assets/ad-ng-1/';
+const CLIP = (k, t, d, o) => { const n = 126, f = 1 + Math.min(n - 1, Math.floor(Math.max(0, t) / Math.max(1, d) * (n - 1))); return IMG(RW + k + '/f' + String(f).padStart(3, '0') + '.jpg', t, Object.assign({ z0: 1.02, dz: .04, d: d }, o || {})) + SHADE(.25, .85); };
+const say = (t, l1, l2, top, c2) => {
+  const a = ease((t - .05) / .25), b = ease((t - .3) / .25);
+  return `<div style="position:absolute;left:50px;right:50px;top:${top || 1250}px;text-align:center">
+    <div style="font-size:78px;font-weight:900;letter-spacing:-.03em;line-height:1.06;white-space:nowrap;opacity:${a};transform:scale(${.9 + .1 * a});text-shadow:0 8px 34px rgba(0,0,0,.85)">${l1}</div>
+    ${l2 ? `<div style="font-size:78px;font-weight:900;letter-spacing:-.03em;line-height:1.06;white-space:nowrap;color:${c2 || '#E3B62F'};margin-top:8px;opacity:${b};transform:scale(${.9 + .1 * b});text-shadow:0 8px 34px rgba(0,0,0,.85)">${l2}</div>` : ''}</div>`;
+};
+const SCN = {
+  hook(t, d) { return CLIP('m1', t, d * 1.6) + say(t, 'Stuck in traffic', 'again?', 1240); },
+  missed(t, d) { return CLIP('m2', t, d * 1.3) + say(t, 'The market moved.', 'You missed it.', 1260, '#ff8a92'); },
+  machine(t, d) { return CLIP('m3', t, d * 1.1) + say(t, 'FTM MACHINE trades.', 'Fixed rules. No emotions.', 1220); },
+  own(t, d) {
+    const chip = (x, i) => { const a = ease((t - .2 - i * .25) / .3); return `<div style="display:inline-block;margin:10px;padding:16px 30px;border-radius:40px;background:rgba(5,10,34,.75);border:2px solid rgba(212,175,55,.7);font-size:44px;font-weight:800;opacity:${a};transform:translateY(${(1 - a) * 16}px)">${x}</div>`; };
+    return CLIP('m3', t + 4, 9, { z0: 1.08 }) + `<div style="position:absolute;left:40px;right:40px;top:1150px;text-align:center">${chip('Your own account', 0)}${chip('In your name', 1)}${chip('Pause any time', 2)}</div>`; },
+  cta(t, d) {
+    return CLIP('m4', t, d * 1.2) + `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,31,.15) 0%,rgba(5,9,31,.55) 45%,rgba(5,9,31,.92) 100%)"></div>
+      <div style="position:absolute;left:0;right:0;top:52%;transform:translateY(-20%);text-align:center">
+        <div style="font-size:70px;font-weight:900;letter-spacing:-.03em;opacity:${ease(t / .25)};text-shadow:0 8px 30px rgba(0,0,0,.7)">Watch the live account.</div>
+        <div style="font-size:56px;font-weight:900;color:#E3B62F;margin:8px 0 30px;opacity:${ease((t - .25) / .25)}">Every trade public.</div>
+        <div style="display:inline-block;padding:26px 60px;border-radius:70px;background:#E5323E;font-weight:900;font-size:52px;opacity:${ease((t - .5) / .3)};transform:scale(${1 + .04 * sin(t * 6)})">Learn more</div>
+        <div style="margin-top:26px;font-weight:700;font-size:34px;color:#dfe4ff;opacity:${ease((t - .7) / .3)}">FTM MACHINE · automated trading software</div>
+        <div style="margin-top:18px;font-weight:600;font-size:24px;color:#aab3d8;opacity:${ease((t - .8) / .3)}">Capital at risk. Trading can lose money. Past results do not guarantee future results.</div></div>`;
+  }
+};
+
+let S=[],T=[],TOTAL=0;
+window.setup=function(scenes,durs,amp){if(amp)window.AMP=amp;S=scenes;let a=0.3;T=[];S.forEach((s,i)=>{T.push(a);a+=durs[i]+0.6});TOTAL=a+0.9;window.TOTAL=TOTAL;return {TOTAL,T}};
+window.render=function(t){
+ document.getElementById('bar').style.width=(t/TOTAL*100)+'%';
+ let i=0;for(let k=0;k<S.length;k++)if(t>=T[k]-0.3)i=k;
+ const s=S[i],lt=t-T[i],dur=(i+1<S.length?T[i+1]:TOTAL)-T[i];
+ const st=document.getElementById('stage');st.innerHTML=SCN[s.id](Math.max(0,lt+0.3),dur,talkAt(s.id,Math.max(0,lt)));
+ const fade=Math.min(ease((lt+0.3)/0.3),1-ease((lt-(dur-0.35))/0.3));st.style.opacity=.1+.9*fade;
+ const hide=/^hook/.test(s.id)||window.NOCAP;
+ const words=s.vo.replace(/^(HER|HIM):\s*/,'').replace(/ftm wealth nation dot com/gi,'ftmwealthnation.com').split(' ');const k=Math.floor(cl(lt/((s.d||dur)*0.95))*words.length+0.999);
+ document.getElementById('subw').innerHTML=words.map((w,j)=>`<span style="color:${j<k?(/FTM|MACHINE|markets|free|money|myth|fact|week|trade/i.test(w)?'#E3B62F':'#fff'):'rgba(255,255,255,.28)'}">${w}</span>`).join(' ');
+ document.getElementById('cap').style.opacity=hide?0:fade;
+};
+</script></body></html>

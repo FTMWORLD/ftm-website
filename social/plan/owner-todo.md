@@ -15,6 +15,11 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
+A1. [ ] Decide: add a MONTHLY plan (recommended about 39–49 EUR/month) — 499 EUR at once is too much for most Nigerian buyers
+A2. [ ] Decide: accept USDT for subscriptions (fast for Nigeria; can be added in a day) and/or open Paystack or Flutterwave (needs company documents) for naira cards, transfer and USSD
+A3. [ ] Say "remove them" for "10M+ customers", "$1T+ monthly volume" and the off-topic reviews; give the company address/number and a WhatsApp number for the site (scam-wary visitors leave on these)
+A4. [ ] Meta ad setup (Saturday): Meta Business Suite > business portfolio with the FTM Facebook Page + Instagram, Ads Manager account in EUR, add a card; tell me when done and I give the exact campaign settings (Nigeria only, Reels/Stories, 10 EUR/day, video vid-ad-ng-1)
+A5. [ ] Know the risk: Nigeria's Investments and Securities Act 2025 makes promoting unregistered online trading schemes an offence; consider a lawyer/SEC check before scaling ads there. India needs SEBI registration for Meta investment ads, so India is excluded
 00. [ ] When a Metricool "Allow" appears in the Claude session, tap it: mostly at about 21:40 (tomorrow's posts, one sitting) and about 18:05 (the 6 p.m. result)
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
 01b. [ ] Runway: 619 developer credits left (USD 6.19, about 6 more moving videos). No top-up needed yet. Decide: keep moving shots in both daily videos (about USD 60 a month) or only the 09:30 (about USD 30); the Runway website plan (USD 15) is not used by Claude and can be cancelled
