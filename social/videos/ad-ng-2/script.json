@@ -1,0 +1,32 @@
+[
+ {
+  "id": "hook",
+  "vo": "Dayo: Stuck in Lagos traffic?",
+  "see": ""
+ },
+ {
+  "id": "fuel",
+  "vo": "Ayinde: Hours in a fuel queue?",
+  "see": ""
+ },
+ {
+  "id": "shop",
+  "vo": "Ngozi: Busy at your shop all day?",
+  "see": ""
+ },
+ {
+  "id": "missed",
+  "vo": "Ify: Gold moves. You miss it.",
+  "see": ""
+ },
+ {
+  "id": "machine",
+  "vo": "Dayo: FTM Machine trades for you. Fixed rules. No emotions.",
+  "see": ""
+ },
+ {
+  "id": "cta",
+  "vo": "Ify: See every trade. Tap Learn more.",
+  "see": ""
+ }
+]

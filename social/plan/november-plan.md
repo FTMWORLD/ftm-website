@@ -8,7 +8,7 @@
 - **The first 1.5 seconds** show the hook big on screen and say it out loud. Up to 75% of viewers swipe away in the first 3 seconds.
 - **Length:** 25–40 seconds. Captions on screen in short chunks, centred, with lines breaking at the sentence.
 - **Real figures only, in % only.** Never money amounts, never a promise. Backtest figures always say "backtest 2020–2026". Live figures marked *(fill on the day)* are read from the live account that morning.
-- **Wording:** say "people", never "traders"; "profit days" and "loss days"; in videos "Growth", never "Growth 2×".
+- **Wording:** say "people", never "traders"; "profit days" and "loss days"; everywhere only "Growth", "Balanced", "Conservative" — never with 2× (owner 27 Nov).
 - **Ending:** every video ends with a question for the comments plus the call to action, "Create your account, just your email: link in bio". Every caption adds "Last 24 hours on FTM, every day at 6 p.m."
 - **Voices:** our own AI voices only, a different voice and music style every post.
 - **ChatGPT images:** realistic photos, vertical 9:16 (1080×1920), the same person or people across one video, no text, logos, numbers or readable screens, and a calm top 20% and bottom 30%. FTM colours where natural: navy #0B1440, gold #D4AF37, a touch of red #E5323E. Every set below is written to paste straight into ChatGPT; the file names are given so I can match them.

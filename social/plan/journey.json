@@ -755,6 +755,41 @@
     ]
    ],
    "note": "Owner 27 Nov: first paid ad, Nigeria (India excluded: Meta requires SEBI registration since 31 Jul 2025). Meta finance rules: no return figures or promises, software framing, risk line on screen."
+  },
+  {
+   "date": "ad-ng-2",
+   "slot": "paid ad",
+   "stage": "Paid ad · Nigeria",
+   "format": "14 s Reels/Stories ad, fast cuts: Lagos traffic, fuel queue, market stall",
+   "audience": "working people in Nigeria",
+   "sound": "drive",
+   "voice": "ElevenLabs: Dayo, Ayinde, Ngozi, Ify (Nigerian), speed 1.2",
+   "title": "Traffic, fuel queue, shop all day",
+   "vote": null,
+   "open": "Dayo: Stuck in Lagos traffic?",
+   "scenes": [
+    [
+     "fuel",
+     "Ayinde: Hours in a fuel queue?"
+    ],
+    [
+     "shop",
+     "Ngozi: Busy at your shop all day?"
+    ],
+    [
+     "missed",
+     "Ify: Gold moves. You miss it."
+    ],
+    [
+     "machine",
+     "Dayo: FTM Machine trades for you. Fixed rules. No emotions."
+    ],
+    [
+     "cta",
+     "Ify: See every trade. Tap Learn more."
+    ]
+   ],
+   "note": "Owner 27 Nov: replaces ad-ng-1 for the first Meta ad; more Nigerian everyday scenes, faster voices, still 14 s. Meta finance rules: no return figures or promises, software framing, risk line on screen. Link ftmwealthnation.com/?start=adng"
   }
  ],
  "2026-11-24-1800": {
