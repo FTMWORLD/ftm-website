@@ -22,7 +22,7 @@ A4. [ ] Meta ad setup (Saturday): Meta Business Suite > business portfolio with 
 A5. [ ] Know the risk: Nigeria's Investments and Securities Act 2025 makes promoting unregistered online trading schemes an offence; consider a lawyer/SEC check before scaling ads there. India needs SEBI registration for Meta investment ads, so India is excluded
 00. [ ] When a Metricool "Allow" appears in the Claude session, tap it: mostly at about 21:40 (tomorrow's posts, one sitting) and about 18:05 (the 6 p.m. result)
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
-01b. [ ] Runway: 619 developer credits left (USD 6.19, about 6 more moving videos). No top-up needed yet. Decide: keep moving shots in both daily videos (about USD 60 a month) or only the 09:30 (about USD 30); the Runway website plan (USD 15) is not used by Claude and can be cancelled
+01b. [ ] Runway developer credits: 56 left (about 1 short moving clip). Top up (e.g. USD 20 = 2,000 credits) before the next videos
 02. [ ] FTM staff → Finance: add the amounts and renewal dates you know (Contabo, Vercel, Supabase, domain, Claude, Metricool, Runway, ChatGPT) and the payment you made 2 days ago
 0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"; still failing 27 Nov 09:30 ("authentication failure")
 1. [ ] Say "remove them" for the invented sample quotes under "What our customers say" (free Trustpilot plan cannot show live reviews; keep the "Rate us on Trustpilot" button)
