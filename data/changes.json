@@ -281,7 +281,7 @@
  },
  {
   "date": "2026-11-23",
-  "text": "Homepage: a new FTM MACHINE card with the real Portfolio growth curve for Growth 2× and Balanced, smoothly rolling figures, and the % and date when you touch the chart."
+  "text": "Homepage: a new FTM MACHINE card with the real Portfolio growth curve for Growth and Balanced, smoothly rolling figures, and the % and date when you touch the chart."
  },
  {
   "date": "2026-11-23",
@@ -377,6 +377,10 @@
  },
  {
   "date": "2026-11-27",
-  "text": "The FTM MACHINE chart on the homepage is now a bar chart of each year's result, with the Conservative profile next to Growth 2× and Balanced."
+  "text": "The FTM MACHINE chart on the homepage is now a bar chart of each year's result, with the Conservative profile next to Growth and Balanced."
+ },
+ {
+  "date": "2026-11-27",
+  "text": "The risk profiles are now called simply Growth, Balanced and Conservative everywhere."
  }
 ]

@@ -63,6 +63,7 @@ jobs:
           node .github/tests/official-channels.js http://localhost:8765
           node .github/tests/affiliate.js http://localhost:8765
           node .github/tests/no-phone-links.js
+          node .github/tests/profile-names.js
           node .github/tests/broker-pick.js http://localhost:8765
           node .github/tests/aligned-buttons.js http://localhost:8765
           node .github/tests/calendar-day.js http://localhost:8765/

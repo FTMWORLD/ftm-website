@@ -29,13 +29,17 @@ for(const [nm,dev] of [['iPhone SE',devices['iPhone SE']],['iPhone 13',devices['
   const h=await p.evaluate(()=>{const g=id=>document.getElementById(id).getAttribute('aria-label');const W=innerWidth;let over=0;document.querySelectorAll('#lcx *').forEach(e=>{const R=e.getBoundingClientRect();if(R.width&&R.right>W+0.5)over++});
     const cols=[...document.querySelectorAll('#lcRet .od')].map(e=>Math.round(e.getBoundingClientRect().width));
     return {ret:g('lcRet'),dd:g('lcDD'),tr:g('lcTr'),over,cols,txt:document.getElementById('lcx').innerText}});
-  ok(h.ret==='+98,644%'&&h.dd==='-36.91%'&&h.tr==='6,209',nm+': card leads with Growth 2× (+98,644%, -36.91%, 6,209 trades)');
+  ok(h.ret==='+98,644%'&&h.dd==='-36.91%'&&h.tr==='6,209',nm+': card leads with Growth (+98,644%, -36.91%, 6,209 trades)');
   ok(!/\+\+/.test(h.txt)&&!/\+\+/.test(h.ret),nm+': no double plus sign');
   ok(h.over===0,nm+': nothing in the card is wider than the screen');
   ok(new Set(h.cols).size===1,nm+': every digit has the same width, so changing numbers never shift');
   await p.evaluate(()=>document.querySelector('.lcx-seg [data-p="1"]').click()); await p.waitForTimeout(1500);
   const bal=await p.evaluate(()=>document.getElementById('lcRet').getAttribute('aria-label'));
   ok(bal==='+12,137%',nm+': Balanced shows +12,137%');
+  ok(await p.evaluate(()=>document.querySelectorAll('#lcxBars .lcx-b').length)===7,nm+': one bar per year, 2020 to 2026');
+  await p.evaluate(()=>document.querySelector('.lcx-seg [data-p="2"]').click()); await p.waitForTimeout(1500);
+  const con=await p.evaluate(()=>[document.getElementById('lcRet').getAttribute('aria-label'),document.getElementById('lcDD').getAttribute('aria-label'),document.getElementById('lcBY').getAttribute('aria-label')].join(' '));
+  ok(con==='+1,772% -13.15% +87.34%',nm+': Conservative shows +1,772%, -13.15%, best year +87.34% ('+con+')');
   const cr=await p.evaluate(()=>{const r=document.getElementById('lcxChart').getBoundingClientRect();return [r.left+r.width*.5,r.top+r.height*.5]});
   await p.mouse.move(cr[0],cr[1]); await p.mouse.down(); await p.waitForTimeout(150);
   const tip=await p.evaluate(()=>{const t=document.getElementById('lcxTip');return t.hidden?'':t.textContent}); await p.mouse.up();

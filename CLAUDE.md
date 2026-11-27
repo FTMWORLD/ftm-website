@@ -21,9 +21,9 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Every FTM email ends with the full-width dark-blue footer (#0b1640): "Invest today, secure tomorrow." in gold, then the FTM logo (blue square with the gold chart line, https://www.ftmwealthnation.com/email-logo.png, plus the white word FTM), then the risk note and unsubscribe link.
 
 ## Advertising figures (owner instruction, 18 October 2026)
-- Lead with the best results: Growth 2× (the most aggressive profile a market has) is the default and headline figure everywhere, on every market and in every design.
-- Videos (owner instruction, 20 November 2026): say and show "Growth", never "Growth 2×" or "Growth two times".
-- Since 18 October 2026 the best result is All in one (five markets on one account): Growth 2× +98,644%, 54–176% a year. Use All in one, not gold, for headline advertising figures. Outside the trust engine it is called "Portfolio".
+- Lead with the best results: Growth (the most aggressive profile a market has) is the default and headline figure everywhere, on every market and in every design.
+- Profile names (owner instruction, 27 November 2026, repeated): only "Growth", "Balanced" and "Conservative". Never "Growth 2×", "2x", "×2" or "two times" anywhere: website, client area, emails, Ask here, letters, videos, posts, ads, all languages.
+- Since 18 October 2026 the best result is All in one (five markets on one account): Growth +98,644%, 54–176% a year. Use All in one, not gold, for headline advertising figures. Outside the trust engine it is called "Portfolio".
 
 ## Risk warnings (owner instruction, 18 October 2026)
 - Risk and past-performance warnings live only in the homepage footer and in terms.html. Never add them to statistics, backtests, the trust engine or designs.
@@ -69,7 +69,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Highest balance = the highest balance the account actually reached (engine peak_balance, with its date). Drawdown = engine max_drawdown_closed_balance_pct. The website never estimates these.
 
 ## Risk profiles (owner instruction, 9 November 2026)
-- Normal drawdown range per profile: Conservative 10–20%, Balanced 20–40%, Growth 2× 40% and more. The Risk level card compares the engine's max_drawdown_closed_balance_pct with this range.
+- Normal drawdown range per profile: Conservative 10–20%, Balanced 20–40%, Growth 40% and more. The Risk level card compares the engine's max_drawdown_closed_balance_pct with this range.
 - Profit and % always come from the closed-trade history (engine deals), never from balance minus deposits. If the engine's balance disagrees with deposits − withdrawals + history, log it (client-log history_gap) and tell FTM ENGINE; on 9 Nov the history was right and the reported master balance was wrong.
 
 ## People, not traders (owner instruction, 10 November 2026)

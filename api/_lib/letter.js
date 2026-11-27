@@ -37,7 +37,7 @@ async function translate(W, lang) {
     model: 'claude-opus-5-5', max_tokens: 6000, output_config: { effort: 'low' }, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
     system: 'You translate the monthly letter of FTM (Follow The Market), a financial company, for its members. Translate every JSON value into ' + LANG_EN[lang] + '. '
       + 'Write natural, warm, professional language a native speaker would use for a letter from their financial company. Keep the meaning exact: no added promises, guarantees or claims. '
-      + 'Keep these names exactly as they are: FTM, FTM MACHINE, FTM engine, MT5, Growth 2×, and every person\'s name. Keep every number, %, currency code and date figure exactly. Keep line breaks. '
+      + 'Keep these names exactly as they are: FTM, FTM MACHINE, FTM engine, MT5, Growth, and every person\'s name. Keep every number, %, currency code and date figure exactly. Keep line breaks. '
       + 'Call customers "members" or "people", never "traders". Answer with the JSON object only, same keys, no other text.',
     messages: [{ role: 'user', content: JSON.stringify(src) }]
   });
