@@ -3727,7 +3727,7 @@ body.op-lock{overflow:hidden}
     var t=e.target.closest&&e.target.closest('.js-activate,.js-plans,.js-free-plans,a.btn[href="#pricing"],#faqPlans,#authToPricing'); if(!t) return;
     e.preventDefault(); e.stopPropagation(); open();
   },true);
-  var v=document.querySelector('.mx-vid'), CLIPS=['machine-wide','machine-2','machine-3','machine-4','machine-5'], ci=0, seen=false;
+  var v=document.querySelector('.mx-vid'), CLIPS=['machine-wide','machine-6','machine-2','machine-3','machine-4','machine-5'], ci=0, seen=false;
   function play(){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
   if(v){
     v.addEventListener('ended',function(){ ci=(ci+1)%CLIPS.length; var n=CLIPS[ci]; v.poster='/'+n+'.jpg'; v.parentNode.style.backgroundImage='url(/'+n+'.jpg)'; v.src='/'+n+'.mp4'; if(seen) play(); });
