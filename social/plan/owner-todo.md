@@ -2,6 +2,8 @@
 Tick an item only when the owner says it is done.
 
 ## Done
+- [x] Allow rule for the Metricool connector added to .claude/settings.json (owner, 27 Nov)
+- [x] New session FTM POSTING started; it takes over the scheduled jobs (owner, 27 Nov)
 - [x] Permission mode set to Auto (owner, 25 Nov)
 - [x] Runway developer key saved and working — 25 Nov
 - [x] ElevenLabs key saved and working — 25 Nov
@@ -13,8 +15,6 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
-0000. [ ] Stop the Allow taps for good: on GitHub open https://github.com/FTMWORLD/ftm-website/edit/main/.claude/settings.json and add the line "mcp__21bab570-0a59-4f7a-b8f0-0a7def1c427f", (the Metricool connector's real name in cloud sessions) under "mcp__Metricool_Social_Media_Management",; commit to main
-000. [ ] FULL AUTOMATION, one time: in the Claude app start a NEW session on ftm-website and send: "Take over all FTM scheduled jobs as described in social/plan/takeover.md, then post what is waiting today." After that no Allow taps are needed
 00. [ ] When a Metricool "Allow" appears in the Claude session, tap it: mostly at about 21:40 (tomorrow's posts, one sitting) and about 18:05 (the 6 p.m. result)
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
 01b. [ ] Runway: 619 developer credits left (USD 6.19, about 6 more moving videos). No top-up needed yet. Decide: keep moving shots in both daily videos (about USD 60 a month) or only the 09:30 (about USD 30); the Runway website plan (USD 15) is not used by Claude and can be cancelled
