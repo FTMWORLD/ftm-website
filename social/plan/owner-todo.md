@@ -2,6 +2,7 @@
 Tick an item only when the owner says it is done.
 
 ## Done
+- [x] Monthly plan 99 EUR (+1 month free) link and ID sent; live in the plan chooser (owner, 27 Nov)
 - [x] Allow rule for the Metricool connector added to .claude/settings.json (owner, 27 Nov)
 - [x] New session FTM POSTING started; it takes over the scheduled jobs (owner, 27 Nov)
 - [x] Permission mode set to Auto (owner, 25 Nov)
@@ -15,7 +16,6 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
-A1. [ ] Send the Stripe link of the 99 EUR monthly plan (+1 month free) and its ID (Stripe > Payment links > the link > starts with plink_); it then appears in the plan chooser
 A2. [ ] Decide: accept USDT for subscriptions (fast for Nigeria; can be added in a day) and/or open Paystack or Flutterwave (needs company documents) for naira cards, transfer and USSD
 A3. [ ] Say "remove them" for "10M+ customers", "$1T+ monthly volume" and the off-topic reviews; give the company address/number and a WhatsApp number for the site (scam-wary visitors leave on these)
 A4. [ ] Meta ad setup (Saturday): Meta Business Suite > business portfolio with the FTM Facebook Page + Instagram, Ads Manager account in EUR, add a card; tell me when done and I give the exact campaign settings (Nigeria only, Reels/Stories, 10 EUR/day, video vid-ad-ng-1)
