@@ -13,6 +13,7 @@ Tick an item only when the owner says it is done.
 - [x] Trustpilot page claimed — 24 Nov ("Rate us on Trustpilot" button on the homepage)
 
 ## Open (most important first; order agreed with the owner 25 Nov)
+000. [ ] FULL AUTOMATION, one time: in the Claude app start a NEW session on ftm-website and send: "Take over all FTM scheduled jobs as described in social/plan/takeover.md, then post what is waiting today." After that no Allow taps are needed
 00. [ ] When a Metricool "Allow" appears in the Claude session, tap it: mostly at about 21:40 (tomorrow's posts, one sitting) and about 18:05 (the 6 p.m. result)
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
 01b. [ ] Runway developer credits: 719 left, about 3 days of moving videos (2 videos a day use about 200 credits, about USD 2). Top up (e.g. USD 20 = 2,000 credits) or switch on auto top-up

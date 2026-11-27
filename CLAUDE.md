@@ -98,6 +98,11 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 - Open (floating) trades are shown ONLY when they are in profit (owner 23 Nov): never on a slide, story, video or caption while they are in loss (last24.py, render.js and stories.py drop them).
 - Stories are at most 60 s: a longer video gets a sped-up story copy (vid-D-story.mp4); Reels, Shorts (3 min) and TikTok take the full video.
 
+## Loss streaks and weekly focus (owner 27 Nov 2026)
+- Amplify the winning side. The 6 p.m. daily result is NOT posted when it is the second (or later) loss day in a row; a single loss day after a profit day is still posted. The Saturday 18:00 weekly summary then covers the whole week (profit or loss).
+- Because some loss days are not posted, posts never claim "we show every loss day" or "every day shown"; they say "Every trade is on our website" (the website keeps every trade public).
+- Full automation (owner 27 Nov): the owner must not have to approve posts. This session (started 9 Nov) asks for approval on Metricool posts; a session started after the 23–24 Nov settings file does not. The owner starts a new session and it takes over every scheduled job (social/plan/takeover.md).
+
 ## Each platform its own way (owner instruction, 24 November 2026; overrides job prompts that send one shared caption)
 - Same video and figures, but presented the way each platform rewards it: follow social/plan/platforms.md. Instagram, Facebook and TikTok are now SEPARATE Metricool posts (one create call each), never one combined post with one caption; YouTube, LinkedIn and Telegram as before but with their own text.
 - Instagram and Facebook get the moving version without the cover frame (`<video>-nc.mp4`, kept by coverfirst.py; at 6 p.m. build `day-T-short-nc.mp4` with slidevideo.py without the cover slide) and the cover as videoThumbnailUrl. TikTok and YouTube keep the cover as frame 1.
