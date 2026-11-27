@@ -100,6 +100,7 @@ Every customer-facing text must be live in all 50 languages at the same moment i
 
 ## Loss streaks and weekly focus (owner 27 Nov 2026)
 - Amplify the winning side. The 6 p.m. daily result is NOT posted when it is the second (or later) loss day in a row; a single loss day after a profit day is still posted. The Saturday 18:00 weekly summary then covers the whole week (profit or loss).
+- Sales texts (plans, chooser, ads, website offers) never mention losses or loss months (owner 27 Nov); they speak positively about what FTM MACHINE does, without promising results.
 - Because some loss days are not posted, posts never claim "we show every loss day" or "every day shown"; they say "Every trade is on our website" (the website keeps every trade public).
 - Full automation (owner 27 Nov): the owner must not have to approve posts. This session (started 9 Nov) asks for approval on Metricool posts; a session started after the 23–24 Nov settings file does not. The owner starts a new session and it takes over every scheduled job (social/plan/takeover.md).
 
