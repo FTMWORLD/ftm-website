@@ -51,14 +51,14 @@ STYLE = (' Photorealistic, natural light, real people, shot on a phone camera, 9
 
 
 def image(out, prompt, refs=None):
-    body = {'model': 'gen4_image', 'promptText': (prompt + STYLE)[:1000], 'ratio': '1080:1920'}
+    body = {'model': 'gen4_image', 'promptText': (prompt + STYLE)[:1000], 'ratio': os.environ.get('RW_IMG_RATIO', '1080:1920')}
     if refs:
         body['referenceImages'] = [{'uri': data_uri(p), 'tag': t} for t, p in refs]
     return fetch(wait(call('text_to_image', body)['id']), out)
 
 
 def video(img, out, prompt, dur=5):
-    body = {'model': 'gen4_turbo', 'promptImage': data_uri(img), 'promptText': prompt[:1000], 'ratio': '720:1280', 'duration': int(dur)}
+    body = {'model': 'gen4_turbo', 'promptImage': data_uri(img), 'promptText': prompt[:1000], 'ratio': os.environ.get('RW_VID_RATIO', '720:1280'), 'duration': int(dur)}
     return fetch(wait(call('image_to_video', body)['id']), out)
 
 

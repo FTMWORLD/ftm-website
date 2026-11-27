@@ -28,7 +28,7 @@ function phase(b, now) {
 }
 
 async function emailFor(kind, b, lang, gain) {
-  const t = x => P.tr(lang, x), end = Date.parse(b.period_end), plan = { ANNUAL: 'Annual', FIVE_YEARS: '5 Years' }[b.plan] || '';
+  const t = x => P.tr(lang, x), end = Date.parse(b.period_end), plan = { MONTHLY: 'Monthly', ANNUAL: 'Annual', FIVE_YEARS: '5 Years' }[b.plan] || '';
   const title = await t(kind === 'ending' ? 'Your FTM plan ends soon' : 'Your FTM plan has ended');
   const first = kind === 'ending'
     ? (plan ? (await t('Your {} plan ends on {}.')).replace('{}', await t(plan)).replace('{}', day(end, lang)) : (await t('Your plan ends on {}.')).replace('{}', day(end, lang))) + ' ' + await t('Renew before then to keep FTM MACHINE trading for you without a break.')

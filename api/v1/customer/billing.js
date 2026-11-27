@@ -19,12 +19,13 @@ async function fromStripe(email) {
   let best = null, sub = null;
   (j.data || []).forEach(s => {
     if (s.status !== 'complete' || (s.payment_status !== 'paid' && s.payment_status !== 'no_payment_required')) return;
-    if (links[s.payment_link] === 'invest' || !(s.payment_link in months)) return;
-    const m = months[s.payment_link];
+    const monthly = !(s.payment_link in months) && wh.isMonthlyAmount && wh.isMonthlyAmount(s);
+    if (links[s.payment_link] === 'invest' || (!(s.payment_link in months) && !monthly)) return;
+    const m = monthly ? wh.MONTHLY_MONTHS : months[s.payment_link];
     if (m === null) { best = { lifetime: true, plan: 'LIFETIME' }; return; }
     if (best && best.lifetime) return;
     const d = new Date(s.created * 1000); d.setUTCMonth(d.getUTCMonth() + m);
-    if (!best || d.toISOString() > best.period_end) { best = { period_end: d.toISOString(), plan: m >= 60 ? 'FIVE_YEARS' : 'ANNUAL' }; sub = s.mode === 'subscription' && s.subscription ? String(s.subscription) : null; }
+    if (!best || d.toISOString() > best.period_end) { best = { period_end: d.toISOString(), plan: m >= 60 ? 'FIVE_YEARS' : (m >= 12 ? 'ANNUAL' : 'MONTHLY') }; sub = s.mode === 'subscription' && s.subscription ? String(s.subscription) : null; }
   });
   if (best && !best.lifetime && sub) best.subscription = sub;
   return best;

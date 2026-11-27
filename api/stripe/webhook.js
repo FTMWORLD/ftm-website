@@ -118,7 +118,7 @@ module.exports = async function handler(req, res) {
   // An unmapped link still grants Auto Trading when it is a real plan payment (400 or more); a small payment
   // such as a 1 EUR test grants nothing. FTM is alerted either way to update the map.
   const unknownLink = !PAYMENT_LINK_PRODUCT[linkId];
-  const product = PAYMENT_LINK_PRODUCT[linkId] || ((session.amount_total || 0) >= 40000 ? 'auto' : null);
+  const product = PAYMENT_LINK_PRODUCT[linkId] || ((session.amount_total || 0) >= 40000 || isMonthlyAmount(session) ? 'auto' : null);
   if (unknownLink) console.error('Stripe webhook: unrecognised payment_link', linkId, 'for', email, '— granted Auto Trading, map needs updating.');
 
   if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -339,6 +339,14 @@ const PLAN_MONTHS = {
   'plink_1USfs7AZWClTb7yxxDVMAKmY': null, 'plink_1UHLQXAZWClTb7yxBn9gU95g': null
 };
 
+/* Monthly plan (owner 27 Nov 2026): 99 EUR for 1 month + 1 month free = 2 months active. Recognised by its amount
+   (99 EUR, or less with an affiliate discount) until its payment link id is added to the two maps above. */
+const MONTHLY_MONTHS = 2;
+function isMonthlyAmount(o) {
+  const a = (o && o.amount_total) || 0, cur = String((o && o.currency) || 'eur').toLowerCase();
+  return !PAYMENT_LINK_PRODUCT[o && o.payment_link] && cur === 'eur' && a >= 8900 && a <= 9900;
+}
+
 function requestIdFor(sessionId) {
   const h = require('crypto').createHash('sha256').update('ftm-invest:' + sessionId).digest('hex');
   return h.slice(0, 8) + '-' + h.slice(8, 12) + '-4' + h.slice(13, 16) + '-a' + h.slice(17, 20) + '-' + h.slice(20, 32);
@@ -384,14 +392,14 @@ async function syncEngine(event) {
     case 'checkout.session.completed': {
       if (o.payment_status !== 'paid' && o.payment_status !== 'no_payment_required') return 'skipped (not paid)';
       if (PAYMENT_LINK_PRODUCT[o.payment_link] === 'invest') return 'skipped (investment)';
-      if (!PAYMENT_LINK_PRODUCT[o.payment_link] && (o.amount_total || 0) < 40000) return 'skipped (not a plan payment)';
+      if (!PAYMENT_LINK_PRODUCT[o.payment_link] && (o.amount_total || 0) < 40000 && !isMonthlyAmount(o)) return 'skipped (not a plan payment)';
       status = 'ACTIVE';
       email = (o.customer_details && o.customer_details.email) || o.customer_email || null;
       ref = o.client_reference_id || (o.metadata && o.metadata.ftm_customer) || null;
       cus = typeof o.customer === 'string' ? o.customer : null;
       if (PLAN_MONTHS[o.payment_link] === null) lifetime = true;
-      if (o.payment_link in PLAN_MONTHS) {
-        const m = PLAN_MONTHS[o.payment_link];
+      if (o.payment_link in PLAN_MONTHS || isMonthlyAmount(o)) {
+        const m = o.payment_link in PLAN_MONTHS ? PLAN_MONTHS[o.payment_link] : MONTHLY_MONTHS;
         if (m) { const d = new Date((o.created || event.created || Math.floor(Date.now() / 1000)) * 1000); d.setUTCMonth(d.getUTCMonth() + m); periodEnd = d.toISOString(); }
       }
       break;
@@ -463,5 +471,7 @@ async function affiliatePayment(event) {
 module.exports._affiliatePayment = affiliatePayment;
 module.exports.PAYMENT_LINK_PRODUCT = PAYMENT_LINK_PRODUCT;
 module.exports.PLAN_MONTHS = PLAN_MONTHS;
+module.exports.isMonthlyAmount = isMonthlyAmount;
+module.exports.MONTHLY_MONTHS = MONTHLY_MONTHS;
 module.exports.addToCustomerList = addToCustomerList;
 module.exports.alertFtm = alertFtm;

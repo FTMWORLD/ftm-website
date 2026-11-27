@@ -1588,6 +1588,36 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   @media (max-width:370px){.lcx{padding:18px 14px}.lcx-stats{gap:6px}.lcx-stats>div{padding:10px 8px}.lcx-stats b{font-size:14.5px}.lcx-stats>div>span{font-size:10.5px}.lcx-brand small{font-size:11.5px}.lcx-run{padding:5px 9px}}
   @media (prefers-reduced-motion:reduce){.running i,.lcx-run i,.lcx::before,.lcx-dot.on::after{animation:none}.od-c,.lcx-thumb{transition:none}}
 
+  .mx{position:relative;overflow:hidden;padding:0!important;min-height:min(52vw,640px);display:flex;align-items:center}
+  .mx-media{position:absolute;inset:0 0 0 38%}
+  .mx-vid{width:100%;height:100%;object-fit:cover;display:block}
+  .mx::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 36%,rgba(11,20,64,.75) 48%,rgba(11,20,64,0) 66%)}
+  .mx-txt{position:relative;z-index:2;width:100%;padding-block:72px}
+  .mx-txt .section-title{text-align:left;max-width:520px;margin:0 0 12px}
+  .mx-sub{color:#c9d0ee;max-width:460px;margin:0 0 26px;font-size:18px}
+  .mx-facts{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 10px}
+  .mx-facts div{display:flex;flex-direction:column;gap:4px;max-width:150px}
+  .mx-facts b{font-size:34px;color:var(--gold);letter-spacing:-.02em;line-height:1}
+  .mx-facts span{font-size:13px;color:#c9d0ee;line-height:1.35}
+  .mx-note{font-size:12px;color:#8f99c4;margin:0 0 26px}
+  .mx-go{font-size:18px;padding:16px 34px}
+  .mx .sale-banner{text-align:left;margin:20px 0 0}
+  @media (max-width:820px){.mx{display:block;min-height:0}.mx-media{position:relative;inset:auto;aspect-ratio:16/9}.mx::before{display:none}.mx-media::after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(180deg,rgba(11,20,64,0),var(--ink))}.mx-txt{padding-block:28px 56px}.mx-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mx-facts b{font-size:24px}.mx-facts span{font-size:12px}}
+  html.pp-open{overflow:hidden}
+  .pp-ov{position:fixed;inset:0;z-index:9000;background:rgba(5,9,31,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+  .pp-ov[hidden]{display:none}
+  .pp-box{position:relative;background:#fff;color:var(--text);border-radius:24px;padding:30px 26px 22px;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 40px 90px rgba(0,0,0,.45)}
+  .pp-box h3{margin:0 0 16px;font-size:26px;color:var(--ink);letter-spacing:-.02em}
+  .pp-x{position:absolute;top:14px;right:14px}
+  .pp-sel select{width:100%;font:inherit;font-size:17px;font-weight:700;color:var(--ink);padding:14px 44px 14px 16px;border:2px solid var(--gold);border-radius:14px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B1440' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center/18px;appearance:none;-webkit-appearance:none;cursor:pointer}
+  .pp-card{margin:16px 0 18px;padding:18px;border-radius:18px;background:linear-gradient(180deg,#fff,#fff8e3);box-shadow:0 0 0 2px rgba(212,175,55,.55);display:flex;flex-direction:column;gap:10px}
+  .pp-price b{font-size:40px;color:var(--ink);letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;margin-right:8px}
+  .pp-price .old{font-size:20px;font-weight:700;color:#5b6378;text-decoration:line-through;text-decoration-color:#e63946;margin-right:8px}
+  .pp-price span{font-size:14px;color:var(--muted)}
+  .pp-card p{margin:0;font-size:15px;line-height:1.5;color:#3a4266}
+  .pp-card .pp-sub{font-size:13px;color:var(--muted)}
+  .pp-go{display:block;text-align:center;font-size:18px;padding:16px}
+  .pp-safe{text-align:center;font-size:12px;color:var(--muted);margin:10px 0 0}
   .pricing{background:radial-gradient(900px 420px at 50% 0,rgba(212,175,55,.16),transparent 70%),var(--ink);color:#fff}
   .pricing .section-title,.pricing .perf-sub{color:#fff}
   .pricing .perf-sub{color:rgba(255,255,255,.8)}
@@ -3630,42 +3660,65 @@ body.op-lock{overflow:hidden}
 </section>
 
 
-<section class="pricing" id="pricing">
-  <div class="container">
-    <p class="eyebrow" style="color:var(--gold);text-align:center;margin-bottom:12px">FTM Auto Trading subscription</p>
-    <h2 class="section-title" style="margin-bottom:16px" data-i18n="pricing.title">Pay once, let the machine work for years</h2>
-    <p class="perf-sub">One plan for every market FTM MACHINE trades.</p>
-    <p class="sale-banner"><b>Sale:</b> up to 50% off every plan until 1 January 2028.</p>
-    <div class="plans">
-      <div class="plan">
-        <div class="plan-name">Annual</div>
-        <div class="plan-price"><s class="old">999€</s><b class="sale">499€</b><span>per year</span></div>
-        <div class="plan-bonus">+1 month free</div>
-        <ul><li>13 months for the price of 12</li><li><b>+12,137%</b> portfolio growth</li><li>All markets and all 3 risk profiles</li><li>24/7 support</li></ul>
-        <a class="btn btn-outline" href="https://buy.stripe.com/fZubJ00Dx6Fm8Nsfw87wA0j">Start annual plan</a>
-      </div>
-      <div class="plan featured">
-        <div class="plan-tag">Popular</div>
-        <div class="plan-name">5 Years</div>
-        <div class="plan-price"><s class="old">3,999€</s><b class="sale">1,999€</b><span>one payment</span></div>
-        <div class="plan-bonus">+4 months free</div>
-        <ul><li>64 months, you pay for 60</li><li><b>+98,644%</b> portfolio growth</li><li>Price locked, about 33€ a month</li><li>Priority support</li></ul>
-        <a class="btn btn-red" href="https://buy.stripe.com/5kQ4gy1HB2p6aVA97K7wA0k">Lock in 5 years</a>
-      </div>
-      <div class="plan">
-        <div class="plan-name">Lifetime</div>
-        <div class="plan-price"><s class="old">9,999€</s><b class="sale">4,999€</b><span>once, forever</span></div>
-        <div class="plan-bonus">Never pay again</div>
-        <ul><li>FTM MACHINE for life</li><li><b>54–176%</b> a year on average</li><li>Every future market included</li><li>Dedicated account manager</li></ul>
-        <a class="btn btn-dark" href="https://buy.stripe.com/dRmdR81HBfbS3t8es47wA0l">Access for life</a>
-      </div>
+<section class="pricing mx" id="pricing">
+  <div class="mx-media" aria-hidden="true"><video class="mx-vid" muted loop playsinline preload="none" poster="/machine-wide.jpg"><source src="/machine-wide.mp4" type="video/mp4"></video></div>
+  <div class="container mx-txt">
+    <p class="eyebrow" style="color:var(--gold);margin-bottom:12px">FTM Auto Trading subscription</p>
+    <h2 class="section-title">FTM MACHINE trades for you</h2>
+    <p class="mx-sub">One plan for every market FTM MACHINE trades.</p>
+    <div class="mx-facts">
+      <div><b data-no-i18n>54–176%</b><span>Average yearly return</span></div>
+      <div><b>7 of 7</b><span>Profitable years, Portfolio</span></div>
+      <div><b data-no-i18n>24/7</b><span>All markets and all 3 risk profiles</span></div>
     </div>
-    <p class="plans-note"><b>Sale prices end on 1 January 2028.</b> After that, every plan goes back to full price.</p>
-
+    <p class="mx-note">Portfolio backtest since 2020, from Conservative to Growth 2×.</p>
+    <button class="btn btn-red mx-go js-activate" type="button">Activate FTM MACHINE</button>
+    <p class="sale-banner"><b>Sale:</b> up to 50% off every plan until 1 January 2028.</p>
   </div>
 </section>
+<div class="pp-ov" id="planPick" hidden role="dialog" aria-modal="true" aria-labelledby="ppTitle">
+  <div class="pp-box">
+    <button class="cw-x pp-x" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <p class="eyebrow" style="color:var(--gold);margin:0 0 6px">FTM Auto Trading subscription</p>
+    <h3 id="ppTitle">Choose your plan</h3>
+    <label class="pp-sel"><select id="ppPlan"></select></label>
+    <div class="pp-card"><div class="pp-price"><s class="old" id="ppOld" data-no-i18n></s><b id="ppNow" data-no-i18n></b><span id="ppPer"></span></div><div class="plan-bonus" id="ppBonus"></div><p id="ppText"></p><p class="pp-sub" id="ppSub"></p></div>
+    <a class="btn btn-red pp-go" id="ppGo" href="#">Continue</a>
+    <p class="pp-safe">Secure payment by Stripe</p>
+  </div>
+</div>
 
 
+<script>
+(function(){
+  var tr=function(x){ return (window.I18NE&&I18NE.t)?I18NE.t(x):x; };
+  var PLANS=[
+    {k:'monthly',name:'Monthly',now:'99€',old:'',per:'1 month',bonus:'+1 month free',text:'Trading is a long-term journey: one year is the best way to see FTM MACHINE at work. Not sure yet? Start with one month and see how it goes.',sub:'2 months for the price of 1',url:''},
+    {k:'annual',name:'Annual',now:'499€',old:'999€',per:'per year',bonus:'+1 month free',text:'The plan most people choose: a full year, through profit months and loss months.',sub:'13 months for the price of 12',url:'https://buy.stripe.com/fZubJ00Dx6Fm8Nsfw87wA0j',def:true},
+    {k:'5y',name:'5 Years',now:'1,999€',old:'3,999€',per:'one payment',bonus:'+4 months free',text:'64 months, you pay for 60',sub:'Price locked, about 33€ a month',url:'https://buy.stripe.com/5kQ4gy1HB2p6aVA97K7wA0k'},
+    {k:'life',name:'Lifetime',now:'4,999€',old:'9,999€',per:'once, forever',bonus:'Never pay again',text:'FTM MACHINE for life',sub:'Every future market included',url:'https://buy.stripe.com/dRmdR81HBfbS3t8es47wA0l'}
+  ].filter(function(x){ return x.url; });
+  var ov=document.getElementById('planPick'), sel=document.getElementById('ppPlan'), go=document.getElementById('ppGo'); if(!ov||!sel) return;
+  function $(i){ return document.getElementById(i); }
+  function fill(){ sel.innerHTML=PLANS.map(function(x){ return '<option value="'+x.k+'"'+(x.def?' selected':'')+'>'+tr(x.name)+' · '+x.now+'</option>'; }).join(''); show(); }
+  function show(){ var x=PLANS.filter(function(y){ return y.k===sel.value; })[0]||PLANS[0];
+    $('ppNow').textContent=x.now; $('ppOld').textContent=x.old; $('ppOld').hidden=!x.old; $('ppPer').textContent=tr(x.per);
+    $('ppBonus').textContent=tr(x.bonus); $('ppText').textContent=tr(x.text); $('ppSub').textContent=tr(x.sub);
+    go.setAttribute('href',x.url); go.removeAttribute('data-base'); }
+  function open(){ fill(); ov.hidden=false; document.documentElement.classList.add('pp-open'); setTimeout(function(){ try{ sel.focus({preventScroll:true}); }catch(e){} },60); }
+  function close(){ ov.hidden=true; document.documentElement.classList.remove('pp-open'); }
+  sel.addEventListener('change',show);
+  ov.addEventListener('click',function(e){ if(e.target===ov||e.target.closest('.pp-x')) close(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!ov.hidden) close(); });
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('.js-activate,.js-plans,.js-free-plans,a.btn[href="#pricing"],#faqPlans,#authToPricing'); if(!t) return;
+    e.preventDefault(); e.stopPropagation(); open();
+  },true);
+  var v=document.querySelector('.mx-vid');
+  if(v&&'IntersectionObserver' in window){ new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ if(v.preload!=='auto'){ v.preload='auto'; v.load(); } var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else v.pause(); }); },{rootMargin:'200px'}).observe(v); }
+  window.FTM=window.FTM||{}; FTM.openPlans=open;
+})();
+</script>
 <section class="longterm">
   <div class="container">
     <div class="compound">

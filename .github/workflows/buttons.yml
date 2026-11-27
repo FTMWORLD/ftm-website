@@ -26,6 +26,7 @@ jobs:
           python3 -m http.server 8765 >/dev/null 2>&1 &
           sleep 2
           node .github/tests/buttons.js http://localhost:8765
+          node .github/tests/plan-chooser.js http://localhost:8765
           node .github/tests/figures.js http://localhost:8765
           node .github/tests/compare-markets.js http://localhost:8765
           node .github/tests/menu-avatar.js http://localhost:8765
