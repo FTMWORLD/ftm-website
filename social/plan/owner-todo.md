@@ -19,7 +19,7 @@ Tick an item only when the owner says it is done.
 01. [ ] ElevenLabs: make sure the Creator plan is active (key saved 25 Nov, works)
 01b. [ ] Runway: 619 developer credits left (USD 6.19, about 6 more moving videos). No top-up needed yet. Decide: keep moving shots in both daily videos (about USD 60 a month) or only the 09:30 (about USD 30); the Runway website plan (USD 15) is not used by Claude and can be cancelled
 02. [ ] FTM staff → Finance: add the amounts and renewal dates you know (Contabo, Vercel, Supabase, domain, Claude, Metricool, Runway, ChatGPT) and the payment you made 2 days ago
-0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"
+0. [ ] Reconnect LinkedIn in Metricool (Settings → Brand → LinkedIn → reconnect): the 25 Nov 13:25 post failed "401 Could not authenticate"; still failing 27 Nov 09:30 ("authentication failure")
 1. [ ] Say "remove them" for the invented sample quotes under "What our customers say" (free Trustpilot plan cannot show live reviews; keep the "Rate us on Trustpilot" button)
 2. [ ] Trustpilot: send members https://www.trustpilot.com/evaluate/ftmwealthnation.com (no TrustBox code needed: review-display widgets are paid; decide on a paid plan at about 20 reviews)
 3. [ ] Every day: answer comments and messages a few minutes after each post

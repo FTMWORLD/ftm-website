@@ -416,12 +416,19 @@
       "path": "/health",
       "auth": "none",
       "status": "live",
-      "summary": "Liveness of the engine.",
+      "summary": "Liveness of the engine. Since 27 Nov 2026 also the price feed's evidence per market (feed: last tick, tick age, market_closed) for the engine's own dead-chart monitor; the website needs none of it.",
       "response": {
         "200": {
           "ok": true,
           "service": "ftm-api",
-          "version": "0.5.0"
+          "version": "0.5.0",
+          "feed": {
+            "feed_age_sec": 0.8,
+            "stale": false,
+            "markets": {
+              "USTEC": { "last_tick_at": "2026-11-27T11:47:26.000Z", "tick_age_sec": 1.2, "market_closed": false }
+            }
+          }
         }
       },
       "errors": []
