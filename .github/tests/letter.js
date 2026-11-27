@@ -82,7 +82,7 @@ const BASE=process.argv[2]||'http://localhost:8765';
       F.data.engineStats={accountId:'m1',flows:F.data.flows}; F.viewAccount=function(){}; F.refreshing=false; if(F.metricsFresh) F.metricsFresh();
       const M=F.metrics(), a=new Date(2026,9,1).getTime(), z=new Date(2026,10,1).getTime(); return {m:M.seg(a,z).pct,y:M.seg(new Date(2026,0,1).getTime(),z).pct}; });
     await p.click('#appView .nav-staff'); await p.waitForTimeout(300);
-    await p.click('.stf-tabs [data-t="letter"]'); await p.waitForTimeout(500);
+    if(!(await p.isVisible('.stf-tabs [data-t="letter"]'))) await p.click('#stfMenu'); await p.click('.stf-tabs [data-t="letter"]'); await p.waitForTimeout(500);
     ok(await p.isVisible('#ltTitle')&&/FTM master account 900/.test(await p.textContent('#ltAcct')),'['+label+'] Letter tab opens with the master account as the figures source');
     await p.selectOption('#ltMonth','2026-10').catch(()=>{});
     const hasOct=await p.evaluate(()=>[...document.querySelectorAll('#ltMonth option')].some(o=>o.value==='2026-10'));
