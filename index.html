@@ -1604,6 +1604,18 @@ document.addEventListener('click',function(e){ var t=e.target.closest&&e.target.
   .mx .sale-banner{text-align:left;margin:20px 0 0}
   @media (max-width:820px){.mx{display:block;min-height:0}.mx-media{position:relative;inset:auto;aspect-ratio:16/9}.mx::before{display:none}.mx-media::after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(180deg,rgba(11,20,64,0),var(--ink))}.mx-txt{padding-block:28px 56px}.mx-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.mx-facts b{font-size:24px}.mx-facts span{font-size:12px}}
   html.pp-open{overflow:hidden}
+  .mx-alerts{position:absolute;right:32px;bottom:40px;width:250px;display:flex;flex-direction:column;gap:10px;z-index:3;pointer-events:none}
+  .mx-al{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 12px 30px rgba(5,9,31,.28);animation:mxIn .5s cubic-bezier(.2,.8,.2,1) both;transition:opacity .5s,transform .5s}
+  .mx-al.out{opacity:0;transform:translateY(-8px) scale(.97)}
+  .mx-al i{flex:none;width:30px;height:30px;border-radius:9px;background:#152a7a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E3B62F' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M4 16l5-5 4 3 7-7'/%3E%3C/svg%3E") no-repeat center/18px}
+  .mx-al div{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.2}
+  .mx-al small{font-size:11px;font-weight:800;letter-spacing:.06em;color:#0B1440}
+  .mx-al span{font-size:12px;color:#5b6378}
+  .mx-al b{font-size:18px;font-weight:900;font-variant-numeric:tabular-nums;color:#15803d}
+  .mx-al b.dn{color:#c81e2b}
+  @keyframes mxIn{from{opacity:0;transform:translateX(30px) scale(.96)}to{opacity:1;transform:none}}
+  @media (max-width:820px){.mx-alerts{right:10px;bottom:12px;width:150px;gap:6px}.mx-al small{display:none}.mx-al{padding:7px 10px;border-radius:12px}.mx-al i{width:24px;height:24px;background-size:14px}.mx-al b{font-size:15px}.mx-al span{font-size:11px}}
+  @media (prefers-reduced-motion:reduce){.mx-al{animation:none}}
   .pp-ov{position:fixed;inset:0;z-index:9000;background:rgba(5,9,31,.72);display:flex;align-items:center;justify-content:center;padding:16px}
   .pp-ov[hidden]{display:none}
   .pp-box{position:relative;background:#fff;color:var(--text);border-radius:24px;padding:30px 26px 22px;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;box-shadow:0 40px 90px rgba(0,0,0,.45)}
@@ -3661,7 +3673,7 @@ body.op-lock{overflow:hidden}
 
 
 <section class="pricing mx" id="pricing">
-  <div class="mx-media" aria-hidden="true"><video class="mx-vid" muted loop playsinline preload="none" poster="/machine-wide.jpg"><source src="/machine-wide.mp4" type="video/mp4"></video></div>
+  <div class="mx-media" aria-hidden="true"><video class="mx-vid" muted loop playsinline preload="none" poster="/machine-wide.jpg"><source src="/machine-wide.mp4" type="video/mp4"></video><div class="mx-alerts" data-no-i18n></div></div>
   <div class="container mx-txt">
     <p class="eyebrow" style="color:var(--gold);margin-bottom:12px">FTM Auto Trading subscription</p>
     <h2 class="section-title">FTM MACHINE trades for you</h2>
@@ -3717,6 +3729,26 @@ body.op-lock{overflow:hidden}
   var v=document.querySelector('.mx-vid');
   if(v&&'IntersectionObserver' in window){ new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ if(v.preload!=='auto'){ v.preload='auto'; v.load(); } var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else v.pause(); }); },{rootMargin:'200px'}).observe(v); }
   window.FTM=window.FTM||{}; FTM.openPlans=open;
+})();
+</script>
+<script>
+(function(){
+  var box=document.querySelector('.mx-alerts'); if(!box) return;
+  var L=(window.FTM_LOCALE||undefined), days=[], i=0, timer=null, max=matchMedia('(max-width:820px)').matches?2:3;
+  function ymd(d){ return d.toLocaleDateString('en-CA',{timeZone:'Europe/Berlin'}); }
+  function pick(cal){ var out=[], since=3; cal.forEach(function(c){ if(!c.n) return; if(c.pct>0){ out.push(c); since++; } else if(c.pct<0&&since>=3){ out.push(c); since=0; } }); return out; }
+  function get(d){ return fetch('/api/v1/community?dayresult='+d).then(function(r){ return r.ok?r.json():null; }).then(function(j){ return (j&&j.cal)||[]; }).catch(function(){ return []; }); }
+  function show(){ if(!days.length) return; var c=days[i++%days.length], dt=new Date(c.date+'T12:00:00Z'), el=document.createElement('div'); el.className='mx-al';
+    el.innerHTML='<i></i><div><small>FTM MACHINE</small><span></span></div><b></b>';
+    el.querySelector('span').textContent=dt.toLocaleDateString(L,{day:'numeric',month:'short'}); var b=el.querySelector('b'); b.textContent=(c.pct>0?'+':'')+c.pct.toFixed(2)+'%'; if(c.pct<0) b.className='dn';
+    box.appendChild(el); var all=box.querySelectorAll('.mx-al:not(.out)'); if(all.length>max){ var o=all[0]; o.classList.add('out'); setTimeout(function(){ o.remove(); },520); } }
+  function start(){ if(timer) return; show(); timer=setInterval(show,2300); }
+  function stop(){ clearInterval(timer); timer=null; }
+  var y=new Date(Date.now()-864e5);
+  get(ymd(y)).then(function(cal){ if(cal.filter(function(c){return c.n;}).length>=4) return cal; var p=new Date(Date.UTC(y.getUTCFullYear(),y.getUTCMonth(),0)); return get(ymd(p)).then(function(c2){ return c2.concat(cal); }); }).then(function(cal){
+    days=pick(cal); if(!days.length) return;
+    if('IntersectionObserver' in window) new IntersectionObserver(function(es){ es.forEach(function(e){ e.isIntersecting?start():stop(); }); }).observe(box.parentNode); else start();
+  });
 })();
 </script>
 <section class="longterm">
