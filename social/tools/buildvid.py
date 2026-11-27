@@ -32,9 +32,11 @@ open(os.path.join(D, 'mix.py'), 'w').write(mix)
 lines = [['hook', day['open']]] + day['scenes']
 json.dump([{'id': a, 'vo': b, 'see': ''} for a, b in lines], open(os.path.join(D, 'script.json'), 'w'), indent=1)
 T = os.environ.get('TTS_DIR', '/tmp/claude-0/-home-user-ftm-website/bf2cab86-488a-5b85-ae97-884fa7cab310/scratchpad/tts')
-from kokoro_onnx import Kokoro
 import soundfile as sf
-k = Kokoro(os.path.join(T, 'kokoro-v1.0.onnx'), os.path.join(T, 'voices-v1.0.bin'))
+k = None
+if os.environ.get('VOICE_ENGINE', 'eleven') != 'eleven':  # 27 Nov: Kokoro is only needed for the old voices; ElevenLabs runs without it
+    from kokoro_onnx import Kokoro
+    k = Kokoro(os.path.join(T, 'kokoro-v1.0.onnx'), os.path.join(T, 'voices-v1.0.bin'))
 durs, amp = [], {}
 def clean_own(a, sr):
     """Owner/wife recordings: remove steady room noise, trim the silence at both ends to 60 ms, fade 25 ms in and out."""
@@ -50,8 +52,12 @@ def clean_own(a, sr):
     return a
 # owner 23 Nov: pronunciation check. Words with two pronunciations are printed with the sounds the voice will use;
 # a known wrong reading stops the build (reword the line, or PRON_OK=1 after listening).
-from kokoro_onnx.tokenizer import Tokenizer as _Tok
-_tk, _bad = _Tok(), []
+try:
+    from kokoro_onnx.tokenizer import Tokenizer as _Tok
+    _tk = _Tok()
+except Exception:
+    _tk = None  # without the phonemizer every trap word stops the build unless PRON_OK=1
+_bad = []
 TRAPS = {'lives': 'laɪvz', 'close': 'kloʊs', 'closes': 'kloʊsɪz', 'lead': 'lɛd', 'wind': 'waɪnd', 'tear': 'tɛɹ', 'minute': 'maɪnuːt', 'wound': 'waʊnd', 'refuse': 'ɹɛfjuːs', 'object': 'ɑbdʒɛkt', 'present': 'pɹɛzənt', 'record': 'ɹɛkɚd', 'content': 'kɑntɛnt', 'live': 'laɪv', 'read': 'ɹiːd', 'row': 'ɹaʊ', 'bow': 'baʊ', 'use': 'juːs'}
 OWN = os.environ.get('OWN_VO')  # owner 22 Nov: folder of the owner's own recordings, one <scene id>.wav each
 for sid, vo in lines:
@@ -68,9 +74,9 @@ for sid, vo in lines:
         m = max(env) or 1; amp[sid] = [round(min(1, (e / m) * 1.4), 2) for e in env]; continue
     for w in re.findall(r"[A-Za-z']+", txt):
         if w.lower() in TRAPS:
-            ph = _tk.phonemize(txt, 'en-us')
+            ph = _tk.phonemize(txt, 'en-us') if _tk else '(no phonemizer: listen to this line)'
             print('PRONUNCIATION CHECK:', sid, '|', w, '|', ph)
-            if w.lower() in ('lives', 'close') and TRAPS[w.lower()] in ph.replace('ˈ', '').replace('ˌ', ''): _bad.append((sid, w, txt))
+            if w.lower() in ('lives', 'close') and (not _tk or TRAPS[w.lower()] in ph.replace('ˈ', '').replace('ˌ', '')): _bad.append((sid, w, txt))
     # owner 25 Nov 2026: ElevenLabs voices, always mixed (social/plan/voices.json). A line "Ify: ..." is spoken by that cast member;
     # NARRATOR=<cast name> for lines without a name; HER:/HIM: map to CAST_HER / CAST_HIM. VOICE_ENGINE=kokoro keeps the old voices.
     if os.environ.get('VOICE_ENGINE', 'eleven') == 'eleven':

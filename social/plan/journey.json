@@ -197,37 +197,6 @@
    }
   },
   {
-   "date": "2026-11-28",
-   "stage": "Pillar · Time",
-   "format": "Pillar Time: short story with characters (rig), one clear scenario",
-   "title": "The move while you slept",
-   "open": "The biggest moves often happen while you sleep.",
-   "hook": "The biggest moves often happen while you sleep.",
-   "scenes": [
-    [
-     "night",
-     "Two a.m. You are fast asleep."
-    ],
-    [
-     "asia",
-     "On the other side of the world, the Asian markets open, and prices start to move."
-    ],
-    [
-     "morning",
-     "You wake up, and the move already happened."
-    ],
-    [
-     "machine",
-     "FTM MACHINE never sleeps. It is in the market at two a.m. as it is at two p.m."
-    ],
-    [
-     "cta",
-     "Sleep well. Start free at ftm wealth nation dot com."
-    ]
-   ],
-   "note": "Owner 22 Nov: 09:30 education built on FTM's three reasons (time, emotion, system). Real figures only."
-  },
-  {
    "date": "2026-11-29",
    "stage": "Pillar · Emotion",
    "format": "Pillar Emotion: short story with characters (rig), one clear scenario",
@@ -790,6 +759,88 @@
     ]
    ],
    "note": "Owner 27 Nov: replaces ad-ng-1 for the first Meta ad; more Nigerian everyday scenes, faster voices, still 14 s. Meta finance rules: no return figures or promises, software framing, risk line on screen. Link ftmwealthnation.com/?start=adng"
+  },
+  {
+   "date": "2026-11-28",
+   "slot": "09:30",
+   "stage": "Education · system",
+   "format": "Honest worst day, then the comeback (figures-led, animated stills)",
+   "audience": "sceptics who want proof",
+   "sound": "bright",
+   "voice": "ElevenLabs mixed: Charlotte (South African), Andy Lin (Chinese), Dayo (Nigerian)",
+   "title": "Our worst day this month",
+   "vote": {
+    "q": "After 2 loss days, you…",
+    "a": "Quit",
+    "b": "Stay with the rules"
+   },
+   "open": "Charlotte: Minus three point four three percent. Our worst day this month.",
+   "scenes": [
+    [
+     "again",
+     "Andy Lin: Three days later? Minus three point three eight. Again."
+    ],
+    [
+     "quit",
+     "Dayo: Most people quit right there. Or trade harder to win it back."
+    ],
+    [
+     "rules",
+     "Charlotte: FTM Machine did neither. Same rules. Next day."
+    ],
+    [
+     "best",
+     "Andy Lin: Three days after that second drop? Plus ten point one six percent. In one day."
+    ],
+    [
+     "month",
+     "Dayo: November so far, by Friday: plus seven point six percent."
+    ],
+    [
+     "cta",
+     "Charlotte: After two loss days, would you quit, or stay with the rules? Vote below, then tap the link in our bio."
+    ]
+   ],
+   "note": "Live figures from the community dayresult API on 27 Nov 21:40 Berlin (mtd +7.6%, 6 Nov -3.43%, 9 Nov -3.38%, 12 Nov +10.16%). Day counts left out (owner 27 Nov: amplify the winning side). Runway credits empty (2 left): stills with slow zoom."
+  },
+  {
+   "date": "2026-11-28-1300",
+   "slot": "13:00",
+   "stage": "Today's reality · statistic",
+   "format": "Mother and daughter at a Lagos market (inflation story)",
+   "audience": "people in high-inflation countries and anyone saving cash",
+   "sound": "drive",
+   "voice": "ElevenLabs mixed: Ngozi (Nigerian), Ify (Nigerian), Sarah (American)",
+   "title": "Inflation is eating your savings",
+   "vote": {
+    "q": "What hurts most right now?",
+    "a": "Food prices",
+    "b": "Rent"
+   },
+   "open": "Ngozi: My savings are shrinking. Quietly. Every single day.",
+   "scenes": [
+    [
+     "rates",
+     "Sarah: Inflation in Nigeria: fourteen percent. On food: nineteen. Even Europe: four percent."
+    ],
+    [
+     "less",
+     "Ngozi: Same money, less bread, less fuel. And saving alone is not growing."
+    ],
+    [
+     "daughter",
+     "Ify: Mama, FTM Machine trades with fixed rules, and every single trade is public."
+    ],
+    [
+     "backtest",
+     "Sarah: Backtest, 2020 to 2026: seven of seven years in profit."
+    ],
+    [
+     "cta",
+     "Ify: What hurts most right now? Food prices, or rent? Vote below, then tap the link in our bio to create your account."
+    ]
+   ],
+   "note": "Nigeria Oct 2026 14.06%, food 19.13% (NBS via Nairametrics, Economic Confidential); euro area Oct 4.0% flash (Eurostat via Trading Economics, investingLive). US 10-year cash line dropped (not re-verified). Runway credits empty: stills with slow zoom."
   }
  ],
  "2026-11-24-1800": {
