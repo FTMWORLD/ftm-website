@@ -724,6 +724,37 @@
     ]
    ],
    "note": "Statistic: Federal Reserve SHED 2025, 63% would cover a small emergency expense with cash or equivalent, so 37% could not (brief, confirmed). ChatGPT images 2026-11-27-1300-01..06 + Runway shots 1,3,5,6."
+  },
+  {
+   "date": "ad-ng-1",
+   "slot": "paid ad",
+   "stage": "Paid ad · Nigeria",
+   "format": "18 s Reels/Stories ad, Runway moving shots",
+   "audience": "working people in Nigeria",
+   "sound": "drive",
+   "voice": "ElevenLabs: Dayo (Nigerian), Ify (Nigerian), fast",
+   "title": "Stuck in traffic",
+   "vote": null,
+   "open": "Dayo: Stuck in Lagos traffic again?",
+   "scenes": [
+    [
+     "missed",
+     "Ify: The market moved. You missed it."
+    ],
+    [
+     "machine",
+     "Dayo: Now FTM Machine trades for me. Fixed rules. No emotions."
+    ],
+    [
+     "own",
+     "Ify: On your own account. In your name. Pause any time."
+    ],
+    [
+     "cta",
+     "Dayo: Watch the live account first. Tap Learn more."
+    ]
+   ],
+   "note": "Owner 27 Nov: first paid ad, Nigeria (India excluded: Meta requires SEBI registration since 31 Jul 2025). Meta finance rules: no return figures or promises, software framing, risk line on screen."
   }
  ],
  "2026-11-24-1800": {
