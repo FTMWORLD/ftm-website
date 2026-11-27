@@ -4,6 +4,27 @@ One entry per deploy, newest first. Each entry: the date, the commit on the engi
 website, and answers to website requests (ids WR-nnn from docs/engine-requests.md in the website repository).
 Served at /api/v1/dev/contract (HTML) and /api/v1/dev/contract.json (JSON).
 
+## 2026-11-27 — A MARKET HOLIDAY IS NOT A DEAD CHART (not committed yet; monitor live 12:40 Berlin at the next 5-minute pass, API restarted 13:01 Berlin with the owner's UAC click, health answers feed, 0 errors)
+
+- WEBSITE: nothing changes for the website. GET /health additionally answers `feed` (per market the price feed's last tick,
+  tick age and market_closed; never the feed login) for the engine's own dead-chart monitor. No other field changed.
+- WHY: Thanksgiving, Thu 26 Nov 2026. US Tech stopped ticking at 18:00 UTC (19:00 Berlin); the monitor's open-hours table said
+  "open", the master's USTEC chart and the prop's NDX100 chart were called dead after 1 h of no prices, and the auto-recover
+  restarted BOTH terminals at 20:33 Berlin for nothing. Positions and orders came back intact; the day-close trades closed
+  at the Friday reopen. A second CHART_DEAD round (gold, US Tech on both terminals, 20:48-00:03) resolved by itself.
+- RULE (src/services/alert-tiers.js chartDeadConditions, shared by every terminal): a chart is dead only when its MARKET went
+  on ticking while the chart wrote nothing -- the price feed (MT5_Feed, a third terminal, via GET /health -> feed) is the
+  witness: quiet = the feed is fresh and its last tick of that market is not later than the chart's last write + the
+  20-minute window (the state files lag the ticks by minutes). Chart symbols map to markets with the symbol families
+  (NDX100 / US Tech 100 -> USTEC). No feed (API down, old API, feed stale, unknown market) -> the table decides, as before.
+  A chart that died while the market still ticked stays dead through the holiday close (its last write is far behind the last tick).
+- PROOF: scripts/verify-alert-tiers.js T13-T13f (the 26 Nov evening replayed every 5 min on both terminals: with the feed's
+  evidence 0 alarms, 0 restarts; with a ticking market 2 alarms at 18:30 UTC and a restart plan after 60 min; no / stale
+  feed = table; a chart dead since 16:30 UTC stays dead; a last write 15 min before the last tick is quiet, 25 min is dead;
+  symbol families), 28/0. scripts/verify-market-feed.js M12 (health carries feed for all 5 markets, no login), 12/0.
+  node scripts/basic-alerts.js --dry-run on the live files: 9 charts checked, "no feed evidence (table only)" until the API restart.
+- Applies to all accounts, past and future: yes (one monitor for every terminal and chart).
+
 ## 2026-11-23 — FTM MACHINE 4.1 ON THE MASTER (prop stays on 3.9; no engine change; live 00:23 Berlin with the owner's "Yes, install now" in chat)
 
 - US Tech 100 chart on normal accounts only: Range Breakout (magic 34686) off, M and W 5-minute stop pad 20 % of leg 2 (was 5), Day Momentum and M and W 1h / 4h risk x1.25. Every other market and the prop terminal untouched. No chart input changed (the change is in the code).
