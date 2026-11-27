@@ -35,8 +35,8 @@ ok(r.red && r.home, n+': a customer without FTM MACHINE sees red Activate FTM MA
 await p.evaluate(()=>{ document.getElementById('appView').classList.add('free'); }); await p.waitForTimeout(300);
 if(!(await p.isVisible('#acctA .um-act'))){ await p.click('#appView .um-btn'); await p.waitForTimeout(300); }
 await p.click('#acctA .um-act'); await p.waitForTimeout(1900);
-r=await p.evaluate(()=>{ const pr=document.getElementById('pricing').getBoundingClientRect(); return {app:document.getElementById('appView').hidden, top:Math.round(pr.top), y:Math.round(scrollY)}; });
-ok(r.app && r.top>-50 && r.top<200, n+': a free account tapping Activate FTM MACHINE lands on the plans to subscribe (app hidden '+r.app+', plans at '+r.top+'px, scrollY '+r.y+')');
+r=await p.evaluate(()=>{ const ov=document.getElementById('planPick'), c=ov&&ov.querySelector('.pp-card,[class*="pp-"]'), go=document.getElementById('ppGo'), b=(c||ov).getBoundingClientRect(); return {open:!!ov&&!ov.hidden&&getComputedStyle(ov).display!=='none', fit:b.left>=0&&b.right<=document.documentElement.clientWidth+1, href:go?go.getAttribute('href'):'', opts:document.querySelectorAll('#ppPlan option').length}; });
+ok(r.open && r.fit && /^https:\/\/buy\.stripe\.com\//.test(r.href) && r.opts>=2, n+': a free account tapping Activate FTM MACHINE gets the plan chooser, which fits the screen and continues to checkout ('+JSON.stringify(r)+')');
 ok(!errs.length, n+': no script errors '+(errs[0]||''));
 await c.close();}
 await b.close(); console.log(fails?'FAILED: '+fails:'MENU OK'); process.exit(fails?1:0);})();
