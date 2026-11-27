@@ -11,7 +11,7 @@ let fail = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); i
     await p.evaluate(() => document.querySelector('.js-activate').click()); await p.waitForTimeout(300);
     ok(await p.evaluate(() => !document.getElementById('planPick').hidden), n + ': Activate opens the plan chooser');
     const opts = await p.$$eval('#ppPlan option', o => o.map(x => x.value));
-    ok(opts.includes('annual') && opts.includes('5y') && opts.includes('life'), n + ': chooser lists Annual, 5 Years, Lifetime (' + opts.join(',') + ')');
+    ok(opts.includes('monthly') && opts.includes('annual') && opts.includes('5y') && opts.includes('life'), n + ': chooser lists Monthly, Annual, 5 Years, Lifetime (' + opts.join(',') + ')');
     for (const v of opts) { await p.selectOption('#ppPlan', v); const h = await p.getAttribute('#ppGo', 'href'); const t = await p.textContent('#ppText'); ok(/^https:\/\/buy\.stripe\.com\//.test(h) && t.trim().length > 10, n + ': ' + v + ' has its own Stripe link and write-up'); }
     await p.evaluate(() => document.getElementById('planPick').click()); await p.waitForTimeout(200);
     ok(await p.evaluate(() => document.getElementById('planPick').hidden), n + ': tapping outside closes the chooser');
